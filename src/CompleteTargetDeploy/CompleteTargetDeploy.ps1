@@ -1,0 +1,94 @@
+Trace-VstsEnteringInvocation $MyInvocation
+$global:ErrorActionPreference = 'Continue'
+$global:__vstsNoOverrideVerbose = $true
+
+try {
+    # Get all inputs for the task
+    $clientKey = Get-VstsInput -Name "ClientKey" -Require -ErrorAction "Stop"
+    $clientSecret = Get-VstsInput -Name "ClientSecret" -Require -ErrorAction "Stop"
+    $projectId = Get-VstsInput -Name "ProjectId" -Require -ErrorAction "Stop"
+    $targetEnvironment = Get-VstsInput -Name "TargetEnvironment" -Require -ErrorAction "Stop"
+    $timeout = Get-VstsInput -Name "Timeout" -AsInt -Require -ErrorAction "Stop"
+
+    ####################################################################################
+
+    . "$PSScriptRoot\Helper.ps1"
+    WriteInfo
+
+    if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
+        Install-Module EpiCloud -Scope CurrentUser -Force
+    }
+
+    Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
+
+    $getEpiDeploymentSplat = @{
+        ProjectId    = $projectId
+    }
+
+    $deploy = Get-EpiDeployment @getEpiDeploymentSplat | Where-Object { $_.Status -eq 'AwaitingVerification' -and $_.parameters.targetEnvironment -eq $targetEnvironment }
+    $deploy
+    if (-not $deploy) {
+        Write-Host "##vso[task.logissue type=error]Failed to locate a deployment in $targetEnvironment to complete!"
+        exit 1
+    }
+    else {
+        $deploymentId = $deploy.id
+        Write-Host "Set variable DeploymentId: $deploymentId"
+        Write-Host "##vso[task.setvariable variable=DeploymentId;]$($deploymentId)"
+    }
+
+    if ($deploymentId.length -gt 1) {
+        $completeEpiDeploymentSplat = @{
+            ProjectId = $projectId
+            Id        = "$deploymentId"
+        }
+
+        Write-Host "Start complete deployment $deploymentId"
+        $complete = Complete-EpiDeployment @completeEpiDeploymentSplat
+        $complete
+
+        if ($complete.status -eq "Completing") {
+
+            $percentComplete = $complete.percentComplete
+
+            $status = Progress -projectid $projectId -deploymentId $deploymentId -percentComplete $percentComplete -expectedStatus "Succeeded" -timeout $timeout
+
+            if ($status.status -eq "Succeeded") {
+                Write-Host "Deployment $deploymentId has been completed."
+            }
+            else {
+                Write-Warning "The completion for deployment $deploymentId has not been successful or the script has timedout."
+                Write-Host "##vso[task.logissue type=error]The completion for deployment $deploymentId has not been successful or the script has timedout."
+                Write-Error "The completion for deployment $deploymentId has not been successful or the script has timedout." -ErrorAction Stop
+                exit 1
+            }
+        }
+        elseif ($complete.status -eq "Succeeded") {
+            Write-Host "The deployment $deploymentId is already in Succeeded status."
+        }
+        else {
+            Write-Warning "Status is not in complete (Current:$($complete.status)). Something is strange..."
+            Write-Host "##vso[task.logissue type=error]Status is not in complete (Current:$($complete.status)). Something is strange..."
+            Write-Error "Status is not in complete (Current:$($complete.status)). Something is strange..." -ErrorAction Stop
+            exit 1
+        }
+
+    }
+    else {
+        Write-Host "##vso[task.logissue type=error]Could not retrieve the DeploymentId variable. Can not complete the deployment."
+        exit 1
+    }
+
+    ####################################################################################
+
+    Write-Host "---THE END---"
+
+}
+catch {
+    Write-Verbose "Exception caught from task: $($_.Exception.ToString())"
+    throw
+}
+finally {
+    Trace-VstsLeavingInvocation $MyInvocation
+}
+

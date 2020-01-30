@@ -1,0 +1,117 @@
+{
+    "manifestVersion": 1,
+    "id": "episerver-dxc-deploy-extensions",
+    "publisher": "epinova-sweden",
+    "version": "1.2.11",
+    "name": "Episerver DXC API Deploy (BETA)",
+    "description": "Tasks to deploy package to Episerver DXC with DXC API.",
+    "public": false,
+    "icons":{
+        "default": "img/Epinova_e_128x128.png"
+    },
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services"
+        }
+    ],
+    "categories": [
+        "Azure Pipelines"
+    ],
+    "tags":[
+        "Release",
+        "Episerver",
+        "Deploy",
+        "DXC"
+    ],
+    "branding":{
+        "color": "rgb(246,247,251)",
+        "theme": "light"
+    },
+    "content": {
+        "details": {
+            "path": "overview.md"
+        },
+        "license": {
+            "path": "license.md"
+        }
+    },
+    "links": {
+        "company": {
+            "uri": "https://www.epinova.se"
+        }
+    },
+    "contributions": [
+        {
+            "id": "dxc-deploy-package-to-environment-build-task",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "DeployPackageToEnvironment"
+            }
+        },
+        {
+            "id": "dxc-smoke-and-reset-target-environment-build-task",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "SmokeAndResetTargetEnvironment"
+            }
+        },
+        {
+            "id": "dxc-complete-target-deploy-build-task",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "CompleteTargetDeploy"
+            }
+        },
+        {
+            "id": "dxc-move-deploy-build-task",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "MoveDeploy"
+            }
+        },
+        {
+            "id": "dxc-reset-deploy-build-task",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "ResetDeploy"
+            }
+        }
+    ],
+    "files": [
+        {
+            "path": "DeployPackageToEnvironment"
+        },
+        {
+            "path": "SmokeAndResetTargetEnvironment"
+        },
+        {
+            "path": "CompleteTargetDeploy"
+        },
+        {
+            "path": "MoveDeploy"
+        },
+        {
+            "path": "ResetDeploy"
+        },
+        {
+            "path": "node_modules/vss-web-extension-sdk/lib",
+            "addressable": true,
+            "packagePath": "lib"
+        }
+    ]
+}
