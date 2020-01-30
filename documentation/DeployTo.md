@@ -14,19 +14,19 @@ The DXC API ClientKey for the current environment.
 #### DXC target environment ClientSecret
 **[string]** - **required**  
 The DXC API ClientSecret for the current environment.  
-**Example:** `mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9` 
+**Example:** `mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9`  
 **Default value:** `$(ClientSecret)`
 
 #### Project Id
 **[string]** - **required**  
 The DXC project id.  
-**Example:** `1921827e-2eca-2fb3-8015-a89f016bacc5` 
+**Example:** `1921827e-2eca-2fb3-8015-a89f016bacc5`  
 **Default value:** `$(DXC.ProjectId)`
 
 #### Source environment
 **[pickList]** - **required**  
 Specify from which environment you want to take the source code/package.  
-**Example:** `Integration` 
+**Example:** `Integration`  
 **Default value:** `$(SourceEnvironment)`  
 **Options:**  
 - Integration
@@ -36,7 +36,7 @@ Specify from which environment you want to take the source code/package.
 #### Target environment
 **[pickList]** - **required**  
 Specify if you want to deploy to Integration/Preproduction/Production.  
-**Example:** `Integration` 
+**Example:** `Integration`  
 **Default value:** `$(TargetEnvironment)`  
 **Options:**  
 - Integration
@@ -46,7 +46,7 @@ Specify if you want to deploy to Integration/Preproduction/Production.
 #### SourceApp
 **[pickList]** - **required**  
 Specify which type of application you want to move.  
-**Example:** `commerce` 
+**Example:** `commerce`  
 **Default value:** `cms`  
 **Options:**  
 - cms
@@ -56,21 +56,21 @@ Specify which type of application you want to move.
 #### Use maintenance page
 **[boolean]** - **required**  
 Specify if you want to use a maintenance page during the deploy.  
-**Example:** `true` 
+**Example:** `true`  
 **Default value:** `false`
 
 ### Group: Timeout
 #### Script timeout (in seconds)
 **[int]** - **required**  
 Specify the number of seconds when the task should timeout. 
-**Example:** `600` 
+**Example:** `600`  
 **Default value:** `1800` (30 minutes)
 
 ### Group: ErrorHandlingOptions
 #### ErrorActionPreference
 **[pickList]** - **required**  
 How the task should handle errors. 
-**Example:** `600` 
+**Example:** `600`  
 **Default value:** `stop`
 **Options:**  
 - **Stop**: Terminate the action with error.

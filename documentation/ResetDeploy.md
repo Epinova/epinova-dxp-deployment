@@ -20,13 +20,13 @@ The DXC API ClientSecret for the current environment.
 #### Project Id
 **[string]** - **required**  
 The DXC project id.  
-**Example:** `1921827e-2eca-2fb3-8015-a89f016bacc5` 
+**Example:** `1921827e-2eca-2fb3-8015-a89f016bacc5`  
 **Default value:** `$(DXC.ProjectId)`
 
 #### Target environment
 **[pickList]** - **required**  
 Specify the target environment that you want to reset.  
-**Example:** `Integration` 
+**Example:** `Integration`  
 **Default value:** `$(TargetEnvironment)`  
 **Options:**  
 - Integration
@@ -37,15 +37,15 @@ Specify the target environment that you want to reset.
 #### Script timeout (in seconds)
 **[int]** - **required**  
 Specify the number of seconds when the task should timeout. 
-**Example:** `600` 
+**Example:** `600`  
 **Default value:** `1800` (30 minutes)
 
 ### Group: ErrorHandlingOptions
 #### ErrorActionPreference
 **[pickList]** - **required**  
 How the task should handle errors. 
-**Example:** `600` 
-**Default value:** `stop`
+**Example:** `600`  
+**Default value:** `stop`  
 **Options:**  
 - **Stop**: Terminate the action with error.
 - **Continue**: Display any error message and attempt to continue execution of subsequence commands.
