@@ -48,14 +48,14 @@ Specify if you want to use a maintenance page during the deploy.
 ### Group: Timeout
 #### Script timeout (in seconds)
 **[int]** - **required**  
-Specify the number of seconds when the task should timeout. 
+Specify the number of seconds when the task should timeout.   
 **Example:** `600`  
 **Default value:** `1800` (30 minutes)
 
 ### Group: ErrorHandlingOptions
 #### ErrorActionPreference
 **[pickList]** - **required**  
-How the task should handle errors. 
+How the task should handle errors.  
 **Example:** `600`  
 **Default value:** `stop`
 **Options:**  

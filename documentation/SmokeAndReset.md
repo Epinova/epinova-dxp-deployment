@@ -25,7 +25,7 @@ The DXC project id.
 
 #### Target environment
 **[pickList]** - **required**  
-Specify the target environment that you are going to do smoke test against. If the smoke test fails, this is the environment that will be reset. 
+Specify the target environment that you are going to do smoke test against. If the smoke test fails, this is the environment that will be reset.  
 **Example:** `Integration`  
 **Default value:** `$(TargetEnvironment)`  
 **Options:**  
@@ -35,7 +35,7 @@ Specify the target environment that you are going to do smoke test against. If t
 
 #### URLs
 **[multiline]** - **required**  
-Specify the URLs that will be used in the smoke test. Use ',' as delimiter between the URLs.  
+Specify the URLs that will be used in the smoke test. Use ',' as delimiter between the URLs.   
 **Example 1:** `https://fake017znx5inte.dxcloud.episerver.net/login?ReturnUrl=%2f`  
 **Example 2:** `https://fake017znx5inte.dxcloud.episerver.net/login?ReturnUrl=%2f,https://fake017znx5inte.dxcloud.episerver.net/some-public-page`  
 **Default value:** `$(EnvironmentSlotUrl)`  
@@ -50,14 +50,14 @@ The sleep time before the script will start to test the URL(s). Most of the time
 ### Group: Timeout
 #### Script timeout (in seconds)
 **[int]** - **required**  
-Specify the number of seconds when the task should timeout. 
+Specify the number of seconds when the task should timeout.  
 **Example:** `600`  
 **Default value:** `1800` (30 minutes)
 
 ### Group: ErrorHandlingOptions
 #### ErrorActionPreference
 **[pickList]** - **required**  
-How the task should handle errors. 
+How the task should handle errors.  
 **Example:** `600`  
 **Default value:** `stop`  
 **Options:**  
