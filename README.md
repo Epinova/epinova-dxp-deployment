@@ -5,20 +5,20 @@ Bucket of release tasks helping you to deploy to all environments in Episerver D
 
 ### Deploy nuget package (Episerver DXC) ###  
 Take a nuget package from your drop folder in Azure DevOps and upload it to your Episerver DXC project and start a deployment to the specified environment. 
-[Documentation](DeployNugetPackage.md)  
+[Documentation](documentation/DeployNugetPackage.md)  
   
 ### Deploy To (Episerver DXC) ###
 Do the same thing like the "Deploy to =>" button in the portal. It moves the deployed code from one environment to another.
-[Documentation](DeployTo.md)  
+[Documentation](documentation/DeployTo.md)  
 
 ### Complete deploy (Episerver DXC) ###
 Both "Deploy nuget package (Episerver DXC)" and "Move deploy (Episerver DXC)" tasks deploy a packe to a environment. That will deploy the package to a slot. The task "Complete deploy (Episerver DXC)" will complete the deploy and move the packe from slot to the real environment.
-[Documentation](CompleteDeploy.md)
+[Documentation](documentation/CompleteDeploy.md)
 
 ### Smoke and reset (Episerver DXC) ###
 This task smoke test a slot and decide if we should continue the release or reset the environment slot because something is not working as expected. The smoke test is a simple check if one or many specified URLs returns HTTPStatus = 200 (OK). 
-[Documentation](SmokeAndReset.md)
+[Documentation](documentation/SmokeAndReset.md)
 
 ### Reset deploy (Episerver DXC) ###
 Reset a specifed environment if the status for the environment is in status "AwaitingVerification". 
-[Documentation](ResetDeploy.md)
+[Documentation](documentation/ResetDeploy.md)
