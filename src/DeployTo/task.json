@@ -2,7 +2,7 @@
     "id": "71f2812c-81cd-4179-9035-37f64d16a1b5",
     "name": "Deploy To",
     "friendlyName": "Deploy To (Episerver DXP)",
-    "description": "Start move DXP deploy from source environment to target environment. Like clicking on the 'Deploy To' button in PAAS.",
+    "description": "Start move DXP deploy from source environment to target environment. Like clicking on the 'Deploy To' button in PAAS. (Episerver DXP, former DXC)",
     "helpUrl": "https://github.com/Epinova/epinova-dxp-deployment/blob/feature/1-rename-smoke/documentation/DeployTo.md",
     "helpMarkDown": "[Extension page](https://marketplace.visualstudio.com/items?itemName=epinova-sweden.episerver-dxp-deployment)[Learn more about this task](https://github.com/Epinova/epinova-dxp-deployment/blob/feature/1-rename-smoke/documentation/DeployTo.md)",
     "category": "Deploy",
