@@ -35,7 +35,7 @@
         "Episerver Commerce Cloud"
     ],
     "branding":{
-        "color": "rgb(246,247,251)",
+        "color": "rgb(255,255,255)",
         "theme": "light"
     },
     "content": {
