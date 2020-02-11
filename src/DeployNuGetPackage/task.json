@@ -4,7 +4,7 @@
     "friendlyName": "Deploy nuget package (Episerver DXP)",
     "description": "Start a deploy of a nuget package to target environment for your DXP project. (Episerver DXP, former DXC)",
     "helpUrl": "https://github.com/Epinova/epinova-dxp-deployment/blob/feature/1-rename-smoke/documentation/DeployNugetPackage.md",
-    "helpMarkDown": "[Extension page](https://marketplace.visualstudio.com/items?itemName=epinova-sweden.episerver-dxp-deployment)[Learn more about this task](https://github.com/Epinova/epinova-dxp-deployment/blob/feature/1-rename-smoke/documentation/DeployNugetPackage.md)",
+    "helpMarkDown": "[Extension page](https://marketplace.visualstudio.com/items?itemName=epinova-sweden.epinova-dxp-deploy-extension)[Learn more about this task](https://github.com/Epinova/epinova-dxp-deployment/blob/feature/1-rename-smoke/documentation/DeployNugetPackage.md)",
     "category": "Deploy",
     "visibility": [
         "Release"
