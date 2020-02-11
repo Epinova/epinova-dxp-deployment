@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "epinova-dxp-deploy-extension",
     "publisher": "epinova-sweden",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Epinova DXP deployment (BETA)",
     "description": "Tasks to deploy NuGet package to Episerver DXP with DXP API. (Former: DXC)",
     "public": false,
