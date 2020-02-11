@@ -23,7 +23,16 @@
         "Episerver",
         "Deploy",
         "DXC",
-        "DXP"
+        "DXP",
+        "Publish",
+        "Install",
+        "Continuous Integration",
+        "Continuous Delivery",
+        "Build",
+        "Release",
+        "Azure Pipelines",
+        "Episerver Content Cloud",
+        "Episerver Commerce Cloud"
     ],
     "branding":{
         "color": "rgb(246,247,251)",
@@ -38,9 +47,19 @@
         }
     },
     "links": {
+        "repository": {
+            "uri": "https://github.com/Epinova/epinova-dxp-deployment"
+        },
         "company": {
             "uri": "https://www.epinova.se"
+        },
+        "contact": {
+            "uri": "mailto:info@epinova.se"
         }
+    },
+    "repository": {
+        "type": "git",
+        "uri": "https://github.com/Epinova/epinova-dxp-deployment"
     },
     "contributions": [
         {
