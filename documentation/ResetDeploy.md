@@ -1,27 +1,27 @@
-# Reset deploy (Episerver DXC)
+# Reset deploy (Episerver DXP)
 Reset a specifed environment if the status for the environment is in status "AwaitingVerification".  
 
 [<= Back](../README.md)
 
 ## Parameters
 ### Group: Settings
-#### DXC target environment ClientKey
+#### DXP target environment ClientKey
 **[string]** - **required**  
-The DXC API ClientKey for the current environment.  
+The DXP API ClientKey for the current environment.  
 **Example:** `mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9`  
 **Default value:** `$(ClientKey)`
 
 #### DXC target environment ClientSecret
 **[string]** - **required**  
-The DXC API ClientSecret for the current environment.  
+The DXP API ClientSecret for the current environment.  
 **Example:** `mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9` 
 **Default value:** `$(ClientSecret)`
 
 #### Project Id
 **[string]** - **required**  
-The DXC project id.  
+The DXP project id.  
 **Example:** `1921827e-2eca-2fb3-8015-a89f016bacc5`  
-**Default value:** `$(DXC.ProjectId)`
+**Default value:** `$(DXP.ProjectId)`
 
 #### Target environment
 **[pickList]** - **required**  

@@ -1,27 +1,27 @@
-# Complete deploy (Episerver DXC)
-Both "Deploy nuget package (Episerver DXC)" and "Move deploy (Episerver DXC)" tasks deploy a packe to a environment. That will deploy the package to a slot. The task "Complete deploy (Episerver DXC)" will complete the deploy and move the packe from slot to the real environment.  
+# Complete deploy (Episerver DXP)
+Both "Deploy nuget package (Episerver DXP)" and "Move deploy (Episerver DXP)" tasks deploy a packe to a environment. That will deploy the package to a slot. The task "Complete deploy (Episerver DXP)" will complete the deploy and move the packe from slot to the real environment.  
 
 [<= Back](../README.md)
 
 ## Parameters
 ### Group: Settings
-#### DXC target environment ClientKey
+#### DXP target environment ClientKey
 **[string]** - **required**  
-The DXC API ClientKey for the current environment.  
+The DXP API ClientKey for the current environment.  
 **Example:** `mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9`  
 **Default value:** `$(ClientKey)`
 
-#### DXC target environment ClientSecret
+#### DXP target environment ClientSecret
 **[string]** - **required**  
-The DXC API ClientSecret for the current environment.  
+The DXP API ClientSecret for the current environment.  
 **Example:** `mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9`  
 **Default value:** `$(ClientSecret)`
 
 #### Project Id
 **[string]** - **required**  
-The DXC project id.  
+The DXP project id.  
 **Example:** `1921827e-2eca-2fb3-8015-a89f016bacc5`  
-**Default value:** `$(DXC.ProjectId)`
+**Default value:** `$(DXP.ProjectId)`
 
 #### Target environment
 **[pickList]** - **required**  

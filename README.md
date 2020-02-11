@@ -17,7 +17,7 @@ Both "Deploy nuget package (Episerver DXP)" and "Move deploy (Episerver DXP)" ta
 
 ### Smoke test if fail reset (Episerver DXP) ###
 This task smoke test a slot and decide if we should continue the release or reset the environment slot because something is not working as expected. The smoke test is a simple check if one or many specified URLs returns HTTPStatus = 200 (OK).  
-[Documentation](documentation/SmokeAndReset.md)
+[Documentation](documentation/SmokeTestIfFailReset.md)
 
 ### Reset deploy (Episerver DXP) ###
 Reset a specifed environment if the status for the environment is in status "AwaitingVerification".  
