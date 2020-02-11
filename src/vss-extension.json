@@ -72,13 +72,13 @@
             }
         },
         {
-            "id": "dxp-movedeploy-buildtask",
+            "id": "dxp-deployto-buildtask",
             "type": "ms.vss-distributed-task.task",
             "targets": [
                 "ms.vss-distributed-task.tasks"
             ],
             "properties": {
-                "name": "MoveDeploy"
+                "name": "DeployTo"
             }
         },
         {
@@ -103,7 +103,7 @@
             "path": "CompleteDeploy"
         },
         {
-            "path": "MoveDeploy"
+            "path": "DeployTo"
         },
         {
             "path": "ResetDeploy"
