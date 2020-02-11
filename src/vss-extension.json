@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "epinova-dxp-deploy-extension",
     "publisher": "epinova-sweden",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Epinova DXP deployment (BETA)",
     "description": "Tasks to deploy NuGet package to Episerver DXP with DXP API. (Former: DXC)",
     "public": false,
@@ -23,10 +23,19 @@
         "Episerver",
         "Deploy",
         "DXC",
-        "DXP"
+        "DXP",
+        "Publish",
+        "Install",
+        "Continuous Integration",
+        "Continuous Delivery",
+        "Build",
+        "Release",
+        "Azure Pipelines",
+        "Episerver Content Cloud",
+        "Episerver Commerce Cloud"
     ],
     "branding":{
-        "color": "rgb(246,247,251)",
+        "color": "rgb(255,255,255)",
         "theme": "light"
     },
     "content": {
@@ -38,9 +47,19 @@
         }
     },
     "links": {
+        "repository": {
+            "uri": "https://github.com/Epinova/epinova-dxp-deployment"
+        },
         "company": {
             "uri": "https://www.epinova.se"
+        },
+        "contact": {
+            "uri": "mailto:info@epinova.se"
         }
+    },
+    "repository": {
+        "type": "git",
+        "uri": "https://github.com/Epinova/epinova-dxp-deployment"
     },
     "contributions": [
         {
