@@ -1,10 +1,10 @@
 {
     "manifestVersion": 1,
-    "id": "episerver-dxc-deploy-extensions",
+    "id": "epinova-dxp-deploy-extension",
     "publisher": "epinova-sweden",
-    "version": "1.2.11",
-    "name": "Episerver DXC API Deploy (BETA)",
-    "description": "Tasks to deploy package to Episerver DXC with DXC API.",
+    "version": "1.0.0",
+    "name": "Epinova DXP deployment (BETA)",
+    "description": "Tasks to deploy NuGet package to Episerver DXP with DXP API. (Former: DXC)",
     "public": false,
     "icons":{
         "default": "img/Epinova_e_128x128.png"
@@ -19,9 +19,11 @@
     ],
     "tags":[
         "Release",
+        "Epinova",
         "Episerver",
         "Deploy",
-        "DXC"
+        "DXC",
+        "DXP"
     ],
     "branding":{
         "color": "rgb(246,247,251)",
@@ -42,47 +44,47 @@
     },
     "contributions": [
         {
-            "id": "dxc-deploy-package-to-environment-build-task",
+            "id": "dxp-deploynugetpackage-buildtask",
             "type": "ms.vss-distributed-task.task",
             "targets": [
                 "ms.vss-distributed-task.tasks"
             ],
             "properties": {
-                "name": "DeployPackageToEnvironment"
+                "name": "DeployNuGetPackage"
             }
         },
         {
-            "id": "dxc-smoke-and-reset-target-environment-build-task",
+            "id": "dxp-smoketestiffailreset-buildtask",
             "type": "ms.vss-distributed-task.task",
             "targets": [
                 "ms.vss-distributed-task.tasks"
             ],
             "properties": {
-                "name": "SmokeAndResetTargetEnvironment"
+                "name": "SmokeTestIfFailReset"
             }
         },
         {
-            "id": "dxc-complete-target-deploy-build-task",
+            "id": "dxp-completedeploy-buildtask",
             "type": "ms.vss-distributed-task.task",
             "targets": [
                 "ms.vss-distributed-task.tasks"
             ],
             "properties": {
-                "name": "CompleteTargetDeploy"
+                "name": "CompleteDeploy"
             }
         },
         {
-            "id": "dxc-move-deploy-build-task",
+            "id": "dxp-deployto-buildtask",
             "type": "ms.vss-distributed-task.task",
             "targets": [
                 "ms.vss-distributed-task.tasks"
             ],
             "properties": {
-                "name": "MoveDeploy"
+                "name": "DeployTo"
             }
         },
         {
-            "id": "dxc-reset-deploy-build-task",
+            "id": "dxp-resetdeploy-buildtask",
             "type": "ms.vss-distributed-task.task",
             "targets": [
                 "ms.vss-distributed-task.tasks"
@@ -94,16 +96,16 @@
     ],
     "files": [
         {
-            "path": "DeployPackageToEnvironment"
+            "path": "DeployNuGetPackage"
         },
         {
-            "path": "SmokeAndResetTargetEnvironment"
+            "path": "SmokeTestIfFailReset"
         },
         {
-            "path": "CompleteTargetDeploy"
+            "path": "CompleteDeploy"
         },
         {
-            "path": "MoveDeploy"
+            "path": "DeployTo"
         },
         {
             "path": "ResetDeploy"
