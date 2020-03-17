@@ -3,8 +3,8 @@
     "name": "Reset deploy",
     "friendlyName": "Reset deploy (Episerver DXP)",
     "description": "Reset the verification 'slot'. The script will try to get the deplot that is in AwaitingVerification and start do a reset on that deploy. (Episerver DXP, former DXC)",
-    "helpUrl": "https://github.com/Epinova/epinova-dxp-deployment/blob/feature/1-rename-smoke/documentation/ResetDeploy.md",
-    "helpMarkDown": "[Extension page](https://marketplace.visualstudio.com/items?itemName=epinova-sweden.epinova-dxp-deploy-extension)[Learn more about this task](https://github.com/Epinova/epinova-dxp-deployment/blob/feature/1-rename-smoke/documentation/ResetDeploy.md)",
+    "helpUrl": "https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/ResetDeploy.md",
+    "helpMarkDown": "[Extension page](https://marketplace.visualstudio.com/items?itemName=epinova-sweden.epinova-dxp-deploy-extension)[Learn more about this task](https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/ResetDeploy.md)",
     "category": "Deploy",
     "visibility": [
         "Release"
