@@ -16,6 +16,16 @@ try {
     # 30 min timeout
     ####################################################################################
 
+    Write-Host "Inputs:"
+    Write-Host "ClientKey: $clientKey"
+    Write-Host "ClientSecret: **** (it is a secret...)"
+    Write-Host "ProjectId: $projectId"
+    Write-Host "SourceEnvironment: $sourceEnvironment"
+    Write-Host "TargetEnvironment: $targetEnvironment"
+    Write-Host "SourceApp: $sourceApp"
+    Write-Host "UseMaintenancePage: $useMaintenancePage"
+    Write-Host "Timeout: $timeout"
+
     . "$PSScriptRoot\Helper.ps1"
     WriteInfo
 
