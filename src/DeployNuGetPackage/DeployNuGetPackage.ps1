@@ -26,6 +26,10 @@ try {
     Write-Host "DropPath: $dropPath"
     Write-Host "Timeout: $timeout"
 
+    if (Test-IsGuid -ObjectGuid $projectId -ne $true){
+        Write-Error "The provided ProjectId is not a guid value."
+    }
+
     . "$PSScriptRoot\Helper.ps1"
     WriteInfo
 
