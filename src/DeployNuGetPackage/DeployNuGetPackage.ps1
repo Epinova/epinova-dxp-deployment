@@ -29,7 +29,7 @@ try {
     . "$PSScriptRoot\Helper.ps1"
     WriteInfo
 
-    if (Test-IsGuid -ObjectGuid $projectId -ne $true){
+    if ((Test-IsGuid -ObjectGuid $projectId) -ne $true){
         Write-Error "The provided ProjectId is not a guid value."
     }
 
