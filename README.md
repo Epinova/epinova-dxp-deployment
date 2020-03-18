@@ -22,3 +22,7 @@ This task smoke test a slot and decide if we should continue the release or rese
 ### Reset deploy (Episerver DXP) ###
 Reset a specifed environment if the status for the environment is in status "AwaitingVerification".  
 [Documentation](documentation/ResetDeploy.md)
+
+## Problems
+A collection of problems that has been found and how to fix it.
+[Problems](documentation/Problems.md)
