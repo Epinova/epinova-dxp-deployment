@@ -29,15 +29,15 @@ try {
 
     Write-Host "ErrorActionPreference: $($global:ErrorActionPreference)"
 
-    if (Test-IsGuid -ObjectGuid $projectId -ne $true){
-        Write-Error "The provided ProjectId is not a guid value."
-    }
-
     $AllProtocols = [System.Net.SecurityProtocolType]'Ssl3,Tls,Tls11,Tls12'
     [System.Net.ServicePointManager]::SecurityProtocol = $AllProtocols
 
     . "$PSScriptRoot\Helper.ps1"
     WriteInfo
+
+    if (Test-IsGuid -ObjectGuid $projectId -ne $true){
+        Write-Error "The provided ProjectId is not a guid value."
+    }
 
     Write-Host "Start sleep for $($sleepBeforeStart) seconds before we start check URL(s)."
     Start-Sleep $sleepBeforeStart

@@ -19,12 +19,12 @@ try {
     Write-Host "TargetEnvironment: $targetEnvironment"
     Write-Host "Timeout: $timeout"
 
+    . "$PSScriptRoot\Helper.ps1"
+    WriteInfo
+
     if (Test-IsGuid -ObjectGuid $projectId -ne $true){
         Write-Error "The provided ProjectId is not a guid value."
     }
-
-    . "$PSScriptRoot\Helper.ps1"
-    WriteInfo
 
     if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
         Install-Module EpiCloud -Scope CurrentUser -Force
