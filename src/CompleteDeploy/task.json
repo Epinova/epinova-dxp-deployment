@@ -3,8 +3,8 @@
     "name": "CompleteDeploy",
     "friendlyName": "Complete deploy (Episerver DXP)",
     "description": "Complete deploy in specified environment. Environment status must be in AwaitingVerification status. (Episerver DXP, former DXC)",
-    "helpUrl": "https://github.com/Epinova/epinova-dxp-deployment/blob/feature/1-rename-smoke/documentation/CompleteDeploy.md",
-    "helpMarkDown": "[Extension page](https://marketplace.visualstudio.com/items?itemName=epinova-sweden.epinova-dxp-deploy-extension)[Learn more about this task](https://github.com/Epinova/epinova-dxp-deployment/blob/feature/1-rename-smoke/documentation/CompleteDeploy.md)",
+    "helpUrl": "https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/CompleteDeploy.md",
+    "helpMarkDown": "[Extension page](https://marketplace.visualstudio.com/items?itemName=epinova-sweden.epinova-dxp-deploy-extension)[Learn more about this task](https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/CompleteDeploy.md)",
     "category": "Deploy",
     "visibility": [
         "Release"
@@ -13,7 +13,7 @@
     "version": {
         "Major": 1,
         "Minor": 0,
-        "Patch": 0
+        "Patch": 1
     },
     "groups": [
         {

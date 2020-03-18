@@ -17,6 +17,16 @@ try {
     $global:ErrorActionPreference = $errorAction
     ####################################################################################
 
+    Write-Host "Inputs:"
+    Write-Host "ClientKey: $clientKey"
+    Write-Host "ClientSecret: **** (it is a secret...)"
+    Write-Host "ProjectId: $projectId"
+    Write-Host "TargetEnvironment: $targetEnvironment"
+    Write-Host "Urls: $urls"
+    Write-Host "SleepBeforeStart: $sleepBeforeStart"
+    Write-Host "Timeout: $timeout"
+    Write-Host "ErrorActionPreference: $errorAction"
+
     Write-Host "ErrorActionPreference: $($global:ErrorActionPreference)"
 
     $AllProtocols = [System.Net.SecurityProtocolType]'Ssl3,Tls,Tls11,Tls12'
