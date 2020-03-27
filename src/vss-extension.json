@@ -5,7 +5,7 @@
     "version": "1.0.5",
     "name": "Epinova DXP deployment (BETA)",
     "description": "Tasks to deploy NuGet package to Episerver DXP with DXP API. (Former: DXC)",
-    "public": false,
+    "public": true,
     "icons":{
         "default": "img/Epinova_e_128x128.png"
     },
