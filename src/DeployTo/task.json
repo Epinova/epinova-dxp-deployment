@@ -1,6 +1,6 @@
 {
     "id": "71f2812c-81cd-4179-9035-37f64d16a1b5",
-    "name": "Deploy To",
+    "name": "DxpDeployTo",
     "friendlyName": "Deploy To (Episerver DXP)",
     "description": "Start move DXP deploy from source environment to target environment. Like clicking on the 'Deploy To' button in PAAS. (Episerver DXP, former DXC)",
     "helpUrl": "https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/DeployTo.md",
@@ -13,7 +13,7 @@
     "version": {
         "Major": 1,
         "Minor": 0,
-        "Patch": 4
+        "Patch": 5
     },
     "groups": [
         {

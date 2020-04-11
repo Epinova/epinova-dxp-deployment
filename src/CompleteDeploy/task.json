@@ -1,6 +1,6 @@
 {
     "id": "95b21d82-af57-4d9e-b67f-59e1266d76a0",
-    "name": "CompleteDeploy",
+    "name": "DxpCompleteDeploy",
     "friendlyName": "Complete deploy (Episerver DXP)",
     "description": "Complete deploy in specified environment. Environment status must be in AwaitingVerification status. (Episerver DXP, former DXC)",
     "helpUrl": "https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/CompleteDeploy.md",
@@ -13,7 +13,7 @@
     "version": {
         "Major": 1,
         "Minor": 0,
-        "Patch": 4
+        "Patch": 5
     },
     "groups": [
         {

@@ -1,6 +1,6 @@
 {
     "id": "2bc993e5-c27c-4a24-aeaf-0fc403debc8d",
-    "name": "dxp-deploynugetpackage",
+    "name": "DxpDeployNuGetPackage",
     "friendlyName": "Deploy nuget package (Episerver DXP)",
     "description": "Start a deploy of a nuget package to target environment for your DXP project. (Episerver DXP, former DXC)",
     "helpUrl": "https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/DeployNugetPackage.md",
@@ -13,7 +13,7 @@
     "version": {
         "Major": 1,
         "Minor": 0,
-        "Patch": 4
+        "Patch": 5
     },
     "groups": [
         {
