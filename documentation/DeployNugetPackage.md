@@ -66,6 +66,3 @@ How the task should handle errors.
 
 [<= Back](../README.md)
 
-
-_Note: No names with spaces is allowed._  
-![ApplicationPool](/images/DeleteAppPoolName.png "How to get the application pool name.")  
