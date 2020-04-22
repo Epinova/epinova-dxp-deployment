@@ -1,0 +1,54 @@
+trigger: none
+
+variables:
+- group: DXP-variables
+
+stages:
+- stage: Reset
+  jobs:
+  - job: ResetIntegration
+    pool:
+      vmImage: 'windows-latest'
+    
+    steps:
+
+    - task: DxpResetDeploy@1
+      displayName: 'Reset Integration'
+      inputs:
+        ClientKey: '$(Integration.ClientKey)'
+        ClientSecret: '$(Integration.ClientSecret)'
+        ProjectId: '$(DXP.ProjectId)'
+        TargetEnvironment: 'Integration'
+        Timeout: 1800
+
+  - job: ResetPreproduction
+    dependsOn: ResetIntegration
+    pool:
+      vmImage: 'windows-latest'
+    
+    steps:
+
+    - task: DxpResetDeploy@1
+      displayName: 'Reset Preproduction'
+      inputs:
+        ClientKey: '$(Preproduction.ClientKey)'
+        ClientSecret: '$(Preproduction.ClientSecret)'
+        ProjectId: '$(DXP.ProjectId)'
+        TargetEnvironment: 'Preproduction'
+        Timeout: 1800
+
+  - job: ResetProduction
+    dependsOn: ResetPreproduction
+    pool:
+      vmImage: 'windows-latest'
+    
+    steps:
+
+    - task: DxpResetDeploy@1
+      displayName: 'Reset Production'
+      inputs:
+        ClientKey: '$(Production.ClientKey)'
+        ClientSecret: '$(Production.ClientSecret)'
+        ProjectId: '$(DXP.ProjectId)'
+        TargetEnvironment: 'Production'
+        Timeout: 1800
