@@ -33,3 +33,6 @@ More detailed description how you can setup and use these tasks in different sce
 ## Problems ##
 A collection of problems that has been found and how to fix it.  
 [Problems](documentation/Problems.md)
+
+## Release notes ##
+[Release notes](src/ReleaseNotes.md)
