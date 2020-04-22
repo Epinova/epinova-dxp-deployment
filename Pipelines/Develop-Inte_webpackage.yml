@@ -1,0 +1,132 @@
+trigger:
+  batch: true
+  branches:
+    include:
+    - develop
+
+variables:
+- group: DXP-variables
+#- name: webProjectDirectory
+#  value: '[SolutionName]/[ProjectName]' #Is used when using npm tasks in the build.
+- name: azureSubscription
+  value: '[Replace with Azure subscription connection name]'
+- name: azureWebAppName
+  value: '[Replace with Azure WepAppName name]'
+
+stages:
+- stage: Build
+  jobs:
+  - job: DevInte
+
+    pool:
+      name: Azure Pipelines
+      vmImage: 'windows-latest'
+      demands:
+      - npm
+      - msbuild
+      - visualstudio
+      - vstest
+
+    variables:
+      solution: '**/*.sln'
+      buildPlatform: 'Any CPU'
+      buildConfiguration: 'Release'
+
+    steps:
+
+    - task: NuGetToolInstaller@0
+      displayName: 'Use NuGet 5.*'
+      inputs:
+        versionSpec: '5.*'
+
+    - task: NuGetCommand@2
+      displayName: 'NuGet restore'
+      inputs:
+        command: 'restore'
+        restoreSolution: '$(Solution)'
+        feedsToUse: 'config'
+        nugetConfigPath: 'NuGet.config'
+
+#    - task: Npm@1
+#      displayName: 'NPM Set progress false (speedup)'
+#      inputs:
+#        command: custom
+#        verbose: false
+#        customCommand: 'set progress=false'
+
+#    - task: Npm@1
+#      displayName: 'npm install'
+#      inputs:
+#        workingDir: '$(WebProjectDirectory)'
+#        verbose: false
+
+#    - task: Npm@1
+#      displayName: 'npm run build'
+#      inputs:
+#        command: custom
+#        workingDir: '$(WebProjectDirectory)'
+#        verbose: false
+#        customCommand: 'run build'
+
+    - task: VSBuild@1
+      displayName: 'Build solution'
+      inputs:
+        solution: '$(Solution)'
+        msbuildArgs: '/p:Configuration=Release /p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)" '
+        platform: '$(BuildPlatform)'
+        configuration: '$(BuildConfiguration)'
+
+    - task: VSTest@2
+      displayName: 'Run unittests'
+      inputs:
+        testSelector: 'testAssemblies'
+        testAssemblyVer2: |
+          **\*Tests.dll
+          !**\*TestAdapter.dll
+          !**\obj\**
+        searchFolder: '$(System.DefaultWorkingDirectory)'
+        platform: '$(BuildPlatform)'
+        configuration: '$(BuildConfiguration)'
+        failOnMinTestsNotRun: true
+
+    - publish: $(Build.ArtifactStagingDirectory)
+      displayName: 'Publish Deployable artifacts'
+      artifact: DeployableArtifacts
+
+- stage: Deploy
+  displayName: Deploy
+  dependsOn: Build
+  jobs:
+  - deployment: DevInte
+    displayName: 'Deploy to Integration'
+    pool:
+      vmImage: 'windows-latest'
+    environment: 'Integration-environment'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          # - task: CmdLine@2 #Debuging. See what is in the folder.
+          #   inputs:
+          #     script: |
+          #       echo All folders and files in this path
+
+          #       dir /b /s
+
+          - task: AzureRmWebAppDeployment@4
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: '$(AzureSubscription)'
+              appType: 'webApp'
+              WebAppName: '$(AzureWebAppName)'
+              packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
+
+          - task: Webapp Warmup@1
+            inputs:
+              Url: '$(Integration.Url)'
+              RetryCount: '3'
+              IgnoreError: true
+              Suffixes: '$(Integration.UrlSuffix)'
+
+
+

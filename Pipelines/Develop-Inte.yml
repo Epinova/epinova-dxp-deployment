@@ -8,10 +8,6 @@ variables:
 - group: DXP-variables
 #- name: webProjectDirectory
 #  value: '[SolutionName]/[ProjectName]' #Is used when using npm tasks in the build.
-- name: azureSubscription
-  value: '[Replace with Azure subscription connection name]'
-- name: azureWebAppName
-  value: '[Replace with Azure WepAppName name]'
 
 stages:
 - stage: Build
@@ -72,7 +68,7 @@ stages:
       displayName: 'Build solution'
       inputs:
         solution: '$(Solution)'
-        msbuildArgs: '/p:Configuration=Release /p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)" '
+        msbuildArgs: '/p:Configuration=Release;DeployOnBuild=True;DeployDefaultTarget=WebPublish;WebPublishMethod=FileSystem;PublishProvider=FileSystem;LastUsedBuildConfiguration=Release;ExcludeApp_Data=False;publishUrl=$(System.DefaultWorkingDirectory)\wwwroot;DeleteExistingFiles=False'
         platform: '$(BuildPlatform)'
         configuration: '$(BuildConfiguration)'
 
@@ -89,44 +85,78 @@ stages:
         configuration: '$(BuildConfiguration)'
         failOnMinTestsNotRun: true
 
-    - publish: $(Build.ArtifactStagingDirectory)
-      displayName: 'Publish Deployable artifacts'
-      artifact: DeployableArtifacts
+    - task: ArchiveFiles@2
+      displayName: 'Create NuGet package'
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)\wwwroot'
+        includeRootFolder: true
+        archiveType: 'zip'
+        archiveFile: '$(build.artifactStagingDirectory)\$(NuGetPackageNamePrefix).cms.app.$(Build.BuildNumber).nupkg'
+        replaceExistingArchive: true
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish artifact'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
 
 - stage: Deploy
-  displayName: Deploy
   dependsOn: Build
   jobs:
-  - deployment: DevInte
+  - job: DevInte
     displayName: 'Deploy to Integration'
     pool:
       vmImage: 'windows-latest'
-    environment: 'Integration-environment'
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          # - task: CmdLine@2 #Debuging. See what is in the folder.
-          #   inputs:
-          #     script: |
-          #       echo All folders and files in this path
+    
+    steps:
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        artifactName: 'drop'
+        downloadPath: '$(System.DefaultWorkingDirectory)'
 
-          #       dir /b /s
+    # - task: CmdLine@2 #Debuging. See what is in the folder.
+    #   inputs:
+    #     script: |
+    #       echo All folders and files in this path
 
-          - task: AzureRmWebAppDeployment@4
-            inputs:
-              ConnectionType: 'AzureRM'
-              azureSubscription: '$(AzureSubscription)'
-              appType: 'webApp'
-              WebAppName: '$(AzureWebAppName)'
-              packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
+    #       dir /b /s
 
-          - task: Webapp Warmup@1
-            inputs:
-              Url: '$(Integration.Url)'
-              RetryCount: '3'
-              IgnoreError: true
-              Suffixes: '$(Integration.UrlSuffix)'
+    - task: DxpDeployNuGetPackage@1
+      inputs:
+        ClientKey: '$(Integration.ClientKey)'
+        ClientSecret: '$(Integration.ClientSecret)'
+        ProjectId: '$(DXP.ProjectId)'
+        DropPath: '$(System.DefaultWorkingDirectory)\drop'
+        TargetEnvironment: 'Integration'
+        UseMaintenancePage: false
+        Timeout: 1800
+
+    - task: DxpSmokeTestIfFailReset@1
+      inputs:
+        ClientKey: '$(Integration.ClientKey)'
+        ClientSecret: '$(Integration.ClientSecret)'
+        ProjectId: '$(DXP.ProjectId)'
+        TargetEnvironment: 'Integration'
+        Urls: '$(Integration.SlotUrl)$(Integration.UrlSuffix)'
+        SleepBeforeStart: 20
+        Timeout: 1800
+
+    - task: DxpCompleteDeploy@1
+      inputs:
+        ClientKey: '$(Integration.ClientKey)'
+        ClientSecret: '$(Integration.ClientSecret)'
+        ProjectId: '$(DXP.ProjectId)'
+        TargetEnvironment: 'Integration'
+        Timeout: 1800
+
+    - task: Webapp Warmup@1
+      inputs:
+        Url: '$(Integration.Url)'
+        RetryCount: '3'
+        IgnoreError: true
+        Suffixes: '$(Integration.UrlSuffix)'
 
 
 
