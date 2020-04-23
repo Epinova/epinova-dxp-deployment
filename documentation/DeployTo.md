@@ -51,7 +51,7 @@ Specify which type of application you want to move.
 **Options:**  
 - cms
 - commerce
-- cms, commerce
+- cms,commerce
 
 #### Use maintenance page
 **[boolean]** - **required**  
