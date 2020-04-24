@@ -13,7 +13,7 @@
     "version": {
         "Major": 1,
         "Minor": 0,
-        "Patch": 6
+        "Patch": 7
     },
     "groups": [
         {
@@ -101,7 +101,7 @@
             "options": {
                 "cms": "cms",
                 "commerce": "commerce",
-                "cms, commerce": "cms,commerce"
+                "cms,commerce": "cms,commerce"
             }
         },
         {
