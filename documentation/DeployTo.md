@@ -77,5 +77,19 @@ How the task should handle errors.
 - **Continue**: Display any error message and attempt to continue execution of subsequence commands.
 - **SilentlyContinue**: Don't display an error message continue to execute subsequent commands.
 
+## YAML ##
+Example:  
+```yaml
+- task: DxpDeployTo@1
+inputs:
+    ClientKey: '$(Production.ClientKey)'
+    ClientSecret: '$(Production.ClientSecret)'
+    ProjectId: '$(DXP.ProjectId)'
+    SourceEnvironment: 'Preproduction'
+    TargetEnvironment: 'Production'
+    SourceApp: 'cms'
+    UseMaintenancePage: false
+    Timeout: 1800
+```
 
 [<= Back](../README.md)

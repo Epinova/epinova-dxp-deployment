@@ -65,5 +65,18 @@ How the task should handle errors.
 - **Continue**: Display any error message and attempt to continue execution of subsequence commands.
 - **SilentlyContinue**: Don't display an error message continue to execute subsequent commands.
 
+## YAML ##
+Example:  
+```yaml
+- task: DxpSmokeTestIfFailReset@1
+    inputs:
+    ClientKey: '$(Integration.ClientKey)'
+    ClientSecret: '$(Integration.ClientSecret)'
+    ProjectId: '$(DXP.ProjectId)'
+    TargetEnvironment: 'Integration'
+    Urls: '$(Integration.SlotUrl)$(Integration.UrlSuffix)'
+    SleepBeforeStart: 20
+    Timeout: 1800
+```
 
 [<= Back](../README.md)
