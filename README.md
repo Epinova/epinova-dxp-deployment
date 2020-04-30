@@ -3,7 +3,10 @@ Bucket of release tasks helping you to deploy to all environments in Episerver D
   
   
 ***NOTE: There is only support for CMS deployment at the moment. We will look into the Commerce support ASAP.***
-  
+
+***NOTE 2: We know that Episerver release some new features in the DXP API. We will start implement these changes/features ASAP.***  
+[https://world.episerver.com/blogs/anders-wahlqvist/dates/2020/4/dxp-deployment-improvements/](https://world.episerver.com/blogs/anders-wahlqvist/dates/2020/4/dxp-deployment-improvements/)
+
 ## Tasks ##
 
 ### Deploy NuGet package (Episerver DXP) ###  
