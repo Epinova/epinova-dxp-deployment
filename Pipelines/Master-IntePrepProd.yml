@@ -12,7 +12,7 @@ variables:
 stages:
 - stage: Build
   jobs:
-  - job: DevInte
+  - job: BuildNugetPackage
 
     pool:
       name: Azure Pipelines
@@ -104,7 +104,7 @@ stages:
 - stage: DeployIntegration
   dependsOn: Build
   jobs:
-  - job: DevInte
+  - job: DeployToIntegration
     displayName: 'Deploy to Integration'
     pool:
       vmImage: 'windows-latest'
