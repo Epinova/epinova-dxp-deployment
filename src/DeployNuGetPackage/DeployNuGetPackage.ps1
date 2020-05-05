@@ -43,21 +43,43 @@ try {
 
     Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
 
-    $resolvedPackagePath = Get-ChildItem -Path $dropPath -Filter *.$sourceApp.*.nupkg
-    Write-Host "resolvedPackagePath: $resolvedPackagePath"
-
-    if ($null -eq $resolvedPackagePath){
-        Write-Host "##vso[task.logissue type=error]Could not find the package in location $dropPath."
-        Write-Error "Could not find the package in location $dropPath." -ErrorAction Stop
-    }
-
     $packageLocation = Get-EpiDeploymentPackageLocation -ProjectId $projectId
     Write-Host "packageLocation: $packageLocation"
 
-    Add-EpiDeploymentPackage -SasUrl $packageLocation -Path $resolvedPackagePath.FullName
+    if ($sourceApp -eq "cms" -or $sourceApp -eq "cms,commerce"){
+        $resolvedCmsPackagePath = Get-ChildItem -Path $dropPath -Filter *.cms.*.nupkg
+        Write-Host "cms PackagePath: $resolvedCmsPackagePath"
+    
+        if ($null -eq $resolvedCmsPackagePath){
+            Write-Host "##vso[task.logissue type=error]Could not find the cms package in location $dropPath."
+            Write-Error "Could not find the cms package in location $dropPath." -ErrorAction Stop
+        }
+    
+        Add-EpiDeploymentPackage -SasUrl $packageLocation -Path $resolvedCmsPackagePath.FullName
+        Write-Host "cms package $resolvedCmsPackagePath is uploaded."
+        $myPackages = $resolvedCmsPackagePath.Name
+    }
+
+    if ($sourceApp -eq "commerce" -or $sourceApp -eq "cms,commerce"){
+        $resolvedCommercePackagePath = Get-ChildItem -Path $dropPath -Filter *.commerce.*.nupkg
+        Write-Host "commerce PackagePath: $resolvedCommercePackagePath"
+    
+        if ($null -eq $resolvedCommercePackagePath){
+            Write-Host "##vso[task.logissue type=error]Could not find the cms package in location $dropPath."
+            Write-Error "Could not find the cms package in location $dropPath." -ErrorAction Stop
+        }
+    
+        Add-EpiDeploymentPackage -SasUrl $packageLocation -Path $resolvedCommercePackagePath.FullName
+        Write-Host "commerce package $resolvedCommercePackagePath is uploaded."
+        $myPackages = $resolvedCommercePackagePath.Name
+    }
+
+    if ($null -ne $resolvedCmsPackagePath -and $null -ne $resolvedCommercePackagePath){
+        $myPackages = $resolvedCmsPackagePath, $resolvedCommercePackagePath
+    }
 
     $startEpiDeploymentSplat = @{
-        DeploymentPackage  = $resolvedPackagePath.Name
+        DeploymentPackage  = $myPackages
         ProjectId          = $projectId
         TargetEnvironment  = $targetEnvironment
         UseMaintenancePage = $useMaintenancePage

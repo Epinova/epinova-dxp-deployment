@@ -47,6 +47,7 @@ Specify which type of application you want to deploy. Will look in the drop fold
 **Options:**  
 - cms
 - commerce
+- cms,commerce
 
 #### Use maintenance page
 **[boolean]** - **required**  
