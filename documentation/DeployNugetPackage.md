@@ -82,6 +82,7 @@ Example:
     ProjectId: '$(DXP.ProjectId)'  
     DropPath: '$(System.DefaultWorkingDirectory)\drop'  
     TargetEnvironment: 'Integration'  
+    SourceApp: 'cms'  
     UseMaintenancePage: false  
     Timeout: 1800  
 ```
