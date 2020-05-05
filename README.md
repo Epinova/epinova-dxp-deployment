@@ -31,7 +31,7 @@ Reset a specifed environment if the status for the environment is in status "Awa
 
 ## Setup scenarios ##
 More detailed description how you can setup and use these tasks in different scenarios. Both with YAML and manual setup.  
-[Setup senarios](documentation/SetupSenarios.md)
+[Setup senarios](documentation/SetupScenarios.md)
   
 ## Problems ##
 A collection of problems that has been found and how to fix it.  
