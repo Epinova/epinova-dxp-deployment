@@ -17,13 +17,13 @@ To be able to have approval steps before deployment can start to different envir
 ## YAML Pipelines
 ## [Branch:develop] (WebPackage) => Integration, [Branch:release] (NuGet) => Preproduction => Production
 This senario build and deploy the develop branch to integration with the WebPackage method. And build and deploy a release branch to preproduction that can be approved and deployed to production.  
-`develop => integration (WebPackage)` [Develop-Inte_webpackage.yaml](../Pipelines/Develop-Inte_webpackage.yml)  
-`release => Prep => Prod (NuGet)` [Release-PrepProd.yaml](../Pipelines/Release-PrepProd.yml)  
+`develop => integration (WebPackage)` [Develop-Inte_webpackage.yml](../Pipelines/Develop-Inte_webpackage.yml)  
+`release => Prep => Prod (NuGet)` [Release-PrepProd.yml](../Pipelines/Release-PrepProd.yml)  
 
 ## [Branch:develop] (NuGet) => Integration, [Branch:release] (NuGet) => Preproduction => Production
 This senario build and deploy the develop branch to integration with the NuGet method. And build and deploy a release branch to preproduction that can be approved and deployed to production. Equal to the senario above but the package technic is different.  
-`develop => integration (NuGet)` [Develop-Inte.yaml](../Pipelines/Develop-Inte.yml)  
-`release => Prep => Prod (NuGet)` [Release-PrepProd.yaml](../Pipelines/Release-PrepProd.yml)  
+`develop => integration (NuGet)` [Develop-Inte.yml](../Pipelines/Develop-Inte.yml)  
+`release => Prep => Prod (NuGet)` [Release-PrepProd.yml](../Pipelines/Release-PrepProd.yml)  
 
 ## [Branch:master] (WebPackage) => Integration => Preproduction => Production
 This senario build and deploy the master branch to integration with the WebPackage method. The deploy can after approval continue to preproduction and production.  
@@ -31,10 +31,10 @@ This senario build and deploy the master branch to integration with the WebPacka
 
 ## [Branch:master] (NuGet) => Integration => Preproduction => Production
 This senario build and deploy the master branch to integration with the Nuget method. The deploy can after approval continue to preproduction and production.  
-`master => inte => prep => prod (NuGet)` [Master-IntePrepProd.yaml](../Pipelines/Master-IntePrepProd.yml)  
+`master => inte => prep => prod (NuGet)` [Master-IntePrepProd.yml](../Pipelines/Master-IntePrepProd.yml)  
 
 ## Reset - Integration => Preproduction => Production
-`reset inte => prep => prod` [Reset-IntePrepProd.yaml](../Pipelines/Reset-IntePrepProd.yml)  
+`reset inte => prep => prod` [Reset-IntePrepProd.yml](../Pipelines/Reset-IntePrepProd.yml)  
 
 ## Hotfix
 `Hotfix* => prod (nuget)`  *No YAML file yet*
