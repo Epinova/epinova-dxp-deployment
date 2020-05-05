@@ -1,4 +1,7 @@
 # Release notes
+## v1.1.2
+- #23, #30: DeployNugetPackage: Added more debug info when no nupkg found.  
+
 ## v1.1.1
 - #23: DeployNugetPackage: Added support for upload both cms and commerce at the same time. "cms,commerce".  
 

@@ -44,15 +44,17 @@ try {
     Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
 
     $packageLocation = Get-EpiDeploymentPackageLocation -ProjectId $projectId
-    Write-Host "packageLocation: $packageLocation"
+    Write-Host "PackageLocation: $packageLocation"
 
     if ($sourceApp -eq "cms" -or $sourceApp -eq "cms,commerce"){
         $resolvedCmsPackagePath = Get-ChildItem -Path $dropPath -Filter *.cms.*.nupkg
-        Write-Host "cms PackagePath: $resolvedCmsPackagePath"
+        Write-Host "Cms PackagePath: $resolvedCmsPackagePath"
     
         if ($null -eq $resolvedCmsPackagePath){
             Write-Host "##vso[task.logissue type=error]Could not find the cms package in location $dropPath."
             Write-Error "Could not find the cms package in location $dropPath." -ErrorAction Stop
+            Write-Host "Following files found in location $dropPath : $(Get-ChildItem -Path $dropPath –File)"
+            exit 1
         }
     
         Add-EpiDeploymentPackage -SasUrl $packageLocation -Path $resolvedCmsPackagePath.FullName
@@ -62,11 +64,13 @@ try {
 
     if ($sourceApp -eq "commerce" -or $sourceApp -eq "cms,commerce"){
         $resolvedCommercePackagePath = Get-ChildItem -Path $dropPath -Filter *.commerce.*.nupkg
-        Write-Host "commerce PackagePath: $resolvedCommercePackagePath"
+        Write-Host "Commerce PackagePath: $resolvedCommercePackagePath"
     
         if ($null -eq $resolvedCommercePackagePath){
-            Write-Host "##vso[task.logissue type=error]Could not find the cms package in location $dropPath."
-            Write-Error "Could not find the cms package in location $dropPath." -ErrorAction Stop
+            Write-Host "##vso[task.logissue type=error]Could not find the commerce package in location $dropPath."
+            Write-Error "Could not find the commerce package in location $dropPath." -ErrorAction Stop
+            Write-Host "Following files found in location $dropPath : $(Get-ChildItem -Path $dropPath –File)"
+            exit 1
         }
     
         Add-EpiDeploymentPackage -SasUrl $packageLocation -Path $resolvedCommercePackagePath.FullName
