@@ -25,7 +25,7 @@ The DXP project id.
 
 #### Drop path
 **[string]** - **required**  
-The path in Azure DevOps where the nuget file is placed in the drop folder.  
+The path in Azure DevOps where the nuget file(s) is placed.  
 **Example:** `$(System.DefaultWorkingDirectory)/_ProjectName-CI/drop`  
 **Default value:** `$(DropPath)`
 
@@ -41,7 +41,8 @@ Specify if you want to deploy to Integration/Preproduction/Production.
 
 #### SourceApp
 **[pickList]** - **required**  
-Specify which type of application you want to deploy. Will look in the drop folder with the filter *.[SourceApp].*.nupkg. New in v1.1.0.
+Specify which type of application you want to deploy. Will look in the drop folder with the filter *.[SourceApp].*.nupkg. New in v1.1.0.  
+If you use "cms,commerce", both nupkg files must be in the same DropPath folder.
 **Example:** `commerce`  
 **Default value:** `cms`  
 **Options:**  

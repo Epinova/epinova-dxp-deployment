@@ -1,4 +1,7 @@
 # Release notes
+## v1.1.3
+- #23, #30: DeployNugetPackage: Bugfix. Spec char error.  
+
 ## v1.1.2
 - #23, #30: DeployNugetPackage: Added more debug info when no nupkg found.  
 
