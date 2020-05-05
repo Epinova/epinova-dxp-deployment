@@ -130,6 +130,7 @@ stages:
         ProjectId: '$(DXP.ProjectId)'
         DropPath: '$(System.DefaultWorkingDirectory)\drop'
         TargetEnvironment: 'Integration'
+        SourceApp: 'cms'
         UseMaintenancePage: false
         Timeout: 1800
 
@@ -151,12 +152,12 @@ stages:
         TargetEnvironment: 'Integration'
         Timeout: 1800
 
-    - task: Webapp Warmup@1
-      inputs:
-        Url: '$(Integration.Url)'
-        RetryCount: '3'
-        IgnoreError: true
-        Suffixes: '$(Integration.UrlSuffix)'
+    #- task: Webapp Warmup@1
+    #  inputs:
+    #    Url: '$(Integration.Url)'
+    #    RetryCount: '3'
+    #    IgnoreError: true
+    #    Suffixes: '$(Integration.UrlSuffix)'
 
 
 

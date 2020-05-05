@@ -122,6 +122,7 @@ stages:
               ProjectId: '$(DXP.ProjectId)'
               DropPath: '$(Pipeline.Workspace)\drop'
               TargetEnvironment: 'Preproduction'
+              SourceApp: 'cms'
               UseMaintenancePage: false
               Timeout: 1800
 
@@ -143,12 +144,12 @@ stages:
               TargetEnvironment: 'Preproduction'
               Timeout: 1800
 
-          - task: Webapp Warmup@1
-            inputs:
-              Url: '$(Preproduction.Url)'
-              RetryCount: '3'
-              IgnoreError: true
-              Suffixes: '$(Preproduction.UrlSuffix)'
+          #- task: Webapp Warmup@1
+          #  inputs:
+          #    Url: '$(Preproduction.Url)'
+          #    RetryCount: '3'
+          #    IgnoreError: true
+          #    Suffixes: '$(Preproduction.UrlSuffix)'
 
 - stage: DeployProduction
   dependsOn: DeployPreproduction
@@ -193,9 +194,9 @@ stages:
               TargetEnvironment: 'Production'
               Timeout: 1800
 
-          - task: Webapp Warmup@1
-            inputs:
-              Url: '$(Production.Url)'
-              RetryCount: '3'
-              IgnoreError: true
-              Suffixes: '$(Production.UrlSuffix)'
+          #- task: Webapp Warmup@1
+          #  inputs:
+          #    Url: '$(Production.Url)'
+          #    RetryCount: '3'
+          #    IgnoreError: true
+          #    Suffixes: '$(Production.UrlSuffix)'
