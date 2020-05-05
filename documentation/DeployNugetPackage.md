@@ -39,6 +39,15 @@ Specify if you want to deploy to Integration/Preproduction/Production.
 - Preproduction
 - Production
 
+#### SourceApp
+**[pickList]** - **required**  
+Specify which type of application you want to deploy. Will look in the drop folder with the filter *.[SourceApp].*.nupkg. New in v1.1.0.
+**Example:** `commerce`  
+**Default value:** `cms`  
+**Options:**  
+- cms
+- commerce
+
 #### Use maintenance page
 **[boolean]** - **required**  
 Specify if you want to use a maintenance page during the deploy.  
@@ -73,6 +82,7 @@ Example:
     ProjectId: '$(DXP.ProjectId)'  
     DropPath: '$(System.DefaultWorkingDirectory)\drop'  
     TargetEnvironment: 'Integration'  
+    SourceApp: 'cms'  
     UseMaintenancePage: false  
     Timeout: 1800  
 ```

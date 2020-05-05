@@ -12,7 +12,7 @@ variables:
 stages:
 - stage: Build
   jobs:
-  - job: DevInte
+  - job: BuildNugetPackage
 
     pool:
       name: Azure Pipelines
@@ -104,7 +104,7 @@ stages:
 - stage: DeployIntegration
   dependsOn: Build
   jobs:
-  - job: DevInte
+  - job: DeployToIntegration
     displayName: 'Deploy to Integration'
     pool:
       vmImage: 'windows-latest'
@@ -130,6 +130,7 @@ stages:
         ProjectId: '$(DXP.ProjectId)'
         DropPath: '$(System.DefaultWorkingDirectory)\drop'
         TargetEnvironment: 'Integration'
+        SourceApp: 'cms'
         UseMaintenancePage: false
         Timeout: 1800
 
@@ -151,12 +152,12 @@ stages:
         TargetEnvironment: 'Integration'
         Timeout: 1800
 
-    - task: Webapp Warmup@1
-      inputs:
-        Url: '$(Integration.Url)'
-        RetryCount: '3'
-        IgnoreError: true
-        Suffixes: '$(Integration.UrlSuffix)'
+    #- task: Webapp Warmup@1
+    #  inputs:
+    #    Url: '$(Integration.Url)'
+    #    RetryCount: '3'
+    #    IgnoreError: true
+    #    Suffixes: '$(Integration.UrlSuffix)'
 
 - stage: DeployPreproduction
   dependsOn: DeployIntegration
@@ -200,12 +201,12 @@ stages:
               TargetEnvironment: 'Preproduction'
               Timeout: 1800
 
-          - task: Webapp Warmup@1
-            inputs:
-              Url: '$(Preproduction.Url)'
-              RetryCount: '3'
-              IgnoreError: true
-              Suffixes: '$(Preproduction.UrlSuffix)'
+          #- task: Webapp Warmup@1
+          #  inputs:
+          #    Url: '$(Preproduction.Url)'
+          #    RetryCount: '3'
+          #    IgnoreError: true
+          #    Suffixes: '$(Preproduction.UrlSuffix)'
 
 - stage: DeployProduction
   dependsOn: DeployPreproduction
@@ -250,11 +251,11 @@ stages:
               TargetEnvironment: 'Production'
               Timeout: 1800
 
-          - task: Webapp Warmup@1
-            inputs:
-              Url: '$(Production.Url)'
-              RetryCount: '3'
-              IgnoreError: true
-              Suffixes: '$(Production.UrlSuffix)'
+          #- task: Webapp Warmup@1
+          #  inputs:
+          #    Url: '$(Production.Url)'
+          #    RetryCount: '3'
+          #    IgnoreError: true
+          #    Suffixes: '$(Production.UrlSuffix)'
 
 

@@ -121,12 +121,12 @@ stages:
               WebAppName: '$(AzureWebAppName)'
               packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
 
-          - task: Webapp Warmup@1
-            inputs:
-              Url: '$(Integration.Url)'
-              RetryCount: '3'
-              IgnoreError: true
-              Suffixes: '$(Integration.UrlSuffix)'
+          #- task: Webapp Warmup@1
+          #  inputs:
+          #    Url: '$(Integration.Url)'
+          #    RetryCount: '3'
+          #    IgnoreError: true
+          #    Suffixes: '$(Integration.UrlSuffix)'
 
 
 

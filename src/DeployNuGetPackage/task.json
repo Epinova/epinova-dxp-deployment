@@ -12,8 +12,8 @@
     "author": "Ove Lartelius",
     "version": {
         "Major": 1,
-        "Minor": 0,
-        "Patch": 5
+        "Minor": 1,
+        "Patch": 0
     },
     "groups": [
         {
@@ -83,6 +83,19 @@
                 "Integration": "Integration",
                 "Preproduction": "Preproduction",
                 "Production": "Production"
+            }
+        },
+        {
+            "name": "SourceApp",
+            "type": "pickList",
+            "label": "SourceApp",
+            "required": true,
+            "defaultValue": "cms",
+            "helpMarkDown": "The type of application that should be deployed.",
+            "groupName": "Settings",
+            "options": {
+                "cms": "cms",
+                "commerce": "commerce"
             }
         },
         {

@@ -8,6 +8,7 @@ try {
     $clientSecret = Get-VstsInput -Name "ClientSecret" -Require -ErrorAction "Stop"
     $projectId = Get-VstsInput -Name "ProjectId" -Require -ErrorAction "Stop"
     $targetEnvironment = Get-VstsInput -Name "TargetEnvironment" -Require -ErrorAction "Stop"
+    $sourceApp = Get-VstsInput -Name "SourceApp" -Require -ErrorAction "Stop"
     $useMaintenancePage = Get-VstsInput -Name "UseMaintenancePage" -AsBool
     $dropPath = Get-VstsInput -Name "DropPath" -Require -ErrorAction "Stop"
     #$includeBlob = $false #switches to copy BLOBs from source to target environment
@@ -22,6 +23,7 @@ try {
     Write-Host "ClientSecret: **** (it is a secret...)"
     Write-Host "ProjectId: $projectId"
     Write-Host "TargetEnvironment: $targetEnvironment"
+    Write-Host "SourceApp: $sourceApp"
     Write-Host "UseMaintenancePage: $useMaintenancePage"
     Write-Host "DropPath: $dropPath"
     Write-Host "Timeout: $timeout"
@@ -41,8 +43,13 @@ try {
 
     Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
 
-    $resolvedPackagePath = Get-ChildItem -Path $dropPath -Filter *.nupkg
+    $resolvedPackagePath = Get-ChildItem -Path $dropPath -Filter *.$sourceApp.*.nupkg
     Write-Host "resolvedPackagePath: $resolvedPackagePath"
+
+    if ($null -eq $resolvedPackagePath){
+        Write-Host "##vso[task.logissue type=error]Could not find the package in location $dropPath."
+        Write-Error "Could not find the package in location $dropPath." -ErrorAction Stop
+    }
 
     $packageLocation = Get-EpiDeploymentPackageLocation -ProjectId $projectId
     Write-Host "packageLocation: $packageLocation"
