@@ -5,9 +5,16 @@ All the senarios below has YAML files that can be used.
 
 [<= Back to root](../README.md)
 
-## Create variable group
+## Prerequisites/Preparation
+### Create variable group
+All tasks and YAML files are using variables that can be reused by one to many pipelines. In Azure DevOps you can use a variable group for this use case.  
+[How to create the variable group](CreateVariableGroup.md)  
 
+### Create environments
+To be able to have approval steps before deployment can start to different environments we need to setup environments in Azure DevOps. The YAML files use these environments and that´s why we need them.  
+[How to create the environments](CreateEnvironments.md)  
 
+## YAML Pipelines
 ## [Branch:develop] (WebPackage) => Integration, [Branch:release] (NuGet) => Preproduction => Production
 This senario build and deploy the develop branch to integration with the WebPackage method. And build and deploy a release branch to preproduction that can be approved and deployed to production.  
 `develop => integration (WebPackage)` [Develop-Inte_webpackage.yaml](../Pipelines/Develop-Inte_webpackage.yaml)  
@@ -30,6 +37,6 @@ This senario build and deploy the master branch to integration with the Nuget me
 `reset inte => prep => prod` [Reset-IntePrepProd.yaml](../Pipelines/Reset-IntePrepProd.yaml)  
 
 ## Hotfix
-`Hotfix* => prod (nuget)`  
+`Hotfix* => prod (nuget)`  *No YAML file yet*
 
 [<= Back to root](../README.md)

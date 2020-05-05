@@ -8,3 +8,6 @@ When the “feature” branch is approved and merged, into the “developer” b
 After a period, you might decide that it’s time to release something to production. Then a “release candidate” branch should be created from the “developer” branch. When the “release candidate” branch is created, we want Azure DevOps to build and release it to the Preproduction environment so that tests can be made on a more stable codebase. If everything is approved, and working as expected, Preproduction can then be released to the Production environment. We look at the Preproduction environment as the customer acceptance test environment.  
   
 The above is of course very simplified description, but I think it is nice to describe what kind of context we try to achieve here.
+
+[<= Back to scenarios](SetupScenarios.md)  
+[<= Back to root](../README.md)
