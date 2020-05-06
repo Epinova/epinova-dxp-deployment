@@ -51,9 +51,9 @@ try {
         Write-Host "Cms PackagePath: $resolvedCmsPackagePath"
     
         if ($null -eq $resolvedCmsPackagePath){
+            Write-Host "Following files found in location $dropPath : $(Get-ChildItem -Path $dropPath -File)"
             Write-Host "##vso[task.logissue type=error]Could not find the cms package in location $dropPath."
             Write-Error "Could not find the cms package in location $dropPath." -ErrorAction Stop
-            Write-Host "Following files found in location $dropPath : $(Get-ChildItem -Path $dropPath -File)"
             exit 1
         }
     
@@ -67,9 +67,9 @@ try {
         Write-Host "Commerce PackagePath: $resolvedCommercePackagePath"
     
         if ($null -eq $resolvedCommercePackagePath){
+            Write-Host "Following files found in location $dropPath : $(Get-ChildItem -Path $dropPath -File)"
             Write-Host "##vso[task.logissue type=error]Could not find the commerce package in location $dropPath."
             Write-Error "Could not find the commerce package in location $dropPath." -ErrorAction Stop
-            Write-Host "Following files found in location $dropPath : $(Get-ChildItem -Path $dropPath -File)"
             exit 1
         }
     
