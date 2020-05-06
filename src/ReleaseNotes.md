@@ -1,4 +1,7 @@
 # Release notes
+## v1.1.4
+- #23, #30: DeployNugetPackage: Bugfix. Code does not get to the extra debug info.  
+  
 ## v1.1.3
 - #23, #30: DeployNugetPackage: Bugfix. Spec char error.  
 
