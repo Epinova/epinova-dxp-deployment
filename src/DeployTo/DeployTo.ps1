@@ -12,6 +12,9 @@ try {
     $sourceApp = Get-VstsInput -Name "SourceApp" -Require -ErrorAction "Stop"
     $useMaintenancePage = Get-VstsInput -Name "UseMaintenancePage" -AsBool
     $timeout = Get-VstsInput -Name "Timeout" -AsInt -Require -ErrorAction "Stop"
+    $includeBlob = Get-VstsInput -Name "IncludeBlob" -AsBool
+    $includeDb = Get-VstsInput -Name "IncludeDb" -AsBool
+
 
     # 30 min timeout
     ####################################################################################
@@ -25,6 +28,8 @@ try {
     Write-Host "SourceApp: $sourceApp"
     Write-Host "UseMaintenancePage: $useMaintenancePage"
     Write-Host "Timeout: $timeout"
+    Write-Host "IncludeBlob: $includeBlob"
+    Write-Host "IncludeDb: $includeDb"
 
     . "$PSScriptRoot\Helper.ps1"
     WriteInfo
@@ -45,6 +50,8 @@ try {
         TargetEnvironment  = $targetEnvironment
         SourceApp          = $sourceApp
         UseMaintenancePage = $useMaintenancePage
+        IncludeBlob = $includeBlob
+        IncludeDb = $includeDb
     }
 
     $deploy = Start-EpiDeployment @startEpiDeploymentSplat

@@ -12,8 +12,8 @@
     "author": "Ove Lartelius",
     "version": {
         "Major": 1,
-        "Minor": 0,
-        "Patch": 8
+        "Minor": 1,
+        "Patch": 0
     },
     "groups": [
         {
@@ -111,6 +111,24 @@
             "required": true,
             "defaultValue": "false",
             "helpMarkDown": "If maintenance page should be used during deployment.",
+            "groupName": "Settings"
+        },
+        {
+            "name": "IncludeBlob",
+            "type": "boolean",
+            "label": "Include BLOB",
+            "required": true,
+            "defaultValue": "false",
+            "helpMarkDown": "If BLOBs should be copied from source environment to the target environment.",
+            "groupName": "Settings"
+        },
+        {
+            "name": "IncludeDb",
+            "type": "boolean",
+            "label": "Include DB",
+            "required": true,
+            "defaultValue": "false",
+            "helpMarkDown": "If DBs should be copied from source environment to the target environment.",
             "groupName": "Settings"
         },
         {

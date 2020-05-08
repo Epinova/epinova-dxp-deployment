@@ -1,6 +1,7 @@
 # Deploy to (Episerver DXP) #
 Do the same thing like the "Deploy to =>" button in the portal. It moves the deployed code from one environment to another.  
-
+Have support for IncludeBlob and IncludeDb so that you can deploy your code and move BLOBs and/or DBif you want.  
+  
 [<= Back](../README.md)
 
 ## Parameters
@@ -56,6 +57,18 @@ Specify which type of application you want to move.
 #### Use maintenance page
 **[boolean]** - **required**  
 Specify if you want to use a maintenance page during the deploy.  
+**Example:** `true`  
+**Default value:** `false`
+
+#### Include BLOB
+**[boolean]** - **required**  
+If BLOBs should be copied from source environment to the target environment.  
+**Example:** `true`  
+**Default value:** `false`
+
+#### Include DB
+**[boolean]** - **required**  
+If DBs should be copied from source environment to the target environment.  
 **Example:** `true`  
 **Default value:** `false`
 
