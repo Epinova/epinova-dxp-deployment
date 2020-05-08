@@ -124,6 +124,8 @@ stages:
               TargetEnvironment: 'Preproduction'
               SourceApp: 'cms'
               UseMaintenancePage: false
+              IncludeBlob: false
+              IncludeDb: false
               Timeout: 1800
 
           - task: DxpSmokeTestIfFailReset@1
@@ -174,6 +176,8 @@ stages:
               TargetEnvironment: 'Production'
               SourceApp: 'cms'
               UseMaintenancePage: false
+              IncludeBlob: false
+              IncludeDb: false
               Timeout: 1800
 
           - task: DxpSmokeTestIfFailReset@1

@@ -1,4 +1,7 @@
 # Release notes
+## v1.2
+- #34: DeployTo: Add support for IncludeBlob and IncludeDb in the task.  
+
 ## v1.1.4
 - #23, #30: DeployNugetPackage: Bugfix. Code does not get to the extra debug info.  
   
