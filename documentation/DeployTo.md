@@ -1,6 +1,7 @@
 # Deploy to (Episerver DXP) #
 Do the same thing like the "Deploy to =>" button in the portal. It moves the deployed code from one environment to another.  
 Have support for IncludeBlob and IncludeDb so that you can deploy your code and move BLOBs and/or DBif you want.  
+Can also be used for Content syncdown. Example: if you want to make your preproduction environment contain the same content as in production. [More about content syncdown can be read on Episerver world.](https://world.episerver.com/blogs/anders-wahlqvist/dates/2020/4/dxp-deployment-improvements/)  
   
 [<= Back](../README.md)
 
@@ -104,5 +105,7 @@ inputs:
     UseMaintenancePage: false
     Timeout: 1800
 ```
+## Example of content syncdown from Production to Preproduction
+![DeployTo syndown example](Images/DeployTo_SyncDown_example.png)  
 
 [<= Back](../README.md)

@@ -13,6 +13,7 @@ Take a NuGet package from your drop folder in Azure DevOps and upload it to your
   
 ### Deploy To (Episerver DXP) ###
 Do the same thing like the "Deploy to =>" button in the portal. It moves the deployed code from one environment to another.  
+Can also be used for Content syncdown.  With the IncludeBlob and IncludeDb you can now sync/deploy both ways.  
 [Deploy to documentation](documentation/DeployTo.md)  
 
 ### Complete deploy (Episerver DXP) ###
