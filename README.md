@@ -1,9 +1,5 @@
 # Epinova DXP Deployment
 Bucket of release tasks helping you to deploy to all environments in Episerver DXP from Azure DevOps. The release tasks use the [Deployment API](https://world.episerver.com/digital-experience-cloud-service/deploying/episerver-digital-experience-cloud-deployment-api/). There are some developers out there that want/need help with deployment to the Episerver DXC enviroment. And that is why this deployment extension is created. 
-  
-  
-***NOTE: We know that Episerver release some new features in the DXP API. We will start implement these changes/features ASAP.***  
-[https://world.episerver.com/blogs/anders-wahlqvist/dates/2020/4/dxp-deployment-improvements/](https://world.episerver.com/blogs/anders-wahlqvist/dates/2020/4/dxp-deployment-improvements/)
 
 ## Tasks ##
 
