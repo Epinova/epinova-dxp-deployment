@@ -1,9 +1,5 @@
 # Epinova DXP Deployment
 Bucket of release tasks helping you to deploy to all environments in Episerver DXP from Azure DevOps. The release tasks use the [Deployment API](https://world.episerver.com/digital-experience-cloud-service/deploying/episerver-digital-experience-cloud-deployment-api/). There are some developers out there that want/need help with deployment to the Episerver DXC enviroment. And that is why this deployment extension is created. 
-  
-  
-***NOTE: We know that Episerver release some new features in the DXP API. We will start implement these changes/features ASAP.***  
-[https://world.episerver.com/blogs/anders-wahlqvist/dates/2020/4/dxp-deployment-improvements/](https://world.episerver.com/blogs/anders-wahlqvist/dates/2020/4/dxp-deployment-improvements/)
 
 ## Tasks ##
 
@@ -13,6 +9,7 @@ Take a NuGet package from your drop folder in Azure DevOps and upload it to your
   
 ### Deploy To (Episerver DXP) ###
 Do the same thing like the "Deploy to =>" button in the portal. It moves the deployed code from one environment to another.  
+Can also be used for Content syncdown.  With the IncludeBlob and IncludeDb you can now sync/deploy both ways.  
 [Deploy to documentation](documentation/DeployTo.md)  
 
 ### Complete deploy (Episerver DXP) ###
@@ -26,6 +23,10 @@ This task smoke test a slot and decide if we should continue the release or rese
 ### Reset deploy (Episerver DXP) ###
 Reset a specifed environment if the status for the environment is in status "AwaitingVerification".  
 [Reset deploy documentation](documentation/ResetDeploy.md)
+
+### Export DB (Episerver DXP) ###
+Export the database as a bacpac file from specified environment.  
+[Export DB documentation](documentation/ExportDb.md)  
 
 ## Setup scenarios ##
 More detailed description how you can setup and use these tasks in different scenarios. Both with YAML and manual setup.  

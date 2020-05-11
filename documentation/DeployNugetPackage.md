@@ -79,8 +79,8 @@ Example:
 ```yaml
 - task: DxpDeployNuGetPackage@1  
     inputs:  
-    ClientKey: '$(Integration.ClientKey)'  
-    ClientSecret: '$(Integration.ClientSecret)'  
+    ClientKey: '$(ClientKey)'  
+    ClientSecret: '$(ClientSecret)'  
     ProjectId: '$(DXP.ProjectId)'  
     DropPath: '$(System.DefaultWorkingDirectory)\drop'  
     TargetEnvironment: 'Integration'  

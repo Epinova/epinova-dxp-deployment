@@ -16,19 +16,15 @@ Allow access to all pipelines: `True`
 ### Variables
 The following variables need to exist.  
 * DXP.ProjectId
-* Integration.ClientKey
-* Integration.ClientSecret (Make as password variable)
+* ClientKey
+* ClientSecret (Make as password variable)
 * Integration.SlotUrl
 * Integration.Url
 * Integration.UrlSuffix
 * NuGetPackageNamePrefix
-* Preproduction.ClientKey
-* Preproduction.ClientSecret (Make as password variable)
 * Preproduction.SlotUrl
 * Preproduction.Url
 * Preproduction.UrlSuffix
-* Production.ClientKey
-* Production.ClientSecret (Make as password variable)
 * Production.SlotUrl
 * Production.Url
 * Production.UrlSuffix
@@ -40,11 +36,9 @@ Go to https://paas.episerver.net and login. When you are on the list page for al
 ![Paas project URL](Images/CreateVariableGroup/PaasProjectUrl.png)  
 
 ### ClientKey, ClientSecret
-Go back to https://paas.episerver.net and click on the link to the project that you setup the deploy for. On the project page you should click on the tab “API (Beta)”. Select the environment “Integration”/”Preproduction”/”Production” and click on the button “Generate API credentials”.  
-Copy the generated ClientKey to the variable “Integation.ClientKey”/”Preproduction.ClientKey”/”Production.ClientKey”.  
-Copy the generated ClientSecret to the variable “Integation.ClientSecret”/”Preproduction.ClientSecret”/”Production.ClientSecret”.   
-Repeat these steps so that you have generated a key and secret for each environment (Integration, Preproduction and Production) and copied to the corresponding variable.
+Go back to https://paas.episerver.net and click on the link to the project that you setup the deploy for. On the project page you should click on the tab “API (Beta)”.  
 ![Generate API credentials](Images/CreateVariableGroup/GenAPICredentials.png)  
+Click on the “Add API Credentials” and give it a name. Select all environments (Integration, Preproduction, Production). After clicked save you will receive a ClientKey and ClientSecret that you can copy to your variables. These variables can now be used to interact with all environments.  
 
 ### SlotUrl, Url
 When you do a deploy to an environment in Episerver DXC the package will be deployed to a slot. That slot can be verified by you and/or the customer. If everything looks ok and your verification tests passes, the package can be deployed to the environment. The SlotUrl variable is the URL to the slot during deployment. And the URL is the URL to the environment that you deploy to.  

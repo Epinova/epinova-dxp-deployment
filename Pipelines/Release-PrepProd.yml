@@ -117,8 +117,8 @@ stages:
 
           - task: DxpDeployNuGetPackage@1
             inputs:
-              ClientKey: '$(Preproduction.ClientKey)'
-              ClientSecret: '$(Preproduction.ClientSecret)'
+              ClientKey: '$(ClientKey)'
+              ClientSecret: '$(ClientSecret)'
               ProjectId: '$(DXP.ProjectId)'
               DropPath: '$(Pipeline.Workspace)\drop'
               TargetEnvironment: 'Preproduction'
@@ -130,8 +130,8 @@ stages:
 
           - task: DxpSmokeTestIfFailReset@1
             inputs:
-              ClientKey: '$(Preproduction.ClientKey)'
-              ClientSecret: '$(Preproduction.ClientSecret)'
+              ClientKey: '$(ClientKey)'
+              ClientSecret: '$(ClientSecret)'
               ProjectId: '$(DXP.ProjectId)'
               TargetEnvironment: 'Preproduction'
               Urls: '$(Preproduction.SlotUrl)$(Preproduction.UrlSuffix)'
@@ -140,8 +140,8 @@ stages:
 
           - task: DxpCompleteDeploy@1
             inputs:
-              ClientKey: '$(Preproduction.ClientKey)'
-              ClientSecret: '$(Preproduction.ClientSecret)'
+              ClientKey: '$(ClientKey)'
+              ClientSecret: '$(ClientSecret)'
               ProjectId: '$(DXP.ProjectId)'
               TargetEnvironment: 'Preproduction'
               Timeout: 1800
@@ -169,21 +169,21 @@ stages:
 
           - task: DxpDeployTo@1
             inputs:
-              ClientKey: '$(Production.ClientKey)'
-              ClientSecret: '$(Production.ClientSecret)'
+              ClientKey: '$(ClientKey)'
+              ClientSecret: '$(ClientSecret)'
               ProjectId: '$(DXP.ProjectId)'
               SourceEnvironment: 'Preproduction'
               TargetEnvironment: 'Production'
               SourceApp: 'cms'
-              UseMaintenancePage: false
+              UseMaintenancePage: true
               IncludeBlob: false
               IncludeDb: false
               Timeout: 1800
 
           - task: DxpSmokeTestIfFailReset@1
             inputs:
-              ClientKey: '$(Production.ClientKey)'
-              ClientSecret: '$(Production.ClientSecret)'
+              ClientKey: '$(ClientKey)'
+              ClientSecret: '$(ClientSecret)'
               ProjectId: '$(DXP.ProjectId)'
               TargetEnvironment: 'Production'
               Urls: '$(Production.SlotUrl)$(Production.UrlSuffix)'
@@ -192,8 +192,8 @@ stages:
 
           - task: DxpCompleteDeploy@1
             inputs:
-              ClientKey: '$(Production.ClientKey)'
-              ClientSecret: '$(Production.ClientSecret)'
+              ClientKey: '$(ClientKey)'
+              ClientSecret: '$(ClientSecret)'
               ProjectId: '$(DXP.ProjectId)'
               TargetEnvironment: 'Production'
               Timeout: 1800

@@ -7,6 +7,7 @@ Tasks
 1. **Smoke test if fail reset**
 1. **Complete deploy**
 1. **Reset deploy**
+1. **Export DB**
 
 ## Details
 
@@ -25,6 +26,9 @@ This task smoke test a slot and decide if we should continue the release or rese
 
 ### Reset deploy (Episerver DXP) ###
 Reset a specifed environment if the status for the environment is in status "AwaitingVerification".  
+
+### Export DB (Episerver DXP) ###
+Export the database as a bacpac file from specified environment.  
 
 ## Release notes
 [Release notes](ReleaseNotes.md)
