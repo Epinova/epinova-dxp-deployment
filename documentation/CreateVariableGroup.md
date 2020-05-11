@@ -36,8 +36,9 @@ Go to https://paas.episerver.net and login. When you are on the list page for al
 ![Paas project URL](Images/CreateVariableGroup/PaasProjectUrl.png)  
 
 ### ClientKey, ClientSecret
-Go back to https://paas.episerver.net and click on the link to the project that you setup the deploy for. On the project page you should click on the tab “API (Beta)”. Click on the “Add API Credentials” and give it a name. Select all environments (Integration, Preproduction, Production). After clicked save you will receive a ClientKey and ClientSecret that you can copy to your variables.
+Go back to https://paas.episerver.net and click on the link to the project that you setup the deploy for. On the project page you should click on the tab “API (Beta)”.  
 ![Generate API credentials](Images/CreateVariableGroup/GenAPICredentials.png)  
+Click on the “Add API Credentials” and give it a name. Select all environments (Integration, Preproduction, Production). After clicked save you will receive a ClientKey and ClientSecret that you can copy to your variables. These variables can now be used to interact with all environments.  
 
 ### SlotUrl, Url
 When you do a deploy to an environment in Episerver DXC the package will be deployed to a slot. That slot can be verified by you and/or the customer. If everything looks ok and your verification tests passes, the package can be deployed to the environment. The SlotUrl variable is the URL to the slot during deployment. And the URL is the URL to the environment that you deploy to.  
