@@ -95,8 +95,8 @@ Example:
 ```yaml
 - task: DxpDeployTo@1
 inputs:
-    ClientKey: '$(Production.ClientKey)'
-    ClientSecret: '$(Production.ClientSecret)'
+    ClientKey: '$(ClientKey)'
+    ClientSecret: '$(ClientSecret)'
     ProjectId: '$(DXP.ProjectId)'
     SourceEnvironment: 'Preproduction'
     TargetEnvironment: 'Production'

@@ -70,8 +70,8 @@ Example:
 ```yaml
 - task: DxpSmokeTestIfFailReset@1
     inputs:
-    ClientKey: '$(Integration.ClientKey)'
-    ClientSecret: '$(Integration.ClientSecret)'
+    ClientKey: '$(ClientKey)'
+    ClientSecret: '$(ClientSecret)'
     ProjectId: '$(DXP.ProjectId)'
     TargetEnvironment: 'Integration'
     Urls: '$(Integration.SlotUrl)$(Integration.UrlSuffix)'

@@ -57,8 +57,8 @@ Example:
 - task: DxpResetDeploy@1
     displayName: 'Reset Integration'
     inputs:
-    ClientKey: '$(Integration.ClientKey)'
-    ClientSecret: '$(Integration.ClientSecret)'
+    ClientKey: '$(ClientKey)'
+    ClientSecret: '$(ClientSecret)'
     ProjectId: '$(DXP.ProjectId)'
     TargetEnvironment: 'Integration'
     Timeout: 1800

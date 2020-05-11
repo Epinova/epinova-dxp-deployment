@@ -74,8 +74,8 @@ Example:
 ```yaml
 - task: DxpExportDb@1
 inputs:
-    ClientKey: '$(Production.ClientKey)'
-    ClientSecret: '$(Production.ClientSecret)'
+    ClientKey: '$(ClientKey)'
+    ClientSecret: '$(ClientSecret)'
     ProjectId: '$(DXP.ProjectId)'
     Environment: 'Integration'
     DatabaseName: 'epicms'
