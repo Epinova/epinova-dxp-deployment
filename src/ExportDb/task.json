@@ -1,10 +1,10 @@
 {
-    "id": "b833e451-9403-4b15-8cd1-478d48236609",
-    "name": "DxpResetDeploy",
-    "friendlyName": "Reset deploy (Episerver DXP)",
-    "description": "Reset the verification 'slot'. The script will try to get the deplot that is in AwaitingVerification and start do a reset on that deploy. (Episerver DXP, former DXC)",
-    "helpUrl": "https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/ResetDeploy.md",
-    "helpMarkDown": "[Extension page](https://marketplace.visualstudio.com/items?itemName=epinova-sweden.epinova-dxp-deploy-extension)[Learn more about this task](https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/ResetDeploy.md)",
+    "id": "2c912ca7-b6b3-47d8-8c99-0a91e7b059a2",
+    "name": "DxpExportDb",
+    "friendlyName": "Export DB (Episerver DXP)",
+    "description": "Export specified database as a bacpac file. (Episerver DXP, former DXC)",
+    "helpUrl": "https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/ExportDb.md",
+    "helpMarkDown": "[Extension page](https://marketplace.visualstudio.com/items?itemName=epinova-sweden.epinova-dxp-deploy-extension)[Learn more about this task](https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/ExportDb.md)",
     "category": "Deploy",
     "visibility": [
         "Release"
@@ -13,7 +13,7 @@
     "version": {
         "Major": 1,
         "Minor": 0,
-        "Patch": 7
+        "Patch": 0
     },
     "groups": [
         {
@@ -63,18 +63,40 @@
             "groupName": "Settings"
         },
         {
-            "name": "TargetEnvironment",
+            "name": "Environment",
             "type": "pickList",
-            "label": "Target environment",
+            "label": "Source environment",
             "required": true,
-            "defaultValue": "$(TargetEnvironment)",
-            "helpMarkDown": "The environment that you you want to start the deploy to.",
+            "defaultValue": "$(Environment)",
+            "helpMarkDown": "The environment that you you want to deploy from.",
             "groupName": "Settings",
             "options": {
                 "Integration": "Integration",
                 "Preproduction": "Preproduction",
                 "Production": "Production"
             }
+        },
+        {
+            "name": "DatabaseName",
+            "type": "pickList",
+            "label": "Database",
+            "required": true,
+            "defaultValue": "epicms",
+            "helpMarkDown": "The type of database that should be exported.",
+            "groupName": "Settings",
+            "options": {
+                "epicms": "epicms",
+                "epicommerce": "epicommerce"
+            }
+        },
+        {
+            "name": "RetentionHours",
+            "type": "int",
+            "label": "Retention hours (in hours)",
+            "required": true,
+            "defaultValue": "24",
+            "helpMarkDown": "By default, the bacpac file is retained for 24 hours unless otherwise the retention hour is overridden.",
+            "groupName": "Settings"
         },
         {
             "name": "Timeout",
@@ -100,10 +122,10 @@
             "groupName": "ErrorHandlingOptions"
         }
     ],
-    "instanceNameFormat": "Reset deploy to $(TargetEnvironment).",
+    "instanceNameFormat": "Export DB $(Environment)",
     "execution": {
         "PowerShell3": {
-            "target": "ResetDeploy.ps1"
+            "target": "ExportDb.ps1"
         }
     },
     "messages": {

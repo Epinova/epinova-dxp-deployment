@@ -1,4 +1,7 @@
 # Release notes
+## v1.3
+- #36: ExportDb: Added new task ExportDb.  
+
 ## v1.2
 - #34: DeployTo: Add support for IncludeBlob and IncludeDb in the task.  
 
