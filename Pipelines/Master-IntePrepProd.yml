@@ -125,8 +125,8 @@ stages:
 
     - task: DxpDeployNuGetPackage@1
       inputs:
-        ClientKey: '$(Integration.ClientKey)'
-        ClientSecret: '$(Integration.ClientSecret)'
+        ClientKey: '$(ClientKey)'
+        ClientSecret: '$(ClientSecret)'
         ProjectId: '$(DXP.ProjectId)'
         DropPath: '$(System.DefaultWorkingDirectory)\drop'
         TargetEnvironment: 'Integration'
@@ -138,8 +138,8 @@ stages:
 
     - task: DxpSmokeTestIfFailReset@1
       inputs:
-        ClientKey: '$(Integration.ClientKey)'
-        ClientSecret: '$(Integration.ClientSecret)'
+        ClientKey: '$(ClientKey)'
+        ClientSecret: '$(ClientSecret)'
         ProjectId: '$(DXP.ProjectId)'
         TargetEnvironment: 'Integration'
         Urls: '$(Integration.SlotUrl)$(Integration.UrlSuffix)'
@@ -148,8 +148,8 @@ stages:
 
     - task: DxpCompleteDeploy@1
       inputs:
-        ClientKey: '$(Integration.ClientKey)'
-        ClientSecret: '$(Integration.ClientSecret)'
+        ClientKey: '$(ClientKey)'
+        ClientSecret: '$(ClientSecret)'
         ProjectId: '$(DXP.ProjectId)'
         TargetEnvironment: 'Integration'
         Timeout: 1800
@@ -176,8 +176,8 @@ stages:
           steps:
           - task: DxpDeployTo@1
             inputs:
-              ClientKey: '$(Preproduction.ClientKey)'
-              ClientSecret: '$(Preproduction.ClientSecret)'
+              ClientKey: '$(ClientKey)'
+              ClientSecret: '$(ClientSecret)'
               ProjectId: '$(DXP.ProjectId)'
               SourceEnvironment: 'Integration'
               TargetEnvironment: 'Preproduction'
@@ -189,8 +189,8 @@ stages:
 
           - task: DxpSmokeTestIfFailReset@1
             inputs:
-              ClientKey: '$(Preproduction.ClientKey)'
-              ClientSecret: '$(Preproduction.ClientSecret)'
+              ClientKey: '$(ClientKey)'
+              ClientSecret: '$(ClientSecret)'
               ProjectId: '$(DXP.ProjectId)'
               TargetEnvironment: 'Preproduction'
               Urls: '$(Preproduction.SlotUrl)$(Preproduction.UrlSuffix)'
@@ -199,8 +199,8 @@ stages:
 
           - task: DxpCompleteDeploy@1
             inputs:
-              ClientKey: '$(Preproduction.ClientKey)'
-              ClientSecret: '$(Preproduction.ClientSecret)'
+              ClientKey: '$(ClientKey)'
+              ClientSecret: '$(ClientSecret)'
               ProjectId: '$(DXP.ProjectId)'
               TargetEnvironment: 'Preproduction'
               Timeout: 1800
@@ -228,8 +228,8 @@ stages:
 
           - task: DxpDeployTo@1
             inputs:
-              ClientKey: '$(Production.ClientKey)'
-              ClientSecret: '$(Production.ClientSecret)'
+              ClientKey: '$(ClientKey)'
+              ClientSecret: '$(ClientSecret)'
               ProjectId: '$(DXP.ProjectId)'
               SourceEnvironment: 'Preproduction'
               TargetEnvironment: 'Production'
@@ -241,8 +241,8 @@ stages:
 
           - task: DxpSmokeTestIfFailReset@1
             inputs:
-              ClientKey: '$(Production.ClientKey)'
-              ClientSecret: '$(Production.ClientSecret)'
+              ClientKey: '$(ClientKey)'
+              ClientSecret: '$(ClientSecret)'
               ProjectId: '$(DXP.ProjectId)'
               TargetEnvironment: 'Production'
               Urls: '$(Production.SlotUrl)$(Production.UrlSuffix)'
@@ -251,8 +251,8 @@ stages:
 
           - task: DxpCompleteDeploy@1
             inputs:
-              ClientKey: '$(Production.ClientKey)'
-              ClientSecret: '$(Production.ClientSecret)'
+              ClientKey: '$(ClientKey)'
+              ClientSecret: '$(ClientSecret)'
               ProjectId: '$(DXP.ProjectId)'
               TargetEnvironment: 'Production'
               Timeout: 1800

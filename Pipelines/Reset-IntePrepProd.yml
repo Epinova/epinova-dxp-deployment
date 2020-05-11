@@ -15,8 +15,8 @@ stages:
     - task: DxpResetDeploy@1
       displayName: 'Reset Integration'
       inputs:
-        ClientKey: '$(Integration.ClientKey)'
-        ClientSecret: '$(Integration.ClientSecret)'
+        ClientKey: '$(ClientKey)'
+        ClientSecret: '$(ClientSecret)'
         ProjectId: '$(DXP.ProjectId)'
         TargetEnvironment: 'Integration'
         Timeout: 1800
@@ -31,8 +31,8 @@ stages:
     - task: DxpResetDeploy@1
       displayName: 'Reset Preproduction'
       inputs:
-        ClientKey: '$(Preproduction.ClientKey)'
-        ClientSecret: '$(Preproduction.ClientSecret)'
+        ClientKey: '$(ClientKey)'
+        ClientSecret: '$(ClientSecret)'
         ProjectId: '$(DXP.ProjectId)'
         TargetEnvironment: 'Preproduction'
         Timeout: 1800
@@ -47,8 +47,8 @@ stages:
     - task: DxpResetDeploy@1
       displayName: 'Reset Production'
       inputs:
-        ClientKey: '$(Production.ClientKey)'
-        ClientSecret: '$(Production.ClientSecret)'
+        ClientKey: '$(ClientKey)'
+        ClientSecret: '$(ClientSecret)'
         ProjectId: '$(DXP.ProjectId)'
         TargetEnvironment: 'Production'
         Timeout: 1800

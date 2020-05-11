@@ -125,8 +125,8 @@ stages:
 
     - task: DxpDeployNuGetPackage@1
       inputs:
-        ClientKey: '$(Integration.ClientKey)'
-        ClientSecret: '$(Integration.ClientSecret)'
+        ClientKey: '$(ClientKey)'
+        ClientSecret: '$(ClientSecret)'
         ProjectId: '$(DXP.ProjectId)'
         DropPath: '$(System.DefaultWorkingDirectory)\drop'
         TargetEnvironment: 'Integration'
@@ -136,8 +136,8 @@ stages:
 
     - task: DxpSmokeTestIfFailReset@1
       inputs:
-        ClientKey: '$(Integration.ClientKey)'
-        ClientSecret: '$(Integration.ClientSecret)'
+        ClientKey: '$(ClientKey)'
+        ClientSecret: '$(ClientSecret)'
         ProjectId: '$(DXP.ProjectId)'
         TargetEnvironment: 'Integration'
         Urls: '$(Integration.SlotUrl)$(Integration.UrlSuffix)'
@@ -146,8 +146,8 @@ stages:
 
     - task: DxpCompleteDeploy@1
       inputs:
-        ClientKey: '$(Integration.ClientKey)'
-        ClientSecret: '$(Integration.ClientSecret)'
+        ClientKey: '$(ClientKey)'
+        ClientSecret: '$(ClientSecret)'
         ProjectId: '$(DXP.ProjectId)'
         TargetEnvironment: 'Integration'
         Timeout: 1800
