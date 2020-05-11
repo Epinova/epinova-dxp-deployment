@@ -182,7 +182,7 @@ stages:
               SourceEnvironment: 'Integration'
               TargetEnvironment: 'Preproduction'
               SourceApp: 'cms'
-              UseMaintenancePage: false
+              UseMaintenancePage: true
               IncludeBlob: false
               IncludeDb: false
               Timeout: 1800
