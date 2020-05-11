@@ -27,6 +27,10 @@ This task smoke test a slot and decide if we should continue the release or rese
 Reset a specifed environment if the status for the environment is in status "AwaitingVerification".  
 [Reset deploy documentation](documentation/ResetDeploy.md)
 
+### Export DB (Episerver DXP) ###
+Export the database as a bacpac file from specified environment. 
+[Export DB documentation](documentation/ExportDb.md)  
+
 ## Setup scenarios ##
 More detailed description how you can setup and use these tasks in different scenarios. Both with YAML and manual setup.  
 [Setup senarios](documentation/SetupScenarios.md)
