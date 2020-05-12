@@ -25,7 +25,7 @@ Reset a specifed environment if the status for the environment is in status "Awa
 [Reset deploy documentation](documentation/ResetDeploy.md)
 
 ### Export DB (Episerver DXP) ###
-Export the database as a bacpac file from specified environment.  
+Export database as a bacpac file from specified environment.  
 [Export DB documentation](documentation/ExportDb.md)  
 
 ## Setup scenarios ##
