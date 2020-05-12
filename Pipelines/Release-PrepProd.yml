@@ -97,6 +97,7 @@ stages:
 
 - stage: DeployPreproduction
   dependsOn: Build
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/')) 
   jobs:
   - deployment: ReleasePrep
     displayName: 'Deploy to Preproduction'
@@ -155,6 +156,7 @@ stages:
 
 - stage: DeployProduction
   dependsOn: DeployPreproduction
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/')) 
   jobs:
   - deployment: ReleaseProd
     displayName: 'Deploy to Production'
