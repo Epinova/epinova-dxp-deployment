@@ -103,6 +103,7 @@ stages:
 
 - stage: DeployIntegration
   dependsOn: Build
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   jobs:
   - job: DeployToIntegration
     displayName: 'Deploy to Integration'
@@ -163,6 +164,7 @@ stages:
 
 - stage: DeployPreproduction
   dependsOn: DeployIntegration
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   jobs:
   - deployment: ReleasePrep
     displayName: 'Deploy to Preproduction'
@@ -214,6 +216,7 @@ stages:
 
 - stage: DeployProduction
   dependsOn: DeployPreproduction
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   jobs:
   - deployment: ReleaseProd
     displayName: 'Deploy to Production'
