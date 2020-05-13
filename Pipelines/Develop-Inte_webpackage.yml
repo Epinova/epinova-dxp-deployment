@@ -96,6 +96,7 @@ stages:
 - stage: Deploy
   displayName: Deploy
   dependsOn: Build
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop')) 
   jobs:
   - deployment: DevInte
     displayName: 'Deploy to Integration'
