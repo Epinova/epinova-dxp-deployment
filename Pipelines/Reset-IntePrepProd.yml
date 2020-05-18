@@ -4,6 +4,8 @@ variables:
 - group: DXP-variables
 
 stages:
+- checkout: none  # Don't sync sources
+
 - stage: Reset
   jobs:
   - job: ResetIntegration
