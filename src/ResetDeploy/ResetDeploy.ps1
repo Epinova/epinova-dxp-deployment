@@ -44,6 +44,7 @@ try {
         $deploymentId = ""
     }
     else {
+        Write-Output "Environment $targetEnvironment is in status AwaitingVerification. We will start to reset this environment ASAP."
         $deploymentId = $deploy.id
     }
 
