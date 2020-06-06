@@ -8,6 +8,7 @@ pool:
   vmImage: 'windows-latest'
 
 steps:
+
 - checkout: none  # Don't sync sources
 
 - task: DxpDeployTo@1
