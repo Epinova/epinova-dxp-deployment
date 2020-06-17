@@ -44,6 +44,7 @@ try {
         $deploymentId = ""
     }
     else {
+        Write-Output "Environment $targetEnvironment is in status AwaitingVerification. We will start to reset this environment ASAP."
         $deploymentId = $deploy.id
     }
 
@@ -55,14 +56,18 @@ try {
         $status
 
         if ($status.status -eq "AwaitingVerification") {
-
-            Write-Host "Start Reset-EpiDeployment -ProjectId $projectId -Id $deploymentId"
+            $deployDateTime = GetDateTimeStamp
+    
+            Write-Host "Start Reset-EpiDeployment -ProjectId $projectId -Id $deploymentId ($deployDateTime)"
             Reset-EpiDeployment -ProjectId $projectId -Id $deploymentId
 
             $percentComplete = $status.percentComplete
 
             $status = Progress -projectid $projectId -deploymentId $deploymentId -percentComplete $percentComplete -expectedStatus "Reset" -timeout $timeout
 
+            $deployDateTime = GetDateTimeStamp
+            Write-Host "Reset $deploymentId ended $deployDateTime"
+    
             if ($status.status -eq "Reset") {
                 Write-Host "Deployment $deploymentId has been successfuly reset."
             }

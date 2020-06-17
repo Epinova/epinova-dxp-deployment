@@ -29,5 +29,21 @@ And after we fixed the so that the variable group where linked to the release pi
 
 **version:** `1.0.3`  
 
+## Smoke test fail
+### Problem
+Sometimes you will get "error" in the smoke test task and the deploy will reset/rollback. This can be enoying. In the log below you can see that the smoke test task wait for 20 seconds. But when the request the site you get the error " Operation is not valid due to the current state of the object.". 
+
+    2020-06-05T01:23:27.9386079Z Start sleep for 20 seconds before we start check URL(s).
+    2020-06-05T01:23:47.9383006Z Start smoketest http://cmsc01xzyqwt29jprod-slot.dxcloud.episerver.net/
+    2020-06-05T01:23:47.9503766Z Executing request for URI http://cmsc01xzyqwt29jprod-slot.dxcloud.episerver.net/
+    2020-06-05T01:23:48.1827174Z ##[warning] http://cmsc01xzyqwt29jprod-slot.dxcloud.episerver.net/ => Error  after 0.222433 seconds: Operation is not valid due to the current state of the object. 
+    2020-06-05T01:23:48.1838705Z We found ERRORS. Smoketest fails. We will set reset flag to TRUE.
+
+The cause of this problem could be:  
+1. Your site has a problem/error an can not start.
+2. You need a longer sleep time before do the test. 20 seconds may not be enough. The application is not ready yeat. That is depending on how fast your application can start.
+3. Your website is behind login and the startpage return HTTP status 301. And want to redirect user to login page. This is where you should use the [Environment].UrlSuffix so that the smoke test request: http://cmsc01xzyqwt29jprod-slot.dxcloud.episerver.net/Util/login.aspx?ReturnUrl=%2f
+  
+
 
 [<= Back](../README.md)

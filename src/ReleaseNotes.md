@@ -1,4 +1,8 @@
 # Release notes
+## v1.4
+- #26: DeployTo: Fix problem with using SourceApp = 'cms,commerce'.  
+- #45: Show start and end DateTime when run DeployNuGetPackage, DeployTo, CompleteDeploy, ExportDb, ResetDeploy.
+
 ## v1.3
 - #36: ExportDb: Added new task ExportDb.  
 

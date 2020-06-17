@@ -108,3 +108,8 @@ function Test-IsGuid
 	# Check guid against regex
 	return $ObjectGuid -match $guidRegex
 }
+
+function GetDateTimeStamp{
+    $dateTimeNow = Get-Date -Format "yyyy-MM-ddTHH:mm:ss"
+    return $dateTimeNow
+}
