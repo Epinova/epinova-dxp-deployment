@@ -44,11 +44,13 @@ try {
 
     Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
 
+    $sourceApps = $sourceApp.Split(",")
+
     $startEpiDeploymentSplat = @{
         ProjectId          = $projectId
         SourceEnvironment  = $sourceEnvironment
         TargetEnvironment  = $targetEnvironment
-        SourceApp          = $sourceApp
+        SourceApp          = $sourceApps
         UseMaintenancePage = $useMaintenancePage
         IncludeBlob = $includeBlob
         IncludeDb = $includeDb
@@ -60,9 +62,13 @@ try {
     $deploymentId = $deploy.id
 
     if ($deploy.status -eq "InProgress") {
-
+        $deployDateTime = GetDateTimeStamp
+        Write-Host "Deploy $deploymentId started $deployDateTime."
         $percentComplete = $deploy.percentComplete
         $status = Progress -projectid $projectId -deploymentId $deploymentId -percentComplete $percentComplete -expectedStatus "AwaitingVerification" -timeout $timeout
+
+        $deployDateTime = GetDateTimeStamp
+        Write-Host "Deploy $deploymentId ended $deployDateTime"
 
         if ($status.status -eq "AwaitingVerification") {
             Write-Host "Deployment $deploymentId has been successful."

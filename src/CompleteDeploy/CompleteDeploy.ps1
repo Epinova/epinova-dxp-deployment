@@ -59,11 +59,16 @@ try {
         $complete
 
         if ($complete.status -eq "Completing") {
-
+            $deployDateTime = GetDateTimeStamp
+            Write-Host "Complete $deploymentId started $deployDateTime."
+    
             $percentComplete = $complete.percentComplete
 
             $status = Progress -projectid $projectId -deploymentId $deploymentId -percentComplete $percentComplete -expectedStatus "Succeeded" -timeout $timeout
 
+            $deployDateTime = GetDateTimeStamp
+            Write-Host "Complete $deploymentId ended $deployDateTime"
+    
             if ($status.status -eq "Succeeded") {
                 Write-Host "Deployment $deploymentId has been completed."
             }

@@ -55,7 +55,13 @@ try {
     $exportId = $export.id
 
     if ($export.status -eq "InProgress") {
+        $deployDateTime = GetDateTimeStamp
+        Write-Host "Export $exportId started $deployDateTime."
+
         $status = ExportProgress -projectid $projectId -exportId $exportId -environment $environment -databaseName $databaseName -expectedStatus "Succeeded" -timeout $timeout
+
+        $deployDateTime = GetDateTimeStamp
+        Write-Host "Export $exportId ended $deployDateTime"
 
         if ($status.status -eq "Succeeded") {
             Write-Host "Database export $exportId has been successful."
