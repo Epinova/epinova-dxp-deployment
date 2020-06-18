@@ -46,6 +46,19 @@ The sleep time before the script will start to test the URL(s). Most of the time
 **Example:** `30`  
 **Default value:** `20`
 
+### Group: Retry
+#### Number of retries
+**[int]** - **required**  
+The number of retries that the script will make before return error and reset the deployment.  
+**Example:** `5`  
+**Default value:** `5`
+
+#### Sleep before retry (in seconds) (in seconds)
+**[int]** - **required**  
+The sleep time before the script will start to test the URL(s) again. This will only happend if the HTTP status response from one/many of the URLs is not responding with HTTP status 200.  
+**Example:** `30`  
+**Default value:** `30`
+
 
 ### Group: Timeout
 #### Script timeout (in seconds)
@@ -76,6 +89,8 @@ Example:
     TargetEnvironment: 'Integration'
     Urls: '$(Integration.SlotUrl)$(Integration.UrlSuffix)'
     SleepBeforeStart: 20
+    NumberOfRetries: 5
+    SleepBeforeRetry: 30
     Timeout: 1800
 ```
 

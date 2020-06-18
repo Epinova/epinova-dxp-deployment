@@ -12,14 +12,19 @@
     "author": "Epinova (Ove Lartelius)",
     "version": {
         "Major": 1,
-        "Minor": 0,
-        "Patch": 7
+        "Minor": 1,
+        "Patch": 0
     },
     "groups": [
         {
             "name": "Settings",
             "displayName": "Script settings",
             "isExpanded": true
+        },
+        {
+            "name": "Retry",
+            "displayName": "Retry",
+            "isExpanded": false
         },
         {
             "name": "Timeout",
@@ -93,6 +98,24 @@
             "defaultValue": "20",
             "helpMarkDown": "The sleep time before the script will start to test the URL(s). Most of the time the slot need some extra time to get up and runing even if the status says that it is up and runing.",
             "groupName": "Settings"
+        },
+        {
+            "name": "NumberOfRetries",
+            "type": "int",
+            "label": "Number of retries",
+            "required": true,
+            "defaultValue": "5",
+            "helpMarkDown": "The number of retries that the script will make before return error and reset the deployment.",
+            "groupName": "Retry"
+        },
+        {
+            "name": "SleepBeforeRetry",
+            "type": "int",
+            "label": "Sleep before retry (in seconds)",
+            "required": true,
+            "defaultValue": "30",
+            "helpMarkDown": "The sleep time before the script will start to test the URL(s) again. This will only happend if the HTTP status response from one/many of the URLs is not responding with HTTP status 200.",
+            "groupName": "Retry"
         },
         {
             "name": "Timeout",

@@ -1,4 +1,7 @@
 # Release notes
+## v1.5
+- #44: SmokeTestIfFailReset: Add function to retry URL checks for specified number of times. This will help when it takes time for the application to start up on the slot example.
+
 ## v1.4
 - #26: DeployTo: Fix problem with using SourceApp = 'cms,commerce'.  
 - #45: Show start and end DateTime when run DeployNuGetPackage, DeployTo, CompleteDeploy, ExportDb, ResetDeploy.
