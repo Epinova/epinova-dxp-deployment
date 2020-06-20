@@ -10,6 +10,8 @@ try {
     $targetEnvironment = Get-VstsInput -Name "TargetEnvironment" -Require -ErrorAction "Stop"
     $urls = Get-VstsInput -Name "Urls" -Require -ErrorAction "Stop"
     $sleepBeforeStart = Get-VstsInput -Name "SleepBeforeStart" -AsInt -Require -ErrorAction "Stop"
+    $retries = Get-VstsInput -Name "NumberOfRetries" -AsInt -Require -ErrorAction "Stop"
+    $sleepBeforeRetry = Get-VstsInput -Name "SleepBeforeRetry" -AsInt -Require -ErrorAction "Stop"
     #$headers = Get-VstsInput -Name "Headers"
     $timeout = Get-VstsInput -Name "Timeout" -AsInt -Require -ErrorAction "Stop"
 
@@ -24,6 +26,8 @@ try {
     Write-Host "TargetEnvironment: $targetEnvironment"
     Write-Host "Urls: $urls"
     Write-Host "SleepBeforeStart: $sleepBeforeStart"
+    Write-Host "NumberOfRetries: $retries"
+    Write-Host "SleepBeforeRetry: $sleepBeforeRetry"
     Write-Host "Timeout: $timeout"
     Write-Host "ErrorActionPreference: $errorAction"
 
@@ -45,40 +49,54 @@ try {
     $urlsArray = "$urls" -split ','
     Write-Host "Start smoketest $urls"
     $numberOfErrors = 0
-    for ($i = 0; $i -le $urlsArray.Length - 1; $i++) {
-        $sw = [Diagnostics.StopWatch]::StartNew()
-        $sw.Start()
-        $uri = $urlsArray[$i]
-        Write-Output "Executing request for URI $uri"
-        try {
-            #if ([string]::IsNullOrEmpty("$headers")) {
-                $response = Invoke-WebRequest -Uri $uri -UseBasicParsing -Verbose:$false -MaximumRedirection 0
-            #}
-            #else {
-                #$headersHashTable = $headers | ConvertFrom-Json -AsHashtable #Must wait to ps v6. Have not find any other way to convert string to IDictionary
-            #    $response = Invoke-WebRequest -Uri $uri -Headers $headersHashTable -UseBasicParsing -Verbose:$false -MaximumRedirection 0
-            #}
-            $sw.Stop()
-            $statusCode = $response.StatusCode
-            $seconds = $sw.Elapsed.TotalSeconds
-            if ($statusCode -eq 200) {
-                $statusDescription = $response.StatusDescription
-                Write-Output "##[ok] $uri => Status: $statusCode $statusDescription in $seconds seconds"
+    $numberOfRetries = 0
+    $retry = $true
+    while ($retries -ge $numberOfRetries -and $retry -eq $true){
+        $retry = $false
+        for ($i = 0; $i -le $urlsArray.Length - 1; $i++) {
+            $sw = [Diagnostics.StopWatch]::StartNew()
+            $sw.Start()
+            $uri = $urlsArray[$i]
+            Write-Output "Executing request for URI $uri"
+            try {
+                #if ([string]::IsNullOrEmpty("$headers")) {
+                    $response = Invoke-WebRequest -Uri $uri -UseBasicParsing -Verbose:$false -MaximumRedirection 0
+                #}
+                #else {
+                    #$headersHashTable = $headers | ConvertFrom-Json -AsHashtable #Must wait to ps v6. Have not find any other way to convert string to IDictionary
+                #    $response = Invoke-WebRequest -Uri $uri -Headers $headersHashTable -UseBasicParsing -Verbose:$false -MaximumRedirection 0
+                #}
+                $sw.Stop()
+                $statusCode = $response.StatusCode
+                $seconds = $sw.Elapsed.TotalSeconds
+                if ($statusCode -eq 200) {
+                    $statusDescription = $response.StatusDescription
+                    Write-Output "##[ok] $uri => Status: $statusCode $statusDescription in $seconds seconds"
+                }
+                else {
+                    Write-Output "##[warning] $uri => Error $statusCode after $seconds seconds"
+                    Write-Output "##vso[task.logissue type=warning;] $uri => Error $statusCode after $seconds seconds"
+                    $numberOfErrors = $numberOfErrors + 1
+                }
             }
-            else {
-                Write-Output "##[warning] $uri => Error $statusCode after $seconds seconds"
-                Write-Output "##vso[task.logissue type=warning;] $uri => Error $statusCode after $seconds seconds"
+            catch {
+                $sw.Stop()
+                $statusCode = $_.Exception.Response.StatusCode.value__
+                $errorMessage = $_.Exception.Message
+                $seconds = $sw.Elapsed.TotalSeconds
+                Write-Output "##vso[task.logissue type=warning;] $uri => Error $statusCode after $seconds seconds: $errorMessage "
                 $numberOfErrors = $numberOfErrors + 1
             }
         }
-        catch {
-            $sw.Stop()
-            $statusCode = $_.Exception.Response.StatusCode.value__
-            $errorMessage = $_.Exception.Message
-            $seconds = $sw.Elapsed.TotalSeconds
-            Write-Output "##vso[task.logissue type=warning;] $uri => Error $statusCode after $seconds seconds: $errorMessage "
-            $numberOfErrors = $numberOfErrors + 1
+        
+        if ($numberOfErrors -gt 0 -and $numberOfRetries -lt $retries) {
+            Write-Host "We found ERRORS. But we will retry in $sleepBeforeRetry seconds."
+            $numberOfErrors = 0
+            Start-Sleep $sleepBeforeRetry
+            $retry = $true
+            $numberOfRetries++
         }
+
     }
 
     if ($numberOfErrors -gt 0) {

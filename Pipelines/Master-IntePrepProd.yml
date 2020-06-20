@@ -145,6 +145,8 @@ stages:
         TargetEnvironment: 'Integration'
         Urls: '$(Integration.SlotUrl)$(Integration.UrlSuffix)'
         SleepBeforeStart: 20
+        NumberOfRetries: 5
+        SleepBeforeRetry: 30
         Timeout: 1800
 
     - task: DxpCompleteDeploy@1
@@ -197,6 +199,8 @@ stages:
               TargetEnvironment: 'Preproduction'
               Urls: '$(Preproduction.SlotUrl)$(Preproduction.UrlSuffix)'
               SleepBeforeStart: 20
+              NumberOfRetries: 5
+              SleepBeforeRetry: 30
               Timeout: 1800
 
           - task: DxpCompleteDeploy@1
@@ -250,6 +254,8 @@ stages:
               TargetEnvironment: 'Production'
               Urls: '$(Production.SlotUrl)$(Production.UrlSuffix)'
               SleepBeforeStart: 20
+              NumberOfRetries: 5
+              SleepBeforeRetry: 30
               Timeout: 1800
 
           - task: DxpCompleteDeploy@1

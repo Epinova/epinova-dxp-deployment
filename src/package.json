@@ -1,6 +1,6 @@
 {
   "name": "Episerver.Dxc.Api.DevOps.Tasks",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "",
   "main": "index.js",
   "scripts": {
