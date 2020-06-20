@@ -42,7 +42,8 @@ Sometimes you will get "error" in the smoke test task and the deploy will reset/
 The cause of this problem could be:  
 1. Your site has a problem/error an can not start.
 2. You need a longer sleep time before do the test. 20 seconds may not be enough. The application is not ready yeat. That is depending on how fast your application can start.
-3. Your website is behind login and the startpage return HTTP status 301. And want to redirect user to login page. This is where you should use the [Environment].UrlSuffix so that the smoke test request: http://cmsc01xzyqwt29jprod-slot.dxcloud.episerver.net/Util/login.aspx?ReturnUrl=%2f
+3. Your website is behind login and the startpage return HTTP status 301. And will redirect user to login page. This is where you should use the [Environment].UrlSuffix so that the smoke test request: http://cmsc01xzyqwt29jprod-slot.dxcloud.episerver.net/Util/login.aspx
+4. You are using a http:// URL but you should use https://. The request in the smoke test expect HTTP status 200 without any redirects.
   
 
 

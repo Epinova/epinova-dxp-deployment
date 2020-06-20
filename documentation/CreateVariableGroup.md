@@ -62,7 +62,7 @@ To get these URLs you go back to https://paas.episerver.net. And select the proj
 ![PAAS portal hostnames](Images/CreateVariableGroup/PassProjectHostnames.png)  
  
 ### UrlSuffix
-The URL suffix are used by the test step when a request will be done against the deployed environment with example [Integration.SlotUrl] + [Integration.UrlSuffix]. Example: https://epinova012inte-slot.dxcloud.episerver.net/Util/login.aspx?ReturnUrl=%2f  
+The URL suffix are used by the test step when a request will be done against the deployed environment with example [Integration.SlotUrl] + [Integration.UrlSuffix]. Example: https://epinova012inte-slot.dxcloud.episerver.net/Util/login.aspx  
 So, you can use this suffix to request your site even if you have turned off the anonymous access to the site.  
 
 ### NuGetPackageNamePrefix
