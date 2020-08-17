@@ -58,11 +58,11 @@ So from that first URL you can see that our project URL name is `epinova012`. An
 Later during the development you will order/change hostnames. Then these values in the variable group should be updated. In my example above we did not use HTTPS. That is also one thing that could change during development.
 
 There is also a hostname tab in the paas portal that could help you with some information.  
-To get these URLs you go back to https://paas.episerver.net. And select the project that you setup the deploy for. On the project page you should click on the tab “Hostnames”. 
+To get these URLs you go back to https://paas.episerver.net. And select the project that you setup the deploy for. On the project page you should click on the tab “Hostnames”.  
 ![PAAS portal hostnames](Images/CreateVariableGroup/PassProjectHostnames.png)  
  
 ### UrlSuffix
-The URL suffix are used by the test step when a request will be done against the deployed environment with example [Integration.SlotUrl] + [Integration.UrlSuffix]. Example: https://epinova012inte-slot.dxcloud.episerver.net/Util/login.aspx?ReturnUrl=%2f  
+The URL suffix are used by the test step when a request will be done against the deployed environment with example [Integration.SlotUrl] + [Integration.UrlSuffix].  Example: https://epinova012inte-slot.dxcloud.episerver.net/Util/login.aspx  
 So, you can use this suffix to request your site even if you have turned off the anonymous access to the site.  
 
 ### NuGetPackageNamePrefix

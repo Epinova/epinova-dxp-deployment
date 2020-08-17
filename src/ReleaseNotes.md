@@ -1,4 +1,11 @@
 # Release notes
+
+## v1.6.0
+- #48: Add task "AwaitStatus".
+
+## v1.5.1
+- Small documentation updates.
+
 ## v1.5
 - #44: SmokeTestIfFailReset: Add function to retry URL checks for specified number of times. This will help when it takes time for the application to start up on the slot example.
 

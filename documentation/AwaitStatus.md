@@ -1,5 +1,7 @@
-# Complete deploy (Episerver DXP)
-Both "Deploy nuget package (Episerver DXP)" and "Move deploy (Episerver DXP)" tasks deploy a package to a environment. That will deploy the package to a slot. The task "Complete deploy (Episerver DXP)" will complete the deploy and move the package from slot to the real environment.  
+# Await status (Episerver DXP)
+Task that await for status AwaitingVerification/Reset. Can be used when have a release setup that often timeout and need a extra task that awaits the correct status. So if target environment is in status InProgress/Resetting when it starts. The task will run and check the status until target environment is in status AwaitingVerification/Reset/Succeeded.
+
+If status is AwaitingVerification/Reset/Succeeded when task starts, nothing will happen. If the task starts and status is anything else then AwaitingVerification/Reset/Succeeded/InProgress/Resetting the task will fail with error.  
 
 [<= Back](../README.md)
 
@@ -54,7 +56,7 @@ How the task should handle errors.
 ## YAML ##
 Example:  
 ```yaml
-- task: DxpCompleteDeploy@1
+- task: DxpAwaitStatus@1
     inputs:
     ClientKey: '$(ClientKey)'
     ClientSecret: '$(ClientSecret)'
