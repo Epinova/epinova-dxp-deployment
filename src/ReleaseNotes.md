@@ -1,5 +1,9 @@
 # Release notes
 
+## v1.6.1
+- #48: Fixed guid in AwaitStatus task.
+
+
 ## v1.6.0
 - #48: Add task "AwaitStatus".
 
