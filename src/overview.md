@@ -34,6 +34,9 @@ Export database as a bacpac file from specified environment.
 ### Await status (Episerver DXP) ###
 Task that await for status AwaitingVerification/Reset. Can be used when have a release setup that often timeout and need a extra task that verify correct status. If status is AwaitingVerification/Reset/Succeeded, nothing will happen.  
 
+### Expect status (Episerver DXP) ###
+Task that check the status for an environment. if environment is not in the expected status the task will fail.  
+
 ## Documentation
 Repository and documentation can be found at GitHub.
 [https://github.com/Epinova/epinova-dxp-deployment](https://github.com/Epinova/epinova-dxp-deployment)
