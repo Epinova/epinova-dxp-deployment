@@ -8,6 +8,7 @@ Tasks
 1. **Complete deploy**
 1. **Reset deploy**
 1. **Export DB**
+1. **Await status**
 
 ## Details
 
@@ -29,6 +30,9 @@ Reset a specifed environment if the status for the environment is in status "Awa
 
 ### Export DB (Episerver DXP) ###
 Export database as a bacpac file from specified environment.  
+
+### Await status (Episerver DXP) ###
+Task that await for status AwaitingVerification/Reset. Can be used when have a release setup that often timeout and need a extra task that verify correct status. If status is AwaitingVerification/Reset/Succeeded, nothing will happen.  
 
 ## Documentation
 Repository and documentation can be found at GitHub.

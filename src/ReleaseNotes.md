@@ -1,5 +1,8 @@
 # Release notes
 
+## v1.6.0
+- #48: Add task "AwaitStatus".
+
 ## v1.5.1
 - Small documentation updates.
 
