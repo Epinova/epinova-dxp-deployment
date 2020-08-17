@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "epinova-dxp-deploy-extension",
     "publisher": "epinova-sweden",
-    "version": "1.6.2",
+    "version": "1.7.0",
     "name": "Epinova DXP deployment (BETA)",
     "description": "Tasks to deploy NuGet package to Episerver DXP with DXP API. (Former: DXC)",
     "public": true,
@@ -131,6 +131,16 @@
             "properties": {
                 "name": "AwaitStatus"
             }
+        },
+        {
+            "id": "dxp-expectstatus-buildtask",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "ExpectStatus"
+            }
         }
     ],
     "files": [
@@ -154,6 +164,9 @@
         },
         {
             "path": "AwaitStatus"
+        },
+        {
+            "path": "ExpectStatus"
         },
         {
             "path": "node_modules/vss-web-extension-sdk/lib",
