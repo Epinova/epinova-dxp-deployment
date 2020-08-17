@@ -1,7 +1,7 @@
 # Release notes
 
-## v1.6.1
-- #48: Fixed guid in AwaitStatus task.
+## v1.6.1, v1.6.2
+- #48: Fixed guid in AwaitStatus task and vss-extension.json.
 
 
 ## v1.6.0
