@@ -33,6 +33,10 @@ Reset a specifed environment if the status for the environment is in status "Awa
 Export database as a bacpac file from specified environment.  
 [Export DB documentation](documentation/ExportDb.md)  
 
+### Await status (Episerver DXP) ###
+Task that await for status AwaitingVerification/Reset. Can be used when have a release setup that often timeout and need a extra task that verify correct status. If status is AwaitingVerification/Reset/Succeeded, nothing will happen.  
+[Await status documentation](documentation/AwaitStatus.md)  
+
 ## Setup scenarios ##
 More detailed description how you can setup and use these tasks in different scenarios. Both with YAML and manual setup.  
 [Setup senarios](documentation/SetupScenarios.md)
