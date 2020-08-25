@@ -155,9 +155,9 @@ try {
                     exit 1
                 }
                 else {
-                    Write-Warning "The reset has not been successful or the script has timedout."
-                    Write-Host "##vso[task.logissue type=error]The reset has not been successful or the script has timedout."
-                    Write-Error "Deployment $deploymentId has NOT been successfuly reset or the script has timedout." -ErrorAction Stop
+                    Write-Warning "The reset has not been successful or the script has timedout. CurrentStatus: $($status.status)"
+                    Write-Host "##vso[task.logissue type=error]The reset has not been successful or the script has timedout. CurrentStatus: $($status.status)"
+                    Write-Error "Deployment $deploymentId has NOT been successfuly reset or the script has timedout. CurrentStatus: $($status.status)" -ErrorAction Stop
                     exit 1
                 }
             }

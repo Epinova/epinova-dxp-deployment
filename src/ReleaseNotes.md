@@ -1,5 +1,8 @@
 # Release notes
 
+## v1.7.1
+- #58: Added CurrentStatus in error/warning text when something goes wrong/timeout.
+
 ## v1.7.0
 - #55: Add task "ExpectStatus".
 
