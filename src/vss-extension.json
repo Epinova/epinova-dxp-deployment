@@ -2,8 +2,8 @@
     "manifestVersion": 1,
     "id": "epinova-dxp-deploy-extension",
     "publisher": "epinova-sweden",
-    "version": "1.7.1",
-    "name": "Epinova DXP deployment (BETA)",
+    "version": "1.8.0",
+    "name": "Epinova DXP deployment",
     "description": "Tasks to deploy NuGet package to Episerver DXP with DXP API. (Former: DXC)",
     "public": true,
     "icons":{
@@ -103,6 +103,16 @@
             }
         },
         {
+            "id": "dxp-deploysmoothto-buildtask",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "DeploySmoothTo"
+            }
+        },
+        {
             "id": "dxp-resetdeploy-buildtask",
             "type": "ms.vss-distributed-task.task",
             "targets": [
@@ -155,6 +165,9 @@
         },
         {
             "path": "DeployTo"
+        },
+        {
+            "path": "DeploySmoothTo"
         },
         {
             "path": "ResetDeploy"
