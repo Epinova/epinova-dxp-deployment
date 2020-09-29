@@ -4,6 +4,7 @@ Tasks
 
 1. **Deploy nuget package**
 1. **Deploy To**
+1. **Deploy Smooth To**
 1. **Smoke test if fail reset**
 1. **Complete deploy**
 1. **Reset deploy**
@@ -17,7 +18,12 @@ Take a NuGet package from your drop folder in Azure DevOps and upload it to your
   
 ### Deploy To (Episerver DXP) ###
 Do the same thing like the "Deploy to =>" button in the portal. It moves the deployed code from one environment to another.  
-Can also be used for Content syncdown.  With the IncludeBlob and IncludeDb you can now sync/deploy both ways.  
+Can also be used for Content syncdown. With the IncludeBlob and IncludeDb you can now sync/deploy both ways.  
+
+### Deploy Smooth To (Episerver DXP) ###
+Do the same thing as the "Deploy to" task. But this has support for Smooth deployment (Zero downtime deployment).  
+Since this function is still in [closed beta](https://world.episerver.com/service-and-product-lifecycles/#CloudServicesLifecycle). There is not everybody that can use this feature yet. That is why this is like a copy past of the "Deploy To" task but with smooth deployment support.  
+When this feature is public for all DXP users, we will implement this feature on the "Deploy to" task.  
 
 ### Complete deploy (Episerver DXP) ###
 Both "Deploy nuget package (Episerver DXP)" and "Move deploy (Episerver DXP)" tasks deploy a packe to a environment. That will deploy the package to a slot. The task "Complete deploy (Episerver DXP)" will complete the deploy and move the packe from slot to the real environment.  
