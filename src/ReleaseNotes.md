@@ -1,5 +1,8 @@
 # Release notes
 
+## v1.8.0
+- #61: Implement "Deploy smooth to" task.
+
 ## v1.7.1
 - #58: Added CurrentStatus in error/warning text when something goes wrong/timeout.
 
