@@ -2,7 +2,7 @@
 Do the same thing like the "Deploy to =>" button in the portal. It moves the deployed code from one environment to another.  
 Have support for IncludeBlob and IncludeDb so that you can deploy your code and move BLOBs and/or DBif you want.  
 Can also be used for Content syncdown. Example: if you want to make your preproduction environment contain the same content as in production. [More about content syncdown can be read on Episerver world.](https://world.episerver.com/blogs/anders-wahlqvist/dates/2020/4/dxp-deployment-improvements/)  
-_*NOTE 2020-09-30:*_ At present date the sync can not handle just one database type. It will sync both cms AND commerce database. We tried to just sync the cms database but there is no support for that in the Episerver API. So if you have a cms and commerce database, both databases will sync when if you set SourceApp=cms.  
+_*NOTE 2020-09-30:* At present date the sync can not handle just one database type. It will sync both cms AND commerce database. We tried to just sync the cms database but there is no support for that in the Episerver API. So if you have a cms and commerce database, both databases will sync when if you set SourceApp=cms._  
   
 [<= Back](../README.md)
 
