@@ -93,7 +93,7 @@ How the task should handle errors.
 - **SilentlyContinue**: Don't display an error message continue to execute subsequent commands.
 
 ## YAML ##
-Example:  
+Example 1: Start CMS deployment of preproduction 'code' from preproduction to production.  
 ```yaml
 - task: DxpDeployTo@1
 inputs:
@@ -106,7 +106,23 @@ inputs:
     UseMaintenancePage: false
     Timeout: 1800
 ```
-## Example of content syncdown from Production to Preproduction
+Example 2: Start CMS content syncdown from production to preproduction. Will sync CMS web application, blobs and DB.
+```yaml
+- task: DxpDeployTo@1
+inputs:
+    ClientKey: '$(ClientKey)'
+    ClientSecret: '$(ClientSecret)'
+    ProjectId: '$(DXP.ProjectId)'
+    SourceEnvironment: 'Production'
+    TargetEnvironment: 'Preproduction'
+    SourceApp: 'cms'
+    UseMaintenancePage: false
+    IncludeBlob: true  
+    IncluseDb: true  
+    Timeout: 1800
+```
+
+## Example of content syncdown from Production to Preproduction - classic
 ![DeployTo syndown example](Images/DeployTo_SyncDown_example.png)  
 
 [<= Back](../README.md)
