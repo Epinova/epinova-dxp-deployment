@@ -15,8 +15,6 @@ try {
     # 30 min timeout
     ####################################################################################
 
-    $useMaintenancePage = $false
-
     Write-Host "Inputs:"
     Write-Host "ClientKey: $clientKey"
     Write-Host "ClientSecret: **** (it is a secret...)"
