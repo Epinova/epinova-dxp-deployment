@@ -44,13 +44,13 @@ Specify content copy you want to do.
 **[boolean]** - **required**  
 If BLOBs should be copied from source environment to the target environment.  
 **Example:** `true`  
-**Default value:** `false`
+**Default value:** `true`
 
 #### Include DB
 **[boolean]** - **required**  
 If DBs should be copied from source environment to the target environment.  
-**Example:** `true`  
-**Default value:** `false`
+**Example:** `false`  
+**Default value:** `true`
 
 ### Group: Timeout
 #### Script timeout (in seconds)

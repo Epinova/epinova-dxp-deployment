@@ -1,5 +1,8 @@
 # Release notes
 
+## v1.9.9
+- Set ContentCopy params IncludeBlob and IncludeDb as default `true`.
+
 ## v1.9.8
 - Fixed ContentCopy script bug.
 
