@@ -11,23 +11,13 @@ steps:
 
 - checkout: none  # Don't sync sources
 
-- task: DxpDeployTo@1
+- task: DxpContentCopy@1
   inputs:
     ClientKey: '$(ClientKey)'
     ClientSecret: '$(ClientSecret)'
     ProjectId: '$(DXP.ProjectId)'
-    SourceEnvironment: 'Preproduction'
-    TargetEnvironment: 'Integration'
+    Environment: 'PrepInte'
     SourceApp: 'cms'
-    UseMaintenancePage: false
     IncludeBlob: true
     IncludeDb: true
-    Timeout: 1800
-
-- task: DxpCompleteDeploy@1
-  inputs:
-    ClientKey: '$(ClientKey)'
-    ClientSecret: '$(ClientSecret)'
-    ProjectId: '$(DXP.ProjectId)'
-    TargetEnvironment: 'Integration'
     Timeout: 1800

@@ -1,7 +1,10 @@
-# Deploy to (Episerver DXP) #
-Do the same thing like the "Deploy to =>" button in the portal. It moves the deployed code from one environment to another.  
-Have support for IncludeBlob and IncludeDb so that you can deploy your code and move BLOBs and/or DBif you want.  
-Can also be used for Content syncdown. Example: if you want to make your preproduction environment contain the same content as in production. [More about content syncdown can be read on Episerver world.](https://world.episerver.com/blogs/anders-wahlqvist/dates/2020/4/dxp-deployment-improvements/)  
+# Content copy #
+In the DXP Management Portal, you can copy content (database and BLOBs) between environments to test your code with the data you want.  
+Does the same thing like the "Content copy" button in the portal. It copy database and/or blobs from one environment to another.  
+
+[More about content syncdown can be read on Episerver world.](https://world.episerver.com/documentation/developer-guides/digital-experience-platform/self-service/content-synchronization/)  
+[How content syncdown works in Episerver DXP deployment API.](https://world.episerver.com/blogs/anders-wahlqvist/dates/2020/4/dxp-deployment-improvements/)  
+
 _*NOTE 2020-09-30:* At present date the sync can not handle just one database type. It will sync both cms AND commerce database. We tried to just sync the cms database but there is no support for that in the Episerver API. So if you have a cms and commerce database, both databases will sync when if you set SourceApp=cms._  
   
 [<= Back](../README.md)
@@ -26,41 +29,26 @@ The DXP project id.
 **Example:** `1921827e-2eca-2fb3-8015-a89f016bacc5`  
 **Default value:** `$(DXP.ProjectId)`
 
-#### Source environment
+#### Environment
 **[pickList]** - **required**  
-Specify from which environment you want to take the source code/package.  
-**Example:** `Integration`  
-**Default value:** `$(SourceEnvironment)`  
+Specify content copy you want to do.  
+**Example:** `Production => Preproduction`  
+**Default value:** `$(Environment)`  
 **Options:**  
-- Integration
-- Preproduction
-- Production
-
-#### Target environment
-**[pickList]** - **required**  
-Specify if you want to deploy to Integration/Preproduction/Production.  
-**Example:** `Integration`  
-**Default value:** `$(TargetEnvironment)`  
-**Options:**  
-- Integration
-- Preproduction
-- Production
+- Production => Preproduction (ProdPrep)
+- Preproduction => Integration (PrepInte)
+- Production => Integration (ProdInte)
+- Integration => Preproduction (IntePrep)
 
 #### SourceApp
 **[pickList]** - **required**  
-Specify which type of application you want to move. (When use syncdown, this param has no effect. Will sync all databases.) 
+Specify which database you want to move. (When use syncdown, this param has no effect. Will sync all databases.) 
 **Example:** `commerce`  
 **Default value:** `cms`  
 **Options:**  
 - cms
 - commerce
 - cms,commerce
-
-#### Use maintenance page
-**[boolean]** - **required**  
-Specify if you want to use a maintenance page during the deploy.  
-**Example:** `true`  
-**Default value:** `false`
 
 #### Include BLOB
 **[boolean]** - **required**  
@@ -93,36 +81,18 @@ How the task should handle errors.
 - **SilentlyContinue**: Don't display an error message continue to execute subsequent commands.
 
 ## YAML ##
-Example 1: Start CMS deployment of preproduction 'code' from preproduction to production.  
+Example: Start content copy of database and blobs from production environment to preproduction environment.  
 ```yaml
-- task: DxpDeployTo@1
+- task: DxpContentCopy@1
 inputs:
     ClientKey: '$(ClientKey)'
     ClientSecret: '$(ClientSecret)'
     ProjectId: '$(DXP.ProjectId)'
-    SourceEnvironment: 'Preproduction'
-    TargetEnvironment: 'Production'
+    Environment: 'ProdPrep'
     SourceApp: 'cms'
-    UseMaintenancePage: false
+    IncludeBlob: true
+    IncludeDb: true
     Timeout: 1800
 ```
-Example 2: Start CMS content syncdown from production to preproduction. Will sync CMS web application, blobs and DB.
-```yaml
-- task: DxpDeployTo@1
-inputs:
-    ClientKey: '$(ClientKey)'
-    ClientSecret: '$(ClientSecret)'
-    ProjectId: '$(DXP.ProjectId)'
-    SourceEnvironment: 'Production'
-    TargetEnvironment: 'Preproduction'
-    SourceApp: 'cms'
-    UseMaintenancePage: false
-    IncludeBlob: true  
-    IncluseDb: true  
-    Timeout: 1800
-```
-
-## Example of content syncdown from Production to Preproduction - classic
-![DeployTo syndown example](Images/DeployTo_SyncDown_example.png)  
 
 [<= Back](../README.md)
