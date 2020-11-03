@@ -13,6 +13,9 @@ try {
     $includeBlob = Get-VstsInput -Name "IncludeBlob" -AsBool
     $includeDb = Get-VstsInput -Name "IncludeDb" -AsBool
 
+    $useMaintenancePage = Get-VstsInput -Name "UseMaintenancePage" -AsBool
+    $includeCode = Get-VstsInput -Name "IncludeCode" -AsBool
+
 
     # 30 min timeout
     ####################################################################################
@@ -23,8 +26,8 @@ try {
     Write-Host "ProjectId: $projectId"
     Write-Host "Environment: $environment"
     Write-Host "SourceApp: $sourceApp"
-    Write-Host "UseMaintenancePage: false"
-    Write-Host "IncludeCode: false"
+    Write-Host "UseMaintenancePage: $useMaintenancePage"
+    Write-Host "IncludeCode: $includeCode"
     Write-Host "Timeout: $timeout"
     Write-Host "IncludeBlob: $includeBlob"
     Write-Host "IncludeDb: $includeDb"
@@ -68,8 +71,8 @@ try {
         SourceEnvironment  = $sourceEnvironment
         TargetEnvironment  = $targetEnvironment
         SourceApp          = $sourceApps
-        UseMaintenancePage = $false
-        IncludeCode = $false
+        UseMaintenancePage = $useMaintenancePage
+        IncludeCode = $includeCode
         IncludeBlob = $includeBlob
         IncludeDb = $includeDb
     }
