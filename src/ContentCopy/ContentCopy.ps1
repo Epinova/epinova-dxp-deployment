@@ -13,12 +13,11 @@ try {
     $includeBlob = Get-VstsInput -Name "IncludeBlob" -AsBool
     $includeDb = Get-VstsInput -Name "IncludeDb" -AsBool
 
-    $useMaintenancePage = Get-VstsInput -Name "UseMaintenancePage" -AsBool
-    $includeCode = Get-VstsInput -Name "IncludeCode" -AsBool
-
-
     # 30 min timeout
     ####################################################################################
+
+    $useMaintenancePage = $false
+    $includeCode = $false
 
     Write-Host "Inputs:"
     Write-Host "ClientKey: $clientKey"
