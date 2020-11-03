@@ -23,9 +23,9 @@ Since this function is still in [closed beta](https://world.episerver.com/servic
 When this feature is public for all DXP users, we will implement this feature on the "Deploy to" task.  
 [Deploy smooth to documentation](documentation/DeploySmoothTo.md)  
 
-### Copy content (Episerver DXP) ###
-Copy database and/or blobs between your environments.
-[Content copy](documentation/ContentCopy.md)  
+### Content copy (Episerver DXP) ###
+Copy content database and/or blobs between your environments.  
+[Content copy documentation](documentation/ContentCopy.md)  
 
 ### Complete deploy (Episerver DXP) ###
 Both "Deploy nuget package (Episerver DXP)" and "Move deploy (Episerver DXP)" tasks deploy a packe to a environment. That will deploy the package to a slot. The task "Complete deploy (Episerver DXP)" will complete the deploy and move the packe from slot to the real environment.  

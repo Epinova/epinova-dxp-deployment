@@ -1,4 +1,4 @@
-# Cotnent copy #
+# Content copy #
 In the DXP Management Portal, you can copy content (database and BLOBs) between environments to test your code with the data you want.  
 Does the same thing like the "Content copy" button in the portal. It copy database and/or blobs from one environment to another.  
 
@@ -81,7 +81,7 @@ How the task should handle errors.
 - **SilentlyContinue**: Don't display an error message continue to execute subsequent commands.
 
 ## YAML ##
-Example 1: Start CMS deployment of preproduction 'code' from preproduction to production.  
+Example: Start content copy of database and blobs from production environment to preproduction environment.  
 ```yaml
 - task: DxpContentCopy@1
 inputs:
