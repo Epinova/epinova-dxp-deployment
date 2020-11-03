@@ -68,8 +68,8 @@ try {
         SourceEnvironment  = $sourceEnvironment
         TargetEnvironment  = $targetEnvironment
         SourceApp          = $sourceApps
-        UseMaintenancePage = 0
-        IncludeCode = 0
+        UseMaintenancePage = $false
+        IncludeCode = $false
         IncludeBlob = $includeBlob
         IncludeDb = $includeDb
     }
