@@ -17,7 +17,6 @@ try {
     ####################################################################################
 
     $useMaintenancePage = $false
-    $includeCode = $false
 
     Write-Host "Inputs:"
     Write-Host "ClientKey: $clientKey"
@@ -26,7 +25,6 @@ try {
     Write-Host "Environment: $environment"
     Write-Host "SourceApp: $sourceApp"
     Write-Host "UseMaintenancePage: $useMaintenancePage"
-    Write-Host "IncludeCode: $includeCode"
     Write-Host "Timeout: $timeout"
     Write-Host "IncludeBlob: $includeBlob"
     Write-Host "IncludeDb: $includeDb"
@@ -71,7 +69,6 @@ try {
         TargetEnvironment  = $targetEnvironment
         SourceApp          = $sourceApps
         UseMaintenancePage = $useMaintenancePage
-        IncludeCode = $includeCode
         IncludeBlob = $includeBlob
         IncludeDb = $includeDb
     }
