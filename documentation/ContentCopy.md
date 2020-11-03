@@ -40,16 +40,6 @@ Specify content copy you want to do.
 - Production => Integration (ProdInte)
 - Integration => Preproduction (IntePrep)
 
-#### SourceApp
-**[pickList]** - **required**  
-Specify which database you want to move. (When use syncdown, this param has no effect. Will sync all databases.) 
-**Example:** `commerce`  
-**Default value:** `cms`  
-**Options:**  
-- cms
-- commerce
-- cms,commerce
-
 #### Include BLOB
 **[boolean]** - **required**  
 If BLOBs should be copied from source environment to the target environment.  
@@ -89,7 +79,6 @@ inputs:
     ClientSecret: '$(ClientSecret)'
     ProjectId: '$(DXP.ProjectId)'
     Environment: 'ProdPrep'
-    SourceApp: 'cms'
     IncludeBlob: true
     IncludeDb: true
     Timeout: 1800

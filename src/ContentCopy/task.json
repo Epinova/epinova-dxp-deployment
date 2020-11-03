@@ -13,7 +13,7 @@
     "version": {
         "Major": 1,
         "Minor": 0,
-        "Patch": 5
+        "Patch": 6
     },
     "groups": [
         {
@@ -75,20 +75,6 @@
                 "PrepInte": "Preproduction => Integration",
                 "ProdInte": "Production => Integration",
                 "IntePrep": "Integration => Preproduction"
-            }
-        },
-        {
-            "name": "SourceApp",
-            "type": "pickList",
-            "label": "SourceApp",
-            "required": true,
-            "defaultValue": "cms",
-            "helpMarkDown": "The type of application that should be deployed.",
-            "groupName": "Settings",
-            "options": {
-                "cms": "cms",
-                "commerce": "commerce",
-                "cms,commerce": "cms,commerce"
             }
         },
         {
