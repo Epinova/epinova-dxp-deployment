@@ -1,0 +1,23 @@
+trigger: none
+
+variables:
+- group: DXP-variables
+
+pool:
+  name: Azure Pipelines
+  vmImage: 'windows-latest'
+
+steps:
+
+- checkout: none  # Don't sync sources
+
+- task: DxpContentCopy@1
+  inputs:
+    ClientKey: '$(ClientKey)'
+    ClientSecret: '$(ClientSecret)'
+    ProjectId: '$(DXP.ProjectId)'
+    Environment: 'ProdPrep'
+    SourceApp: 'cms'
+    IncludeBlob: true
+    IncludeDb: true
+    Timeout: 1800
