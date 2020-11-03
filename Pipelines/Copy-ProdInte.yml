@@ -17,7 +17,6 @@ steps:
     ClientSecret: '$(ClientSecret)'
     ProjectId: '$(DXP.ProjectId)'
     Environment: 'ProdInte'
-    SourceApp: 'cms'
     IncludeBlob: true
     IncludeDb: true
     Timeout: 1800

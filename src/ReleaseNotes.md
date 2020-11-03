@@ -1,6 +1,6 @@
 # Release notes
 
-## v1.9.5
+## v1.9.6
 - Fixed ContentCopy script bug.
 
 ## v1.9.0

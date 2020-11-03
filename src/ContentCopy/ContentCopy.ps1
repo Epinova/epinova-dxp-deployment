@@ -8,7 +8,6 @@ try {
     $clientSecret = Get-VstsInput -Name "ClientSecret" -Require -ErrorAction "Stop"
     $projectId = Get-VstsInput -Name "ProjectId" -Require -ErrorAction "Stop"
     $environment = Get-VstsInput -Name "Environment" -Require -ErrorAction "Stop"
-    $sourceApp = Get-VstsInput -Name "SourceApp" -Require -ErrorAction "Stop"
     $timeout = Get-VstsInput -Name "Timeout" -AsInt -Require -ErrorAction "Stop"
     $includeBlob = Get-VstsInput -Name "IncludeBlob" -AsBool
     $includeDb = Get-VstsInput -Name "IncludeDb" -AsBool
@@ -23,8 +22,6 @@ try {
     Write-Host "ClientSecret: **** (it is a secret...)"
     Write-Host "ProjectId: $projectId"
     Write-Host "Environment: $environment"
-    Write-Host "SourceApp: $sourceApp"
-    Write-Host "UseMaintenancePage: $useMaintenancePage"
     Write-Host "Timeout: $timeout"
     Write-Host "IncludeBlob: $includeBlob"
     Write-Host "IncludeDb: $includeDb"
@@ -67,7 +64,6 @@ try {
         ProjectId          = $projectId
         SourceEnvironment  = $sourceEnvironment
         TargetEnvironment  = $targetEnvironment
-        SourceApp          = $sourceApps
         UseMaintenancePage = $useMaintenancePage
         IncludeBlob = $includeBlob
         IncludeDb = $includeDb
