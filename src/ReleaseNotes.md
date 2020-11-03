@@ -1,5 +1,8 @@
 # Release notes
 
+## v1.9.0
+- Implemented "Content copy" task.  
+
 ## v1.8.0
 - #61: Implement "Deploy smooth to" task.
 
