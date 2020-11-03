@@ -13,7 +13,7 @@
     "version": {
         "Major": 1,
         "Minor": 0,
-        "Patch": 0
+        "Patch": 1
     },
     "groups": [
         {
@@ -133,10 +133,10 @@
             "groupName": "ErrorHandlingOptions"
         }
     ],
-    "instanceNameFormat": "Sync down $(Environment)",
+    "instanceNameFormat": "Content copy $(Environment)",
     "execution": {
         "PowerShell3": {
-            "target": "SyncDown.ps1"
+            "target": "ContentCopy.ps1"
         }
     },
     "messages": {
