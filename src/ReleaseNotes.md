@@ -1,5 +1,8 @@
 # Release notes
 
+## v1.9.1
+- Fixed ContentCopy script bug.
+
 ## v1.9.0
 - Implemented "Content copy" task.  
 
