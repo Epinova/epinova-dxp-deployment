@@ -39,8 +39,6 @@ try {
 
     Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
 
-    $sourceApps = $sourceApp.Split(",")
-
     switch ($environment){
         ProdPrep{
             $sourceEnvironment = "Production"
@@ -64,7 +62,6 @@ try {
         ProjectId          = $projectId
         SourceEnvironment  = $sourceEnvironment
         TargetEnvironment  = $targetEnvironment
-        UseMaintenancePage = $useMaintenancePage
         IncludeBlob = $includeBlob
         IncludeDb = $includeDb
     }
