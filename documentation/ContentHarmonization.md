@@ -13,10 +13,10 @@ It as simple as just using the task “**Content copy**” to solve this.
 If you are already using Epinova DXP deployment extension there is a good possibility that you have already done this. But you need to have the following steps setup.  
 
 ### Install Epinova DXP deployment extension to you Azure DevOps organization ###
-Instructions how to install the extension and be able to use the tasks can be found in the documentation. [epinova-dxp-deployment @ github](../README.md)  
+Instructions how to install the extension and be able to use the tasks can be found in the documentation. [Install Epinova DXP Deployment extension](InstallDxpExtension.md)  
 
 ### DXP variable group ###
-Either you choose the YAML or classic road you need to make sure that you have created a “Variable group” with your project specific variables. You can follow the instructions in the documentation how to create variable group and how to gather the variable information needed. [epinova-dxp-deployment @ github](CreateVariableGroup.md)
+Either you choose the YAML or classic road you need to make sure that you have created a “Variable group” with your project specific variables. You can follow the instructions in the documentation how to create variable group and how to gather the variable information needed. [How to setup variable group](CreateVariableGroup.md)
 
 ## Content copy with YAML ##
 There are 4 example YAML files in the documentation that can be downloaded and used from the GitHub repository.  
