@@ -26,6 +26,7 @@ When this feature is public for all DXP users, we will implement this feature on
 ### Content copy (Episerver DXP) ###
 Copy content database and/or blobs between your environments.  
 [Content copy documentation](documentation/ContentCopy.md)  
+[Example how to use Content copy](documentation/ContentHarmonization.md)  
 
 ### Complete deploy (Episerver DXP) ###
 Both "Deploy nuget package (Episerver DXP)" and "Move deploy (Episerver DXP)" tasks deploy a packe to a environment. That will deploy the package to a slot. The task "Complete deploy (Episerver DXP)" will complete the deploy and move the packe from slot to the real environment.  
@@ -53,7 +54,8 @@ Task that check the status for an environment. if environment is not in the expe
 
 ## Setup scenarios ##
 More detailed description how you can setup and use these tasks in different scenarios. Both with YAML and manual setup.  
-[Setup senarios](documentation/SetupScenarios.md)
+[Setup senarios](documentation/SetupScenarios.md)  
+[Example how to setup content harmonization between DXP environments](documentation/ContentHarmonization.md)
   
 ## Problems ##
 A collection of problems that has been found and how to fix it.  
