@@ -13,7 +13,7 @@
     "version": {
         "Major": 1,
         "Minor": 0,
-        "Patch": 7
+        "Patch": 9
     },
     "groups": [
         {
@@ -82,7 +82,7 @@
             "type": "boolean",
             "label": "Include BLOB",
             "required": true,
-            "defaultValue": "false",
+            "defaultValue": "true",
             "helpMarkDown": "If BLOBs should be copied from source environment to the target environment.",
             "groupName": "Settings"
         },
@@ -91,7 +91,7 @@
             "type": "boolean",
             "label": "Include DB",
             "required": true,
-            "defaultValue": "false",
+            "defaultValue": "true",
             "helpMarkDown": "If DBs should be copied from source environment to the target environment.",
             "groupName": "Settings"
         },

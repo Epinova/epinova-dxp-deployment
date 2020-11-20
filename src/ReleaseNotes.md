@@ -1,6 +1,12 @@
 # Release notes
 
-## v1.9.7
+## v1.9.10
+- Added detailed description [how to setup content harmonization with YAML/Classic mode](documentation/ContentHarmonization.md) .
+
+## v1.9.9
+- Set ContentCopy params IncludeBlob and IncludeDb as default `true`.
+
+## v1.9.8
 - Fixed ContentCopy script bug.
 
 ## v1.9.0
