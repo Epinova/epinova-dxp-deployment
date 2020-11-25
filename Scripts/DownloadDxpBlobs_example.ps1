@@ -1,24 +1,39 @@
-﻿[CmdletBinding()]
-    param(
-        [Parameter(Mandatory=$false)]
-        [string] $clientKey = "",
-        [Parameter(Mandatory=$false)]
-        [string] $clientSecret = "",
-        [Parameter(Mandatory=$false)]
-        [string] $projectId = "",
-        [Parameter(Mandatory=$false)]
-        [string] $environment = "Integration", #Integration | Preproduction | Production
-        [Parameter(Mandatory=$false)]
-        [string] $downloadFolder = "d:\downloads",
-        [Parameter(Mandatory=$false)]
-        [int] $maxFilesToDownload = 0, # 0=All, 100=Max 100 downloads
-        [Parameter(Mandatory=$false)]
-        [string] $container = "Blobs",  #AppLogs | WebLogs | Blobs
-        [Parameter(Mandatory=$false)]
-        [bool] $overwriteExistingFiles = $true,
-        [Parameter(Mandatory=$false)]
-        [int] $retentionHours = 24
-    )
+﻿#[CmdletBinding()]
+#    param(
+#        [Parameter(Mandatory=$false)]
+#        [string] $clientKey = "yGgDNXo00kfQtDuCkmlfpvxcOoyPVjPmPDoScQR3ghNYFDDz",
+#        [Parameter(Mandatory=$false)]
+#        [string] $clientSecret = "s4sL5YdrHb6dX9NftdsTcj0CHE+cRzNmnf4Pj4FQAu4EBqZlEbHgvZOK64ZnZo/b",
+#        [Parameter(Mandatory=$false)]
+#        [string] $projectId = "d5fe0234-5005-4f66-b124-ab0b007f7d3c",
+#        [Parameter(Mandatory=$false)]
+#        [string] $environment = "Integration", #Integration | Preproduction | Production
+#        [Parameter(Mandatory=$false)]
+#        [string] $downloadFolder = "C:\temp\downloads_dxp",
+#        [Parameter(Mandatory=$false)]
+#        [int] $maxFilesToDownload = 10, # 0=All, 100=Max 100 downloads
+#        [Parameter(Mandatory=$false)]
+#        [string] $container = "WebLogs",  #AppLogs | WebLogs | Blobs
+#        [Parameter(Mandatory=$false)]
+#        [bool] $overwriteExistingFiles = $true,
+#        [Parameter(Mandatory=$false)]
+#        [int] $retentionHours = 24
+#    )
+
+#[string] $clientKey = "yGgDNXo00kfQtDuCkmlfpvxcOoyPVjPmPDoScQR3ghNYFDDz"
+#[string] $clientSecret = "s4sL5YdrHb6dX9NftdsTcj0CHE+cRzNmnf4Pj4FQAu4EBqZlEbHgvZOK64ZnZo/b"
+#[string] $projectId = "d5fe0234-5005-4f66-b124-ab0b007f7d3c"
+
+[string] $clientKey = "yxGgDNXo00kfQtDuCkmlfpvxcOoyPVjPmPDoScQR3ghNYFDDz"
+[string] $clientSecret = "sx4sL5YdrHb6dX9NftdsTcj0CHE+cRzNmnf4Pj4FQAu4EBqZlEbHgvZOK64ZnZo/b"
+[string] $projectId = "dx5fe0234-5005-4f66-b124-ab0b007f7d3c"
+
+[string] $environment = "Integration" #Integration | Preproduction | Production
+[string] $downloadFolder = "C:\temp\downloads_dxp"
+[int] $maxFilesToDownload = 10 # 0=All, 100=Max 100 downloads
+[string] $container = "WebLogs"  #AppLogs | WebLogs | Blobs
+[bool] $overwriteExistingFiles = $true
+[int] $retentionHours = 24
 
 ####################################################################################
 
@@ -64,7 +79,6 @@ function ImportAzureStorageModule {
         throw "'Az.Storage' module is required to run this cmdlet."
     }
 }
-
 function AddTlsSecurityProtocolSupport {
     <#
     .SYNOPSIS
@@ -92,7 +106,6 @@ function AddTlsSecurityProtocolSupport {
         [Net.ServicePointManager]::SecurityProtocol += [Net.SecurityProtocolType]::Tls12
     }
 }
-
 function Join-Parts {
     param
     (
@@ -115,6 +128,7 @@ function Join-Parts {
     Write-Host "Container: $container"
     Write-Host "OverwriteExistingFiles: $overwriteExistingFiles"
     Write-Host "RetentionHours: $retentionHours"
+    Write-Host "################################################"
 
     #. "$PSScriptRoot\Helper.ps1"
     WriteInfo
@@ -123,11 +137,15 @@ function Join-Parts {
     if ((Test-IsGuid -ObjectGuid $projectId) -ne $true){
         Write-Error "The provided ProjectId is not a guid value."
         exit
+    } else {
+        Write-Host "ProjectId is validated as GUID."
     }
 
     if ((Test-Path $downloadFolder -PathType Container) -eq $false) {
         Write-Error "Download folder $downloadFolder does not exist."
         exit
+    } else {
+        Write-Host "Download folder exist"
     }
 
     if ($environment -eq "Integration" -or $environment -eq "Preproduction" -or $environment -eq "Production") {
@@ -162,6 +180,7 @@ function Join-Parts {
 
     try {
         Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
+        Write-Host "Conected to Episerver DXP API."
     }
     catch {
         Write-Error "Could not connect to EpiCload API with specified ClientKey/ClientSecret"
@@ -175,6 +194,7 @@ function Join-Parts {
 
     try {
         $containerResult = Get-EpiStorageContainer @storageContainerSplat
+        Write-Host "Retrieved container information."
     }
     catch {
         Write-Error "Could not get storage container information from Epi. Make sure you have specified correct ProjectId/Environment"
