@@ -17,7 +17,7 @@
         [Parameter(Mandatory=$false)]
         [bool] $overwriteExistingFiles = $true,
         [Parameter(Mandatory=$false)]
-        [int] $retentionHours = 24
+        [int] $retentionHours = 2
     )
 
 ####################################################################################
@@ -243,7 +243,7 @@ else {
         $maxFilesToDownload = [int]$blobContents.Length
     }
 
-    $blobContents=Get-AzStorageBlob -Container $container  -Context $ctx  
+    $blobContents=Get-AzStorageBlob -Container $container  -Context $ctx | Sort-Object -Property LastModified -Descending
     #$itterator = 1
     $downloadedFiles = 0
     foreach($blobContent in $blobContents)  
