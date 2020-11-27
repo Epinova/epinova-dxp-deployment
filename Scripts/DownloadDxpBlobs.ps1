@@ -217,11 +217,13 @@ function Join-Parts {
             $fullSasLink -match "(\?.*)"
             $sasToken = $Matches[0]
             Write-Host "SAS token: $sasToken"
+        } else{
+            Write-Host "Ignore container: $($link.containerName)"
         }
     }
     
-    if ($null -eq $sasToken) {
-        Write-Error "Did not found container $container in the list."
+    if ($null -eq $sasToken -or $sasToken.Length -eq 0) {
+        Write-Warning "Did not found container $container in the list. Look in the log and see if your blob container have another name then mysitemedia. If so, specify that name as container. Example: Ignore container: projectname-assets. Then set -container=projectname-assets"
         exit
     }
 
@@ -237,13 +239,18 @@ if ($null -eq $ctx){
     exit
 }
 else {
+   $blobContents=Get-AzStorageBlob -Container $container  -Context $ctx | Sort-Object -Property LastModified -Descending
+
     Write-Host "Found $($blobContents.Length) BlobContent."
+
+    if ($blobContents.Length -eq 0) {
+        Write-Warning "No blob/files found in the container $container"
+        exit
+    }
 
     if ($maxFilesToDownload -eq 0) {
         $maxFilesToDownload = [int]$blobContents.Length
     }
-
-    $blobContents=Get-AzStorageBlob -Container $container  -Context $ctx | Sort-Object -Property LastModified -Descending
     #$itterator = 1
     $downloadedFiles = 0
     foreach($blobContent in $blobContents)  
