@@ -144,9 +144,6 @@ function Join-Parts {
         $container = "azure-web-logs"
     } elseif ($container -eq "Blobs"){
         $container = "mysitemedia"
-    }else{
-        Write-Error "The container $container that you have specified does not exist. Ok containers: AppLogs | WebLogs | Blobs"
-        exit
     } 
 
     if ($PSVersionTable.PSEdition -eq 'Desktop' -and (Get-Module -Name AzureRM -ListAvailable)) {
@@ -180,16 +177,42 @@ function Join-Parts {
         Write-Error "Could not get storage container information from Epi. Make sure you have specified correct ProjectId/Environment"
         exit
     }
-    #$containerResult
-    #Write-Host $containerResult
-    #$containerResult.storageContainers
-    #Write-Host $containerResult.storageContainers
 
     if ($null -eq $containerResult){
         Write-Error "Could not get Epi DXP storage containers. Make sure you have specified correct ProjectId/Environment"
         exit
     }
 
+    if ($false -eq $containerResult.storageContainers.Contains($container))
+    {
+        Write-Host "Containers does not contain $container. Will try to figure out the correct one."
+        Write-Host "---------------------------------------------------"
+        Write-Host "Found the following containers for your project:"
+        foreach ($tempContainer in $containerResult.storageContainers){
+            Write-Host "$tempContainer"
+        }
+        Write-Host "---------------------------------------------------"
+        if ($container -eq "mysitemedia" -and $containerResult.storageContainers.Length -eq 3) {
+            $exclude = @("azure-application-logs", "azure-web-logs")
+            $lastContainer = $containerResult.storageContainers | Where{ $_ -notin $exclude }
+            Write-Host $lastContainer.Length
+            if ($lastContainer.Length -ne 0) {
+                $container = $lastContainer
+                Write-Host "Found $container and going to use that as the blob folder."
+            } else {
+                Write-Host "After trying to figure out which is the blob folder. We still can not find it."
+                Write-Error "Expected blob container '$container' but we can not find it. Check the specified container above and try to specify one of them."
+                exit
+            }
+        } else {
+            if ($container -eq "azure-application-logs" -or $container -eq "azure-web-logs"){
+                Write-Error "Expected log container '$container' but we could not find it."
+            } else {
+                Write-Error "Expected container '$container' but we can not find it. Check the specified container above and try to specify one of them."
+            }
+            exit
+        }
+    }
 
     $linkSplat = @{
         ProjectId          = $projectId
@@ -199,10 +222,6 @@ function Join-Parts {
     }
 
     $linkResult = Get-EpiStorageContainerSasLink @linkSplat
-
-    #$linkResult
-
-    #Write-Host $linkResult
 
     foreach ($link in $linkResult){
         if ($link.containerName -eq $container) {
