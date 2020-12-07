@@ -6,9 +6,14 @@ Example:
 ```powershell
 .\DownloadDxpBlobs.ps1 -clientKey "mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9" -clientSecret "mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9mRgLgE/d" -projectId "1921827e-2eca-2fb3-8015-a89f016bacc5" -environment "Integration" -downloadFolder "C:\downloads"
 ```
+This is a really new script so we have not made this signed yeat. So if you get an "Execution policy" error message. You can use this following command before you run download script.
+```powershell
 Set-ExecutionPolicy Unrestricted
-
+```
+When you are done you can set the execution policy back to normal.
+```powershell
 Set-ExecutionPolicy Restricted
+```
 
 ## Parameters
 ### clientKey
@@ -81,23 +86,46 @@ Number of hours that the sasToken created to get access to the files will be val
 ### Download all Blobs from Integration
 This example will download all blob files from the integration environment and put them in the c:\downloads folder.
 ```powershell
-.\DownloadDxpBlobs.ps1 -clientKey "mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9" -clientSecret "mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9mRgLgE/d" -projectId "1921827e-2eca-2fb3-8015-a89f016bacc5" -environment "Integration" -downloadFolder "C:\downloads"
+.\DownloadDxpBlobs.ps1 
+    -clientKey "mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9" 
+    -clientSecret "mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9mRgLgE/d" 
+    -projectId "1921827e-2eca-2fb3-8015-a89f016bacc5" 
+    -environment "Integration" 
+    -downloadFolder "C:\downloads"
 ```
 ### Download 100 Blobs from Preproduction
 This example will download 100 blob files from the integration environment and put them in the c:\downloads folder.
 ```powershell
-.\DownloadDxpBlobs.ps1 -clientKey "mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9" -clientSecret "mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9mRgLgE/d" -projectId "1921827e-2eca-2fb3-8015-a89f016bacc5" -environment "Preproduction" -downloadFolder "C:\downloads" -maxFilesToDownload 100
+.\DownloadDxpBlobs.ps1 
+    -clientKey "mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9"  
+    -clientSecret "mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9mRgLgE/d" 
+    -projectId "1921827e-2eca-2fb3-8015-a89f016bacc5" 
+    -environment "Preproduction" 
+    -downloadFolder "C:\downloads" 
+    -maxFilesToDownload 100
 ```
 ### Download all web logs from Integration
 This example will download all web log files from the integration environment and put them in the c:\downloads folder.
 ```powershell
-.\DownloadDxpBlobs.ps1 -clientKey "mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9" -clientSecret "mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9mRgLgE/d" -projectId "1921827e-2eca-2fb3-8015-a89f016bacc5" -environment "Integration" -downloadFolder "C:\downloads" -container "WebLogs"
+.\DownloadDxpBlobs.ps1 
+    -clientKey "mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9" 
+        -clientSecret "mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9mRgLgE/d" 
+        -projectId "1921827e-2eca-2fb3-8015-a89f016bacc5" 
+        -environment "Integration" 
+        -downloadFolder "C:\downloads" 
+        -container "WebLogs"
 ```
 
 ### Download all application logs from Integration
 This example will download all application log files from the integration environment and put them in the c:\downloads folder.
 ```powershell
-.\DownloadDxpBlobs.ps1 -clientKey "mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9" -clientSecret "mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9mRgLgE/d" -projectId "1921827e-2eca-2fb3-8015-a89f016bacc5" -environment "Integration" -downloadFolder "C:\downloads" -container "AppLogs"
+.\DownloadDxpBlobs.ps1 
+    -clientKey "mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9" 
+    -clientSecret "mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9mRgLgE/d" 
+    -projectId "1921827e-2eca-2fb3-8015-a89f016bacc5" 
+    -environment "Integration" 
+    -downloadFolder "C:\downloads" 
+    -container "AppLogs"
 ```
 
 
