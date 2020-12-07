@@ -23,8 +23,7 @@
 ####################################################################################
 
 
-function Test-IsGuid
-{
+function Test-IsGuid() {
 	[OutputType([bool])]
 	param
 	(
@@ -116,7 +115,6 @@ function Join-Parts {
     Write-Host "OverwriteExistingFiles: $overwriteExistingFiles"
     Write-Host "RetentionHours: $retentionHours"
 
-    #. "$PSScriptRoot\Helper.ps1"
     WriteInfo
 
     #Check values/params
@@ -186,8 +184,8 @@ function Join-Parts {
     if ($false -eq $containerResult.storageContainers.Contains($container))
     {
         Write-Host "Containers does not contain $container. Will try to figure out the correct one."
-        Write-Host "---------------------------------------------------"
         Write-Host "Found the following containers for your project:"
+        Write-Host "---------------------------------------------------"
         foreach ($tempContainer in $containerResult.storageContainers){
             Write-Host "$tempContainer"
         }
@@ -195,12 +193,12 @@ function Join-Parts {
         if ($container -eq "mysitemedia" -and $containerResult.storageContainers.Length -eq 3) {
             $exclude = @("azure-application-logs", "azure-web-logs")
             $lastContainer = $containerResult.storageContainers | Where{ $_ -notin $exclude }
-            Write-Host $lastContainer.Length
+            #Write-Host $lastContainer.Length
             if ($lastContainer.Length -ne 0) {
                 $container = $lastContainer
-                Write-Host "Found $container and going to use that as the blob folder."
+                Write-Host "Found '$container' and going to use that as the blob container."
             } else {
-                Write-Host "After trying to figure out which is the blob folder. We still can not find it."
+                Write-Host "After trying to figure out which is the blob container. We still can not find it."
                 Write-Error "Expected blob container '$container' but we can not find it. Check the specified container above and try to specify one of them."
                 exit
             }
@@ -208,14 +206,14 @@ function Join-Parts {
             if ($container -eq "azure-application-logs" -or $container -eq "azure-web-logs"){
                 Write-Error "Expected log container '$container' but we could not find it."
             } else {
-                Write-Error "Expected container '$container' but we can not find it. Check the specified container above and try to specify one of them."
+                Write-Error "Expected container '$container' but we can not find it. Check the found containers above and try to specify one of them as param -container."
             }
             exit
         }
     }
 
     $linkSplat = @{
-        ProjectId          = $projectId
+        ProjectId = $projectId
         Environment = $environment
         StorageContainer = $containerResult.storageContainers
         RetentionHours = $retentionHours
@@ -226,23 +224,23 @@ function Join-Parts {
     foreach ($link in $linkResult){
         if ($link.containerName -eq $container) {
 
-            Write-Host "Sas link: $($link.sasLink)"
+            Write-Host "Sas link           : $($link.sasLink)"
 
             $fullSasLink = $link.sasLink
-            $fullSasLink -match "https:\/\/(.*).blob.core"
+            $fullSasLink -match "https:\/\/(.*).blob.core" | Out-Null
             $storageAccountName = $Matches[1]
-            Write-Host "StorageAccountName: $storageAccountName"
+            Write-Host "StorageAccountName : $storageAccountName"
 
-            $fullSasLink -match "(\?.*)"
+            $fullSasLink -match "(\?.*)" | Out-Null
             $sasToken = $Matches[0]
-            Write-Host "SAS token: $sasToken"
+            Write-Host "SAS token          : $sasToken"
         } else{
-            Write-Host "Ignore container: $($link.containerName)"
+            Write-Host "Ignore container   : $($link.containerName)"
         }
     }
     
     if ($null -eq $sasToken -or $sasToken.Length -eq 0) {
-        Write-Warning "Did not found container $container in the list. Look in the log and see if your blob container have another name then mysitemedia. If so, specify that name as container. Example: Ignore container: projectname-assets. Then set -container=projectname-assets"
+        Write-Warning "Did not found container $container in the list. Look in the log and see if your blob container have another name then mysitemedia. If so, specify that name as param -container. Example: Ignore container: projectname-assets. Then set -container 'projectname-assets'"
         exit
     }
 
@@ -258,20 +256,20 @@ if ($null -eq $ctx){
     exit
 }
 else {
-   $blobContents=Get-AzStorageBlob -Container $container  -Context $ctx | Sort-Object -Property LastModified -Descending
+   $blobContents = Get-AzStorageBlob -Container $container  -Context $ctx | Sort-Object -Property LastModified -Descending
 
     Write-Host "Found $($blobContents.Length) BlobContent."
 
     if ($blobContents.Length -eq 0) {
-        Write-Warning "No blob/files found in the container $container"
+        Write-Warning "No blob/files found in the container '$container'"
         exit
     }
 
     if ($maxFilesToDownload -eq 0) {
         $maxFilesToDownload = [int]$blobContents.Length
     }
-    #$itterator = 1
     $downloadedFiles = 0
+    Write-Host "---------------------------------------------------"
     foreach($blobContent in $blobContents)  
     {  
         if ($downloadedFiles -ge $maxFilesToDownload){
@@ -295,9 +293,8 @@ else {
 
         $procentage = [int](($downloadedFiles / $maxFilesToDownload) * 100)
         Write-Progress -Activity "Download files" -Status "$procentage% Complete:" -PercentComplete $procentage;
-
-        #$itterator++
     }
+    Write-Host "---------------------------------------------------"
 }
 
     ####################################################################################
