@@ -94,7 +94,7 @@ This example will download all blob files from the integration environment and p
     -downloadFolder "C:\downloads"
 ```
 ### Download 100 Blobs from Preproduction
-This example will download 100 blob files from the integration environment and put them in the c:\downloads folder.
+This example will download 100 blob files from the preproduction environment and put them in the c:\downloads folder.
 ```powershell
 .\DownloadDxpBlobs.ps1 
     -clientKey "mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9"  

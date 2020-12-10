@@ -99,7 +99,7 @@ function Join-Parts {
         $Separator = ''
     )
 
-    ($Parts | ? { $_ } | % { ([string]$_).trim($Separator) } | ? { $_ } ) -join $Separator 
+    ($Parts | Where-Object { $_ } | ForEach-Object { ([string]$_).trim($Separator) } | Where-Object { $_ } ) -join $Separator 
 }
 
     ####################################################################################
@@ -192,7 +192,7 @@ function Join-Parts {
         Write-Host "---------------------------------------------------"
         if ($container -eq "mysitemedia" -and $containerResult.storageContainers.Length -eq 3) {
             $exclude = @("azure-application-logs", "azure-web-logs")
-            $lastContainer = $containerResult.storageContainers | Where{ $_ -notin $exclude }
+            $lastContainer = $containerResult.storageContainers | Where-Object { $_ -notin $exclude }
             #Write-Host $lastContainer.Length
             if ($lastContainer.Length -ne 0) {
                 $container = $lastContainer
@@ -247,7 +247,7 @@ function Join-Parts {
 
 AddTlsSecurityProtocolSupport
 
-$azureModuleType = ImportAzureStorageModule
+ImportAzureStorageModule
 
 $ctx = New-AzStorageContext -StorageAccountName $storageAccountName -SASToken $sasToken -ErrorAction Stop
 
