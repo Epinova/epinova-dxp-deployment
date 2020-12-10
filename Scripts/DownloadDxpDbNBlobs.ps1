@@ -375,8 +375,6 @@ else {
     if ($maxFilesToDownload -eq 0) {
         $maxFilesToDownload = [int]$blobContents.Length
     }
-
-    $blobContents=Get-AzStorageBlob -Container $container  -Context $ctx  
     $downloadedFiles = 0
     Write-Host "---------------------------------------------------"
     foreach($blobContent in $blobContents)  
