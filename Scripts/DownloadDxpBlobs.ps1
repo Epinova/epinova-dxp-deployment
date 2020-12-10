@@ -193,7 +193,6 @@ function Join-Parts {
         if ($container -eq "mysitemedia" -and $containerResult.storageContainers.Length -eq 3) {
             $exclude = @("azure-application-logs", "azure-web-logs")
             $lastContainer = $containerResult.storageContainers | Where-Object { $_ -notin $exclude }
-            #Write-Host $lastContainer.Length
             if ($lastContainer.Length -ne 0) {
                 $container = $lastContainer
                 Write-Host "Found '$container' and going to use that as the blob container."
@@ -234,7 +233,7 @@ function Join-Parts {
             $fullSasLink -match "(\?.*)" | Out-Null
             $sasToken = $Matches[0]
             Write-Host "SAS token          : $sasToken"
-        } else{
+        } else {
             Write-Host "Ignore container   : $($link.containerName)"
         }
     }
