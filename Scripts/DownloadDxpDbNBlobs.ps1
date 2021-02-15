@@ -9,6 +9,8 @@
         [Parameter(Mandatory=$false)]
         [string] $environment = "Integration", #Integration | Preproduction | Production
         [Parameter(Mandatory=$false)]
+        [string] $databaseName = "epicms", #epicms | epicommerce
+        [Parameter(Mandatory=$false)]
         [string] $downloadFolder = "d:\downloads",
         [Parameter(Mandatory=$false)]
         [int] $maxFilesToDownload = 0, # 0=All, 100=Max 100 downloads
@@ -17,11 +19,12 @@
         [Parameter(Mandatory=$false)]
         [bool] $overwriteExistingFiles = $true,
         [Parameter(Mandatory=$false)]
-        [int] $retentionHours = 2
-    )
+        [int] $retentionHours = 24,
+        [Parameter(Mandatory=$false)]
+        [int] $timeout = 1800
+)
 
 ####################################################################################
-
 
 function Test-IsGuid() {
 	[OutputType([bool])]
@@ -102,22 +105,86 @@ function Join-Parts {
     ($Parts | Where-Object { $_ } | ForEach-Object { ([string]$_).trim($Separator) } | Where-Object { $_ } ) -join $Separator 
 }
 
-    ####################################################################################
+function GetDateTimeStamp{
+    $dateTimeNow = Get-Date -Format "yyyy-MM-ddTHH:mm:ss"
+    return $dateTimeNow
+}
 
+function GetFileDateTimeStamp{
+    $dateTimeNow = Get-Date -Format "yyyyMMddTHHmm"
+    return $dateTimeNow
+}
+
+function ExportProgress {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $projectId,
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $exportId,
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $environment,
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $databaseName,
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $expectedStatus,
+        [Parameter(Mandatory = $true)]
+        [int] $timeout
+    )
+    $sw = [Diagnostics.Stopwatch]::StartNew()
+    $sw.Start()
+    $currentStatus = ""
+    $iterator = 0
+    while ($currentStatus -ne $expectedStatus) {
+        $status = Get-EpiDatabaseExport -projectId $projectId -id $exportId -environment $environment -databaseName $databaseName
+        $currentStatus = $status.status
+        if ($iterator % 6 -eq 0) {
+            Write-Host "Database backup status: $($currentStatus). ElapsedSeconds: $($sw.Elapsed.TotalSeconds)"
+        }
+        if ($currentStatus -ne $expectedStatus) {
+            Start-Sleep 10
+        }
+        if ($sw.Elapsed.TotalSeconds -ge $timeout) { break }
+        if ($currentStatus -eq $expectedStatus) { break }
+        $iterator++
+    }
+
+    $sw.Stop()
+    Write-Host "Stopped iteration after $($sw.Elapsed.TotalSeconds) seconds."
+
+    $status = Get-EpiDatabaseExport -projectId $projectId -id $exportId -environment $environment -databaseName $databaseName
+    Write-Host "################################################"
+    Write-Host "Database export:"
+    Write-Host "Status:       $($status.status)"
+    Write-Host "BacpacName:   $($status.bacpacName)"
+    Write-Host "DownloadLink: $($status.downloadLink)"
+    return $status
+}
+
+    ####################################################################################
+    Write-Host "################################################"
     Write-Host "Inputs:"
-    Write-Host "ClientKey: $clientKey"
-    Write-Host "ClientSecret: **** (it is a secret...)"
-    Write-Host "ProjectId: $projectId"
-    Write-Host "Environment: $environment"
-    Write-Host "DownloadFolder: $downloadFolder"
-    Write-Host "MaxFilesToDownload: $maxFilesToDownload"
-    Write-Host "Container: $container"
+    Write-Host "ClientKey:              $clientKey"
+    Write-Host "ClientSecret:           **** (it is a secret...)"
+    Write-Host "ProjectId:              $projectId"
+    Write-Host "Environment:            $environment"
+    Write-Host "DatabaseName:           $databaseName"
+    Write-Host "DownloadFolder:         $downloadFolder"
+    Write-Host "MaxFilesToDownload:     $maxFilesToDownload"
+    Write-Host "Container:              $container"
     Write-Host "OverwriteExistingFiles: $overwriteExistingFiles"
-    Write-Host "RetentionHours: $retentionHours"
+    Write-Host "RetentionHours:         $retentionHours"
+    Write-Host "Timeout:                $timeout"
+    Write-Host "################################################"
 
     WriteInfo
 
-    #Check values/params
+    #Check values/params #####################################################
     if ((Test-IsGuid -ObjectGuid $projectId) -ne $true){
         Write-Error "The provided ProjectId is not a guid value."
         exit
@@ -142,6 +209,14 @@ function Join-Parts {
         $container = "azure-web-logs"
     } elseif ($container -eq "Blobs"){
         $container = "mysitemedia"
+    }
+    
+    if ($databaseName -eq "epicms" -or $databaseName -eq "epicommerce") {
+        Write-Host "DatabaseName param ok."
+    }
+    else {
+        Write-Error "The database $databaseName that you have specified is not valid. Ok databaseName: epicms | epicommerce"
+        exit
     } 
 
     if ($PSVersionTable.PSEdition -eq 'Desktop' -and (Get-Module -Name AzureRM -ListAvailable)) {
@@ -154,6 +229,8 @@ function Join-Parts {
     if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
         Install-Module EpiCloud -Scope CurrentUser -Force
     }
+    ####################################################################################
+
 
     try {
         Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
@@ -162,12 +239,42 @@ function Join-Parts {
         Write-Error "Could not connect to EpiCload API with specified ClientKey/ClientSecret"
         exit
     }
+
+    # Start download database. Then download blobs. After downloaded blobs we will check again if the bakpac file is ready to download.
+    
+    $exportDatabaseSplat = @{
+        ProjectId      = $projectId
+        Environment    = $environment
+        DatabaseName   = $databaseName
+        RetentionHours = $retentionHours
+    }
+
+    $export = Start-EpiDatabaseExport @exportDatabaseSplat
+    Write-Host "################################################"
+    Write-Host "Database export has started:"
+    Write-Host "Id:           $($export.id)"
+    Write-Host "ProjectId:    $($export.projectId)"
+    Write-Host "DatabaseName: $($export.databaseName)"
+    Write-Host "Environment:  $($export.environment)"
+    Write-Host "Status:       $($export.status)"
+
+    $exportId = $export.id 
+
+    if ($export.status -eq "InProgress") {
+        $deployDateTime = GetDateTimeStamp
+        Write-Host "Export $exportId started $deployDateTime."
+    } else {
+        Write-Error "Status is not in InProgress (Current:$($export.status)). You can not export database at this moment."
+        exit
+    }
+    ####################################################################################
     
     $storageContainerSplat = @{
-        ProjectId          = $projectId
+        ProjectId   = $projectId
         Environment = $environment
     }
 
+    Write-Host "################################################"
     try {
         $containerResult = Get-EpiStorageContainer @storageContainerSplat
     }
@@ -175,7 +282,7 @@ function Join-Parts {
         Write-Error "Could not get storage container information from Epi. Make sure you have specified correct ProjectId/Environment"
         exit
     }
-
+  
     if ($null -eq $containerResult){
         Write-Error "Could not get Epi DXP storage containers. Make sure you have specified correct ProjectId/Environment"
         exit
@@ -211,8 +318,9 @@ function Join-Parts {
         }
     }
 
+
     $linkSplat = @{
-        ProjectId = $projectId
+        ProjectId          = $projectId
         Environment = $environment
         StorageContainer = $containerResult.storageContainers
         RetentionHours = $retentionHours
@@ -222,7 +330,7 @@ function Join-Parts {
 
     foreach ($link in $linkResult){
         if ($link.containerName -eq $container) {
-
+            
             Write-Host "Sas link           : $($link.sasLink)"
 
             $fullSasLink = $link.sasLink
@@ -255,7 +363,7 @@ if ($null -eq $ctx){
     exit
 }
 else {
-   $blobContents = Get-AzStorageBlob -Container $container  -Context $ctx | Sort-Object -Property LastModified -Descending
+    $blobContents = Get-AzStorageBlob -Container $container  -Context $ctx | Sort-Object -Property LastModified -Descending
 
     Write-Host "Found $($blobContents.Length) BlobContent."
 
@@ -296,6 +404,32 @@ else {
     Write-Host "---------------------------------------------------"
 }
 
+####################################################################################
+
+    Write-Host "Continue to check how it goes for the database export."
+
+    if ($export.status -eq "InProgress" -or $status.status -eq "Succeeded") {
+        $status = ExportProgress -projectid $projectId -exportId $exportId -environment $environment -databaseName $databaseName -expectedStatus "Succeeded" -timeout $timeout
+
+        $deployDateTime = GetDateTimeStamp
+        Write-Host "Export $exportId ended $deployDateTime"
+
+        if ($status.status -eq "Succeeded") {
+            Write-Host "Database export $exportId has been successful."
+            Write-Host "Start download database $($status.downloadLink)"
+            $filePath = Join-Parts -Separator '\' -Parts $downloadFolder, $status.bacpacName
+            Invoke-WebRequest -Uri $status.downloadLink -OutFile $filePath
+            Write-Host "Download database to $filePath"
+        }
+        else {
+            Write-Error "The database export has not been successful or the script has timedout. CurrentStatus: $($status.status)"
+            exit
+        }
+    }
+    else {
+        Write-Error "Status is not in InProgress (Current:$($export.status)). You can not export database at this moment."
+        exit
+    }
     ####################################################################################
 
     Write-Host "---THE END---"
