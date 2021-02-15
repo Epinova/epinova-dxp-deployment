@@ -1,5 +1,8 @@
 # Release notes
 
+## v1.9.11
+- Added EpiCloud in the ps_modules.  
+
 ## v1.9.10
 - Added detailed description [how to setup content harmonization with YAML/Classic mode](documentation/ContentHarmonization.md) .
 
