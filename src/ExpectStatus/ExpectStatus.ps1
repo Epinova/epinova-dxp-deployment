@@ -14,7 +14,7 @@ try {
     ####################################################################################
 
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    
+
     Write-Host "Inputs:"
     Write-Host "ClientKey: $clientKey"
     Write-Host "ClientSecret: **** (it is a secret...)"
@@ -42,12 +42,13 @@ try {
     }
 
     try{
+        Remove-Module -Name EpinovaDxpDeploymentUtil
         if (-not (Get-Module -Name EpinovaDxpDeploymentUtil -ListAvailable)) {
             Write-Host "Could not find EpinovaDxpDeploymentUtil. Installing it."
-            Install-Module EpinovaDxpDeploymentUtil -Scope CurrentUser -Force
+            Import-module EpinovaDxpDeploymentUtil -Scope CurrentUser -Force
         } else {
             Write-Host "EpinovaDxpDeploymentUtil installed."
-            Update-Module -Name EpinovaDxpDeploymentUtil -RequiredVersion 0.0.2
+            #Update-Module -Name EpinovaDxpDeploymentUtil -RequiredVersion 0.0.2
             Get-Module -Name EpinovaDxpDeploymentUtil -ListAvailable
         }
         Write-DxpHostInfo
