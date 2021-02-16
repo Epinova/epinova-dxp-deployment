@@ -1,6 +1,6 @@
 @{
     RootModule        = 'EpinovaDxpDeploymentUtil.psm1'
-    ModuleVersion     = '0.0.1'
+    ModuleVersion     = '0.0.2'
     GUID              = '00740cd5-5e72-4fb7-9a6b-1afd534df2d2'
     Author            = 'Ove Lartelius'
     CompanyName       = 'Epinova AB, LOL IT AB'
