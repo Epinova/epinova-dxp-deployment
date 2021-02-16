@@ -44,7 +44,7 @@ try {
     #$env:PSModulePath = "C:\Modules\azurerm_6.7.0;$PSScriptRoot\ps_modules;" + $env:PSModulePath
 
     if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
-        Write-Host "Could not find EpiCloud. Install it."
+        Write-Host "Could not find EpiCloud. Installing it."
         Install-Module EpiCloud -Scope CurrentUser -Force
     } else {
         Write-Host "EpiCloud installed."

@@ -28,9 +28,30 @@ try {
         Write-Error "The provided ProjectId is not a guid value."
     }
 
+    if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
+        $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
+    }
+
     if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
-        $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath
+        Write-Host "Could not find EpiCloud. Installing it."
         Install-Module EpiCloud -Scope CurrentUser -Force
+    } else {
+        Write-Host "EpiCloud installed."
+    }
+
+    try{
+        if (-not (Get-Module -Name EpinovaDxpDeploymentUtil -ListAvailable)) {
+            Write-Host "Could not find EpinovaDxpDeploymentUtil. Installing it."
+            Install-Module EpinovaDxpDeploymentUtil -Scope CurrentUser -Force
+        } else {
+            Write-Host "EpinovaDxpDeploymentUtil installed."
+            Get-Module -Name EpinovaDxpDeploymentUtil -ListAvailable
+        }
+        Write-DxpHostInfo
+    }
+    catch{
+        $errorMessage = $_.Exception.Message
+        Write-Host $errorMessage
     }
 
     Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
