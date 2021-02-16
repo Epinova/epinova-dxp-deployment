@@ -11,4 +11,4 @@ function Write-DxpHostInfo() {
     Write-Host $version
 }
 
-Export-ModuleMember -Function Write-DxpHostInfo
+Export-ModuleMember -Function @( 'Write-DxpHostInfo' )
