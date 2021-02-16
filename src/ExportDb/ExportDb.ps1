@@ -14,6 +14,9 @@ try {
 
     # 30 min timeout
     ####################################################################################
+    
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    
     Write-Host "Inputs:"
     Write-Host "ClientKey: $clientKey"
     Write-Host "ClientSecret: **** (it is a secret...)"
@@ -31,9 +34,15 @@ try {
         exit 1
     }
 
+    if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
+        $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
+    }
+
     if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
-        $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath
+        Write-Host "Could not find EpiCloud. Installing it."
         Install-Module EpiCloud -Scope CurrentUser -Force
+    } else {
+        Write-Host "EpiCloud installed."
     }
 
     Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
