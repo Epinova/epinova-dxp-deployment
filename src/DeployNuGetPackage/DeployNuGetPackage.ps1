@@ -35,16 +35,25 @@ try {
         Write-Error "The provided ProjectId is not a guid value."
     }
 
-    $env:PSModulePath = "C:\Modules\azurerm_6.7.0;$PSScriptRoot\ps_modules;" + $env:PSModulePath
+    if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
+        $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
+    }
+    if (-not ($env:PSModulePath.Contains("C:\Modules\azurerm_6.7.0"))){
+        $env:PSModulePath = "C:\Modules\azurerm_6.7.0;" + $env:PSModulePath   
+    }
+    #$env:PSModulePath = "C:\Modules\azurerm_6.7.0;$PSScriptRoot\ps_modules;" + $env:PSModulePath
 
     if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
-        #$env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath
+        Write-Host "Could not find EpiCloud. Install it."
         Install-Module EpiCloud -Scope CurrentUser -Force
+    } else {
+        Write-Host "EpiCloud installed."
     }
+    
 
     try{
         if (-not (Get-Module -Name EpinovaDxpDeploymentUtil -ListAvailable)) {
-            #$env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath
+            Write-Host "Could not find EpinovaDxpDeploymentUtil. Install it."
             Install-Module EpinovaDxpDeploymentUtil -Scope CurrentUser -Force
         }
 

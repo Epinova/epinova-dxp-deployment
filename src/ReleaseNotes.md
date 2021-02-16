@@ -1,6 +1,6 @@
 # Release notes
 
-## v1.9.13
+## v1.9.13, v1.9.14
 - Added EpinovaDxpDeploymentUtil module to verify local PSModules.  
 
 ## v1.9.12
