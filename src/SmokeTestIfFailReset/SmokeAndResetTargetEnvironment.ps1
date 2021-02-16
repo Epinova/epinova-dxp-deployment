@@ -59,13 +59,7 @@ try {
             $uri = $urlsArray[$i]
             Write-Output "Executing request for URI $uri"
             try {
-                #if ([string]::IsNullOrEmpty("$headers")) {
-                    $response = Invoke-WebRequest -Uri $uri -UseBasicParsing -Verbose:$false -MaximumRedirection 0
-                #}
-                #else {
-                    #$headersHashTable = $headers | ConvertFrom-Json -AsHashtable #Must wait to ps v6. Have not find any other way to convert string to IDictionary
-                #    $response = Invoke-WebRequest -Uri $uri -Headers $headersHashTable -UseBasicParsing -Verbose:$false -MaximumRedirection 0
-                #}
+                $response = Invoke-WebRequest -Uri $uri -UseBasicParsing -Verbose:$false -MaximumRedirection 0
                 $sw.Stop()
                 $statusCode = $response.StatusCode
                 $seconds = $sw.Elapsed.TotalSeconds
@@ -114,6 +108,7 @@ try {
 
 
         if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
+            $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath
             Install-Module EpiCloud -Scope CurrentUser -Force
         }
 

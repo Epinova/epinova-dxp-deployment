@@ -1,5 +1,8 @@
 # Release notes
 
+## v1.9.12
+- Added ps_module to PSModulePath in all tasks.  
+
 ## v1.9.11
 - Added EpiCloud in the ps_modules.  
 
