@@ -42,15 +42,14 @@ try {
     }
 
     try{
-        Remove-Module -Name EpinovaDxpDeploymentUtil
-        if (-not (Get-Module -Name EpinovaDxpDeploymentUtil -ListAvailable)) {
-            Write-Host "Could not find EpinovaDxpDeploymentUtil. Installing it."
+        #if (-not (Get-Module -Name EpinovaDxpDeploymentUtil -ListAvailable)) {
+        #    Write-Host "Could not find EpinovaDxpDeploymentUtil. Installing it."
             Import-module EpinovaDxpDeploymentUtil -Scope CurrentUser -Force
-        } else {
-            Write-Host "EpinovaDxpDeploymentUtil installed."
+        #} else {
+        #    Write-Host "EpinovaDxpDeploymentUtil installed."
             #Update-Module -Name EpinovaDxpDeploymentUtil -RequiredVersion 0.0.2
             Get-Module -Name EpinovaDxpDeploymentUtil -ListAvailable
-        }
+        #}
         Write-DxpHostInfo
     }
     catch{
