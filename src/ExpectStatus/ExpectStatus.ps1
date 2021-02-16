@@ -29,6 +29,7 @@ try {
     }
 
     if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
+        $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath
         Install-Module EpiCloud -Scope CurrentUser -Force
     }
 
