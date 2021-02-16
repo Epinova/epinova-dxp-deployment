@@ -1,5 +1,8 @@
 # Release notes
 
+## v1.9.13
+- Added EpinovaDxpDeploymentUtil module to verify local PSModules.  
+
 ## v1.9.12
 - Added ps_module to PSModulePath in all tasks.  
 
