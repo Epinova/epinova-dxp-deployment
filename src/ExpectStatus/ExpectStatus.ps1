@@ -45,6 +45,7 @@ try {
             Install-Module EpinovaDxpDeploymentUtil -Scope CurrentUser -Force
         } else {
             Write-Host "EpinovaDxpDeploymentUtil installed."
+            Update-Module -Name EpinovaDxpDeploymentUtil -RequiredVersion 0.0.2
             Get-Module -Name EpinovaDxpDeploymentUtil -ListAvailable
         }
         Write-DxpHostInfo
