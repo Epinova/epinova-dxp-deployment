@@ -2,6 +2,7 @@
 
 ## v1.9.19, v1.9.28
 - Added EpinovaDxpDeploymentUtil module to verify local PSModules.  
+- Build script that move modules auto to ps_modules folders in tasks.  
 
 ## v1.9.18
 - Added SecurityProtocol Tls12 to all tasks  
