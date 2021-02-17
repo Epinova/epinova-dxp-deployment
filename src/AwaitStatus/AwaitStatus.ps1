@@ -22,23 +22,44 @@ try {
     Write-Host "Timeout: $timeout"
 
     . "$PSScriptRoot\Helper.ps1"
-    WriteInfo
-
-    if ((Test-IsGuid -ObjectGuid $projectId) -ne $true){
-        Write-Error "The provided ProjectId is not a guid value."
-    }
+    #WriteInfo
 
     if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
         $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
     }
 
+    # EpinovaDxpDeploymentUtil module
+    Import-module EpinovaDxpDeploymentUtil -Force
+    Get-Module -Name EpinovaDxpDeploymentUtil -ListAvailable
+
+    # EpiCloud module
     if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
         Write-Host "Could not find EpiCloud. Installing it."
         Install-Module EpiCloud -Scope CurrentUser -Force
     } else {
         Write-Host "EpiCloud installed."
+        Get-Module -Name EpiCloud -ListAvailable
     }
 
+
+    #if ((Test-IsGuid -ObjectGuid $projectId) -ne $true){
+    #    Write-Error "The provided ProjectId is not a guid value."
+    #}
+
+    #if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
+    #    $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
+    #}
+
+    #if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
+    #    Write-Host "Could not find EpiCloud. Installing it."
+    #    Install-Module EpiCloud -Scope CurrentUser -Force
+    #} else {
+    #    Write-Host "EpiCloud installed."
+    #}
+
+    Write-DxpHostVersion
+
+    Test-DxpProjectId -ProjectId $projectId
 
     Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
 
@@ -54,7 +75,7 @@ try {
         Write-Output "Latest found deploy on targetEnvironment $targetEnvironment is in status $($lastDeploy.status)"
 
         if ($lastDeploy.status -eq "InProgress" -or $lastDeploy.status -eq "Resetting") {
-            $deployDateTime = GetDateTimeStamp
+            $deployDateTime = Get-DxpDateTimeStamp
             $deploymentId = $lastDeploy.id
             Write-Host "Deploy $deploymentId started $deployDateTime."
 
@@ -68,9 +89,9 @@ try {
                 $expectedStatus = "Reset"
             }
 
-            $status = Progress -projectid $projectId -deploymentId $deploymentId -percentComplete $percentComplete -expectedStatus $expectedStatus -timeout $timeout
+            $status = Invoke-DxpProgress -projectid $projectId -deploymentId $deploymentId -percentComplete $percentComplete -expectedStatus $expectedStatus -timeout $timeout
 
-            $deployDateTime = GetDateTimeStamp
+            $deployDateTime = Get-DxpDateTimeStamp
             Write-Host "Deploy $deploymentId ended $deployDateTime"
 
             if ($status.status -eq "AwaitingVerification") {
@@ -80,9 +101,9 @@ try {
                 Write-Host "Reset $deploymentId has been successful."
             }
             else {
-                Write-Warning "The deploy has not been successful or the script has timedout. CurrentStatus: $($status.status)"
-                Write-Host "##vso[task.logissue type=error]The deploy has not been successful or the script has timedout. CurrentStatus: $($status.status)"
-                Write-Error "The deploy has not been successful or the script has timedout. CurrentStatus: $($status.status)" -ErrorAction Stop
+                Write-Warning "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
+                Write-Host "##vso[task.logissue type=error]The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
+                Write-Error "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)" -ErrorAction Stop
                 exit 1
             }
         }
