@@ -6,7 +6,7 @@
     CompanyName       = 'Epinova AB, LOL IT AB'
     Copyright         = '(c) 2021 Epinova AB. All rights reserved.'
     Description       = 'Module contain help functions for the Epinova DXP deployment extension.'
-    PowerShellVersion = '6.0'
+    PowerShellVersion = '5.0'
     FunctionsToExport = 'Write-DxpHostInfo' #, 'Invoke-DxpProgress'
     CmdletsToExport   = @()
     AliasesToExport   = @()
