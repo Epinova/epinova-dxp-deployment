@@ -1,6 +1,6 @@
 # Release notes
 
-## v1.9.19, v1.9.29
+## v1.9.19, v1.9.30
 - Added EpinovaDxpDeploymentUtil module to verify local PSModules.  
 - Build script that move modules auto to ps_modules folders in tasks.  
 - Fixed some result texts.
