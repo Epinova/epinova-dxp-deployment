@@ -24,42 +24,52 @@ try {
     Write-Host "Timeout: $timeout"
 
     . "$PSScriptRoot\Helper.ps1"
-    WriteInfo
-
-    if ((Test-IsGuid -ObjectGuid $projectId) -ne $true){
-        Write-Error "The provided ProjectId is not a guid value."
-    }
 
     if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
         $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
     }
 
-    #if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
-    #    Write-Host "Could not find EpiCloud. Installing it."
-    #    Install-Module EpiCloud -Scope CurrentUser -Force
-    #} else {
-    #    Write-Host "EpiCloud installed."
-    #}
-    Import-Module -FullyQualifiedName @{ModuleName = 'EpiCload'; ModuleVersion = '0.12.14' } -Verbose
+    Import-module EpinovaDxpDeploymentUtil -Force
+    Get-Module -Name EpinovaDxpDeploymentUtil -ListAvailable
+    Write-DxpHostVersion
 
-    Write-Host "/---"
-    try{
+    Test-DxpProjectId -ProjectId $projectId
+
+    #WriteInfo
+
+    #if ((Test-IsGuid -ObjectGuid $projectId) -ne $true){
+    #    Write-Error "The provided ProjectId is not a guid value."
+    #}
+
+
+
+    if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
+    #    Write-Host "Could not find EpiCloud. Installing it."
+        Install-Module EpiCloud -Scope CurrentUser -Force
+    } else {
+        Write-Host "EpiCloud installed."
+        Get-Module -Name EpiCloud -ListAvailable
+    }
+    #Import-Module -FullyQualifiedName @{ModuleName = 'EpiCload'; ModuleVersion = '0.12.14' } -Verbose
+
+    #Write-Host "/---"
+    #try{
         #if (-not (Get-Module -Name EpinovaDxpDeploymentUtil -ListAvailable)) {
         #    Write-Host "Could not find EpinovaDxpDeploymentUtil. Installing it."
-            #Import-module EpinovaDxpDeploymentUtil -Force -MinimumVersion 0.0.2
-            Import-Module -FullyQualifiedName @{ModuleName = 'EpinovaDxpDeploymentUtil'; ModuleVersion = '0.0.2' }
+    #        Import-module EpinovaDxpDeploymentUtil -Force
+            #Import-Module -FullyQualifiedName @{ModuleName = 'EpinovaDxpDeploymentUtil'; ModuleVersion = '0.0.3' }
         #} else {
         #    Write-Host "EpinovaDxpDeploymentUtil installed."
             #Update-Module -Name EpinovaDxpDeploymentUtil -RequiredVersion 0.0.2
-            Get-Module -Name EpinovaDxpDeploymentUtil -ListAvailable
+    #        Get-Module -Name EpinovaDxpDeploymentUtil -ListAvailable
         #}
-        Write-DxpHostInfo
-    }
-    catch{
-        $errorMessage = $_.Exception.Message
-        Write-Host $errorMessage
-    }
-    Write-Host "---/"
+    #    Write-DxpHostInfo
+    #}
+    #catch{
+    #    $errorMessage = $_.Exception.Message
+    #    Write-Host $errorMessage
+    #}
+    #Write-Host "---/"
 
     Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
 
