@@ -171,4 +171,83 @@ function Invoke-DxpProgress {
     return $status
 }
 
-Export-ModuleMember -Function @( 'Write-DxpHostVersion', 'Test-DxpProjectId', 'Get-DxpDateTimeStamp', 'Invoke-DxpProgress' )
+function Connect-DxpEpiCloud{
+    <#
+    .SYNOPSIS
+        Adds credentials (ClientKey and ClientSecret) for all functions
+        in EpiCloud module to be used during the session/context.
+
+    .DESCRIPTION
+        Connect to the EpiCloud.
+
+    .PARAMETER ClientKey
+        Project id for the project in Episerver DXP.
+
+    .PARAMETER ClientSecret
+        Deployment id for the specific deployment in Episerver DXP that you want to show the progress for.
+
+    .EXAMPLE
+        Connect-DxpEpiCloud -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId
+
+    .EXAMPLE
+        Connect-DxpEpiCloud -ClientKey '644b6926-39b1-42a1-93d6-3771cdc4a04e' -ClientSecret '644b6926-39b1fasrehyjtye-42a1-93d6-3771cdc4asasda04e' -ProjectId '644b6926-39b1-42a1-93d6-3771cdc4a04e'
+
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ClientKey,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ClientSecret,
+
+        [Parameter(Mandatory = $true)]
+        [String] $ProjectId
+    )
+    Connect-EpiCloud -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId
+}
+
+function Get-DxpEnvironmentDeployments{
+    <#
+    .SYNOPSIS
+        Get the latest deployments for the specified environment.
+
+    .DESCRIPTION
+        Get the latest deployments for the specified environment.
+
+    .PARAMETER ProjectId
+        Project id for the project in Episerver DXP.
+
+    .PARAMETER TargetEnvironment
+        The target environment that should match the deployment.
+
+    .EXAMPLE
+        $deployments = Get-DxpEnvironmentDeployments -ProjectId $ProjectId -TargetEnvironment $TargetEnvironment
+
+    .EXAMPLE
+        $deployments = Get-DxpEnvironmentDeployments -ProjectId '644b6926-39b1-42a1-93d6-3771cdc4a04e' -TargetEnvironment 'Integration'
+
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [String] $ProjectId,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $TargetEnvironment
+    )
+
+    $getEpiDeploymentSplat = @{
+        ProjectId    = $ProjectId
+    }
+
+    $deployments = Get-EpiDeployment @getEpiDeploymentSplat | Where-Object { $_.parameters.targetEnvironment -eq $TargetEnvironment }
+
+    return $deployments
+}
+
+Export-ModuleMember -Function @( 'Write-DxpHostVersion', 'Test-DxpProjectId', 'Get-DxpDateTimeStamp', 'Invoke-DxpProgress', 'Connect-DxpEpiCloud', 'Get-DxpEnvironmentDeployments' )

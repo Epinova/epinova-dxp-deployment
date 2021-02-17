@@ -23,8 +23,6 @@ try {
     Write-Host "ExpectedStatus: $expectedStatus"
     Write-Host "Timeout: $timeout"
 
-    #. "$PSScriptRoot\Helper.ps1"
-
     if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
         $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
     }
