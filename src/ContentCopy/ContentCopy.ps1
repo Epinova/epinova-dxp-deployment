@@ -91,9 +91,9 @@ try {
             Write-Host "Content copy $deploymentId has been successful."
         }
         else {
-            Write-Warning "Content copy has not been successful or the script has timedout. CurrentStatus: $($status.status)"
-            Write-Host "##vso[task.logissue type=error]Content copy has not been successful or the script has timedout. CurrentStatus: $($status.status)"
-            Write-Error "Content copy has not been successful or the script has timedout. CurrentStatus: $($status.status)" -ErrorAction Stop
+            Write-Warning "Content copy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
+            Write-Host "##vso[task.logissue type=error]Content copy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
+            Write-Error "Content copy has not been successful or the script has timed out. CurrentStatus: $($status.status)" -ErrorAction Stop
             exit 1
         }
     }
