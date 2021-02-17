@@ -119,7 +119,7 @@ try {
     }
     else {
         Write-Output "No history received from the specified target environment $targetEnvironment"
-        Write-Output "Will and can´t do anything..."
+        Write-Output "Will and can not do anything..."
     }
 
     ####################################################################################
