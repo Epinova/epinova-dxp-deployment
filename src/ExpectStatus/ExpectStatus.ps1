@@ -41,10 +41,12 @@ try {
         Write-Host "EpiCloud installed."
     }
 
+    Write-Host "/---"
     try{
         #if (-not (Get-Module -Name EpinovaDxpDeploymentUtil -ListAvailable)) {
         #    Write-Host "Could not find EpinovaDxpDeploymentUtil. Installing it."
-            Import-module EpinovaDxpDeploymentUtil -Scope CurrentUser -Force
+            #Import-module EpinovaDxpDeploymentUtil -Force -MinimumVersion 0.0.2
+            Import-Module -FullyQualifiedName @{ModuleName = 'EpinovaDxpDeploymentUtil'; ModuleVersion = '0.0.2' }
         #} else {
         #    Write-Host "EpinovaDxpDeploymentUtil installed."
             #Update-Module -Name EpinovaDxpDeploymentUtil -RequiredVersion 0.0.2
@@ -56,6 +58,7 @@ try {
         $errorMessage = $_.Exception.Message
         Write-Host $errorMessage
     }
+    Write-Host "---/"
 
     Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
 
