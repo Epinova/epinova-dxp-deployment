@@ -125,7 +125,6 @@ try {
     ####################################################################################
 
     Write-Host "---THE END---"
-
 }
 catch {
     Write-Verbose "Exception caught from task: $($_.Exception.ToString())"
