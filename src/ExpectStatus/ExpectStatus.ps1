@@ -40,7 +40,7 @@ try {
     #} else {
     #    Write-Host "EpiCloud installed."
     #}
-    Import-Module EpiCload -Verbose
+    Import-Module -FullyQualifiedName @{ModuleName = 'EpiCload'; ModuleVersion = '0.12.14' } -Verbose
 
     Write-Host "/---"
     try{
