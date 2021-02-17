@@ -77,9 +77,9 @@ try {
             Write-Host "Database export $exportId has been successful."
         }
         else {
-            Write-Warning "The database export has not been successful or the script has timedout. CurrentStatus: $($status.status)"
-            Write-Host "##vso[task.logissue type=error]The database export has not been successful or the script has timedout. CurrentStatus: $($status.status)"
-            Write-Error "The database export has not been successful or the script has timedout. CurrentStatus: $($status.status)" -ErrorAction Stop
+            Write-Warning "The database export has not been successful or the script has timed out. CurrentStatus: $($status.status)"
+            Write-Host "##vso[task.logissue type=error]The database export has not been successful or the script has timed out. CurrentStatus: $($status.status)"
+            Write-Error "The database export has not been successful or the script has timed out. CurrentStatus: $($status.status)" -ErrorAction Stop
             exit 1
         }
     }

@@ -19,7 +19,7 @@ try {
     ####################################################################################
 
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    
+
     Write-Host "Inputs:"
     Write-Host "ClientKey: $clientKey"
     Write-Host "ClientSecret: **** (it is a secret...)"
@@ -51,19 +51,6 @@ try {
         Install-Module EpiCloud -Scope CurrentUser -Force
     } else {
         Write-Host "EpiCloud installed."
-    }
-
-    try{
-        if (-not (Get-Module -Name EpinovaDxpDeploymentUtil -ListAvailable)) {
-            Write-Host "Could not find EpinovaDxpDeploymentUtil. Install it."
-            Install-Module EpinovaDxpDeploymentUtil -Scope CurrentUser -Force
-        }
-
-        Write-DxpHostInfo
-    }
-    catch{
-        $errorMessage = $_.Exception.Message
-        Write-Host $errorMessage
     }
 
     Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
@@ -134,9 +121,9 @@ try {
             Write-Host "Deployment $deploymentId has been successful."
         }
         else {
-            Write-Warning "The deploy has not been successful or the script has timedout. CurrentStatus: $($status.status)"
-            Write-Host "##vso[task.logissue type=error]The deploy has not been successful or the script has timedout. CurrentStatus: $($status.status)"
-            Write-Error "The deploy has not been successful or the script has timedout. CurrentStatus: $($status.status)" -ErrorAction Stop
+            Write-Warning "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
+            Write-Host "##vso[task.logissue type=error]The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
+            Write-Error "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)" -ErrorAction Stop
             exit 1
         }
     }

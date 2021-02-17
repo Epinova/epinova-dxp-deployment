@@ -83,9 +83,9 @@ try {
                 Write-Host "Deployment $deploymentId has been completed."
             }
             else {
-                Write-Warning "The completion for deployment $deploymentId has not been successful or the script has timedout. CurrentStatus: $($status.status)"
-                Write-Host "##vso[task.logissue type=error]The completion for deployment $deploymentId has not been successful or the script has timedout. CurrentStatus: $($status.status)"
-                Write-Error "The completion for deployment $deploymentId has not been successful or the script has timedout. CurrentStatus: $($status.status)" -ErrorAction Stop
+                Write-Warning "The completion for deployment $deploymentId has not been successful or the script has timed out. CurrentStatus: $($status.status)"
+                Write-Host "##vso[task.logissue type=error]The completion for deployment $deploymentId has not been successful or the script has timed out. CurrentStatus: $($status.status)"
+                Write-Error "The completion for deployment $deploymentId has not been successful or the script has timed out. CurrentStatus: $($status.status)" -ErrorAction Stop
                 exit 1
             }
         }
