@@ -13,7 +13,7 @@
     "version": {
         "Major": 1,
         "Minor": 0,
-        "Patch": 3
+        "Patch": 4
     },
     "groups": [
         {
@@ -140,7 +140,7 @@
             "helpMarkDown": "The type of smooth deployment you want to use. [More information about zero downtime mode](https://world.episerver.com/documentation/developer-guides/digital-experience-platform/deploying/deployment-process/smooth-deploy/)",
             "groupName": "Settings",
             "options": {
-                "": "",
+                "Not specified": "",
                 "ReadOnly": "ReadOnly",
                 "ReadWrite": "ReadWrite"
             }
