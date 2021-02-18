@@ -292,7 +292,7 @@ function Get-DxpLatestEnvironmentDeployment{
 
     $deployment = $null
     if ($deployments.Count -gt 1){
-        $deployment = $deploy[0]
+        $deployment = $deployments[0]
     }
 
     return $deployment
