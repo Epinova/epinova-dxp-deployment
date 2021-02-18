@@ -252,5 +252,3 @@ function Get-DxpEnvironmentDeployments{
 
     return $deployments
 }
-
-Export-ModuleMember -Function @( 'Write-DxpHostVersion', 'Test-DxpProjectId', 'Get-DxpDateTimeStamp', 'Invoke-DxpProgress', 'Connect-DxpEpiCloud', 'Get-DxpEnvironmentDeployments' )
