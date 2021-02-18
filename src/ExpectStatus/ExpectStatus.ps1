@@ -23,13 +23,11 @@ try {
     Write-Host "ExpectedStatus: $expectedStatus"
     Write-Host "Timeout: $timeout"
 
+    . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
+
     if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
         $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
     }
-
-    # EpinovaDxpDeploymentUtil module
-    Import-module EpinovaDxpDeploymentUtil -Force
-    Get-Module -Name EpinovaDxpDeploymentUtil -ListAvailable
 
     # EpiCloud module
     if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
@@ -44,16 +42,18 @@ try {
 
     Test-DxpProjectId -ProjectId $projectId
 
-    Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
+    Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
-    $getEpiDeploymentSplat = @{
-        ProjectId    = $projectId
-    }
+    #$getEpiDeploymentSplat = @{
+    #    ProjectId    = $projectId
+    #}
 
-    $deploy = Get-EpiDeployment @getEpiDeploymentSplat | Where-Object { $_.parameters.targetEnvironment -eq $targetEnvironment }
+    #$deploy = Get-EpiDeployment @getEpiDeploymentSplat | Where-Object { $_.parameters.targetEnvironment -eq $targetEnvironment }
+    $lastDeploy = Get-DxpLatestEnvironmentDeployment -ProjectId $projectId -TargetEnvironment $targetEnvironment
 
-    if ($deploy.Count -gt 1){
-        $lastDeploy = $deploy[0]
+    #if ($deploy.Count -gt 1){
+    if ($null -ne $lastDeploy){
+        #$lastDeploy = $deploy[0]
         Write-Output $lastDeploy | ConvertTo-Json
         Write-Output "Latest found deploy on targetEnvironment $targetEnvironment is in status $($lastDeploy.status)"
 
@@ -69,7 +69,7 @@ try {
     }
     else {
         Write-Output "No history received from the specified target environment $targetEnvironment"
-        Write-Output "Will and can´t do anything..."
+        Write-Output "Will and can not do anything..."
     }
     ####################################################################################
     Write-Host "---THE END---"

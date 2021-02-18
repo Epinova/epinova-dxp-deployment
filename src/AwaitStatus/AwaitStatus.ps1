@@ -70,12 +70,14 @@ try {
     #}
 
     #$deploy = Get-EpiDeployment @getEpiDeploymentSplat | Where-Object { $_.parameters.targetEnvironment -eq $targetEnvironment }
-    $deployments = Get-DxpEnvironmentDeployments -ProjectId $projectId -TargetEnvironment $targetEnvironment
+    #$deployments = Get-DxpEnvironmentDeployments -ProjectId $projectId -TargetEnvironment $targetEnvironment
+    $lastDeploy = Get-DxpLatestEnvironmentDeployment -ProjectId $projectId -TargetEnvironment $targetEnvironment
 
     #if ($deploy.Count -gt 1){
-    if ($deployments.Count -gt 1){
+    #if ($deployments.Count -gt 1){
+        if ($null -ne $lastDeploy){
         #$lastDeploy = $deploy[0]
-        $lastDeploy = $deployments[0]
+        #$lastDeploy = $deployments[0]
         Write-Output $lastDeploy | ConvertTo-Json
         Write-Output "Latest found deploy on targetEnvironment $targetEnvironment is in status $($lastDeploy.status)"
 
@@ -94,14 +96,7 @@ try {
                 $expectedStatus = "Reset"
             }
 
-            $progressSplat = @{
-                Projectid    = $projectId
-                DeploymentId = $deploymentId
-                PercentComplete = $percentComplete
-                ExpectedStatus = $expectedStatus
-                Timeout = $timeout
-            }
-            $status = Invoke-DxpProgress $progressSplat #-Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus $expectedStatus -Timeout $timeout
+            $status = Invoke-DxpProgress -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus $expectedStatus -Timeout $timeout
 
             $deployDateTime = Get-DxpDateTimeStamp
             Write-Host "Deploy $deploymentId ended $deployDateTime"

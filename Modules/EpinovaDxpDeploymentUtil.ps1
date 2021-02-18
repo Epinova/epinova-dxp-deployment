@@ -256,6 +256,48 @@ function Get-DxpEnvironmentDeployments{
     return $deployments
 }
 
+function Get-DxpLatestEnvironmentDeployment{
+    <#
+    .SYNOPSIS
+        Get the latest deployment for the specified environment.
+
+    .DESCRIPTION
+        Get the latest deployment for the specified environment.
+
+    .PARAMETER ProjectId
+        Project id for the project in Episerver DXP.
+
+    .PARAMETER TargetEnvironment
+        The target environment that should match the deployment.
+
+    .EXAMPLE
+        $deployment = Get-DxpLatestEnvironmentDeployment -ProjectId $ProjectId -TargetEnvironment $TargetEnvironment
+
+    .EXAMPLE
+        $deployment = Get-DxpLatestEnvironmentDeployment -ProjectId '644b6926-39b1-42a1-93d6-3771cdc4a04e' -TargetEnvironment 'Integration'
+
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [String] $ProjectId,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $TargetEnvironment
+    )
+
+    $deployments = Get-DxpEnvironmentDeployments -ProjectId $ProjectId -TargetEnvironment $TargetEnvironment
+
+    $deployment = $null
+    if ($deployments.Count -gt 1){
+        $deployment = $deploy[0]
+    }
+
+    return $deployment
+}
+
 function Invoke-ExportProgress {
     [CmdletBinding()]
     param(
@@ -278,7 +320,7 @@ function Invoke-ExportProgress {
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string] $expectedStatus,
-        
+
         [Parameter(Mandatory = $true)]
         [int] $timeout
     )
