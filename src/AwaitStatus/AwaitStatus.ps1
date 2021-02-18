@@ -22,6 +22,7 @@ try {
     Write-Host "Timeout: $timeout"
 
     #. "$PSScriptRoot\Helper.ps1"
+    . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
     #WriteInfo
 
     if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
@@ -29,8 +30,8 @@ try {
     }
 
     # EpinovaDxpDeploymentUtil module
-    Import-module EpinovaDxpDeploymentUtil -Force
-    Get-Module -Name EpinovaDxpDeploymentUtil -ListAvailable
+    #Import-module EpinovaDxpDeploymentUtil -Force
+    #Get-Module -Name EpinovaDxpDeploymentUtil -ListAvailable
 
     # EpiCloud module
     if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
@@ -61,7 +62,7 @@ try {
 
     Test-DxpProjectId -ProjectId $projectId
 
-    #Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
+    #Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
     Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
     #$getEpiDeploymentSplat = @{
