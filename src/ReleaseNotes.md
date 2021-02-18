@@ -1,6 +1,6 @@
 # Release notes
 
-## v1.9.33 - v1.9.35
+## v1.9.33 - v1.9.36
 - Start using EpinovaDxpDeploymentUtil.ps1 script. Problem with authentication in custom module.
 - Test using splat on function calls.
 
