@@ -299,53 +299,83 @@ function Get-DxpLatestEnvironmentDeployment{
 }
 
 function Invoke-ExportProgress {
+    <#
+    .SYNOPSIS
+        Start a export of a database from DXP.
+
+    .DESCRIPTION
+        Start a export of a database from DXP.
+
+    .PARAMETER ProjectId
+        Project id for the project in Episerver DXP.
+
+    .PARAMETER ExportId
+        .
+
+    .PARAMETER Environment
+        The environment that the database should be exported from.
+
+    .PARAMETER DatabaseName
+        The name of the database that should be downloaded. cms or commerce.
+
+    .PARAMETER ExpectedStatus
+        The status that we expect when the export is done. 'Succeeded'
+
+    .PARAMETER Timeout
+        The timeout. How long time the script will wait for the export to be finished.
+
+    .EXAMPLE
+        $status = ExportProgress -Projectid $projectId -ExportId $exportId -Environment $environment -DatabaseName $databaseName -ExpectedStatus "Succeeded" -Timeout $timeout
+
+
+    #>
     [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [string] $projectId,
+        [string] $ProjectId,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [string] $exportId,
+        [string] $ExportId,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [string] $environment,
+        [string] $Environment,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [string] $databaseName,
+        [string] $DatabaseName,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [string] $expectedStatus,
+        [string] $ExpectedStatus,
 
         [Parameter(Mandatory = $true)]
-        [int] $timeout
+        [int] $Timeout
     )
     $sw = [Diagnostics.Stopwatch]::StartNew()
     $sw.Start()
     $currentStatus = ""
     $iterator = 0
-    while ($currentStatus -ne $expectedStatus) {
-        $status = Get-EpiDatabaseExport -projectId $projectId -id $exportId -environment $environment -databaseName $databaseName
+    while ($currentStatus -ne $ExpectedStatus) {
+        $status = Get-EpiDatabaseExport -ProjectId $ProjectId -Id $ExportId -Environment $Environment -DatabaseName $DatabaseName
         $currentStatus = $status.status
         if ($iterator % 6 -eq 0) {
             Write-Host "Status: $($currentStatus). ElapsedSeconds: $($sw.Elapsed.TotalSeconds)"
         }
-        if ($currentStatus -ne $expectedStatus) {
+        if ($currentStatus -ne $ExpectedStatus) {
             Start-Sleep 10
         }
-        if ($sw.Elapsed.TotalSeconds -ge $timeout) { break }
-        if ($currentStatus -eq $expectedStatus) { break }
+        if ($sw.Elapsed.TotalSeconds -ge $Timeout) { break }
+        if ($currentStatus -eq $ExpectedStatus) { break }
         $iterator++
     }
 
     $sw.Stop()
     Write-Host "Stopped iteration after $($sw.Elapsed.TotalSeconds) seconds."
 
-    $status = Get-EpiDatabaseExport -projectId $projectId -id $exportId -environment $environment -databaseName $databaseName
+    $status = Get-EpiDatabaseExport -ProjectId $ProjectId -Id $ExportId -Environment $Environment -DatabaseName $DatabaseName
     Write-Host $status
     return $status
 }
