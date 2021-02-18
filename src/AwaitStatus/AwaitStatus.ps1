@@ -94,7 +94,14 @@ try {
                 $expectedStatus = "Reset"
             }
 
-            $status = Invoke-DxpProgress -projectid $projectId -deploymentId $deploymentId -percentComplete $percentComplete -expectedStatus $expectedStatus -timeout $timeout
+            $progressSplat = @{
+                Projectid    = $projectId
+                DeploymentId = $deploymentId
+                PercentComplete = $percentComplete
+                ExpectedStatus = $expectedStatus
+                Timeout = $timeout
+            }
+            $status = Invoke-DxpProgress $progressSplat #-Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus $expectedStatus -Timeout $timeout
 
             $deployDateTime = Get-DxpDateTimeStamp
             Write-Host "Deploy $deploymentId ended $deployDateTime"
