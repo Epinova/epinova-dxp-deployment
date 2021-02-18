@@ -1,9 +1,10 @@
 # Release notes
 
-## v1.9.33
+## v1.9.33 - v1.9.34
 - Start using EpinovaDxpDeploymentUtil.ps1 script. Problem with authentication in custom module.
+- Test using splat on function calls.
 
-## v1.9.19, v1.9.32
+## v1.9.19 - v1.9.32
 - Added EpinovaDxpDeploymentUtil module to verify local PSModules.  
 - Build script that move modules auto to ps_modules folders in tasks.  
 - Fixed some result texts.

@@ -23,8 +23,7 @@ function Write-DxpHostVersion() {
     Write-Host $version
 }
 
-function Test-IsGuid
-{
+function Test-IsGuid {
         <#
     .SYNOPSIS
         Test a GUID.
@@ -108,65 +107,69 @@ function Invoke-DxpProgress {
     .DESCRIPTION
         Write the progress of a operation in the Episerver DXP environment to the host.
 
-    .PARAMETER projectId
+    .PARAMETER ProjectId
         Project id for the project in Episerver DXP.
 
-    .PARAMETER deploymentId
+    .PARAMETER DeploymentId
         Deployment id for the specific deployment in Episerver DXP that you want to show the progress for.
 
-    .PARAMETER percentComplete
+    .PARAMETER PercentComplete
         The initialized percentComplete value that we got from the invoke of the operation.
 
-    .PARAMETER expectedStatus
+    .PARAMETER ExpectedStatus
         The expectedStatus that the deployment should get when done/before timeout.
 
-    .PARAMETER timeout
+    .PARAMETER Timeout
         The maximum time that the progress should run. When the script has timeout if will stop.
 
     .EXAMPLE
-        $status = Invoke-DxpProgress -projectid $projectId -deploymentId $deploymentId -percentComplete $percentComplete -expectedStatus $expectedStatus -timeout $timeout
+        $status = Invoke-DxpProgress -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus $expectedStatus -Timeout $timeout
 
     .EXAMPLE
-        $status = Invoke-DxpProgress -projectid '644b6926-39b1-42a1-93d6-3771cdc4a04e' -deploymentId '817b5df3-21cd-4080-adbd-6c211b71f34d' -percentComplete 0 -expectedStatus 'Success' -timeout 1800
+        $status = Invoke-DxpProgress -Projectid '644b6926-39b1-42a1-93d6-3771cdc4a04e' -DeploymentId '817b5df3-21cd-4080-adbd-6c211b71f34d' -PercentComplete 0 -ExpectedStatus 'Success' -Timeout 1800
 
     #>
     [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [string] $projectId,
+        [string] $ProjectId,
+
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [string] $deploymentId,
+        [string] $DeploymentId,
+
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [int] $percentComplete,
+        [int] $PercentComplete,
+
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [string] $expectedStatus,
+        [string] $ExpectedStatus,
+
         [Parameter(Mandatory = $true)]
-        [int] $timeout
+        [int] $Timeout
     )
 
     $sw = [Diagnostics.Stopwatch]::StartNew()
     $sw.Start()
-    while ($percentComplete -le 100) {
-        $status = Get-EpiDeployment -ProjectId $projectId -Id $deploymentId
-        if ($percentComplete -ne $status.percentComplete) {
-            $percentComplete = $status.percentComplete
-            Write-Host $percentComplete "%. Status: $($status.status). ElapsedSeconds: $($sw.Elapsed.TotalSeconds)"
+    while ($PercentComplete -le 100) {
+        $status = Get-EpiDeployment -ProjectId $ProjectId -Id $DeploymentId
+        if ($PercentComplete -ne $status.percentComplete) {
+            $PercentComplete = $status.percentComplete
+            Write-Host $PercentComplete "%. Status: $($status.status). ElapsedSeconds: $($sw.Elapsed.TotalSeconds)"
         }
-        if ($percentComplete -le 100 -or $status.status -ne $expectedStatus) {
+        if ($PercentComplete -le 100 -or $status.status -ne $ExpectedStatus) {
             Start-Sleep 5
         }
-        if ($sw.Elapsed.TotalSeconds -ge $timeout) { break }
-        if ($status.percentComplete -eq 100 -and $status.status -eq $expectedStatus) { break }
+        if ($sw.Elapsed.TotalSeconds -ge $Timeout) { break }
+        if ($status.percentComplete -eq 100 -and $status.status -eq $ExpectedStatus) { break }
     }
 
     $sw.Stop()
     Write-Host "Stopped iteration after $($sw.Elapsed.TotalSeconds) seconds."
 
-    $status = Get-EpiDeployment -ProjectId $projectId -Id $deploymentId
+    $status = Get-EpiDeployment -ProjectId $ProjectId -Id $DeploymentId
     $status
     return $status
 }
@@ -251,4 +254,56 @@ function Get-DxpEnvironmentDeployments{
     $deployments = Get-EpiDeployment @getEpiDeploymentSplat | Where-Object { $_.parameters.targetEnvironment -eq $TargetEnvironment }
 
     return $deployments
+}
+
+function Invoke-ExportProgress {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $projectId,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $exportId,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $environment,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $databaseName,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $expectedStatus,
+        
+        [Parameter(Mandatory = $true)]
+        [int] $timeout
+    )
+    $sw = [Diagnostics.Stopwatch]::StartNew()
+    $sw.Start()
+    $currentStatus = ""
+    $iterator = 0
+    while ($currentStatus -ne $expectedStatus) {
+        $status = Get-EpiDatabaseExport -projectId $projectId -id $exportId -environment $environment -databaseName $databaseName
+        $currentStatus = $status.status
+        if ($iterator % 6 -eq 0) {
+            Write-Host "Status: $($currentStatus). ElapsedSeconds: $($sw.Elapsed.TotalSeconds)"
+        }
+        if ($currentStatus -ne $expectedStatus) {
+            Start-Sleep 10
+        }
+        if ($sw.Elapsed.TotalSeconds -ge $timeout) { break }
+        if ($currentStatus -eq $expectedStatus) { break }
+        $iterator++
+    }
+
+    $sw.Stop()
+    Write-Host "Stopped iteration after $($sw.Elapsed.TotalSeconds) seconds."
+
+    $status = Get-EpiDatabaseExport -projectId $projectId -id $exportId -environment $environment -databaseName $databaseName
+    Write-Host $status
+    return $status
 }
