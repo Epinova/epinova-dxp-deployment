@@ -73,6 +73,7 @@ try {
         $myPackages = $resolvedCmsPackagePath.Name
     }
 
+    $resolvedCommercePackagePath = $null
     if ($sourceApp -eq "commerce" -or $sourceApp -eq "cms,commerce"){
         $resolvedCommercePackagePath = Get-ChildItem -Path $dropPath -Filter *.commerce.*.nupkg
         Write-Host "Commerce PackagePath: $resolvedCommercePackagePath"
