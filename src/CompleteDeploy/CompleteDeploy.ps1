@@ -21,26 +21,43 @@ try {
     Write-Host "TargetEnvironment: $targetEnvironment"
     Write-Host "Timeout: $timeout"
 
-    . "$PSScriptRoot\Helper.ps1"
-    WriteInfo
+    . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
 
-    if ((Test-IsGuid -ObjectGuid $projectId) -ne $true){
-        Write-Error "The provided ProjectId is not a guid value."
-    }
+    #. "$PSScriptRoot\Helper.ps1"
+    #WriteInfo
 
+    #if ((Test-IsGuid -ObjectGuid $projectId) -ne $true){
+    #    Write-Error "The provided ProjectId is not a guid value."
+    #}
     if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
         $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
     }
 
+    # EpiCloud module
     if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
         Write-Host "Could not find EpiCloud. Installing it."
         Install-Module EpiCloud -Scope CurrentUser -Force
     } else {
         Write-Host "EpiCloud installed."
+        Get-Module -Name EpiCloud -ListAvailable
     }
 
+    #if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
+    #    $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
+    #}
 
-    Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
+    #if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
+    #    Write-Host "Could not find EpiCloud. Installing it."
+    #    Install-Module EpiCloud -Scope CurrentUser -Force
+    #} else {
+    #    Write-Host "EpiCloud installed."
+    #}
+
+    Write-DxpHostVersion
+
+    Test-DxpProjectId -ProjectId $projectId
+
+    Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
     $getEpiDeploymentSplat = @{
         ProjectId    = $projectId
