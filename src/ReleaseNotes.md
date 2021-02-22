@@ -1,7 +1,18 @@
 # Release notes
 
-## v1.9.19, v1.9.20
+## v1.9.33 - v1.9.42
+- Start using EpinovaDxpDeploymentUtil.ps1 script. Problem with authentication in custom module.
+- Test using splat on function calls.
+- Centralize EpiCloud module. Deploy with script during build to ps_modules folder(s).
+- Centralize EpinovaDxpDeploymentUtil script. Deploy with script during build to ps_modules folder(s).
+- Centralize VstsTaskSdk module. Deploy with script during build to ps_modules folder(s).
+- Create one CopyScripts build script. That handle all the scripts and modules that should be copied during build.
+- Fixed bug in SmokeTestIfFailReset regarding $deploymentId
+
+## v1.9.19 - v1.9.32
 - Added EpinovaDxpDeploymentUtil module to verify local PSModules.  
+- Build script that move modules auto to ps_modules folders in tasks.  
+- Fixed some result texts.
 
 ## v1.9.18
 - Added SecurityProtocol Tls12 to all tasks  

@@ -23,50 +23,30 @@ try {
     Write-Host "ExpectedStatus: $expectedStatus"
     Write-Host "Timeout: $timeout"
 
-    . "$PSScriptRoot\Helper.ps1"
-    WriteInfo
-
-    if ((Test-IsGuid -ObjectGuid $projectId) -ne $true){
-        Write-Error "The provided ProjectId is not a guid value."
-    }
+    . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
 
     if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
         $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
     }
 
+    # EpiCloud module
     if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
         Write-Host "Could not find EpiCloud. Installing it."
         Install-Module EpiCloud -Scope CurrentUser -Force
     } else {
         Write-Host "EpiCloud installed."
+        Get-Module -Name EpiCloud -ListAvailable
     }
+    
+    Write-DxpHostVersion
 
-    try{
-        #if (-not (Get-Module -Name EpinovaDxpDeploymentUtil -ListAvailable)) {
-        #    Write-Host "Could not find EpinovaDxpDeploymentUtil. Installing it."
-            Import-module EpinovaDxpDeploymentUtil -Scope CurrentUser -Force
-        #} else {
-        #    Write-Host "EpinovaDxpDeploymentUtil installed."
-            #Update-Module -Name EpinovaDxpDeploymentUtil -RequiredVersion 0.0.2
-            Get-Module -Name EpinovaDxpDeploymentUtil -ListAvailable
-        #}
-        Write-DxpHostInfo
-    }
-    catch{
-        $errorMessage = $_.Exception.Message
-        Write-Host $errorMessage
-    }
+    Test-DxpProjectId -ProjectId $projectId
 
-    Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
+    Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
-    $getEpiDeploymentSplat = @{
-        ProjectId    = $projectId
-    }
+    $lastDeploy = Get-DxpLatestEnvironmentDeployment -ProjectId $projectId -TargetEnvironment $targetEnvironment
 
-    $deploy = Get-EpiDeployment @getEpiDeploymentSplat | Where-Object { $_.parameters.targetEnvironment -eq $targetEnvironment }
-
-    if ($deploy.Count -gt 1){
-        $lastDeploy = $deploy[0]
+    if ($null -ne $lastDeploy){
         Write-Output $lastDeploy | ConvertTo-Json
         Write-Output "Latest found deploy on targetEnvironment $targetEnvironment is in status $($lastDeploy.status)"
 
@@ -82,7 +62,7 @@ try {
     }
     else {
         Write-Output "No history received from the specified target environment $targetEnvironment"
-        Write-Output "Will and can´t do anything..."
+        Write-Output "Will and can not do anything..."
     }
     ####################################################################################
     Write-Host "---THE END---"

@@ -21,32 +21,28 @@ try {
     Write-Host "TargetEnvironment: $targetEnvironment"
     Write-Host "Timeout: $timeout"
 
-    . "$PSScriptRoot\Helper.ps1"
-    WriteInfo
-
-    if ((Test-IsGuid -ObjectGuid $projectId) -ne $true){
-        Write-Error "The provided ProjectId is not a guid value."
-    }
+    . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
 
     if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
         $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
     }
 
+    # EpiCloud module
     if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
         Write-Host "Could not find EpiCloud. Installing it."
         Install-Module EpiCloud -Scope CurrentUser -Force
     } else {
         Write-Host "EpiCloud installed."
+        Get-Module -Name EpiCloud -ListAvailable
     }
 
+    Write-DxpHostVersion
 
-    Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
+    Test-DxpProjectId -ProjectId $projectId
 
-    $getEpiDeploymentSplat = @{
-        ProjectId    = $projectId
-    }
+    Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
-    $deploy = Get-EpiDeployment @getEpiDeploymentSplat | Where-Object { $_.Status -eq 'AwaitingVerification' -and $_.parameters.targetEnvironment -eq $targetEnvironment }
+    $deploy = Get-DxpAwaitingEnvironmentDeployment -ProjectId $projectId -TargetEnvironment $targetEnvironment
     $deploy
     if (-not $deploy) {
         Write-Host "##vso[task.logissue type=error]Failed to locate a deployment in $targetEnvironment to complete!"
@@ -69,23 +65,22 @@ try {
         $complete
 
         if ($complete.status -eq "Completing") {
-            $deployDateTime = GetDateTimeStamp
-            Write-Host "Complete $deploymentId started $deployDateTime."
+            $deployDateTime = Get-DxpDateTimeStamp
+            Write-Host "Complete deploy $deploymentId started $deployDateTime."
     
             $percentComplete = $complete.percentComplete
+            $status = Invoke-DxpProgress -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus "Succeeded" -Timeout $timeout
 
-            $status = Progress -projectid $projectId -deploymentId $deploymentId -percentComplete $percentComplete -expectedStatus "Succeeded" -timeout $timeout
-
-            $deployDateTime = GetDateTimeStamp
-            Write-Host "Complete $deploymentId ended $deployDateTime"
+            $deployDateTime = Get-DxpDateTimeStamp
+            Write-Host "Complete deploy $deploymentId ended $deployDateTime"
     
             if ($status.status -eq "Succeeded") {
                 Write-Host "Deployment $deploymentId has been completed."
             }
             else {
-                Write-Warning "The completion for deployment $deploymentId has not been successful or the script has timedout. CurrentStatus: $($status.status)"
-                Write-Host "##vso[task.logissue type=error]The completion for deployment $deploymentId has not been successful or the script has timedout. CurrentStatus: $($status.status)"
-                Write-Error "The completion for deployment $deploymentId has not been successful or the script has timedout. CurrentStatus: $($status.status)" -ErrorAction Stop
+                Write-Warning "The completion for deployment $deploymentId has not been successful or the script has timed out. CurrentStatus: $($status.status)"
+                Write-Host "##vso[task.logissue type=error]The completion for deployment $deploymentId has not been successful or the script has timed out. CurrentStatus: $($status.status)"
+                Write-Error "The completion for deployment $deploymentId has not been successful or the script has timed out. CurrentStatus: $($status.status)" -ErrorAction Stop
                 exit 1
             }
         }

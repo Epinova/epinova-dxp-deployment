@@ -26,13 +26,7 @@ try {
     Write-Host "RetentionHours: $retentionHours"
     Write-Host "Timeout: $timeout"
 
-    . "$PSScriptRoot\Helper.ps1"
-    WriteInfo
-
-    if ((Test-IsGuid -ObjectGuid $projectId) -ne $true){
-        Write-Error "The provided ProjectId is not a guid value."
-        exit 1
-    }
+    . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
 
     if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
         $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
@@ -43,9 +37,14 @@ try {
         Install-Module EpiCloud -Scope CurrentUser -Force
     } else {
         Write-Host "EpiCloud installed."
+        Get-Module -Name EpiCloud -ListAvailable
     }
 
-    Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
+    Write-DxpHostVersion
+
+    Test-DxpProjectId -ProjectId $projectId
+
+    Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
     $exportDatabaseSplat = @{
         ProjectId          = $projectId
@@ -65,21 +64,21 @@ try {
     $exportId = $export.id
 
     if ($export.status -eq "InProgress") {
-        $deployDateTime = GetDateTimeStamp
+        $deployDateTime = Get-DxpDateTimeStamp
         Write-Host "Export $exportId started $deployDateTime."
 
-        $status = ExportProgress -projectid $projectId -exportId $exportId -environment $environment -databaseName $databaseName -expectedStatus "Succeeded" -timeout $timeout
+        $status = Invoke-DxpExportProgress -Projectid $projectId -ExportId $exportId -Environment $environment -DatabaseName $databaseName -ExpectedStatus "Succeeded" -Timeout $timeout
 
-        $deployDateTime = GetDateTimeStamp
+        $deployDateTime = Get-DxpDateTimeStamp
         Write-Host "Export $exportId ended $deployDateTime"
 
         if ($status.status -eq "Succeeded") {
             Write-Host "Database export $exportId has been successful."
         }
         else {
-            Write-Warning "The database export has not been successful or the script has timedout. CurrentStatus: $($status.status)"
-            Write-Host "##vso[task.logissue type=error]The database export has not been successful or the script has timedout. CurrentStatus: $($status.status)"
-            Write-Error "The database export has not been successful or the script has timedout. CurrentStatus: $($status.status)" -ErrorAction Stop
+            Write-Warning "The database export has not been successful or the script has timed out. CurrentStatus: $($status.status)"
+            Write-Host "##vso[task.logissue type=error]The database export has not been successful or the script has timed out. CurrentStatus: $($status.status)"
+            Write-Error "The database export has not been successful or the script has timed out. CurrentStatus: $($status.status)" -ErrorAction Stop
             exit 1
         }
     }

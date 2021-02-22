@@ -21,40 +21,35 @@ try {
     Write-Host "TargetEnvironment: $targetEnvironment"
     Write-Host "Timeout: $timeout"
 
-    . "$PSScriptRoot\Helper.ps1"
-    WriteInfo
-
-    if ((Test-IsGuid -ObjectGuid $projectId) -ne $true){
-        Write-Error "The provided ProjectId is not a guid value."
-    }
+    . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
 
     if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
         $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
     }
 
+    # EpiCloud module
     if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
         Write-Host "Could not find EpiCloud. Installing it."
         Install-Module EpiCloud -Scope CurrentUser -Force
     } else {
         Write-Host "EpiCloud installed."
+        Get-Module -Name EpiCloud -ListAvailable
     }
 
+    Write-DxpHostVersion
 
-    Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
+    Test-DxpProjectId -ProjectId $projectId
 
-    $getEpiDeploymentSplat = @{
-        ProjectId    = $projectId
-    }
+    Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
-    $deploy = Get-EpiDeployment @getEpiDeploymentSplat | Where-Object { $_.parameters.targetEnvironment -eq $targetEnvironment }
+    $lastDeploy = Get-DxpLatestEnvironmentDeployment -ProjectId $projectId -TargetEnvironment $targetEnvironment
 
-    if ($deploy.Count -gt 1){
-        $lastDeploy = $deploy[0]
+    if ($null -ne $lastDeploy){
         Write-Output $lastDeploy | ConvertTo-Json
         Write-Output "Latest found deploy on targetEnvironment $targetEnvironment is in status $($lastDeploy.status)"
 
         if ($lastDeploy.status -eq "InProgress" -or $lastDeploy.status -eq "Resetting") {
-            $deployDateTime = GetDateTimeStamp
+            $deployDateTime = Get-DxpDateTimeStamp
             $deploymentId = $lastDeploy.id
             Write-Host "Deploy $deploymentId started $deployDateTime."
 
@@ -68,9 +63,9 @@ try {
                 $expectedStatus = "Reset"
             }
 
-            $status = Progress -projectid $projectId -deploymentId $deploymentId -percentComplete $percentComplete -expectedStatus $expectedStatus -timeout $timeout
+            $status = Invoke-DxpProgress -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus $expectedStatus -Timeout $timeout
 
-            $deployDateTime = GetDateTimeStamp
+            $deployDateTime = Get-DxpDateTimeStamp
             Write-Host "Deploy $deploymentId ended $deployDateTime"
 
             if ($status.status -eq "AwaitingVerification") {
@@ -80,9 +75,9 @@ try {
                 Write-Host "Reset $deploymentId has been successful."
             }
             else {
-                Write-Warning "The deploy has not been successful or the script has timedout. CurrentStatus: $($status.status)"
-                Write-Host "##vso[task.logissue type=error]The deploy has not been successful or the script has timedout. CurrentStatus: $($status.status)"
-                Write-Error "The deploy has not been successful or the script has timedout. CurrentStatus: $($status.status)" -ErrorAction Stop
+                Write-Warning "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
+                Write-Host "##vso[task.logissue type=error]The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
+                Write-Error "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)" -ErrorAction Stop
                 exit 1
             }
         }
@@ -98,13 +93,12 @@ try {
     }
     else {
         Write-Output "No history received from the specified target environment $targetEnvironment"
-        Write-Output "Will and can´t do anything..."
+        Write-Output "Will and can not do anything..."
     }
 
     ####################################################################################
 
     Write-Host "---THE END---"
-
 }
 catch {
     Write-Verbose "Exception caught from task: $($_.Exception.ToString())"
