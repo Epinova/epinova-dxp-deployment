@@ -40,22 +40,11 @@ try {
 
     Test-DxpProjectId -ProjectId $projectId
 
-    #Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
     Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
-    #$getEpiDeploymentSplat = @{
-    #    ProjectId    = $projectId
-    #}
-
-    #$deploy = Get-EpiDeployment @getEpiDeploymentSplat | Where-Object { $_.parameters.targetEnvironment -eq $targetEnvironment }
-    #$deployments = Get-DxpEnvironmentDeployments -ProjectId $projectId -TargetEnvironment $targetEnvironment
     $lastDeploy = Get-DxpLatestEnvironmentDeployment -ProjectId $projectId -TargetEnvironment $targetEnvironment
 
-    #if ($deploy.Count -gt 1){
-    #if ($deployments.Count -gt 1){
-        if ($null -ne $lastDeploy){
-        #$lastDeploy = $deploy[0]
-        #$lastDeploy = $deployments[0]
+    if ($null -ne $lastDeploy){
         Write-Output $lastDeploy | ConvertTo-Json
         Write-Output "Latest found deploy on targetEnvironment $targetEnvironment is in status $($lastDeploy.status)"
 

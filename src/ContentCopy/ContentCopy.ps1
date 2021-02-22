@@ -26,13 +26,7 @@ try {
     Write-Host "IncludeBlob: $includeBlob"
     Write-Host "IncludeDb: $includeDb"
 
-    #. "$PSScriptRoot\Helper.ps1"
-    #WriteInfo
     . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
-
-    #if ((Test-IsGuid -ObjectGuid $projectId) -ne $true){
-    #    Write-Error "The provided ProjectId is not a guid value."
-    #}
 
     if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
         $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
@@ -50,7 +44,6 @@ try {
 
     Test-DxpProjectId -ProjectId $projectId
 
-    #Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
     Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
     switch ($environment){
@@ -89,7 +82,6 @@ try {
         $deployDateTime = Get-DxpDateTimeStamp
         Write-Host "Content copy $deploymentId started $deployDateTime."
         $percentComplete = $deploy.percentComplete
-        #$status = Progress -projectid $projectId -deploymentId $deploymentId -percentComplete $percentComplete -expectedStatus "Succeeded" -timeout $timeout
         $status = Invoke-DxpProgress -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus "Succeeded" -Timeout $timeout
 
         $deployDateTime = Get-DxpDateTimeStamp

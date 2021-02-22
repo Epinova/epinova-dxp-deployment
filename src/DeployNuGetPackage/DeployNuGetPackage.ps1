@@ -11,8 +11,6 @@ try {
     $sourceApp = Get-VstsInput -Name "SourceApp" -Require -ErrorAction "Stop"
     $useMaintenancePage = Get-VstsInput -Name "UseMaintenancePage" -AsBool
     $dropPath = Get-VstsInput -Name "DropPath" -Require -ErrorAction "Stop"
-    #$includeBlob = $false #switches to copy BLOBs from source to target environment
-    #$includeDb = $false #switched to copy the DB from source to target environment
     $timeout = Get-VstsInput -Name "Timeout" -AsInt -Require -ErrorAction "Stop"
 
     # 30 min timeout
@@ -51,7 +49,6 @@ try {
 
     Test-DxpProjectId -ProjectId $projectId
 
-    #Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
     Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
     $packageLocation = Get-EpiDeploymentPackageLocation -ProjectId $projectId
@@ -107,13 +104,10 @@ try {
     $deploymentId = $deploy.id
 
     if ($deploy.status -eq "InProgress") {
-        #$deployDateTime = GetDateTimeStamp
         $deployDateTime = Get-DxpDateTimeStamp
         Write-Host "Deploy $deploymentId started $deployDateTime."
 
         $percentComplete = $deploy.percentComplete
-
-        #$status = Progress -projectid $projectId -deploymentId $deploymentId -percentComplete $percentComplete -expectedStatus "AwaitingVerification" -timeout $timeout
         $status = Invoke-DxpProgress -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus "AwaitingVerification" -Timeout $timeout
 
         $deployDateTime = Get-DxpDateTimeStamp

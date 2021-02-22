@@ -28,14 +28,6 @@ try {
 
     . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
 
-    #. "$PSScriptRoot\Helper.ps1"
-    #WriteInfo
-
-    #if ((Test-IsGuid -ObjectGuid $projectId) -ne $true){
-    #    Write-Error "The provided ProjectId is not a guid value."
-    #    exit 1
-    #}
-
     if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
         $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
     }
@@ -52,7 +44,6 @@ try {
 
     Test-DxpProjectId -ProjectId $projectId
 
-    #Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
     Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
     $exportDatabaseSplat = @{
@@ -76,7 +67,6 @@ try {
         $deployDateTime = Get-DxpDateTimeStamp
         Write-Host "Export $exportId started $deployDateTime."
 
-        #$status = ExportProgress -projectid $projectId -exportId $exportId -environment $environment -databaseName $databaseName -expectedStatus "Succeeded" -timeout $timeout
         $status = Invoke-DxpExportProgress -Projectid $projectId -ExportId $exportId -Environment $environment -DatabaseName $databaseName -ExpectedStatus "Succeeded" -Timeout $timeout
 
         $deployDateTime = Get-DxpDateTimeStamp

@@ -13,7 +13,7 @@
     "version": {
         "Major": 1,
         "Minor": 1,
-        "Patch": 7
+        "Patch": 8
     },
     "groups": [
         {
@@ -37,7 +37,7 @@
             "isExpanded": false
         }
     ],
-    "releaseNotes": "Fixed bug with $deploymentId",
+    "releaseNotes": "Using EpinovaDxpDeploymentUtil. Fixed bug with $deploymentId.",
     "minimumAgentVersion": "2.134.0",
     "inputs": [
         {

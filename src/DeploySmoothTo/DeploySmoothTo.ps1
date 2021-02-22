@@ -37,14 +37,6 @@ try {
 
     . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
 
-    #. "$PSScriptRoot\Helper.ps1"
-    #WriteInfo
-
-
-    #if ((Test-IsGuid -ObjectGuid $projectId) -ne $true){
-    #    Write-Error "The provided ProjectId is not a guid value."
-    #}
-
     if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
         $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
     }
@@ -61,7 +53,6 @@ try {
 
     Test-DxpProjectId -ProjectId $projectId
 
-    #Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
     Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
     $sourceApps = $sourceApp.Split(",")
@@ -86,7 +77,6 @@ try {
         $deployDateTime = Get-DxpDateTimeStamp
         Write-Host "Deploy $deploymentId started $deployDateTime."
         $percentComplete = $deploy.percentComplete
-        #$status = Progress -projectid $projectId -deploymentId $deploymentId -percentComplete $percentComplete -expectedStatus "AwaitingVerification" -timeout $timeout
         $status = Invoke-DxpProgress -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus "AwaitingVerification" -Timeout $timeout
 
         $deployDateTime = Get-DxpDateTimeStamp

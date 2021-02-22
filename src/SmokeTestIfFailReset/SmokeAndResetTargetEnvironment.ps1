@@ -36,17 +36,11 @@ try {
     $AllProtocols = [System.Net.SecurityProtocolType]'Ssl3,Tls,Tls11,Tls12'
     [System.Net.ServicePointManager]::SecurityProtocol = $AllProtocols
 
-    #. "$PSScriptRoot\Helper.ps1"
-    #WriteInfo
     . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
 
     if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
         $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
     }
-
-    #if ((Test-IsGuid -ObjectGuid $projectId) -ne $true){
-    #    Write-Error "The provided ProjectId is not a guid value."
-    #}
 
     Write-Host "Start sleep for $($sleepBeforeStart) seconds before we start check URL(s)."
     Start-Sleep $sleepBeforeStart
@@ -111,11 +105,6 @@ try {
 
     if ($resetDeployment -eq $true) {
 
-
-        #if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
-        #    $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
-        #}
-    
         # EpiCloud module
         if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
             Write-Host "Could not find EpiCloud. Installing it."
@@ -125,7 +114,6 @@ try {
             Get-Module -Name EpiCloud -ListAvailable
         }
  
-        #Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
         Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
         $getEpiDeploymentSplat = @{
@@ -155,7 +143,6 @@ try {
                 Reset-EpiDeployment -ProjectId $projectId -Id $deploymentId
 
                 $percentComplete = $status.percentComplete
-                #$status = Progress -projectid $projectId -deploymentId $deploymentId -percentComplete $percentComplete -expectedStatus "Reset" -timeout $timeout                
                 $status = Invoke-DxpProgress -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus "Reset" -Timeout $timeout
 
                 if ($status.status -eq "Reset") {

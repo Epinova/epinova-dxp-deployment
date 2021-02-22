@@ -44,16 +44,9 @@ try {
 
     Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
-    #$getEpiDeploymentSplat = @{
-    #    ProjectId    = $projectId
-    #}
-
-    #$deploy = Get-EpiDeployment @getEpiDeploymentSplat | Where-Object { $_.parameters.targetEnvironment -eq $targetEnvironment }
     $lastDeploy = Get-DxpLatestEnvironmentDeployment -ProjectId $projectId -TargetEnvironment $targetEnvironment
 
-    #if ($deploy.Count -gt 1){
     if ($null -ne $lastDeploy){
-        #$lastDeploy = $deploy[0]
         Write-Output $lastDeploy | ConvertTo-Json
         Write-Output "Latest found deploy on targetEnvironment $targetEnvironment is in status $($lastDeploy.status)"
 
