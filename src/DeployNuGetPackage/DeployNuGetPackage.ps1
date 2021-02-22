@@ -30,17 +30,11 @@ try {
     Write-Host "DropPath: $dropPath"
     Write-Host "Timeout: $timeout"
 
-    . "$PSScriptRoot\Helper.ps1"
-    WriteInfo
-
-    if ((Test-IsGuid -ObjectGuid $projectId) -ne $true){
-        Write-Error "The provided ProjectId is not a guid value."
-    }
+    . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
 
     if (-not ($env:PSModulePath.Contains("C:\Modules\azurerm_6.7.0"))){
         $env:PSModulePath = "C:\Modules\azurerm_6.7.0;" + $env:PSModulePath   
     }
-    #$env:PSModulePath = "C:\Modules\azurerm_6.7.0;$PSScriptRoot\ps_modules;" + $env:PSModulePath
 
     if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
         $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
@@ -53,7 +47,12 @@ try {
         Write-Host "EpiCloud installed."
     }
 
-    Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
+    Write-DxpHostVersion
+
+    Test-DxpProjectId -ProjectId $projectId
+
+    #Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
+    Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
     $packageLocation = Get-EpiDeploymentPackageLocation -ProjectId $projectId
     Write-Host "PackageLocation: $packageLocation"
@@ -107,14 +106,16 @@ try {
     $deploymentId = $deploy.id
 
     if ($deploy.status -eq "InProgress") {
-        $deployDateTime = GetDateTimeStamp
+        #$deployDateTime = GetDateTimeStamp
+        $deployDateTime = Get-DxpDateTimeStamp
         Write-Host "Deploy $deploymentId started $deployDateTime."
 
         $percentComplete = $deploy.percentComplete
 
-        $status = Progress -projectid $projectId -deploymentId $deploymentId -percentComplete $percentComplete -expectedStatus "AwaitingVerification" -timeout $timeout
+        #$status = Progress -projectid $projectId -deploymentId $deploymentId -percentComplete $percentComplete -expectedStatus "AwaitingVerification" -timeout $timeout
+        $status = Invoke-DxpProgress -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus "AwaitingVerification" -Timeout $timeout
 
-        $deployDateTime = GetDateTimeStamp
+        $deployDateTime = Get-DxpDateTimeStamp
         Write-Host "Deploy $deploymentId ended $deployDateTime"
 
         if ($status.status -eq "AwaitingVerification") {
