@@ -186,7 +186,7 @@ try {
         }
     }
     else {
-        Write-Host "The deployment $deploymentId will not be reset. Smoketest is success."
+        Write-Host "The deployment will not be reset. Smoketest is success."
     }
 
     ####################################################################################
