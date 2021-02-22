@@ -134,9 +134,9 @@ try {
 
         $deploy = Get-EpiDeployment @getEpiDeploymentSplat | Where-Object { $_.Status -eq 'AwaitingVerification' -and $_.parameters.targetEnvironment -eq $targetEnvironment }
         $deploy
+        $deploymentId = ""
         if (-not $deploy) {
             Write-Output "Environment $targetEnvironment is not in status AwaitingVerification. We do not need to reset this environment."
-            $deploymentId = ""
         }
         else {
             $deploymentId = $deploy.id

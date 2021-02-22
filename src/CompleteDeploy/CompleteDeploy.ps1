@@ -59,11 +59,12 @@ try {
 
     Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
-    $getEpiDeploymentSplat = @{
-        ProjectId    = $projectId
-    }
+    #$getEpiDeploymentSplat = @{
+    #    ProjectId    = $projectId
+    #}
 
-    $deploy = Get-EpiDeployment @getEpiDeploymentSplat | Where-Object { $_.Status -eq 'AwaitingVerification' -and $_.parameters.targetEnvironment -eq $targetEnvironment }
+    #$deploy = Get-EpiDeployment @getEpiDeploymentSplat | Where-Object { $_.Status -eq 'AwaitingVerification' -and $_.parameters.targetEnvironment -eq $targetEnvironment }
+    $deploy = Get-DxpAwaitingEnvironmentDeployment -ProjectId $projectId -TargetEnvironment $targetEnvironment
     $deploy
     if (-not $deploy) {
         Write-Host "##vso[task.logissue type=error]Failed to locate a deployment in $targetEnvironment to complete!"
