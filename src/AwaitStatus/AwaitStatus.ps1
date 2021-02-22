@@ -21,17 +21,11 @@ try {
     Write-Host "TargetEnvironment: $targetEnvironment"
     Write-Host "Timeout: $timeout"
 
-    #. "$PSScriptRoot\Helper.ps1"
     . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
-    #WriteInfo
 
     if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
         $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
     }
-
-    # EpinovaDxpDeploymentUtil module
-    #Import-module EpinovaDxpDeploymentUtil -Force
-    #Get-Module -Name EpinovaDxpDeploymentUtil -ListAvailable
 
     # EpiCloud module
     if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
@@ -41,22 +35,6 @@ try {
         Write-Host "EpiCloud installed."
         Get-Module -Name EpiCloud -ListAvailable
     }
-
-
-    #if ((Test-IsGuid -ObjectGuid $projectId) -ne $true){
-    #    Write-Error "The provided ProjectId is not a guid value."
-    #}
-
-    #if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
-    #    $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
-    #}
-
-    #if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
-    #    Write-Host "Could not find EpiCloud. Installing it."
-    #    Install-Module EpiCloud -Scope CurrentUser -Force
-    #} else {
-    #    Write-Host "EpiCloud installed."
-    #}
 
     Write-DxpHostVersion
 
