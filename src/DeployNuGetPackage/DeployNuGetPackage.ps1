@@ -11,8 +11,6 @@ try {
     $sourceApp = Get-VstsInput -Name "SourceApp" -Require -ErrorAction "Stop"
     $useMaintenancePage = Get-VstsInput -Name "UseMaintenancePage" -AsBool
     $dropPath = Get-VstsInput -Name "DropPath" -Require -ErrorAction "Stop"
-    #$includeBlob = $false #switches to copy BLOBs from source to target environment
-    #$includeDb = $false #switched to copy the DB from source to target environment
     $timeout = Get-VstsInput -Name "Timeout" -AsInt -Require -ErrorAction "Stop"
 
     # 30 min timeout
@@ -30,17 +28,11 @@ try {
     Write-Host "DropPath: $dropPath"
     Write-Host "Timeout: $timeout"
 
-    . "$PSScriptRoot\Helper.ps1"
-    WriteInfo
-
-    if ((Test-IsGuid -ObjectGuid $projectId) -ne $true){
-        Write-Error "The provided ProjectId is not a guid value."
-    }
+    . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
 
     if (-not ($env:PSModulePath.Contains("C:\Modules\azurerm_6.7.0"))){
         $env:PSModulePath = "C:\Modules\azurerm_6.7.0;" + $env:PSModulePath   
     }
-    #$env:PSModulePath = "C:\Modules\azurerm_6.7.0;$PSScriptRoot\ps_modules;" + $env:PSModulePath
 
     if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
         $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
@@ -53,7 +45,11 @@ try {
         Write-Host "EpiCloud installed."
     }
 
-    Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
+    Write-DxpHostVersion
+
+    Test-DxpProjectId -ProjectId $projectId
+
+    Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
     $packageLocation = Get-EpiDeploymentPackageLocation -ProjectId $projectId
     Write-Host "PackageLocation: $packageLocation"
@@ -74,6 +70,7 @@ try {
         $myPackages = $resolvedCmsPackagePath.Name
     }
 
+    $resolvedCommercePackagePath = $null
     if ($sourceApp -eq "commerce" -or $sourceApp -eq "cms,commerce"){
         $resolvedCommercePackagePath = Get-ChildItem -Path $dropPath -Filter *.commerce.*.nupkg
         Write-Host "Commerce PackagePath: $resolvedCommercePackagePath"
@@ -107,14 +104,13 @@ try {
     $deploymentId = $deploy.id
 
     if ($deploy.status -eq "InProgress") {
-        $deployDateTime = GetDateTimeStamp
+        $deployDateTime = Get-DxpDateTimeStamp
         Write-Host "Deploy $deploymentId started $deployDateTime."
 
         $percentComplete = $deploy.percentComplete
+        $status = Invoke-DxpProgress -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus "AwaitingVerification" -Timeout $timeout
 
-        $status = Progress -projectid $projectId -deploymentId $deploymentId -percentComplete $percentComplete -expectedStatus "AwaitingVerification" -timeout $timeout
-
-        $deployDateTime = GetDateTimeStamp
+        $deployDateTime = Get-DxpDateTimeStamp
         Write-Host "Deploy $deploymentId ended $deployDateTime"
 
         if ($status.status -eq "AwaitingVerification") {

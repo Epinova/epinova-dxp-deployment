@@ -298,7 +298,48 @@ function Get-DxpLatestEnvironmentDeployment{
     return $deployment
 }
 
-function Invoke-ExportProgress {
+function Get-DxpAwaitingEnvironmentDeployment{
+    <#
+    .SYNOPSIS
+        Get the latest deployment in status 'AwaitingVerification' for the specified environment.
+
+    .DESCRIPTION
+        Get the latest deployment in status 'AwaitingVerification' for the specified environment.
+
+    .PARAMETER ProjectId
+        Project id for the project in Episerver DXP.
+
+    .PARAMETER TargetEnvironment
+        The target environment that should match the deployment.
+
+    .EXAMPLE
+        $deployment = Get-DxpAwaitingEnvironmentDeployment -ProjectId $ProjectId -TargetEnvironment $TargetEnvironment
+
+    .EXAMPLE
+        $deployment = Get-DxpAwaitingEnvironmentDeployment -ProjectId '644b6926-39b1-42a1-93d6-3771cdc4a04e' -TargetEnvironment 'Integration'
+
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [String] $ProjectId,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $TargetEnvironment
+    )
+
+    $getEpiDeploymentSplat = @{
+        ProjectId    = $ProjectId
+    }
+
+    $deployment = Get-EpiDeployment @getEpiDeploymentSplat | Where-Object { $_.Status -eq 'AwaitingVerification' -and $_.parameters.targetEnvironment -eq $TargetEnvironment }
+
+    return $deployment
+}
+
+function Invoke-DxpExportProgress {
     <#
     .SYNOPSIS
         Start a export of a database from DXP.

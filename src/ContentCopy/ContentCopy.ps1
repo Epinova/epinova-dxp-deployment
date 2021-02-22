@@ -26,12 +26,7 @@ try {
     Write-Host "IncludeBlob: $includeBlob"
     Write-Host "IncludeDb: $includeDb"
 
-    . "$PSScriptRoot\Helper.ps1"
-    WriteInfo
-
-    if ((Test-IsGuid -ObjectGuid $projectId) -ne $true){
-        Write-Error "The provided ProjectId is not a guid value."
-    }
+    . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
 
     if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
         $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
@@ -42,9 +37,14 @@ try {
         Install-Module EpiCloud -Scope CurrentUser -Force
     } else {
         Write-Host "EpiCloud installed."
+        Get-Module -Name EpiCloud -ListAvailable
     }
 
-    Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
+    Write-DxpHostVersion
+
+    Test-DxpProjectId -ProjectId $projectId
+
+    Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
     switch ($environment){
         ProdPrep{
@@ -79,12 +79,12 @@ try {
     $deploymentId = $deploy.id
 
     if ($deploy.status -eq "InProgress") {
-        $deployDateTime = GetDateTimeStamp
+        $deployDateTime = Get-DxpDateTimeStamp
         Write-Host "Content copy $deploymentId started $deployDateTime."
         $percentComplete = $deploy.percentComplete
-        $status = Progress -projectid $projectId -deploymentId $deploymentId -percentComplete $percentComplete -expectedStatus "Succeeded" -timeout $timeout
+        $status = Invoke-DxpProgress -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus "Succeeded" -Timeout $timeout
 
-        $deployDateTime = GetDateTimeStamp
+        $deployDateTime = Get-DxpDateTimeStamp
         Write-Host "Content copy $deploymentId ended $deployDateTime"
 
         if ($status.status -eq "Succeeded") {

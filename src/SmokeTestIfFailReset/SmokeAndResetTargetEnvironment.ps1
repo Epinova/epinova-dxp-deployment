@@ -36,11 +36,10 @@ try {
     $AllProtocols = [System.Net.SecurityProtocolType]'Ssl3,Tls,Tls11,Tls12'
     [System.Net.ServicePointManager]::SecurityProtocol = $AllProtocols
 
-    . "$PSScriptRoot\Helper.ps1"
-    WriteInfo
+    . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
 
-    if ((Test-IsGuid -ObjectGuid $projectId) -ne $true){
-        Write-Error "The provided ProjectId is not a guid value."
+    if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
+        $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
     }
 
     Write-Host "Start sleep for $($sleepBeforeStart) seconds before we start check URL(s)."
@@ -106,19 +105,16 @@ try {
 
     if ($resetDeployment -eq $true) {
 
-
-        if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
-            $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
-        }
-    
+        # EpiCloud module
         if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
             Write-Host "Could not find EpiCloud. Installing it."
             Install-Module EpiCloud -Scope CurrentUser -Force
         } else {
             Write-Host "EpiCloud installed."
+            Get-Module -Name EpiCloud -ListAvailable
         }
-
-        Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
+ 
+        Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
         $getEpiDeploymentSplat = @{
             ProjectId = $projectId
@@ -126,9 +122,9 @@ try {
 
         $deploy = Get-EpiDeployment @getEpiDeploymentSplat | Where-Object { $_.Status -eq 'AwaitingVerification' -and $_.parameters.targetEnvironment -eq $targetEnvironment }
         $deploy
+        $deploymentId = ""
         if (-not $deploy) {
             Write-Output "Environment $targetEnvironment is not in status AwaitingVerification. We do not need to reset this environment."
-            $deploymentId = ""
         }
         else {
             $deploymentId = $deploy.id
@@ -147,7 +143,7 @@ try {
                 Reset-EpiDeployment -ProjectId $projectId -Id $deploymentId
 
                 $percentComplete = $status.percentComplete
-                $status = Progress -projectid $projectId -deploymentId $deploymentId -percentComplete $percentComplete -expectedStatus "Reset" -timeout $timeout                
+                $status = Invoke-DxpProgress -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus "Reset" -Timeout $timeout
 
                 if ($status.status -eq "Reset") {
                     Write-Host "Deployment $deploymentId has been successfuly reset."
@@ -177,7 +173,7 @@ try {
         }
     }
     else {
-        Write-Host "The deployment $deploymentId will not be reset. Smoketest is success."
+        Write-Host "The deployment will not be reset. Smoketest is success."
     }
 
     ####################################################################################

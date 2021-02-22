@@ -13,7 +13,7 @@
     "version": {
         "Major": 1,
         "Minor": 0,
-        "Patch": 13
+        "Patch": 14
     },
     "groups": [
         {
@@ -32,7 +32,7 @@
             "isExpanded": false
         }
     ],
-    "releaseNotes": "Created the task.",
+    "releaseNotes": "Using EpinovaDxpDeploymentUtil.",
     "minimumAgentVersion": "2.134.0",
     "inputs": [
         {

@@ -22,12 +22,7 @@ try {
     Write-Host "TargetEnvironment: $targetEnvironment"
     Write-Host "Timeout: $timeout"
 
-    . "$PSScriptRoot\Helper.ps1"
-    WriteInfo
-
-    if ((Test-IsGuid -ObjectGuid $projectId) -ne $true){
-        Write-Error "The provided ProjectId is not a guid value."
-    }
+    . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
 
     if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
         $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
@@ -38,16 +33,18 @@ try {
         Install-Module EpiCloud -Scope CurrentUser -Force
     } else {
         Write-Host "EpiCloud installed."
+        Get-Module -Name EpiCloud -ListAvailable
     }
 
-    Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret
+    Write-DxpHostVersion
 
-    $getEpiDeploymentSplat = @{
-        ProjectId    = $projectId
-    }
+    Test-DxpProjectId -ProjectId $projectId
 
-    $deploy = Get-EpiDeployment @getEpiDeploymentSplat | Where-Object { $_.Status -eq 'AwaitingVerification' -and $_.parameters.targetEnvironment -eq $targetEnvironment }
+    Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
+
+    $deploy = Get-DxpAwaitingEnvironmentDeployment -ProjectId $projectId -TargetEnvironment $targetEnvironment
     $deploy
+    $deploymentId = ""
     if (-not $deploy) {
         Write-Output "Environment $targetEnvironment is not in status AwaitingVerification. We do not need to reset this environment."
         $deploymentId = ""
@@ -65,16 +62,15 @@ try {
         $status
 
         if ($status.status -eq "AwaitingVerification") {
-            $deployDateTime = GetDateTimeStamp
+            $deployDateTime = Get-DxpDateTimeStamp
     
             Write-Host "Start Reset-EpiDeployment -ProjectId $projectId -Id $deploymentId ($deployDateTime)"
             Reset-EpiDeployment -ProjectId $projectId -Id $deploymentId
 
             $percentComplete = $status.percentComplete
+            $status = Invoke-DxpProgress -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus "Reset" -Timeout $timeout
 
-            $status = Progress -projectid $projectId -deploymentId $deploymentId -percentComplete $percentComplete -expectedStatus "Reset" -timeout $timeout
-
-            $deployDateTime = GetDateTimeStamp
+            $deployDateTime = Get-DxpDateTimeStamp
             Write-Host "Reset $deploymentId ended $deployDateTime"
     
             if ($status.status -eq "Reset") {
