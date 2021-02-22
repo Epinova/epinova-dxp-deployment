@@ -1,9 +1,9 @@
 ﻿
 Write-Host "---Start---"
 
-$module1 = (Get-Item -Path .\Modules\EpinovaDxpDeploymentUtil).FullName
+$module = (Get-Item -Path .\Modules\EpiCloud).FullName
 
-Write-Host $module1
+Write-Host $module
 
 #Get-ChildItem -Path .\src -Directory -Force -ErrorAction SilentlyContinue | Select-Object FullName
 
@@ -14,7 +14,7 @@ foreach ($d in $dir){
     
     if (Test-Path $filePath){
         Write-Host $filePath
-        Copy-Item -Path $module1 -Destination $filePath -Recurse -Force
+        Copy-Item -Path $module -Destination $filePath -Recurse -Force
     }
 }
 Write-Host "---End---"
