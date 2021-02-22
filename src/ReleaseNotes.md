@@ -1,6 +1,6 @@
 # Release notes
 
-## v1.9.33 - v1.9.37
+## v1.9.33 - v1.9.38
 - Start using EpinovaDxpDeploymentUtil.ps1 script. Problem with authentication in custom module.
 - Test using splat on function calls.
 - Centralize EpiCloud module. Deploy with script during build to ps_modules folder(s).

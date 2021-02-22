@@ -86,15 +86,16 @@ try {
         $complete
 
         if ($complete.status -eq "Completing") {
-            $deployDateTime = GetDateTimeStamp
-            Write-Host "Complete $deploymentId started $deployDateTime."
+            $deployDateTime = Get-DxpDateTimeStamp
+            Write-Host "Complete deploy $deploymentId started $deployDateTime."
     
             $percentComplete = $complete.percentComplete
 
-            $status = Progress -projectid $projectId -deploymentId $deploymentId -percentComplete $percentComplete -expectedStatus "Succeeded" -timeout $timeout
+            #$status = Progress -projectid $projectId -deploymentId $deploymentId -percentComplete $percentComplete -expectedStatus "Succeeded" -timeout $timeout
+            $status = Invoke-DxpProgress -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus "Succeeded" -Timeout $timeout
 
-            $deployDateTime = GetDateTimeStamp
-            Write-Host "Complete $deploymentId ended $deployDateTime"
+            $deployDateTime = Get-DxpDateTimeStamp
+            Write-Host "Complete deploy $deploymentId ended $deployDateTime"
     
             if ($status.status -eq "Succeeded") {
                 Write-Host "Deployment $deploymentId has been completed."
