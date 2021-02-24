@@ -54,6 +54,7 @@ try {
     $packageLocation = Get-EpiDeploymentPackageLocation -ProjectId $projectId
     Write-Host "PackageLocation: $packageLocation"
 
+    $resolvedCmsPackagePath = $null
     if ($sourceApp -eq "cms" -or $sourceApp -eq "cms,commerce"){
         $resolvedCmsPackagePath = Get-ChildItem -Path $dropPath -Filter *.cms.*.nupkg
         Write-Host "Cms PackagePath: $resolvedCmsPackagePath"
