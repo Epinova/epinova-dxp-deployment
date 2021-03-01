@@ -124,6 +124,144 @@ function Test-EnvironmentParam{
     }
 }
 
+
+function Test-ContainerName{
+    <#
+    .SYNOPSIS
+        Test if the container exist and if not it will figure out a container to use..
+
+    .DESCRIPTION
+        Test if the container exist and if not it will figure out a container to use..
+
+    .PARAMETER Container
+        The shortname of the container.
+
+    .EXAMPLE
+        Format-ContainerName -Container $Container
+
+    #>
+	[OutputType([string])]
+	param
+	(
+		[Parameter(Mandatory = $true)]
+		[object]$Containers,
+		[Parameter(Mandatory = $true)]
+		[string]$Container
+	)  
+
+    if ($Container -eq "AppLogs"){
+        $Container = "azure-application-logs"
+    } elseif ($Container -eq "WebLogs"){
+        $Container = "azure-web-logs"
+    } elseif ($Container -eq "Blobs"){
+        $Container = "mysitemedia"
+    } 
+
+    if ($false -eq $Containers.storageContainers.Contains($Container))
+    {
+        Write-Host "Containers does not contain $Container. Will try to figure out the correct one."
+        Write-Host "Found the following containers for your project:"
+        Write-Host "---------------------------------------------------"
+        foreach ($tempContainer in $Containers.storageContainers){
+            Write-Host "$tempContainer"
+        }
+        Write-Host "---------------------------------------------------"
+        if ($Container -eq "mysitemedia" -and $Containers.storageContainers.Length -eq 3) {
+            $exclude = @("azure-application-logs", "azure-web-logs")
+            $lastContainer = $Containers.storageContainers | Where-Object { $_ -notin $exclude }
+            if ($lastContainer.Length -ne 0) {
+                $Container = $lastContainer
+                Write-Host "Found '$Container' and going to use that as the blob container."
+            } else {
+                Write-Host "After trying to figure out which is the blob container. We still can not find it."
+                Write-Error "Expected blob container '$Container' but we can not find it. Check the specified container above and try to specify one of them."
+                exit
+            }
+        } else {
+            if ($Container -eq "azure-application-logs" -or $Container -eq "azure-web-logs"){
+                Write-Error "Expected log container '$Container' but we could not find it."
+            } else {
+                Write-Error "Expected container '$Container' but we can not find it. Check the found containers above and try to specify one of them as param -container."
+            }
+            exit
+        }
+    }
+
+    return $Container
+}
+
+function Import-Az{
+    <#
+    .SYNOPSIS
+        Install-Module Az.
+
+    .DESCRIPTION
+        Install-Module Az.
+
+    .EXAMPLE
+        Import-Az
+    #>
+    if ($PSVersionTable.PSEdition -eq 'Desktop' -and (Get-Module -Name AzureRM -ListAvailable)) {
+        Write-Warning -Message ('Az module not installed. Having both the AzureRM and ' +
+            'Az modules installed at the same time is not supported.')
+    } else {
+        Install-Module -Name Az -AllowClobber -Scope CurrentUser
+    }
+}
+
+function Import-EpiCloud{
+    <#
+    .SYNOPSIS
+        Import module EpiCloud.
+
+    .DESCRIPTION
+        Import module EpiCloud.
+
+    .EXAMPLE
+        Import-EpiCloud
+    #>
+    if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
+        Install-Module EpiCloud -Scope CurrentUser -Force
+    }
+}
+
+function Get-StorageAccountName{
+    [OutputType([string])]
+	param
+	(
+		[Parameter(Mandatory = $true)]
+		[object]$SasLink
+	)
+	
+    #Write-Host "Sas link           : $($SasLink.sasLink)"
+
+    $fullSasLink = $SasLink.sasLink
+    $fullSasLink -match "https:\/\/(.*).blob.core" | Out-Null
+    $storageAccountName = $Matches[1]
+    Write-Host "StorageAccountName : $storageAccountName"
+
+            #$fullSasLink -match "(\?.*)" | Out-Null
+            #$sasToken = $Matches[0]
+            #Write-Host "SAS token          : $sasToken"
+    return $storageAccountName
+}
+
+function Get-SasToken{
+    [OutputType([string])]
+	param
+	(
+		[Parameter(Mandatory = $true)]
+		[object]$SasLink
+	)
+	
+    #Write-Host "Sas link           : $($SasLink.sasLink)"
+
+    $fullSasLink = $SasLink.sasLink
+    $fullSasLink -match "(\?.*)" | Out-Null
+    $sasToken = $Matches[0]
+    Write-Host "SAS token          : $sasToken"
+    return $sasToken
+}
 # END PRIVATE METHODS
 
 function Test-DxpProjectId {
@@ -299,6 +437,7 @@ function Connect-DxpEpiCloud{
         [String] $ProjectId
     )
     Connect-EpiCloud -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId
+    Write-Host "Connected to DXP Project $ProjectId"
 }
 
 function Import-AzureStorageModule {
@@ -333,6 +472,175 @@ function Import-AzureStorageModule {
     }
 }
 
+function Get-DxpStorageContainers{
+    <#
+    .SYNOPSIS
+        List storage containers in a DXP environment.
+
+    .DESCRIPTION
+        List storage containers in a DXP environment.
+
+    .PARAMETER ClientKey
+        The client key used to access the project.
+
+    .PARAMETER ClientSecret
+        The client secret used to access the project.
+
+    .PARAMETER ProjectId
+        The id of the DXP project.
+
+    .PARAMETER Environment
+        The environment where we should check for storage containers.
+
+    .PARAMETER Container
+        The name of the container that you want. If it does not exist it will try ti figure out which container you want.
+
+    .EXAMPLE
+        Get-DxpStorageContainers -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment
+
+    .EXAMPLE
+        Get-DxpStorageContainers -ClientKey '644b6926-39b1-42a1-93d6-3771cdc4a04e' -ClientSecret '644b6926-39b1fasrehyjtye-42a1-93d6-3771cdc4asasda04e'-ProjectId '644b6926-39b1-42a1-93d6-3771cdc4a04e' -Environment 'Integration' 
+
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ClientKey,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ClientSecret,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ProjectId,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $Environment
+    )
+
+    $storageContainerSplat = @{
+        ClientKey   = $ClientKey
+        ClientSecret   = $ClientSecret
+        ProjectId   = $ProjectId
+        Environment = $Environment
+    }
+
+    $containers = $null
+    try {
+        $containers = Get-EpiStorageContainer @storageContainerSplat
+    }
+    catch {
+        Write-Error "Could not get storage container information from Epi. Make sure you have specified correct ProjectId/Environment"
+        exit
+    }
+
+    if ($null -eq $containers){
+        Write-Error "Could not get Epi DXP storage containers. Make sure you have specified correct ProjectId/Environment"
+        exit
+    }
+
+    return $containers
+}
+
+function Get-DxpStorageContainerSasLink{
+    <#
+    .SYNOPSIS
+        ...
+
+    .DESCRIPTION
+        ...
+
+    .PARAMETER ClientKey
+        The client key used to access the project.
+
+    .PARAMETER ClientSecret
+        The client secret used to access the project.
+
+    .PARAMETER ProjectId
+        The id of the DXP project.
+
+    .PARAMETER Environment
+        The environment where we should check for storage containers.
+
+    .PARAMETER Container
+        The name of the container that you want. If it does not exist it will try ti figure out which container you want.
+
+    .EXAMPLE
+        Get-DxpStorageContainerSasLink -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment
+
+    .EXAMPLE
+        Get-DxpStorageContainerSasLink -ClientKey '644b6926-39b1-42a1-93d6-3771cdc4a04e' -ClientSecret '644b6926-39b1fasrehyjtye-42a1-93d6-3771cdc4asasda04e'-ProjectId '644b6926-39b1-42a1-93d6-3771cdc4a04e' -Environment 'Integration' 
+
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ClientKey,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ClientSecret,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ProjectId,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $Environment,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [object] $Containers,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $Container,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [object] $RetentionHours
+
+    )
+
+    $linkSplat = @{
+        ClientKey = $ClientKey
+        ClientSecret = $ClientSecret
+        ProjectId = $ProjectId
+        Environment = $Environment
+        StorageContainer = $Containers.storageContainers
+        RetentionHours = $RetentionHours
+    }
+
+    $linkResult = Get-EpiStorageContainerSasLink @linkSplat
+
+    $sasLink = $null
+    foreach ($link in $linkResult){
+        if ($link.containerName -eq $Container) {
+            Write-Host "Found Sas link for container   : $Container"
+            $sasLink = $link
+            #Write-Host "Sas link           : $($link.sasLink)"
+
+            #$fullSasLink = $link.sasLink
+            #$fullSasLink -match "https:\/\/(.*).blob.core" | Out-Null
+            #$storageAccountName = $Matches[1]
+            #Write-Host "StorageAccountName : $storageAccountName"
+
+            #$fullSasLink -match "(\?.*)" | Out-Null
+            #$sasToken = $Matches[0]
+            #Write-Host "SAS token          : $sasToken"
+        } else {
+            Write-Host "Ignore container   : $($link.containerName)"
+        }
+    }
+
+    return $sasLink
+}
+
 function Get-DxpProjectBlobs{
     [CmdletBinding()]
     param(
@@ -347,7 +655,7 @@ function Get-DxpProjectBlobs{
         [string] $ProjectId,
         [Parameter(Mandatory=$false)]
         [ValidateSet('Integration','Preproduction','Production')]
-        [string] $Environment = "Integration", #Integration | Preproduction | Production
+        [string] $Environment = "Integration",
         [Parameter(Mandatory=$false)]
         [string] $DownloadFolder = $PSScriptRoot, 
         [Parameter(Mandatory=$false)]
@@ -360,7 +668,7 @@ function Get-DxpProjectBlobs{
         [int] $RetentionHours = 2
     )
 
-    Write-Host "Inputs:"
+    Write-Host "Inputs:-----------------------------------------"
     Write-Host "ClientKey: $ClientKey"
     Write-Host "ClientSecret: **** (it is a secret...)"
     Write-Host "ProjectId: $ProjectId"
@@ -370,6 +678,7 @@ function Get-DxpProjectBlobs{
     Write-Host "Container: $Container"
     Write-Host "OverwriteExistingFiles: $OverwriteExistingFiles"
     Write-Host "RetentionHours: $RetentionHours"
+    Write-Host "------------------------------------------------"
 
     Write-DxpHostVersion
 
@@ -377,8 +686,19 @@ function Get-DxpProjectBlobs{
     Test-DownloadFolder -DownloadFolder $DownloadFolder
     Test-EnvironmentParam -Environment $Environment
 
+    Import-Az
+    Import-EpiCloud
+    Connect-DxpEpiCloud -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId
 
+    $containers = Get-DxpStorageContainers -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment
+
+    $Container = Test-ContainerName -Containers $containers -Container $Container
+    
+    $sasLink = Get-DxpStorageContainerSasLink -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -Containers $containers -Container $Container -RetentionHours $RetentionHours
+
+    $storageAccountName = Get-StorageAccountName -SasLink $sasLink
+    $sasToken = Get-SasToken -SasLink $sasLink
     #return 
 }
 
-Export-ModuleMember -Function @( 'Get-DxpProjectBlobs', 'Write-DxpHostVersion', 'Get-DxpDateTimeStamp', 'Invoke-DxpProgress', 'Connect-DxpEpiCloud', 'Import-AzureStorageModule', 'Test-DxpProjectId' )
+Export-ModuleMember -Function @( 'Get-DxpProjectBlobs', 'Get-DxpStorageContainers', 'Write-DxpHostVersion', 'Get-DxpDateTimeStamp', 'Invoke-DxpProgress', 'Connect-DxpEpiCloud', 'Import-AzureStorageModule', 'Test-DxpProjectId' )
