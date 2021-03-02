@@ -8,4 +8,4 @@ Import-Module -Name E:\dev\epinova-dxp-deployment\Modules\EpinovaDxpToolBucket -
 
 Set-ExecutionPolicy Unrestricted
 #Get-DxpProjectBlobs -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment "Integration" -DownloadFolder "E:\dev\temp\_blobDownloads" -MaxFilesToDownload 10 -Container "Blobs" -OverwriteExistingFiles 1 -RetentionHours 2
-Get-DxpProjectBlobs -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment "Integration" -DownloadFolder "E:\dev\temp\_blobDownloads" -MaxFilesToDownload 10 -Container "contentassets" -OverwriteExistingFiles 1 -RetentionHours 2
+Get-DxpProjectBlobs -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment "Integration" -DownloadFolder "E:\dev\temp\_blobDownloads" -MaxFilesToDownload 10 -Container "indutrade-portal-assets" -OverwriteExistingFiles 1 -RetentionHours 2

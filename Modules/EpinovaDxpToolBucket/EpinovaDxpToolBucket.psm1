@@ -226,6 +226,20 @@ function Import-EpiCloud{
 }
 
 function Get-StorageAccountName{
+    <#
+    .SYNOPSIS
+        Get StorageAccountName from a SAS link.
+
+    .DESCRIPTION
+        Get StorageAccountName from a SAS link.
+        The SasLink you will get by using Get-DxpStorageContainerSasLink
+
+    .PARAMETER SasLink
+        The SasLink that contain the information about StorageAccountName.
+
+    .EXAMPLE
+        Get-StorageAccountName -SasLink $sasLink
+    #>
     [OutputType([string])]
 	param
 	(
@@ -233,20 +247,30 @@ function Get-StorageAccountName{
 		[object]$SasLink
 	)
 	
-    #Write-Host "Sas link           : $($SasLink.sasLink)"
-
     $fullSasLink = $SasLink.sasLink
     $fullSasLink -match "https:\/\/(.*).blob.core" | Out-Null
     $storageAccountName = $Matches[1]
+
     Write-Host "StorageAccountName : $storageAccountName"
 
-            #$fullSasLink -match "(\?.*)" | Out-Null
-            #$sasToken = $Matches[0]
-            #Write-Host "SAS token          : $sasToken"
     return $storageAccountName
 }
 
 function Get-SasToken{
+    <#
+    .SYNOPSIS
+        Get the SasToken from a SAS link.
+
+    .DESCRIPTION
+        Get the SasToken from a SAS link.
+        The SasLink you will get by using Get-DxpStorageContainerSasLink
+
+    .PARAMETER SasLink
+        The SasLink that contain the information about the Sas token.
+
+    .EXAMPLE
+        Get-SasToken -SasLink $sasLink
+    #>
     [OutputType([string])]
 	param
 	(
@@ -254,13 +278,28 @@ function Get-SasToken{
 		[object]$SasLink
 	)
 	
-    #Write-Host "Sas link           : $($SasLink.sasLink)"
-
     $fullSasLink = $SasLink.sasLink
     $fullSasLink -match "(\?.*)" | Out-Null
     $sasToken = $Matches[0]
+
+    if ($null -eq $sasToken -or $sasToken.Length -eq 0) {
+        Write-Warning "Did not found container $container in the list. Look in the log and see if your blob container have another name then mysitemedia. If so, specify that name as param -container. Example: Ignore container: projectname-assets. Then set -container 'projectname-assets'"
+        exit
+    }
+
     Write-Host "SAS token          : $sasToken"
+
     return $sasToken
+}
+
+function Join-Parts {
+    param
+    (
+        $Parts = $null,
+        $Separator = ''
+    )
+
+    ($Parts | Where-Object { $_ } | ForEach-Object { ([string]$_).trim($Separator) } | Where-Object { $_ } ) -join $Separator 
 }
 # END PRIVATE METHODS
 
@@ -452,6 +491,7 @@ function Import-AzureStorageModule {
         Import-AzureStorageModule
 
     #>
+    $azureModuleLoaded = $false
     $azModuleLoaded = Get-Module -Name "Az.Storage"
 
     if (-not ($azureModuleLoaded -or $azModuleLoaded)) {
@@ -565,14 +605,17 @@ function Get-DxpStorageContainerSasLink{
     .PARAMETER Environment
         The environment where we should check for storage containers.
 
+    .PARAMETER Containers
+        List of containers that we should look for the one that match the next parameter Container.
+
     .PARAMETER Container
         The name of the container that you want. If it does not exist it will try ti figure out which container you want.
 
     .EXAMPLE
-        Get-DxpStorageContainerSasLink -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment
+        Get-DxpStorageContainerSasLink -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -Containers $Containers -Container $Container -RetentionHours $RetentionHours
 
     .EXAMPLE
-        Get-DxpStorageContainerSasLink -ClientKey '644b6926-39b1-42a1-93d6-3771cdc4a04e' -ClientSecret '644b6926-39b1fasrehyjtye-42a1-93d6-3771cdc4asasda04e'-ProjectId '644b6926-39b1-42a1-93d6-3771cdc4a04e' -Environment 'Integration' 
+        Get-DxpStorageContainerSasLink -ClientKey '644b6926-39b1-42a1-93d6-3771cdc4a04e' -ClientSecret '644b6926-39b1fasrehyjtye-42a1-93d6-3771cdc4asasda04e'-ProjectId '644b6926-39b1-42a1-93d6-3771cdc4a04e' -Environment 'Integration' -Containers $Containers -Container "mysitemedia" -RetentionHours 2
 
     #>
     [CmdletBinding()]
@@ -601,9 +644,8 @@ function Get-DxpStorageContainerSasLink{
         [ValidateNotNullOrEmpty()]
         [string] $Container,
 
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [object] $RetentionHours
+        [Parameter(Mandatory = $false)]
+        [int] $RetentionHours = 2
 
     )
 
@@ -623,22 +665,140 @@ function Get-DxpStorageContainerSasLink{
         if ($link.containerName -eq $Container) {
             Write-Host "Found Sas link for container   : $Container"
             $sasLink = $link
-            #Write-Host "Sas link           : $($link.sasLink)"
-
-            #$fullSasLink = $link.sasLink
-            #$fullSasLink -match "https:\/\/(.*).blob.core" | Out-Null
-            #$storageAccountName = $Matches[1]
-            #Write-Host "StorageAccountName : $storageAccountName"
-
-            #$fullSasLink -match "(\?.*)" | Out-Null
-            #$sasToken = $Matches[0]
-            #Write-Host "SAS token          : $sasToken"
         } else {
             Write-Host "Ignore container   : $($link.containerName)"
         }
     }
 
     return $sasLink
+}
+
+function Invoke-DownloadStorageAccountFiles{
+    <#
+    .SYNOPSIS
+        ...
+
+    .DESCRIPTION
+        ...
+
+    .PARAMETER StorageAccountName
+        The storage account name the you want to download from.
+
+    .PARAMETER SasToken
+        SAS token needed for the access to the storage account.
+
+    .PARAMETER DownloadFolder
+        The folder on disc where you want to download your files.
+
+    .PARAMETER Container
+        List of containers that we should look for the one that match the next parameter Container.
+
+    .PARAMETER MaxFilesToDownload
+        The max number of files you want to download. 0=All. X=Download X number of files.
+
+    .PARAMETER OverwriteExistingFiles
+        True/False if you want to overwrite if there is any existing files in the download folder.
+
+    .EXAMPLE
+        Invoke-DownloadStorageAccountFiles -StorageAccountName $StorageAccountName -SasToken $SasToken -DownloadFolder $DownloadFolder -Container $Container -MaxFilesToDownload $MaxFilesToDownload -OverwriteExistingFiles $OverwriteExistingFiles
+
+    .EXAMPLE
+        Invoke-DownloadStorageAccountFiles -StorageAccountName "exxxxx012znb5inte" -SasToken "?sv=2017-04-17&sr=c&sig=RqgmOvZM%2BV4HQPAKqCm5KE5PI4ZjbnQqDaQPEQjz6gs%3D&st=2021-03-01T22%3A20%3A26Z&se=2021-03-02T00%3A20%3A26Z&sp=rl" -DownloadFolder "c:\temp" -Container "mysitemedia" -MaxFilesToDownload 100 -OverwriteExistingFiles $false
+
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $StorageAccountName,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $SasToken,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $Container,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $DownloadFolder,
+
+        [Parameter(Mandatory = $false)]
+        [int] $MaxFilesToDownload = 0,
+
+
+        [Parameter(Mandatory = $false)]
+        [bool] $OverwriteExistingFiles = $true,
+
+        [Parameter(Mandatory = $false)]
+        [int] $RetentionHours = 2
+
+    )
+    Write-Host "Invoke-DownloadStorageAccountFiles - Inputs:----"
+    Write-Host "StorageAccountName: $StorageAccountName"
+    Write-Host "ClientSecret: **** (it is a secret...)"
+    Write-Host "SasToken: $SasToken"
+    Write-Host "Container: $Container"
+    Write-Host "DownloadFolder: $DownloadFolder"
+    Write-Host "MaxFilesToDownload: $MaxFilesToDownload"
+    Write-Host "OverwriteExistingFiles: $OverwriteExistingFiles"
+    Write-Host "RetentionHours: $RetentionHours"
+    Write-Host "------------------------------------------------"
+
+    $ctx = New-AzStorageContext -StorageAccountName $storageAccountName -SASToken $SasToken -ErrorAction Stop
+
+    if ($null -eq $ctx){
+        Write-Error "No context. The provided SASToken is not valid."
+        exit
+    }
+    else {
+    $blobContents = Get-AzStorageBlob -Container $Container  -Context $ctx | Sort-Object -Property LastModified -Descending
+
+    if ($null -eq $blobContents){
+        Write-Host "Can not find any blobs in container $Container :("
+        exit
+    }
+    
+        Write-Host "Found $($blobContents.Length) BlobContent."
+
+        if ($blobContents.Length -eq 0) {
+            Write-Warning "No blob/files found in the container '$container'"
+            exit
+        }
+
+        if ($MaxFilesToDownload -eq 0) {
+            $MaxFilesToDownload = [int]$blobContents.Length
+        }
+        $downloadedFiles = 0
+        Write-Host "---------------------------------------------------"
+        foreach($blobContent in $blobContents)  
+        {  
+            if ($downloadedFiles -ge $MaxFilesToDownload){
+                Write-Host "Hit max files to download ($MaxFilesToDownload)"
+                break
+            }
+
+            $filePath = Join-Parts -Separator '\' -Parts $DownloadFolder, $blobContent.Name
+            $fileExist = Test-Path $filePath -PathType Leaf
+
+            if ($fileExist -eq $false -or $true -eq $OverwriteExistingFiles){
+                    ## Download the blob content 
+                    Write-Host "Download #$($downloadedFiles + 1) - $($blobContent.Name) $(if ($fileExist -eq $true) {"overwrite"} else {"to"}) $filePath" 
+                    Get-AzStorageBlobContent -Container $Container  -Context $ctx -Blob $blobContent.Name -Destination $DownloadFolder -Force  
+                    $downloadedFiles++
+            }
+            else
+            {
+                    Write-Host "File exist on disc: $filePath." 
+            }
+
+            $procentage = [int](($downloadedFiles / $maxFilesToDownload) * 100)
+            Write-Progress -Activity "Download files" -Status "$procentage% Complete:" -PercentComplete $procentage;
+        }
+        Write-Progress -Activity "Download files" -Status "100% Complete:" -PercentComplete 100;
+        Write-Host "---------------------------------------------------"
+    }
 }
 
 function Get-DxpProjectBlobs{
@@ -668,7 +828,7 @@ function Get-DxpProjectBlobs{
         [int] $RetentionHours = 2
     )
 
-    Write-Host "Inputs:-----------------------------------------"
+    Write-Host "Get-DxpProjectBlobs - Inputs:--------------------"
     Write-Host "ClientKey: $ClientKey"
     Write-Host "ClientSecret: **** (it is a secret...)"
     Write-Host "ProjectId: $ProjectId"
@@ -698,7 +858,12 @@ function Get-DxpProjectBlobs{
 
     $storageAccountName = Get-StorageAccountName -SasLink $sasLink
     $sasToken = Get-SasToken -SasLink $sasLink
+
+    Add-TlsSecurityProtocolSupport
+    Import-AzureStorageModule
+
+    Invoke-DownloadStorageAccountFiles -StorageAccountName $StorageAccountName -SasToken $SasToken -DownloadFolder $DownloadFolder -Container $Container -MaxFilesToDownload $MaxFilesToDownload -OverwriteExistingFiles $OverwriteExistingFiles
     #return 
 }
 
-Export-ModuleMember -Function @( 'Get-DxpProjectBlobs', 'Get-DxpStorageContainers', 'Write-DxpHostVersion', 'Get-DxpDateTimeStamp', 'Invoke-DxpProgress', 'Connect-DxpEpiCloud', 'Import-AzureStorageModule', 'Test-DxpProjectId' )
+Export-ModuleMember -Function @( 'Get-DxpProjectBlobs', 'Get-DxpStorageContainers', 'Get-DxpStorageContainerSasLink', 'Invoke-DownloadStorageAccountFiles', 'Write-DxpHostVersion', 'Get-DxpDateTimeStamp', 'Invoke-DxpProgress', 'Connect-DxpEpiCloud', 'Import-AzureStorageModule', 'Test-DxpProjectId' )

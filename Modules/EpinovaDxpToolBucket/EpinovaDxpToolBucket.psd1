@@ -7,7 +7,7 @@
     Copyright         = '(c) 2021 Epinova AB. All rights reserved.'
     Description       = 'Module contain help functions for the Epinova DXP vs Azure Portal.'
     PowerShellVersion = '5.0'
-    FunctionsToExport = 'Get-DxpProjectBlobs', 'Get-DxpStorageContainers', 'Write-DxpHostVersion', 'Get-DxpDateTimeStamp', 'Invoke-DxpProgress', 'Connect-DxpEpiCloud', 'Import-AzureStorageModule', 'Test-DxpProjectId'
+    FunctionsToExport = 'Get-DxpProjectBlobs', 'Get-DxpStorageContainers', 'Get-DxpStorageContainerSasLink', 'Invoke-DownloadStorageAccountFiles', 'Write-DxpHostVersion', 'Get-DxpDateTimeStamp', 'Invoke-DxpProgress', 'Connect-DxpEpiCloud', 'Import-AzureStorageModule', 'Test-DxpProjectId'
     CmdletsToExport   = @()
     AliasesToExport   = @()
 }
