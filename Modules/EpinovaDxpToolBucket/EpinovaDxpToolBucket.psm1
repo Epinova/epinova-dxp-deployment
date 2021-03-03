@@ -94,7 +94,7 @@ function Test-DownloadFolder {
 }
 
 function Test-EnvironmentParam{
-<#
+    <#
     .SYNOPSIS
         ...
 
@@ -124,6 +124,36 @@ function Test-EnvironmentParam{
     }
 }
 
+function Test-DatabaseName{
+    <#
+    .SYNOPSIS
+        Test that the database name is correct.
+
+    .DESCRIPTION
+        Test that the database name is correct.
+
+    .PARAMETER DatabaseName
+        The database name that you want to test.
+
+    .EXAMPLE
+        Test-DatabaseName -DatabaseName $DatabaseName
+
+    #>
+	[OutputType([bool])]
+	param
+	(
+		[Parameter(Mandatory = $true)]
+		[string]$DatabaseName
+	)
+
+    if ($databaseName -eq "epicms" -or $databaseName -eq "epicommerce") {
+        Write-Host "DatabaseName param ok."
+    }
+    else {
+        Write-Error "The database $databaseName that you have specified is not valid. Ok databaseName: epicms | epicommerce"
+        exit
+    } 
+}
 
 function Test-ContainerName{
     <#
@@ -158,17 +188,21 @@ function Test-ContainerName{
     } 
 
     if ($false -eq $Containers.storageContainers.Contains($Container))
+    #if ($false -eq $Containers.Contains($Container))
     {
         Write-Host "Containers does not contain $Container. Will try to figure out the correct one."
         Write-Host "Found the following containers for your project:"
         Write-Host "---------------------------------------------------"
         foreach ($tempContainer in $Containers.storageContainers){
+        #foreach ($tempContainer in $Containers){
             Write-Host "$tempContainer"
         }
         Write-Host "---------------------------------------------------"
         if ($Container -eq "mysitemedia" -and $Containers.storageContainers.Length -eq 3) {
+        #if ($Container -eq "mysitemedia" -and $Containers.Length -eq 3) {
             $exclude = @("azure-application-logs", "azure-web-logs")
             $lastContainer = $Containers.storageContainers | Where-Object { $_ -notin $exclude }
+            #$lastContainer = $Containers | Where-Object { $_ -notin $exclude }
             if ($lastContainer.Length -ne 0) {
                 $Container = $lastContainer
                 Write-Host "Found '$Container' and going to use that as the blob container."
@@ -209,21 +243,21 @@ function Import-Az{
     }
 }
 
-function Import-EpiCloud{
-    <#
-    .SYNOPSIS
-        Import module EpiCloud.
+# function Import-EpiCloud{
+#     <#
+#     .SYNOPSIS
+#         Import module EpiCloud.
 
-    .DESCRIPTION
-        Import module EpiCloud.
+#     .DESCRIPTION
+#         Import module EpiCloud.
 
-    .EXAMPLE
-        Import-EpiCloud
-    #>
-    if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
-        Install-Module EpiCloud -Scope CurrentUser -Force
-    }
-}
+#     .EXAMPLE
+#         Import-EpiCloud
+#     #>
+#     if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
+#         Install-Module EpiCloud -Scope CurrentUser -Force
+#     }
+# }
 
 function Get-StorageAccountName{
     <#
@@ -293,15 +327,116 @@ function Get-SasToken{
 }
 
 function Join-Parts {
+    <#
+    .SYNOPSIS
+        Join parts.
+
+    .DESCRIPTION
+        Join parts. Used for creating a URI for example
+
+    .PARAMETER Parts
+        Array of string that should be join.
+
+    .PARAMETER Separator
+        The separator character that should join the parts.
+
+    .EXAMPLE
+        $filePath = Join-Parts -Separator '\' -Parts $DownloadFolder, $blobContent.Name
+        Result 'c:\temp\myblob.txt'
+    #>
+    [OutputType([string])]
     param
     (
         $Parts = $null,
-        $Separator = ''
+        [string]$Separator = ''
     )
 
     ($Parts | Where-Object { $_ } | ForEach-Object { ([string]$_).trim($Separator) } | Where-Object { $_ } ) -join $Separator 
 }
-# END PRIVATE METHODS
+
+function Get-DxpDateTimeStamp{
+    <#
+    .SYNOPSIS
+        Create DateTime stamp in correct format.
+
+    .DESCRIPTION
+        Create DateTime stamp in yyyy-MM-ddTHH:mm:ss format.
+
+    .EXAMPLE
+        Get-DxpDateTimeStamp
+
+        You will get the DateTime now in the format ex: '2021-02-20T14:34:22'.
+    #>
+    $dateTimeNow = Get-Date -Format "yyyy-MM-ddTHH:mm:ss"
+    return $dateTimeNow
+}
+
+function Invoke-DxpDatabaseExportProgress {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [String] $ClientKey,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [String] $ClientSecret,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ProjectId,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ExportId,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $Environment,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $DatabaseName,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ExpectedStatus,
+
+        [Parameter(Mandatory = $true)]
+        [int] $Timeout
+    )
+    $sw = [Diagnostics.Stopwatch]::StartNew()
+    $sw.Start()
+    $currentStatus = ""
+    $iterator = 0
+    $status = $null
+    while ($currentStatus -ne $expectedStatus) {
+        $status = Get-EpiDatabaseExport -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Id $ExportId -Environment $Environment -DatabaseName $DatabaseName
+        $currentStatus = $status.status
+        if ($iterator % 6 -eq 0) {
+            Write-Host "Database backup status: $($currentStatus). ElapsedSeconds: $($sw.Elapsed.TotalSeconds)"
+        }
+        if ($currentStatus -ne $ExpectedStatus) {
+            Start-Sleep 10
+        }
+        if ($sw.Elapsed.TotalSeconds -ge $timeout) { break }
+        if ($currentStatus -eq $ExpectedStatus) { break }
+        $iterator++
+    }
+
+    $sw.Stop()
+    Write-Host "Stopped iteration after $($sw.Elapsed.TotalSeconds) seconds."
+
+    #$status = Get-EpiDatabaseExport -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Id $ExportId -Environment $Environment -DatabaseName $DatabaseName
+    if ($null -ne $status){
+        Write-Host "################################################"
+        Write-Host "Database export:"
+        Write-Host "Status:       $($status.status)"
+        Write-Host "BacpacName:   $($status.bacpacName)"
+        Write-Host "DownloadLink: $($status.downloadLink)"
+    }
+    return $status
+}
 
 function Test-DxpProjectId {
     <#
@@ -332,6 +467,39 @@ function Test-DxpProjectId {
     }
 }
 
+function Import-AzureStorageModule {
+    <#
+    .SYNOPSIS
+        Load module Az.Storage.
+
+    .DESCRIPTION
+        Load module Az.Storage.
+
+    .EXAMPLE
+        Import-AzureStorageModule
+
+    #>
+    $azureModuleLoaded = $false
+    $azModuleLoaded = Get-Module -Name "Az.Storage"
+
+    if (-not ($azureModuleLoaded -or $azModuleLoaded)) {
+        try {
+            $null = Import-Module -Name "Az.Storage" -ErrorAction Stop
+            $azModuleLoaded = $true
+        }
+        catch {
+            Write-Verbose "Tried to find 'Az.Storage', module couldn't be imported."
+        }
+    }
+
+    if ($azModuleLoaded) {
+        "Az module loaded."
+    }
+    else {
+        throw "'Az.Storage' module is required to run this cmdlet."
+    }
+}
+
 function Write-DxpHostVersion() {
     <#
     .SYNOPSIS
@@ -349,21 +517,46 @@ function Write-DxpHostVersion() {
     Write-Host $version
 }
 
-function Get-DxpDateTimeStamp{
+function Connect-DxpEpiCloud{
     <#
     .SYNOPSIS
-        Create DateTime stamp in correct format.
+        Adds credentials (ClientKey and ClientSecret) for all functions
+        in EpiCloud module to be used during the session/context.
 
     .DESCRIPTION
-        Create DateTime stamp in yyyy-MM-ddTHH:mm:ss format.
+        Connect to the EpiCloud.
+
+    .PARAMETER ClientKey
+        The client key used to access the project.
+
+    .PARAMETER ClientSecret
+        The client secret used to access the project.
+
+    .PARAMETER ProjectId
+        The id of the DXP project.
 
     .EXAMPLE
-        Get-DxpDateTimeStamp
+        Connect-DxpEpiCloud -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId
 
-        You will get the DateTime now in the format ex: '2021-02-20T14:34:22'.
+    .EXAMPLE
+        Connect-DxpEpiCloud -ClientKey '644b6926-39b1-42a1-93d6-3771cdc4a04e' -ClientSecret '644b6926-39b1fasrehyjtye-42a1-93d6-3771cdc4asasda04e' -ProjectId '644b6926-39b1-42a1-93d6-3771cdc4a04e'
+
     #>
-    $dateTimeNow = Get-Date -Format "yyyy-MM-ddTHH:mm:ss"
-    return $dateTimeNow
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ClientKey,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ClientSecret,
+
+        [Parameter(Mandatory = $true)]
+        [String] $ProjectId
+    )
+    Connect-EpiCloud -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId
+    Write-Host "Connected to DXP Project $ProjectId"
 }
 
 function Invoke-DxpProgress {
@@ -435,154 +628,6 @@ function Invoke-DxpProgress {
     $status = Get-EpiDeployment -ProjectId $projectId -Id $deploymentId
     $status
     return $status
-}
-
-function Connect-DxpEpiCloud{
-    <#
-    .SYNOPSIS
-        Adds credentials (ClientKey and ClientSecret) for all functions
-        in EpiCloud module to be used during the session/context.
-
-    .DESCRIPTION
-        Connect to the EpiCloud.
-
-    .PARAMETER ClientKey
-        The client key used to access the project.
-
-    .PARAMETER ClientSecret
-        The client secret used to access the project.
-
-    .PARAMETER ProjectId
-        The id of the DXP project.
-
-    .EXAMPLE
-        Connect-DxpEpiCloud -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId
-
-    .EXAMPLE
-        Connect-DxpEpiCloud -ClientKey '644b6926-39b1-42a1-93d6-3771cdc4a04e' -ClientSecret '644b6926-39b1fasrehyjtye-42a1-93d6-3771cdc4asasda04e' -ProjectId '644b6926-39b1-42a1-93d6-3771cdc4a04e'
-
-    #>
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [string] $ClientKey,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [string] $ClientSecret,
-
-        [Parameter(Mandatory = $true)]
-        [String] $ProjectId
-    )
-    Connect-EpiCloud -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId
-    Write-Host "Connected to DXP Project $ProjectId"
-}
-
-function Import-AzureStorageModule {
-    <#
-    .SYNOPSIS
-        Load module Az.Storage.
-
-    .DESCRIPTION
-        Load module Az.Storage.
-
-    .EXAMPLE
-        Import-AzureStorageModule
-
-    #>
-    $azureModuleLoaded = $false
-    $azModuleLoaded = Get-Module -Name "Az.Storage"
-
-    if (-not ($azureModuleLoaded -or $azModuleLoaded)) {
-        try {
-            $null = Import-Module -Name "Az.Storage" -ErrorAction Stop
-            $azModuleLoaded = $true
-        }
-        catch {
-            Write-Verbose "Tried to find 'Az.Storage', module couldn't be imported."
-        }
-    }
-
-    if ($azModuleLoaded) {
-        "Az module loaded."
-    }
-    else {
-        throw "'Az.Storage' module is required to run this cmdlet."
-    }
-}
-
-function Get-DxpStorageContainers{
-    <#
-    .SYNOPSIS
-        List storage containers in a DXP environment.
-
-    .DESCRIPTION
-        List storage containers in a DXP environment.
-
-    .PARAMETER ClientKey
-        The client key used to access the project.
-
-    .PARAMETER ClientSecret
-        The client secret used to access the project.
-
-    .PARAMETER ProjectId
-        The id of the DXP project.
-
-    .PARAMETER Environment
-        The environment where we should check for storage containers.
-
-    .PARAMETER Container
-        The name of the container that you want. If it does not exist it will try ti figure out which container you want.
-
-    .EXAMPLE
-        Get-DxpStorageContainers -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment
-
-    .EXAMPLE
-        Get-DxpStorageContainers -ClientKey '644b6926-39b1-42a1-93d6-3771cdc4a04e' -ClientSecret '644b6926-39b1fasrehyjtye-42a1-93d6-3771cdc4asasda04e'-ProjectId '644b6926-39b1-42a1-93d6-3771cdc4a04e' -Environment 'Integration' 
-
-    #>
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [string] $ClientKey,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [string] $ClientSecret,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [string] $ProjectId,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [string] $Environment
-    )
-
-    $storageContainerSplat = @{
-        ClientKey   = $ClientKey
-        ClientSecret   = $ClientSecret
-        ProjectId   = $ProjectId
-        Environment = $Environment
-    }
-
-    $containers = $null
-    try {
-        $containers = Get-EpiStorageContainer @storageContainerSplat
-    }
-    catch {
-        Write-Error "Could not get storage container information from Epi. Make sure you have specified correct ProjectId/Environment"
-        exit
-    }
-
-    if ($null -eq $containers){
-        Write-Error "Could not get Epi DXP storage containers. Make sure you have specified correct ProjectId/Environment"
-        exit
-    }
-
-    return $containers
 }
 
 function Get-DxpStorageContainerSasLink{
@@ -676,10 +721,10 @@ function Get-DxpStorageContainerSasLink{
 function Invoke-DownloadStorageAccountFiles{
     <#
     .SYNOPSIS
-        ...
+        Download files from the specified storageaccount and specified container.
 
     .DESCRIPTION
-        ...
+        Download files from the specified storageaccount and specified container.
 
     .PARAMETER StorageAccountName
         The storage account name the you want to download from.
@@ -794,14 +839,142 @@ function Invoke-DownloadStorageAccountFiles{
             }
 
             $procentage = [int](($downloadedFiles / $maxFilesToDownload) * 100)
-            Write-Progress -Activity "Download files" -Status "$procentage% Complete:" -PercentComplete $procentage;
+            Write-Progress -Activity "Download files" -Status "$procentage% complete." -PercentComplete $procentage;
         }
-        Write-Progress -Activity "Download files" -Status "100% Complete:" -PercentComplete 100;
+        Write-Progress -Completed;
         Write-Host "---------------------------------------------------"
     }
 }
 
-function Get-DxpProjectBlobs{
+# END PRIVATE METHODS
+
+function Get-DxpStorageContainers{
+    <#
+    .SYNOPSIS
+        List storage containers in a DXP environment.
+
+    .DESCRIPTION
+        List storage containers in a DXP environment.
+
+    .PARAMETER ClientKey
+        The client key used to access the project.
+
+    .PARAMETER ClientSecret
+        The client secret used to access the project.
+
+    .PARAMETER ProjectId
+        The id of the DXP project.
+
+    .PARAMETER Environment
+        The environment where we should check for storage containers.
+
+    .PARAMETER Container
+        The name of the container that you want. If it does not exist it will try ti figure out which container you want.
+
+    .EXAMPLE
+        Get-DxpStorageContainers -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment
+
+    .EXAMPLE
+        Get-DxpStorageContainers -ClientKey '644b6926-39b1-42a1-93d6-3771cdc4a04e' -ClientSecret '644b6926-39b1fasrehyjtye-42a1-93d6-3771cdc4asasda04e'-ProjectId '644b6926-39b1-42a1-93d6-3771cdc4a04e' -Environment 'Integration' 
+
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ClientKey,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ClientSecret,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ProjectId,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $Environment
+    )
+
+    Test-DxpProjectId -ProjectId $ProjectId
+    Test-EnvironmentParam -Environment $Environment
+
+    Connect-DxpEpiCloud -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId
+
+    $storageContainerSplat = @{
+        ClientKey      = $ClientKey
+        ClientSecret   = $ClientSecret
+        ProjectId      = $ProjectId
+        Environment    = $Environment
+    }
+
+    $containers = $null
+    try {
+        $containers = Get-EpiStorageContainer @storageContainerSplat
+    }
+    catch {
+        Write-Error "Could not get storage container information from Epi. Make sure you have specified correct ProjectId/Environment"
+        exit
+    }
+
+    if ($null -eq $containers){
+        Write-Error "Could not get Epi DXP storage containers. Make sure you have specified correct ProjectId/Environment"
+        exit
+    }
+    # if ($null -ne $containers.storageContainers){
+    #     Write-Error "Could not get Epi DXP storage containers."
+    #     exit
+    # }
+
+    return $containers
+}
+
+function Invoke-DxpBlobsDownload{
+    <#
+    .SYNOPSIS
+        Download DXP project blobs.
+
+    .DESCRIPTION
+        Download DXP project blobs. You can specify the environment where the blobs exist.
+
+    .PARAMETER ClientKey
+        Your DXP ClientKey that you can generate in the paas.episerver.net portal.
+
+    .PARAMETER ClientSecret
+        Your DXP ClientSecret that you can generate in the paas.episerver.net portal.
+
+    .PARAMETER ProjectId
+        The DXP project id that is related to the ClientKey/Secret.
+
+    .PARAMETER Environment
+        The environment that holds the blobs that you want to download.
+
+    .PARAMETER DownloadFolder
+        The local download folder where you want to download the blob files.
+
+    .PARAMETER MaxFilesToDownload
+        The max number of blobs you want to download. 0=All. X=The first X number of blob found in the blobs container. Order by LastModified -Descending
+
+    .PARAMETER Container
+        The type of container you want to download. 
+        AppLogs=Application logs that is created by your application in the specified environment.
+        WebLogs=Web logs/IIS logs that is created by your webapp in the specified environment.
+        Blobs or *=The container name where your blobs are stored. At present date (2021-02-02) Episerver/Optimizly have no default or standard name of the blobs container. So the script will try to help you find the right one. If not it will list the containers and you will be able to rerun the script and try which one it is.
+
+    .PARAMETER OverwriteExistingFiles
+        True/False if the downloaded files should overwite existing files (if exist).
+
+    .PARAMETER RetentionHours
+        The number of hours that the SAS token used for download will be ok. Default is 2 hours. This maybe need to be raised if it take longer then 2 hours to download the files requested to download.
+
+    .EXAMPLE
+        Invoke-DxpBlobsDownload -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -DownloadFolder $DownloadFolder -MaxFilesToDownload $MaxFilesToDownload -Container $Container -OverwriteExistingFiles $OverwriteExistingFiles -RetentionHours $RetentionHours
+
+    .EXAMPLE
+        Invoke-DxpBlobsDownload -ClientKey '644b6926-39b1-42a1-93d6-3771cdc4a04e' -ClientSecret '644b6926-39b1fasrehyjtye-42a1-93d6-3771cdc4asasda04e'-ProjectId '644b6926-39b1-42a1-93d6-3771cdc4a04e' -Environment 'Integration' -DownloadFolder "c:\temp" -MaxFilesToDownload 100 -Container "mysitemedia" -OverwriteExistingFiles $false -RetentionHours 2
+
+    #>
     [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
@@ -825,19 +998,20 @@ function Get-DxpProjectBlobs{
         [Parameter(Mandatory=$false)]
         [bool] $OverwriteExistingFiles = $true,
         [Parameter(Mandatory=$false)]
+        [ValidateRange(1, 168)]
         [int] $RetentionHours = 2
     )
 
-    Write-Host "Get-DxpProjectBlobs - Inputs:--------------------"
-    Write-Host "ClientKey: $ClientKey"
-    Write-Host "ClientSecret: **** (it is a secret...)"
-    Write-Host "ProjectId: $ProjectId"
-    Write-Host "Environment: $Environment"
-    Write-Host "DownloadFolder: $DownloadFolder"
-    Write-Host "MaxFilesToDownload: $MaxFilesToDownload"
-    Write-Host "Container: $Container"
+    Write-Host "Invoke-DxpBlobsDownload - Inputs:-----------------"
+    Write-Host "ClientKey:              $ClientKey"
+    Write-Host "ClientSecret:           **** (it is a secret...)"
+    Write-Host "ProjectId:              $ProjectId"
+    Write-Host "Environment:            $Environment"
+    Write-Host "DownloadFolder:         $DownloadFolder"
+    Write-Host "MaxFilesToDownload:     $MaxFilesToDownload"
+    Write-Host "Container:              $Container"
     Write-Host "OverwriteExistingFiles: $OverwriteExistingFiles"
-    Write-Host "RetentionHours: $RetentionHours"
+    Write-Host "RetentionHours:         $RetentionHours"
     Write-Host "------------------------------------------------"
 
     Write-DxpHostVersion
@@ -847,23 +1021,172 @@ function Get-DxpProjectBlobs{
     Test-EnvironmentParam -Environment $Environment
 
     Import-Az
-    Import-EpiCloud
+    #Import-EpiCloud
     Connect-DxpEpiCloud -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId
 
     $containers = Get-DxpStorageContainers -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment
+    $containers
 
     $Container = Test-ContainerName -Containers $containers -Container $Container
+    $Container
     
-    $sasLink = Get-DxpStorageContainerSasLink -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -Containers $containers -Container $Container -RetentionHours $RetentionHours
+    # $sasLink = Get-DxpStorageContainerSasLink -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -Containers $containers -Container $Container -RetentionHours $RetentionHours
+    # $sasLink
 
-    $storageAccountName = Get-StorageAccountName -SasLink $sasLink
-    $sasToken = Get-SasToken -SasLink $sasLink
+    # $storageAccountName = Get-StorageAccountName -SasLink $sasLink
+    # $sasToken = Get-SasToken -SasLink $sasLink
 
-    Add-TlsSecurityProtocolSupport
-    Import-AzureStorageModule
+    # Add-TlsSecurityProtocolSupport
+    # Import-AzureStorageModule
 
-    Invoke-DownloadStorageAccountFiles -StorageAccountName $StorageAccountName -SasToken $SasToken -DownloadFolder $DownloadFolder -Container $Container -MaxFilesToDownload $MaxFilesToDownload -OverwriteExistingFiles $OverwriteExistingFiles
-    #return 
+    # Invoke-DownloadStorageAccountFiles -StorageAccountName $StorageAccountName -SasToken $SasToken -DownloadFolder $DownloadFolder -Container $Container -MaxFilesToDownload $MaxFilesToDownload -OverwriteExistingFiles $OverwriteExistingFiles
 }
 
-Export-ModuleMember -Function @( 'Get-DxpProjectBlobs', 'Get-DxpStorageContainers', 'Get-DxpStorageContainerSasLink', 'Invoke-DownloadStorageAccountFiles', 'Write-DxpHostVersion', 'Get-DxpDateTimeStamp', 'Invoke-DxpProgress', 'Connect-DxpEpiCloud', 'Import-AzureStorageModule', 'Test-DxpProjectId' )
+function Invoke-DxpDatabaseDownload{
+    <#
+    .SYNOPSIS
+        Download DXP project DB.
+
+    .DESCRIPTION
+        Download DXP project DB. You can specify the environment from where the database should be exported from.
+
+    .PARAMETER ClientKey
+        Your DXP ClientKey that you can generate in the paas.episerver.net portal.
+
+    .PARAMETER ClientSecret
+        Your DXP ClientSecret that you can generate in the paas.episerver.net portal.
+
+    .PARAMETER ProjectId
+        The DXP project id that is related to the ClientKey/Secret.
+
+    .PARAMETER Environment
+        The environment that holds the blobs that you want to download.
+
+    .PARAMETER DatabaseName
+        The database you want to download. epicms / epicommerce
+
+    .PARAMETER DownloadFolder
+        The local download folder where you want to download the DB backup file.
+
+    .PARAMETER RetentionHours
+        The number of hours that the SAS token used for download will be ok. Default is 2 hours. This maybe need to be raised if it take longer then 2 hours to download the files requested to download.
+
+    .PARAMETER Timeout
+        The number of seconds that you will let the script run until it will timeout. Default 1800 (ca 30 minutes)
+
+    .EXAMPLE
+        Invoke-DxpDatabaseDownload -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -DatabaseName $DatabaseName -DownloadFolder $DownloadFolder -RetentionHours $RetentionHours -Timeout $Timeout
+
+    .EXAMPLE
+        Invoke-DxpDatabaseDownload -ClientKey '644b6926-39b1-42a1-93d6-3771cdc4a04e' -ClientSecret '644b6926-39b1fasrehyjtye-42a1-93d6-3771cdc4asasda04e'-ProjectId '644b6926-39b1-42a1-93d6-3771cdc4a04e' -Environment 'Integration' -DatabaseName 'epicms' -DownloadFolder "c:\temp" -RetentionHours 2 -Timeout 1800
+
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [String] $ClientKey,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [String] $ClientSecret,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ProjectId,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [ValidateSet('Integration','Preproduction','Production')]
+        [string] $Environment,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateSet('epicms','epicommerce')]
+        [string] $DatabaseName,
+
+        [Parameter(Mandatory=$true)]
+        [string] $DownloadFolder,
+
+        [Parameter(Mandatory=$false)]
+        [ValidateRange(1, 168)]
+        [int] $RetentionHours = 2,
+
+        [Parameter(Mandatory = $false)]
+        [int] $Timeout = 1800
+    )
+
+    Write-Host "Invoke-DxpDatabaseDownload - Inputs:-------------"
+    Write-Host "ClientKey:              $ClientKey"
+    Write-Host "ClientSecret:           **** (it is a secret...)"
+    Write-Host "ProjectId:              $ProjectId"
+    Write-Host "Environment:            $Environment"
+    Write-Host "DatabaseName:           $databaseName"
+    Write-Host "DownloadFolder:         $DownloadFolder"
+    Write-Host "RetentionHours:         $RetentionHours"
+    Write-Host "Timeout:                $timeout"
+    Write-Host "------------------------------------------------"
+
+    Write-DxpHostVersion
+
+    Test-DxpProjectId -ProjectId $ProjectId
+    Test-DownloadFolder -DownloadFolder $DownloadFolder
+    Test-EnvironmentParam -Environment $Environment
+    Test-DatabaseName -DatabaseName $DatabaseName
+
+    Connect-DxpEpiCloud -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId
+
+    $exportDatabaseSplat = @{
+        ClientKey      = $ClientKey
+        ClientSecret   = $ClientSecret
+        ProjectId      = $ProjectId
+        Environment    = $Environment
+        DatabaseName   = $DatabaseName
+        RetentionHours = $RetentionHours
+    }
+
+    $export = Start-EpiDatabaseExport @exportDatabaseSplat
+    Write-Host "################################################"
+    Write-Host "Database export has started:"
+    Write-Host "Id:           $($export.id)"
+    Write-Host "ProjectId:    $($export.projectId)"
+    Write-Host "DatabaseName: $($export.databaseName)"
+    Write-Host "Environment:  $($export.environment)"
+    Write-Host "Status:       $($export.status)"
+
+    $exportId = $export.id 
+
+    if ($export.status -eq "InProgress") {
+        $deployDateTime = Get-DxpDateTimeStamp
+        Write-Host "Export $exportId started $deployDateTime."
+    } else {
+        Write-Error "Status is not in InProgress (Current:$($export.status)). You can not export database at this moment."
+        exit
+    }
+
+    Write-Host "Continue to check how it goes for the database export."
+
+    if ($export.status -eq "InProgress" -or $status.status -eq "Succeeded") {
+        $status = Invoke-DxpDatabaseExportProgress -ClientKey $ClientKey -ClientSecret $ClientSecret -Projectid $ProjectId -ExportId $ExportId -Environment $Environment -DatabaseName $DatabaseName -ExpectedStatus "Succeeded" -Timeout $timeout
+
+        $deployDateTime = Get-DxpDateTimeStamp
+        Write-Host "Export $exportId ended $deployDateTime"
+
+        if ($status.status -eq "Succeeded") {
+            Write-Host "Database export $exportId has been successful."
+            Write-Host "Start download database $($status.downloadLink)"
+            $filePath = Join-Parts -Separator '\' -Parts $DownloadFolder, $status.bacpacName
+            Invoke-WebRequest -Uri $status.downloadLink -OutFile $filePath
+            Write-Host "Download database to $filePath"
+        }
+        else {
+            Write-Error "The database export has not been successful or the script has timedout. CurrentStatus: $($status.status)"
+            exit
+        }
+    }
+    else {
+        Write-Error "Status is not in InProgress (Current:$($export.status)). You can not export database at this moment."
+        exit
+    }
+}
+
+Export-ModuleMember -Function @( 'Invoke-DxpBlobsDownload', 'Invoke-DxpDatabaseDownload', 'Get-DxpStorageContainers' )
