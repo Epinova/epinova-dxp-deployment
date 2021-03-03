@@ -243,21 +243,23 @@ function Import-Az{
     }
 }
 
-# function Import-EpiCloud{
-#     <#
-#     .SYNOPSIS
-#         Import module EpiCloud.
+ function Import-EpiCloud{
+    <#
+    .SYNOPSIS
+        Import module EpiCloud.
 
-#     .DESCRIPTION
-#         Import module EpiCloud.
+    .DESCRIPTION
+        Import module EpiCloud.
 
-#     .EXAMPLE
-#         Import-EpiCloud
-#     #>
-#     if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
-#         Install-Module EpiCloud -Scope CurrentUser -Force
-#     }
-# }
+    .EXAMPLE
+        Import-EpiCloud
+    #>
+    if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
+        Install-Module EpiCloud -Scope CurrentUser -Force
+    } else {
+        Write-Host "EpiCloud is installed."
+    }
+}
 
 function Get-StorageAccountName{
     <#
@@ -464,6 +466,8 @@ function Test-DxpProjectId {
     if ((Test-IsGuid -ObjectGuid $ProjectId) -ne $true){
         Write-Error "The provided ProjectId is not a guid value."
         exit
+    } else {
+        Write-Host "ProjectId is a GUID."
     }
 }
 
@@ -781,14 +785,14 @@ function Invoke-DownloadStorageAccountFiles{
 
     )
     Write-Host "Invoke-DownloadStorageAccountFiles - Inputs:----"
-    Write-Host "StorageAccountName: $StorageAccountName"
-    Write-Host "ClientSecret: **** (it is a secret...)"
-    Write-Host "SasToken: $SasToken"
-    Write-Host "Container: $Container"
-    Write-Host "DownloadFolder: $DownloadFolder"
-    Write-Host "MaxFilesToDownload: $MaxFilesToDownload"
+    Write-Host "StorageAccountName:     $StorageAccountName"
+    Write-Host "ClientSecret:           **** (it is a secret...)"
+    Write-Host "SasToken:               $SasToken"
+    Write-Host "Container:              $Container"
+    Write-Host "DownloadFolder:         $DownloadFolder"
+    Write-Host "MaxFilesToDownload:     $MaxFilesToDownload"
     Write-Host "OverwriteExistingFiles: $OverwriteExistingFiles"
-    Write-Host "RetentionHours: $RetentionHours"
+    Write-Host "RetentionHours:         $RetentionHours"
     Write-Host "------------------------------------------------"
 
     $ctx = New-AzStorageContext -StorageAccountName $storageAccountName -SASToken $SasToken -ErrorAction Stop
@@ -798,12 +802,12 @@ function Invoke-DownloadStorageAccountFiles{
         exit
     }
     else {
-    $blobContents = Get-AzStorageBlob -Container $Container  -Context $ctx | Sort-Object -Property LastModified -Descending
+        $blobContents = Get-AzStorageBlob -Container $Container  -Context $ctx | Sort-Object -Property LastModified -Descending
 
-    if ($null -eq $blobContents){
-        Write-Host "Can not find any blobs in container $Container :("
-        exit
-    }
+        if ($null -eq $blobContents){
+            Write-Host "Can not find any blobs in container $Container :("
+            exit
+        }
     
         Write-Host "Found $($blobContents.Length) BlobContent."
 
@@ -816,6 +820,7 @@ function Invoke-DownloadStorageAccountFiles{
             $MaxFilesToDownload = [int]$blobContents.Length
         }
         $downloadedFiles = 0
+        
         Write-Host "---------------------------------------------------"
         foreach($blobContent in $blobContents)  
         {  
@@ -828,20 +833,18 @@ function Invoke-DownloadStorageAccountFiles{
             $fileExist = Test-Path $filePath -PathType Leaf
 
             if ($fileExist -eq $false -or $true -eq $OverwriteExistingFiles){
-                    ## Download the blob content 
-                    Write-Host "Download #$($downloadedFiles + 1) - $($blobContent.Name) $(if ($fileExist -eq $true) {"overwrite"} else {"to"}) $filePath" 
-                    Get-AzStorageBlobContent -Container $Container  -Context $ctx -Blob $blobContent.Name -Destination $DownloadFolder -Force  
-                    $downloadedFiles++
-            }
-            else
-            {
-                    Write-Host "File exist on disc: $filePath." 
+                ## Download the blob content 
+                Write-Host "Download #$($downloadedFiles + 1) - $($blobContent.Name) $(if ($fileExist -eq $true) {"overwrite"} else {"to"}) $filePath" 
+                Get-AzStorageBlobContent -Container $Container -Context $ctx -Blob $blobContent.Name -Destination $DownloadFolder -Force #-AsJob
+                $downloadedFiles++
+            } else {
+                Write-Host "File exist on disc: $filePath." 
             }
 
             $procentage = [int](($downloadedFiles / $maxFilesToDownload) * 100)
             Write-Progress -Activity "Download files" -Status "$procentage% complete." -PercentComplete $procentage;
         }
-        Write-Progress -Completed;
+        Write-Progress -Activity "Download files" -Completed;
         Write-Host "---------------------------------------------------"
     }
 }
@@ -897,21 +900,20 @@ function Get-DxpStorageContainers{
         [string] $Environment
     )
 
+    Write-Host "Get-DxpStorageContainers - Inputs:--------------"
+    Write-Host "ClientKey:              $ClientKey"
+    Write-Host "ClientSecret:           **** (it is a secret...)"
+    Write-Host "ProjectId:              $ProjectId"
+    Write-Host "Environment:            $Environment"
+    Write-Host "------------------------------------------------"
+
     Test-DxpProjectId -ProjectId $ProjectId
     Test-EnvironmentParam -Environment $Environment
 
-    Connect-DxpEpiCloud -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId
+    Import-EpiCloud
 
-    $storageContainerSplat = @{
-        ClientKey      = $ClientKey
-        ClientSecret   = $ClientSecret
-        ProjectId      = $ProjectId
-        Environment    = $Environment
-    }
-
-    $containers = $null
     try {
-        $containers = Get-EpiStorageContainer @storageContainerSplat
+        $containers = Get-EpiStorageContainer -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment
     }
     catch {
         Write-Error "Could not get storage container information from Epi. Make sure you have specified correct ProjectId/Environment"
@@ -922,10 +924,6 @@ function Get-DxpStorageContainers{
         Write-Error "Could not get Epi DXP storage containers. Make sure you have specified correct ProjectId/Environment"
         exit
     }
-    # if ($null -ne $containers.storageContainers){
-    #     Write-Error "Could not get Epi DXP storage containers."
-    #     exit
-    # }
 
     return $containers
 }
@@ -980,26 +978,35 @@ function Invoke-DxpBlobsDownload{
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string] $ClientKey,
+
         [Parameter(Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
         [string] $ClientSecret,
+
         [Parameter(Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
         [string] $ProjectId,
+
         [Parameter(Mandatory=$false)]
         [ValidateSet('Integration','Preproduction','Production')]
         [string] $Environment = "Integration",
+
         [Parameter(Mandatory=$false)]
         [string] $DownloadFolder = $PSScriptRoot, 
+
         [Parameter(Mandatory=$false)]
         [int] $MaxFilesToDownload = 0, # 0=All, 100=Max 100 downloads
+
         [Parameter(Mandatory=$false)]
         [string] $Container = "Blobs",  #AppLogs | WebLogs | Blobs
+
         [Parameter(Mandatory=$false)]
         [bool] $OverwriteExistingFiles = $true,
+
         [Parameter(Mandatory=$false)]
         [ValidateRange(1, 168)]
         [int] $RetentionHours = 2
+
     )
 
     Write-Host "Invoke-DxpBlobsDownload - Inputs:-----------------"
@@ -1021,25 +1028,32 @@ function Invoke-DxpBlobsDownload{
     Test-EnvironmentParam -Environment $Environment
 
     Import-Az
-    #Import-EpiCloud
-    Connect-DxpEpiCloud -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId
+    Import-EpiCloud
+
+    #Connect-DxpEpiCloud -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId
 
     $containers = Get-DxpStorageContainers -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment
-    $containers
 
     $Container = Test-ContainerName -Containers $containers -Container $Container
-    $Container
+    #$Container
     
-    # $sasLink = Get-DxpStorageContainerSasLink -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -Containers $containers -Container $Container -RetentionHours $RetentionHours
+    $sasLink = Get-DxpStorageContainerSasLink -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -Containers $containers -Container $Container -RetentionHours $RetentionHours
     # $sasLink
 
-    # $storageAccountName = Get-StorageAccountName -SasLink $sasLink
-    # $sasToken = Get-SasToken -SasLink $sasLink
+    $storageAccountName = Get-StorageAccountName -SasLink $sasLink
+    $sasToken = Get-SasToken -SasLink $sasLink
 
-    # Add-TlsSecurityProtocolSupport
-    # Import-AzureStorageModule
+    Add-TlsSecurityProtocolSupport
+    Import-AzureStorageModule
 
-    # Invoke-DownloadStorageAccountFiles -StorageAccountName $StorageAccountName -SasToken $SasToken -DownloadFolder $DownloadFolder -Container $Container -MaxFilesToDownload $MaxFilesToDownload -OverwriteExistingFiles $OverwriteExistingFiles
+    Invoke-DownloadStorageAccountFiles -StorageAccountName $StorageAccountName -SasToken $SasToken -DownloadFolder $DownloadFolder -Container $Container -MaxFilesToDownload $MaxFilesToDownload -OverwriteExistingFiles $OverwriteExistingFiles
+    #$files = 
+    #Write-Host "¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤"
+    #$files | Select-Object -Last 1 | Format-Table
+    #$Files | Format-Table
+    #Write-Host "¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤"
+
+    #$Files = $files
 }
 
 function Invoke-DxpDatabaseDownload{
@@ -1133,6 +1147,8 @@ function Invoke-DxpDatabaseDownload{
     Test-EnvironmentParam -Environment $Environment
     Test-DatabaseName -DatabaseName $DatabaseName
 
+    Import-EpiCloud
+
     Connect-DxpEpiCloud -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId
 
     $exportDatabaseSplat = @{
@@ -1145,13 +1161,13 @@ function Invoke-DxpDatabaseDownload{
     }
 
     $export = Start-EpiDatabaseExport @exportDatabaseSplat
-    Write-Host "################################################"
-    Write-Host "Database export has started:"
+    Write-Host "Database export has started:--------------------"
     Write-Host "Id:           $($export.id)"
     Write-Host "ProjectId:    $($export.projectId)"
     Write-Host "DatabaseName: $($export.databaseName)"
     Write-Host "Environment:  $($export.environment)"
     Write-Host "Status:       $($export.status)"
+    Write-Host "------------------------------------------------"
 
     $exportId = $export.id 
 
@@ -1163,20 +1179,21 @@ function Invoke-DxpDatabaseDownload{
         exit
     }
 
-    Write-Host "Continue to check how it goes for the database export."
-
     if ($export.status -eq "InProgress" -or $status.status -eq "Succeeded") {
+        Write-Host "----------------PROGRESS-------------------------"
         $status = Invoke-DxpDatabaseExportProgress -ClientKey $ClientKey -ClientSecret $ClientSecret -Projectid $ProjectId -ExportId $ExportId -Environment $Environment -DatabaseName $DatabaseName -ExpectedStatus "Succeeded" -Timeout $timeout
-
+        Write-Host "------------------------------------------------"
         $deployDateTime = Get-DxpDateTimeStamp
         Write-Host "Export $exportId ended $deployDateTime"
 
         if ($status.status -eq "Succeeded") {
             Write-Host "Database export $exportId has been successful."
+            Write-Host "-------------DOWNLOAD----------------------------"
             Write-Host "Start download database $($status.downloadLink)"
             $filePath = Join-Parts -Separator '\' -Parts $DownloadFolder, $status.bacpacName
             Invoke-WebRequest -Uri $status.downloadLink -OutFile $filePath
             Write-Host "Download database to $filePath"
+            Write-Host "------------------------------------------------"
         }
         else {
             Write-Error "The database export has not been successful or the script has timedout. CurrentStatus: $($status.status)"
