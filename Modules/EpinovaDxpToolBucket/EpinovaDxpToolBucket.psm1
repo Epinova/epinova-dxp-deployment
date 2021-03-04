@@ -497,10 +497,11 @@ function Import-AzureStorageModule {
     }
 
     if ($azModuleLoaded) {
-        "Az module loaded."
+        Write-Host "Az module loaded."
     }
     else {
-        throw "'Az.Storage' module is required to run this cmdlet."
+        Write-Error "'Az.Storage' module is required to run this cmdlet."
+        exit
     }
 }
 
@@ -797,6 +798,8 @@ function Invoke-DownloadStorageAccountFiles{
 
     $ctx = New-AzStorageContext -StorageAccountName $storageAccountName -SASToken $SasToken -ErrorAction Stop
 
+    $ArrayList = [System.Collections.ArrayList]::new()
+
     if ($null -eq $ctx){
         Write-Error "No context. The provided SASToken is not valid."
         exit
@@ -835,7 +838,8 @@ function Invoke-DownloadStorageAccountFiles{
             if ($fileExist -eq $false -or $true -eq $OverwriteExistingFiles){
                 ## Download the blob content 
                 Write-Host "Download #$($downloadedFiles + 1) - $($blobContent.Name) $(if ($fileExist -eq $true) {"overwrite"} else {"to"}) $filePath" 
-                Get-AzStorageBlobContent -Container $Container -Context $ctx -Blob $blobContent.Name -Destination $DownloadFolder -Force #-AsJob
+                [void]$ArrayList.Add($filePath)
+                $doNothingWithThisInfo = Get-AzStorageBlobContent -Container $Container -Context $ctx -Blob $blobContent.Name -Destination $DownloadFolder -Force -AsJob
                 $downloadedFiles++
             } else {
                 Write-Host "File exist on disc: $filePath." 
@@ -847,6 +851,8 @@ function Invoke-DownloadStorageAccountFiles{
         Write-Progress -Activity "Download files" -Completed;
         Write-Host "---------------------------------------------------"
     }
+
+    return $ArrayList
 }
 
 # END PRIVATE METHODS
@@ -1046,7 +1052,7 @@ function Invoke-DxpBlobsDownload{
     Add-TlsSecurityProtocolSupport
     Import-AzureStorageModule
 
-    Invoke-DownloadStorageAccountFiles -StorageAccountName $StorageAccountName -SasToken $SasToken -DownloadFolder $DownloadFolder -Container $Container -MaxFilesToDownload $MaxFilesToDownload -OverwriteExistingFiles $OverwriteExistingFiles
+    $ArrayList = Invoke-DownloadStorageAccountFiles -StorageAccountName $StorageAccountName -SasToken $SasToken -DownloadFolder $DownloadFolder -Container $Container -MaxFilesToDownload $MaxFilesToDownload -OverwriteExistingFiles $OverwriteExistingFiles
     #$files = 
     #Write-Host "¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤"
     #$files | Select-Object -Last 1 | Format-Table
@@ -1054,6 +1060,7 @@ function Invoke-DxpBlobsDownload{
     #Write-Host "¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤"
 
     #$Files = $files
+    return $ArrayList
 }
 
 function Invoke-DxpDatabaseDownload{
