@@ -24,17 +24,18 @@ Write-Host "Containers:-------------------"
 $containers.storageContainers | Format-Table
 Write-Host "------------------------------"
 
-#Invoke-DxpBlobsDownload -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment "Integration" -DownloadFolder "E:\dev\temp\_blobDownloads" -MaxFilesToDownload 10 -Container "Blobs" -OverwriteExistingFiles 1 -RetentionHours 2
-#Invoke-DxpBlobsDownload -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment "Integration" -DownloadFolder "E:\dev\temp\_blobDownloads" -MaxFilesToDownload 10 -Container "indutrade-portal-assets" -OverwriteExistingFiles 1 -RetentionHours 2
-
-#Invoke-DxpBlobsDownload -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment "Production" -DownloadFolder "E:\dev\temp\_blobDownloads" -MaxFilesToDownload 10 -Container "AppLogs"
-#Invoke-DxpBlobsDownload -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $Environment -DownloadFolder "E:\dev\temp\_blobDownloads" -MaxFilesToDownload 2 -Container "azure-web-logs"
 $downloadFolder = "$PSScriptRoot\Downloads"
 if ((Test-Path -Path $downloadFolder) -ne $true)
 {
     New-Item -Path $downloadFolder -ItemType "directory"
 }
-$files = Invoke-DxpBlobsDownload -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $Environment -DownloadFolder $downloadFolder -MaxFilesToDownload 2 -Container "azure-web-logs"
+
+#Invoke-DxpBlobsDownload -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment "Integration" -DownloadFolder "E:\dev\temp\_blobDownloads" -MaxFilesToDownload 10 -Container "Blobs" -OverwriteExistingFiles 1 -RetentionHours 2
+#Invoke-DxpBlobsDownload -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment "Integration" -DownloadFolder "E:\dev\temp\_blobDownloads" -MaxFilesToDownload 10 -Container "indutrade-portal-assets" -OverwriteExistingFiles 1 -RetentionHours 2
+
+$files = Invoke-DxpBlobsDownload -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment "Production" -DownloadFolder $downloadFolder -MaxFilesToDownload 2 -Container "AppLogs"
+#Invoke-DxpBlobsDownload -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $Environment -DownloadFolder "E:\dev\temp\_blobDownloads" -MaxFilesToDownload 2 -Container "azure-web-logs"
+#$files = Invoke-DxpBlobsDownload -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $Environment -DownloadFolder $downloadFolder -MaxFilesToDownload 2 -Container "azure-web-logs"
 Write-Host "€€€€€€€€€€€€€€€€€€€€€€€€€€€€"
 $files
 Write-Host "€€€€€€€€€€€€€€€€€€€€€€€€€€€€"
