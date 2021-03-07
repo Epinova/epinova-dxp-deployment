@@ -1,5 +1,8 @@
 # Release notes
 
+## v1.10.1
+- Deploy NuGet package has support for DirectDeploy.
+
 ## v1.9.43
 - Fix for #120 Deploy NuGet package task is not working for commerce. (##[error]The variable '$resolvedCmsPackagePath' cannot be retrieved because it has not been set.)
 

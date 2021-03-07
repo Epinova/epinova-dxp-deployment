@@ -9,6 +9,7 @@ try {
     $projectId = Get-VstsInput -Name "ProjectId" -Require -ErrorAction "Stop"
     $targetEnvironment = Get-VstsInput -Name "TargetEnvironment" -Require -ErrorAction "Stop"
     $sourceApp = Get-VstsInput -Name "SourceApp" -Require -ErrorAction "Stop"
+    $directDeploy = Get-VstsInput -Name "DirectDeploy" -AsBool
     $useMaintenancePage = Get-VstsInput -Name "UseMaintenancePage" -AsBool
     $dropPath = Get-VstsInput -Name "DropPath" -Require -ErrorAction "Stop"
     $timeout = Get-VstsInput -Name "Timeout" -AsInt -Require -ErrorAction "Stop"
@@ -24,6 +25,7 @@ try {
     Write-Host "ProjectId: $projectId"
     Write-Host "TargetEnvironment: $targetEnvironment"
     Write-Host "SourceApp: $sourceApp"
+    Write-Host "DirectDeploy: $directDeploy"
     Write-Host "UseMaintenancePage: $useMaintenancePage"
     Write-Host "DropPath: $dropPath"
     Write-Host "Timeout: $timeout"
@@ -43,6 +45,11 @@ try {
         Install-Module EpiCloud -Scope CurrentUser -Force
     } else {
         Write-Host "EpiCloud installed."
+    }
+
+    if ($targetEnvironment -ne "Integration" -and $directDeploy){
+        Write-Host "DirectDeploy does only support target environment = Integration at the moment. Will set the DirectDeploy=false."
+        $directDeploy = $false
     }
 
     Write-DxpHostVersion
@@ -99,7 +106,11 @@ try {
         UseMaintenancePage = $useMaintenancePage
     }
 
-    $deploy = Start-EpiDeployment @startEpiDeploymentSplat
+    if ($true -eq $directDeploy){
+        $deploy = Start-EpiDeployment @startEpiDeploymentSplat -DirectDeploy
+    } else {
+        $deploy = Start-EpiDeployment @startEpiDeploymentSplat
+    }
     $deploy
 
     $deploymentId = $deploy.id
