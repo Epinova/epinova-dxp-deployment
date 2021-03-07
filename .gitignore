@@ -6,3 +6,7 @@ node_modules/
 
 # Bundle Transformer related Russian files
 ru-ru/
+
+Modules/nuget.exe
+
+Scripts/Downloads
