@@ -1,19 +1,23 @@
 # Release notes
 
+## v1.10.10
+- Fixed bug with SetVariable DeploymentId in DeployNuGetPackage task.
+- Fixed bug with SetVariable DeploymentId in DeployTo task.
+
 ## v1.10.9
-- Fixed ExpectedStatus bug in Deploy NuGet package regarding support for DirectDeploy.
+- Fixed ExpectedStatus bug in DeployNuGetPackage regarding support for DirectDeploy.
 
 ## v1.10.8
 - Handle status Failed in progress function.
 
 ## v1.10.2-1.10.7
-- Fixed ExpectedStatus bug in Deploy NuGet package regarding support for DirectDeploy.
+- Fixed ExpectedStatus bug in DeployNuGetPackage regarding support for DirectDeploy.
 
 ## v1.10.1
-- Deploy NuGet package has support for DirectDeploy.
+- DeployNuGetPackage: Added  support for DirectDeploy.
 
 ## v1.9.43
-- Fix for #120 Deploy NuGet package task is not working for commerce. (##[error]The variable '$resolvedCmsPackagePath' cannot be retrieved because it has not been set.)
+- Fix for #120 DeployNuGetPackage task is not working for commerce. (##[error]The variable '$resolvedCmsPackagePath' cannot be retrieved because it has not been set.)
 
 ## v1.9.33 - v1.9.42
 - Start using EpinovaDxpDeploymentUtil.ps1 script. Problem with authentication in custom module.
