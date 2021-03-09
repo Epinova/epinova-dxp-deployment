@@ -107,8 +107,10 @@ try {
     }
 
     if ($true -eq $directDeploy){
+        $expectedStatus = "Succeeded"
         $deploy = Start-EpiDeployment @startEpiDeploymentSplat -DirectDeploy
     } else {
+        $expectedStatus = "AwaitingVerification"
         $deploy = Start-EpiDeployment @startEpiDeploymentSplat
     }
     $deploy
@@ -120,12 +122,13 @@ try {
         Write-Host "Deploy $deploymentId started $deployDateTime."
 
         $percentComplete = $deploy.percentComplete
-        $status = Invoke-DxpProgress -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus "AwaitingVerification" -Timeout $timeout
+
+        $status = Invoke-DxpProgress -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus $expectedStatus -Timeout $timeout
 
         $deployDateTime = Get-DxpDateTimeStamp
         Write-Host "Deploy $deploymentId ended $deployDateTime"
 
-        if ($status.status -eq "AwaitingVerification") {
+        if ($status.status -eq $expectedStatus) {
             Write-Host "Deployment $deploymentId has been successful."
         }
         else {
@@ -141,7 +144,7 @@ try {
         Write-Error "Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment." -ErrorAction Stop
         exit 1
     }
-    Write-Host "Setvariable DeploymentId: $deploy.id"
+    Write-Host "Setvariable DeploymentId: $deploymentId"
     Write-Host "##vso[task.setvariable variable=DeploymentId;]$($deploymentId)"
 
     ####################################################################################

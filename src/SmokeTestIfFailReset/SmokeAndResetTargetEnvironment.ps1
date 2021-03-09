@@ -111,9 +111,8 @@ try {
             Install-Module EpiCloud -Scope CurrentUser -Force
         } else {
             Write-Host "EpiCloud installed."
-            Get-Module -Name EpiCloud -ListAvailable
         }
- 
+     
         Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
         $getEpiDeploymentSplat = @{

@@ -163,6 +163,7 @@ function Invoke-DxpProgress {
             Start-Sleep 5
         }
         if ($sw.Elapsed.TotalSeconds -ge $Timeout) { break }
+        if ($status.status -eq "Failed") { break }
         if ($status.percentComplete -eq 100 -and $status.status -eq $ExpectedStatus) { break }
     }
 
@@ -170,7 +171,19 @@ function Invoke-DxpProgress {
     Write-Host "Stopped iteration after $($sw.Elapsed.TotalSeconds) seconds."
 
     $status = Get-EpiDeployment -ProjectId $ProjectId -Id $DeploymentId
-    $status
+    Write-Host "Deployment $DeploymentId"
+    Write-Host "Status: $($status.status)."
+    Write-Host "PercentComplete: $($status.percentComplete)."
+    Write-Host "StartTime: $($status.startTime)."
+    Write-Host "EndTime: $($status.endTime)."
+
+    if ($null -ne $status.deploymentErrors -and $status.deploymentErrors.Length -ne 0){
+        Write-Host "Errors: $($status.deploymentErrors)"
+    }
+    if ($null -ne $status.deploymentWarnings -and $status.deploymentWarnings.Length -ne 0){
+        Write-Host "Warnings: $($status.deploymentWarnings)"
+    }
+
     return $status
 }
 

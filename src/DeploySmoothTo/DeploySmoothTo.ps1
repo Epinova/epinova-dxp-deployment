@@ -46,7 +46,6 @@ try {
         Install-Module EpiCloud -Scope CurrentUser -Force
     } else {
         Write-Host "EpiCloud installed."
-        Get-Module -Name EpiCloud -ListAvailable
     }
 
     Write-DxpHostVersion
