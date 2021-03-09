@@ -50,6 +50,12 @@ If you use "cms,commerce", both nupkg files must be in the same DropPath folder.
 - commerce
 - cms,commerce
 
+#### DirectDeploy
+**[boolean]** - **required**  
+Specify if you want to do a direct deploy without using slot and warmup.  
+**Example:** `true`  
+**Default value:** `false`
+
 #### Use maintenance page
 **[boolean]** - **required**  
 Specify if you want to use a maintenance page during the deploy.  
@@ -85,6 +91,7 @@ Example:
     DropPath: '$(System.DefaultWorkingDirectory)\drop'  
     TargetEnvironment: 'Integration'  
     SourceApp: 'cms'  
+    DirewctDeploy: true  
     UseMaintenancePage: false  
     Timeout: 1800  
 ```

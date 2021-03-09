@@ -2,7 +2,7 @@
 
 Tasks
 
-1. **Deploy nuget package**
+1. **Deploy NuGet package**
 1. **Deploy To**
 1. **Deploy Smooth To**
 1. **Content copy
