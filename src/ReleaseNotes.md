@@ -1,5 +1,8 @@
 # Release notes
 
+## v1.10.11
+- Print out EpiCloud version in tasks.
+
 ## v1.10.10
 - Fixed bug with SetVariable DeploymentId in DeployNuGetPackage task.
 - Fixed bug with SetVariable DeploymentId in DeployTo task.
