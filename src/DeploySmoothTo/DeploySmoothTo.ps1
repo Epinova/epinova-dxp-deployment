@@ -44,9 +44,9 @@ try {
     if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
         Write-Host "Could not find EpiCloud. Installing it."
         Install-Module EpiCloud -Scope CurrentUser -Force
+    } else {
+        Write-Host "EpiCloud installed."
     }
-    $epiModule = Get-Module -Name EpiCloud
-    Write-Host "Using EpiCloud v$($epiModule.Version)"
 
     Write-DxpHostVersion
 
