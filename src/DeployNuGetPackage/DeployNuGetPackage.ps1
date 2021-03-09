@@ -128,7 +128,7 @@ try {
         $deployDateTime = Get-DxpDateTimeStamp
         Write-Host "Deploy $deploymentId ended $deployDateTime"
 
-        if ($status.status -eq "AwaitingVerification") {
+        if ($status.status -eq $expectedStatus) {
             Write-Host "Deployment $deploymentId has been successful."
         }
         else {
