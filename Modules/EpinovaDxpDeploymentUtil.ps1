@@ -178,7 +178,10 @@ function Invoke-DxpProgress {
         Write-Host "Deployment Warnings: $($status.deploymentWarnings)"
     }
     if ($null -ne $status.endTime){
-        $timeSpan = NEW-TIMESPAN –Start $status.startTime –End $status.endTime
+        $deploymentStartTime = $status.startTime
+        $deploymentEndTime = $status.endTime
+        $timeSpan = NEW-TIMESPAN –Start $deploymentStartTime –End $deploymentEndTime
+        
         Write-Host "Deployment took $($timeSpan.Minutes) minutes, $($timeSpan.Seconds) seconds, $($timeSpan.Milliseconds) milliseconds"
     }
 
