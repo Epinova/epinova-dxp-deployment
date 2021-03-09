@@ -163,6 +163,7 @@ function Invoke-DxpProgress {
             Start-Sleep 5
         }
         if ($sw.Elapsed.TotalSeconds -ge $Timeout) { break }
+        if ($status.status -eq "Failed") { break }
         if ($status.percentComplete -eq 100 -and $status.status -eq $ExpectedStatus) { break }
     }
 

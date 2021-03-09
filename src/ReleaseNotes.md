@@ -1,5 +1,8 @@
 # Release notes
 
+## v1.10.8
+- Handle status Failed in progress function.
+
 ## v1.10.2-1.10.7
 - Fixed ExpectedStatus bug in Deploy NuGet package regarding support for DirectDeploy.
 
