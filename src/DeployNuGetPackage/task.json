@@ -12,8 +12,8 @@
     "author": "Ove Lartelius",
     "version": {
         "Major": 1,
-        "Minor": 1,
-        "Patch": 19
+        "Minor": 2,
+        "Patch": 11
     },
     "groups": [
         {
@@ -98,6 +98,15 @@
                 "commerce": "commerce",
                 "cms,commerce": "cms,commerce"
             }
+        },
+        {
+            "name": "DirectDeploy",
+            "type": "boolean",
+            "label": "Use direct deploy",
+            "required": true,
+            "defaultValue": "false",
+            "helpMarkDown": "If you should skip slot and other time consuming stuff and just deploy to environment.",
+            "groupName": "Settings"
         },
         {
             "name": "UseMaintenancePage",

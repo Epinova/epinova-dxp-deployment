@@ -9,6 +9,7 @@ try {
     $projectId = Get-VstsInput -Name "ProjectId" -Require -ErrorAction "Stop"
     $targetEnvironment = Get-VstsInput -Name "TargetEnvironment" -Require -ErrorAction "Stop"
     $sourceApp = Get-VstsInput -Name "SourceApp" -Require -ErrorAction "Stop"
+    $directDeploy = Get-VstsInput -Name "DirectDeploy" -AsBool
     $useMaintenancePage = Get-VstsInput -Name "UseMaintenancePage" -AsBool
     $dropPath = Get-VstsInput -Name "DropPath" -Require -ErrorAction "Stop"
     $timeout = Get-VstsInput -Name "Timeout" -AsInt -Require -ErrorAction "Stop"
@@ -24,6 +25,7 @@ try {
     Write-Host "ProjectId: $projectId"
     Write-Host "TargetEnvironment: $targetEnvironment"
     Write-Host "SourceApp: $sourceApp"
+    Write-Host "DirectDeploy: $directDeploy"
     Write-Host "UseMaintenancePage: $useMaintenancePage"
     Write-Host "DropPath: $dropPath"
     Write-Host "Timeout: $timeout"
@@ -43,6 +45,11 @@ try {
         Install-Module EpiCloud -Scope CurrentUser -Force
     } else {
         Write-Host "EpiCloud installed."
+    }
+
+    if ($targetEnvironment -ne "Integration" -and $directDeploy){
+        Write-Host "DirectDeploy does only support target environment = Integration at the moment. Will set the DirectDeploy=false."
+        $directDeploy = $false
     }
 
     Write-DxpHostVersion
@@ -99,7 +106,13 @@ try {
         UseMaintenancePage = $useMaintenancePage
     }
 
-    $deploy = Start-EpiDeployment @startEpiDeploymentSplat
+    if ($true -eq $directDeploy){
+        $expectedStatus = "Succeeded"
+        $deploy = Start-EpiDeployment @startEpiDeploymentSplat -DirectDeploy
+    } else {
+        $expectedStatus = "AwaitingVerification"
+        $deploy = Start-EpiDeployment @startEpiDeploymentSplat
+    }
     $deploy
 
     $deploymentId = $deploy.id
@@ -109,12 +122,13 @@ try {
         Write-Host "Deploy $deploymentId started $deployDateTime."
 
         $percentComplete = $deploy.percentComplete
-        $status = Invoke-DxpProgress -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus "AwaitingVerification" -Timeout $timeout
+
+        $status = Invoke-DxpProgress -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus $expectedStatus -Timeout $timeout
 
         $deployDateTime = Get-DxpDateTimeStamp
         Write-Host "Deploy $deploymentId ended $deployDateTime"
 
-        if ($status.status -eq "AwaitingVerification") {
+        if ($status.status -eq $expectedStatus) {
             Write-Host "Deployment $deploymentId has been successful."
         }
         else {
@@ -130,7 +144,7 @@ try {
         Write-Error "Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment." -ErrorAction Stop
         exit 1
     }
-    Write-Host "Setvariable DeploymentId: $deploy.id"
+    Write-Host "Setvariable DeploymentId: $deploymentId"
     Write-Host "##vso[task.setvariable variable=DeploymentId;]$($deploymentId)"
 
     ####################################################################################

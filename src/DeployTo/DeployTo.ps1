@@ -44,7 +44,6 @@ try {
         Install-Module EpiCloud -Scope CurrentUser -Force
     } else {
         Write-Host "EpiCloud installed."
-        Get-Module -Name EpiCloud -ListAvailable
     }
 
     Write-DxpHostVersion
@@ -95,7 +94,7 @@ try {
         Write-Error "Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment." -ErrorAction Stop
         exit 1
     }
-    Write-Host "Setvariable DeploymentId: $deploy.id"
+    Write-Host "Setvariable DeploymentId: $deploymentId"
     Write-Host "##vso[task.setvariable variable=DeploymentId;]$($deploymentId)"
 
     ####################################################################################
