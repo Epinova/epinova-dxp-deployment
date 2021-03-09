@@ -107,8 +107,10 @@ try {
     }
 
     if ($true -eq $directDeploy){
+        $expectedStatus = "Succeeded"
         $deploy = Start-EpiDeployment @startEpiDeploymentSplat -DirectDeploy
     } else {
+        $expectedStatus = "AwaitingVerification"
         $deploy = Start-EpiDeployment @startEpiDeploymentSplat
     }
     $deploy
@@ -120,7 +122,8 @@ try {
         Write-Host "Deploy $deploymentId started $deployDateTime."
 
         $percentComplete = $deploy.percentComplete
-        $status = Invoke-DxpProgress -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus "AwaitingVerification" -Timeout $timeout
+
+        $status = Invoke-DxpProgress -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus $expectedStatus -Timeout $timeout
 
         $deployDateTime = Get-DxpDateTimeStamp
         Write-Host "Deploy $deploymentId ended $deployDateTime"
