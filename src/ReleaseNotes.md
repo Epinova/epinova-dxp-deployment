@@ -1,6 +1,6 @@
 # Release notes
 
-## v1.10.2-1.10.4
+## v1.10.2-1.10.5
 - Fixed ExpectedStatus bug in Deploy NuGet package regarding support for DirectDeploy.  
   Added better description how long a deployment took. Ex: "Deployment took 1 minutes, 12 seconds, 54 milliseconds"
 
