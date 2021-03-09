@@ -170,7 +170,18 @@ function Invoke-DxpProgress {
     Write-Host "Stopped iteration after $($sw.Elapsed.TotalSeconds) seconds."
 
     $status = Get-EpiDeployment -ProjectId $ProjectId -Id $DeploymentId
-    $status
+
+    if ($null -ne $status.deploymentErrors -and $status.deploymentErrors.Length -ne 0){
+        Write-Host "Deployment Errors: $($status.deploymentErrors)"
+    }
+    if ($null -ne $status.deploymentWarnings -and $status.deploymentWarnings.Length -ne 0){
+        Write-Host "Deployment Warnings: $($status.deploymentWarnings)"
+    }
+    if ($null -ne $status.endTime){
+        $timeSpan = NEW-TIMESPAN –Start $status.startTime –End $status.endTime
+        Write-Host "Deployment took $($timeSpan.Minutes) minutes, $($timeSpan.Seconds) seconds, $($timeSpan.Milliseconds) milliseconds"
+    }
+
     return $status
 }
 
