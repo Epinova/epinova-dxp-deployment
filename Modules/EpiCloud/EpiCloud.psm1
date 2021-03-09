@@ -1341,6 +1341,11 @@ function Start-EpiDeployment {
     .PARAMETER IncludeDb
         Specify this switch to include the SQL DB from the source environment.
 
+    .PARAMETER DirectDeploy
+        Specify this switch to speed up deployments to Integration/Development environment.
+        A deployment will be made directly to the target web app without performing a swap.
+        Attention: Resetting the deployment (or the database of the target environment) is not supported for DirectDeploy.
+
     .PARAMETER Wait
         Specify this switch to enable "polling" of the deployment until it's completed.
 
@@ -1352,6 +1357,11 @@ function Start-EpiDeployment {
 
     .PARAMETER PollingIntervalSec
         How often, in seconds, to poll for deployment status.
+
+    .EXAMPLE
+        Start-EpiDeployment -ClientKey $myKey -ClientSecret $mySecret -ProjectId $projectId -TargetEnvironment Integration -DeploymentPackage cms.app.1.0.0.nupkg -DirectDeploy
+
+        Directly deploys a code package to the Integration environment.
 
     .EXAMPLE
         Start-EpiDeployment -ClientKey $myKey -ClientSecret $mySecret -ProjectId d117c12c-d02e-4b53-aabd-aa8e00a47cdv -TargetEnvironment Integration -DeploymentPackage cms.app.1.0.0.nupkg
@@ -1380,8 +1390,8 @@ function Start-EpiDeployment {
     #>
 
     [CmdletBinding(
-        DefaultParameterSetName='DeploymentPackage',
-        PositionalBinding=$false
+        DefaultParameterSetName = 'DeploymentPackage',
+        PositionalBinding = $false
     )]
     param(
         [Parameter(Mandatory = $true)]
@@ -1394,7 +1404,7 @@ function Start-EpiDeployment {
         [String] $ProjectId,
 
         [Parameter(Mandatory = $false, ParameterSetName = 'SourceEnvironment')]
-        [ValidateSet('cms','commerce')]
+        [ValidateSet('cms', 'commerce')]
         [String[]] $SourceApp,
 
         [Parameter(Mandatory = $true, ParameterSetName = 'SourceEnvironment')]
@@ -1420,6 +1430,9 @@ function Start-EpiDeployment {
         [Switch] $IncludeDb,
 
         [Parameter(Mandatory = $false)]
+        [Switch] $DirectDeploy,
+
+        [Parameter(Mandatory = $false)]
         [Switch] $Wait,
 
         [Parameter(Mandatory = $false)]
@@ -1439,7 +1452,7 @@ function Start-EpiDeployment {
         if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('WaitTimeoutMinutes')) {
             if ($PSCmdlet.MyInvocation.Line -like "*-WaitTimeoutSec*") {
                 Write-Warning "The WaitTimeoutSec-parameter has been deprecated. Please use WaitTimeoutMinutes instead."
-                $WaitTimeoutMinutes = $WaitTimeoutMinutes/60
+                $WaitTimeoutMinutes = $WaitTimeoutMinutes / 60
             }
         }
     }
@@ -1468,6 +1481,7 @@ function Start-EpiDeployment {
                 TargetEnvironment = $TargetEnvironment
                 MaintenancePage   = $maintenanceMode
                 ZeroDownTimeMode  = $ZeroDownTimeMode
+                DirectDeploy      = $DirectDeploy.IsPresent
             }
         }
 
@@ -1487,7 +1501,7 @@ function Start-EpiDeployment {
             if (-not $startDeploymentParams.RequestPayload.sourceApps -and
                 -not $IncludeBlob.IsPresent -and
                 -not $IncludeDb.IsPresent) {
-                    throw "You need to specify at least one of the following parameters: DeploymentPackage, SourceApp, IncludeBlob or IncludeDb."
+                throw "You need to specify at least one of the following parameters: DeploymentPackage, SourceApp, IncludeBlob or IncludeDb."
             }
         }
 
@@ -1496,9 +1510,9 @@ function Start-EpiDeployment {
 
         if ($ShowProgress.IsPresent -and $Wait.IsPresent) {
             $writeProgressParams = @{
-                Activity = "Deployment running against $TargetEnvironment..."
+                Activity        = "Deployment running against $TargetEnvironment..."
                 PercentComplete = 0
-                Status = $startDeploymentResponse.status
+                Status          = $startDeploymentResponse.status
             }
 
             Write-Progress @writeProgressParams
