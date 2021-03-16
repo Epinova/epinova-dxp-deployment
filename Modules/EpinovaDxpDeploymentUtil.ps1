@@ -42,7 +42,7 @@ function Write-DxpHostVersion() {
         Will print out the PowerShell host version in the host. Ex: @{Version=5.1.14393.3866}
     #>
     $version = Get-Host | Select-Object Version
-    Write-Host "PowerShell $version" 
+    Write-Host "PowerShell          $version" 
 }
 
 function Test-IsGuid {

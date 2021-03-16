@@ -27,15 +27,7 @@ try {
         $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
     }
 
-    # EpiCloud module
-    Initialize-EpiCload    
-    #if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
-    #    Write-Host "Could not find EpiCloud."
-    #    Install-Module EpiCloud -Scope CurrentUser -Force
-    #    Write-Host "Install EpiCloud."
-    #}
-    #$version = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
-    #Write-Host "EpiCloud            $version" 
+    Initialize-EpiCload
 
     Write-DxpHostVersion
 

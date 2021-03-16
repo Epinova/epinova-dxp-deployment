@@ -15,11 +15,11 @@ try {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     
     Write-Host "Inputs:"
-    Write-Host "ClientKey: $clientKey"
-    Write-Host "ClientSecret: **** (it is a secret...)"
-    Write-Host "ProjectId: $projectId"
-    Write-Host "TargetEnvironment: $targetEnvironment"
-    Write-Host "Timeout: $timeout"
+    Write-Host "ClientKey:          $clientKey"
+    Write-Host "ClientSecret:       **** (it is a secret...)"
+    Write-Host "ProjectId:          $projectId"
+    Write-Host "TargetEnvironment:  $targetEnvironment"
+    Write-Host "Timeout:            $timeout"
 
     . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
 
@@ -27,13 +27,7 @@ try {
         $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
     }
 
-    # EpiCloud module
-    if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
-        Write-Host "Could not find EpiCloud. Installing it."
-        Install-Module EpiCloud -Scope CurrentUser -Force
-    } else {
-        Write-Host "EpiCloud installed."
-    }
+    Initialize-EpiCload
 
     Write-DxpHostVersion
 

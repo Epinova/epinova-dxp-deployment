@@ -23,17 +23,17 @@ try {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     
     Write-Host "Inputs:"
-    Write-Host "ClientKey: $clientKey"
-    Write-Host "ClientSecret: **** (it is a secret...)"
-    Write-Host "ProjectId: $projectId"
-    Write-Host "SourceEnvironment: $sourceEnvironment"
-    Write-Host "TargetEnvironment: $targetEnvironment"
-    Write-Host "SourceApp: $sourceApp"
+    Write-Host "ClientKey:          $clientKey"
+    Write-Host "ClientSecret:       **** (it is a secret...)"
+    Write-Host "ProjectId:          $projectId"
+    Write-Host "SourceEnvironment:  $sourceEnvironment"
+    Write-Host "TargetEnvironment:  $targetEnvironment"
+    Write-Host "SourceApp:          $sourceApp"
     Write-Host "UseMaintenancePage: $useMaintenancePage"
-    Write-Host "Timeout: $timeout"
-    Write-Host "IncludeBlob: $includeBlob"
-    Write-Host "IncludeDb: $includeDb"
-    Write-Host "ZeroDowntimeMode: $zeroDowntimeMode"
+    Write-Host "Timeout:            $timeout"
+    Write-Host "IncludeBlob:        $includeBlob"
+    Write-Host "IncludeDb:          $includeDb"
+    Write-Host "ZeroDowntimeMode:   $zeroDowntimeMode"
 
     . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
 
@@ -41,12 +41,7 @@ try {
         $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
     }
 
-    if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
-        Write-Host "Could not find EpiCloud. Installing it."
-        Install-Module EpiCloud -Scope CurrentUser -Force
-    } else {
-        Write-Host "EpiCloud installed."
-    }
+    Initialize-EpiCload
 
     Write-DxpHostVersion
 
