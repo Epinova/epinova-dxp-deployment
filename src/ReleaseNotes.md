@@ -1,6 +1,6 @@
 # Release notes
 
-## v1.10.13-1.10.18
+## v1.10.13-1.10.19
 - Print out EpiCloud version in tasks.
 
 ## v1.10.11-1.10.12
