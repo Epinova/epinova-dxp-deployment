@@ -28,12 +28,12 @@ try {
     }
 
     # EpiCloud module
-    $epiCloudModule = Get-InstalledModule -Name "EpiCloud" -RequiredVersion $epiCloudVersion
-    if (-not (Get-InstalledModule -Name EpiCloud)) {
+    if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
         Write-Host "Could not find EpiCloud."
         Install-Module EpiCloud -Scope CurrentUser -Force
         Write-Host "Install EpiCloud."
     } else {
+        $epiCloudModule = Get-InstalledModule -Name "EpiCloud" -RequiredVersion $epiCloudVersion
         if ($null -ne $epiCloudModule -and $epiCloudModule.Version -ne $epiCloudVersion){
             Update-Module EpiCloud -RequiredVersion $epiCloudVersion -Scope CurrentUser -Force
             Write-Host "Update EpiCloud."
