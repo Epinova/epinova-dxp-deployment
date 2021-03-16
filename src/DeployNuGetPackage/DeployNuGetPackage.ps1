@@ -54,12 +54,12 @@ try {
     Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
     $packageLocation = Get-EpiDeploymentPackageLocation -ProjectId $projectId
-    Write-Host "PackageLocation: $packageLocation"
+    Write-Host "PackageLocation:    $packageLocation"
 
     $resolvedCmsPackagePath = $null
     if ($sourceApp -eq "cms" -or $sourceApp -eq "cms,commerce"){
         $resolvedCmsPackagePath = Get-ChildItem -Path $dropPath -Filter *.cms.*.nupkg
-        Write-Host "Cms PackagePath: $resolvedCmsPackagePath"
+        Write-Host "Cms PackagePath:    $resolvedCmsPackagePath"
     
         if ($null -eq $resolvedCmsPackagePath){
             Write-Host "Following files found in location $dropPath : $(Get-ChildItem -Path $dropPath -File)"
