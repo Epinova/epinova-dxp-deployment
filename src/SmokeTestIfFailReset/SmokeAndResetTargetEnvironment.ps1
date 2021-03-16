@@ -20,18 +20,18 @@ try {
     ####################################################################################
 
     Write-Host "Inputs:"
-    Write-Host "ClientKey: $clientKey"
-    Write-Host "ClientSecret: **** (it is a secret...)"
-    Write-Host "ProjectId: $projectId"
-    Write-Host "TargetEnvironment: $targetEnvironment"
-    Write-Host "Urls: $urls"
-    Write-Host "SleepBeforeStart: $sleepBeforeStart"
-    Write-Host "NumberOfRetries: $retries"
-    Write-Host "SleepBeforeRetry: $sleepBeforeRetry"
-    Write-Host "Timeout: $timeout"
-    Write-Host "ErrorActionPreference: $errorAction"
+    Write-Host "ClientKey:          $clientKey"
+    Write-Host "ClientSecret:       **** (it is a secret...)"
+    Write-Host "ProjectId:          $projectId"
+    Write-Host "TargetEnvironment:  $targetEnvironment"
+    Write-Host "Urls:               $urls"
+    Write-Host "SleepBeforeStart:   $sleepBeforeStart"
+    Write-Host "NumberOfRetries:    $retries"
+    Write-Host "SleepBeforeRetry:   $sleepBeforeRetry"
+    Write-Host "Timeout:            $timeout"
+    Write-Host "ErrorActionPref:    $errorAction"
 
-    Write-Host "ErrorActionPreference: $($global:ErrorActionPreference)"
+    Write-Host "ErrorActionPref:    $($global:ErrorActionPreference)"
 
     $AllProtocols = [System.Net.SecurityProtocolType]'Ssl3,Tls,Tls11,Tls12'
     [System.Net.ServicePointManager]::SecurityProtocol = $AllProtocols
@@ -105,13 +105,7 @@ try {
 
     if ($resetDeployment -eq $true) {
 
-        # EpiCloud module
-        if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
-            Write-Host "Could not find EpiCloud. Installing it."
-            Install-Module EpiCloud -Scope CurrentUser -Force
-        } else {
-            Write-Host "EpiCloud installed."
-        }
+        Initialize-EpiCload
      
         Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
