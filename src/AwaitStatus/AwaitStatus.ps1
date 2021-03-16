@@ -35,8 +35,8 @@ try {
     } else {
         #$epiCloudModule = Get-InstalledModule -Name "EpiCloud" -RequiredVersion $epiCloudVersion
         #if ($null -ne $epiCloudModule -and $epiCloudModule.Version -ne $epiCloudVersion){
-            Update-Module EpiCloud -RequiredVersion $epiCloudVersion -Scope CurrentUser -Force
-            Write-Host "Update EpiCloud."
+        #    Update-Module EpiCloud -RequiredVersion $epiCloudVersion -Scope CurrentUser -Force
+        #    Write-Host "Update EpiCloud."
         #}
     }
     Write-Host Get-Module -Name EpiCloud -ListAvailable

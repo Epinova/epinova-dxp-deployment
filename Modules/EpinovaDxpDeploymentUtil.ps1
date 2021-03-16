@@ -7,8 +7,6 @@
 
 Set-StrictMode -Version Latest
 
-$epiCloudVersion = "0.13.15"
-
 function Write-DxpHostVersion() {
     <#
     .SYNOPSIS
