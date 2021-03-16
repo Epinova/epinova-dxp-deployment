@@ -29,7 +29,7 @@ try {
 
     # EpiCloud module
     $epiCloudModule = Get-InstalledModule -Name "EpiCloud" -RequiredVersion $epiCloudVersion
-    if (-not (Get-InstalledModule -Name EpiCloud -ListAvailable)) {
+    if (-not (Get-InstalledModule -Name EpiCloud)) {
         Write-Host "Could not find EpiCloud."
         Install-Module EpiCloud -Scope CurrentUser -Force
         Write-Host "Install EpiCloud."
