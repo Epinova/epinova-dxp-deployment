@@ -39,10 +39,11 @@ try {
             Write-Host "Update EpiCloud."
         #}
     }
-    $epiCloudModule = Get-InstalledModule -Name "EpiCloud" -RequiredVersion $epiCloudVersion
-    if ($null -ne $epiCloudModule){
-        Write-Host "Using EpiCloud v$($epiCloudModule.Version)"
-    }
+    Write-Host Get-Module -Name EpiCloud -ListAvailable
+    #$epiCloudModule = Get-InstalledModule -Name "EpiCloud" #-RequiredVersion $epiCloudVersion
+    #if ($null -ne $epiCloudModule){
+    #    Write-Host "Using EpiCloud v$($epiCloudModule.Version)"
+    #}
 
     Write-DxpHostVersion
 
