@@ -1,6 +1,9 @@
 # Release notes
 
-## v1.10.11-1.20.12
+## v1.10.13
+- Print out EpiCloud version in tasks.
+
+## v1.10.11-1.10.12
 - Print out EpiCloud version in tasks. And removed it. No support in the task.
 
 ## v1.10.10

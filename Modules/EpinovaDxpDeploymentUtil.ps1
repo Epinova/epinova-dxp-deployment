@@ -6,6 +6,9 @@
 #>
 
 Set-StrictMode -Version Latest
+
+$epiCloudVersion = "0.13.15"
+
 function Write-DxpHostVersion() {
     <#
     .SYNOPSIS
@@ -20,7 +23,7 @@ function Write-DxpHostVersion() {
         Will print out the PowerShell host version in the host. Ex: @{Version=5.1.14393.3866}
     #>
     $version = Get-Host | Select-Object Version
-    Write-Host $version
+    Write-Host "PowerShell $version" 
 }
 
 function Test-IsGuid {
