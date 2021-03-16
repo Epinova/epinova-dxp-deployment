@@ -7,6 +7,27 @@
 
 Set-StrictMode -Version Latest
 
+function Initialize-EpiCload{
+    <#
+    .SYNOPSIS
+        Install the EpiCloud module and print version.
+
+    .DESCRIPTION
+        Install the EpiCloud module and print version.
+
+    .EXAMPLE
+        Initialize-EpiCload
+    #>
+    if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
+        Write-Host "Could not find EpiCloud."
+        Install-Module EpiCloud -Scope CurrentUser -Force
+        Write-Host "Install EpiCloud."
+    }
+    $version = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
+    Write-Host "EpiCloud            $version" 
+
+}
+
 function Write-DxpHostVersion() {
     <#
     .SYNOPSIS

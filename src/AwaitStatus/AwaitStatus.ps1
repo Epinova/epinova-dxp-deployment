@@ -15,11 +15,11 @@ try {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
     Write-Host "Inputs:"
-    Write-Host "ClientKey: $clientKey"
-    Write-Host "ClientSecret: **** (it is a secret...)"
-    Write-Host "ProjectId: $projectId"
-    Write-Host "TargetEnvironment: $targetEnvironment"
-    Write-Host "Timeout: $timeout"
+    Write-Host "ClientKey:          $clientKey"
+    Write-Host "ClientSecret:       **** (it is a secret...)"
+    Write-Host "ProjectId:          $projectId"
+    Write-Host "TargetEnvironment:  $targetEnvironment"
+    Write-Host "Timeout:            $timeout"
 
     . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
 
@@ -28,24 +28,14 @@ try {
     }
 
     # EpiCloud module
-    if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
-        Write-Host "Could not find EpiCloud."
-        Install-Module EpiCloud -Scope CurrentUser -Force
-        Write-Host "Install EpiCloud."
-    } else {
-        #$epiCloudModule = Get-InstalledModule -Name "EpiCloud" -RequiredVersion $epiCloudVersion
-        #if ($null -ne $epiCloudModule -and $epiCloudModule.Version -ne $epiCloudVersion){
-        #    Update-Module EpiCloud -RequiredVersion $epiCloudVersion -Scope CurrentUser -Force
-        #    Write-Host "Update EpiCloud."
-        #}
-    }
-    $version = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
-    Write-Host "EpiCloud $version" 
-    #Write-Host (Get-Module -Name EpiCloud -ListAvailable)
-    #$epiCloudModule = Get-InstalledModule -Name "EpiCloud" #-RequiredVersion $epiCloudVersion
-    #if ($null -ne $epiCloudModule){
-    #    Write-Host "Using EpiCloud v$($epiCloudModule.Version)"
+    Initialize-EpiCload    
+    #if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
+    #    Write-Host "Could not find EpiCloud."
+    #    Install-Module EpiCloud -Scope CurrentUser -Force
+    #    Write-Host "Install EpiCloud."
     #}
+    #$version = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
+    #Write-Host "EpiCloud            $version" 
 
     Write-DxpHostVersion
 
