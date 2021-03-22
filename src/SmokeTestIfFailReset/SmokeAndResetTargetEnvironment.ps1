@@ -74,22 +74,9 @@ try {
             }
             catch {
                 $sw.Stop()
-                #$statusCode = $_.Exception | Select-Object Response.StatusCode.value__
-                $response = $_.Exception | Select-Object Response
-                $statusCode = "?"
-                if ($null -ne $response) {
-                    $responseCode = $response | Select-Object StatusCode
-                    if ($null -ne $responseCode) {
-                        $statusCode = $responseCode
-                        #$responseCodeValue = $responseCode | Select-Object value__
-                        #if ($null -ne $responseCodeValue) {
-                        #    $statusCode = $responseCodeValue
-                        #}
-                    }
-                }
                 $errorMessage = $_.Exception.Message
                 $seconds = $sw.Elapsed.TotalSeconds
-                Write-Output "##vso[task.logissue type=warning;] $uri => Error $statusCode after $seconds seconds: $errorMessage "
+                Write-Output "##vso[task.logissue type=warning;] $uri => Error after $seconds seconds: $errorMessage "
                 $numberOfErrors = $numberOfErrors + 1
             }
         }
