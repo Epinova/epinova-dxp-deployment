@@ -1,6 +1,6 @@
 # Release notes
 
-## v1.10.24-1.10.26
+## v1.10.24-1.10.27
 - Fix SmokeTestIfFailReset bug with response error when request fails.
 
 ## v1.10.23
