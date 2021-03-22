@@ -74,10 +74,9 @@ try {
             }
             catch {
                 $sw.Stop()
-                $statusCode = $_.Exception.Response.StatusCode.value__
                 $errorMessage = $_.Exception.Message
                 $seconds = $sw.Elapsed.TotalSeconds
-                Write-Output "##vso[task.logissue type=warning;] $uri => Error $statusCode after $seconds seconds: $errorMessage "
+                Write-Output "##vso[task.logissue type=warning;] $uri => Error after $seconds seconds: $errorMessage "
                 $numberOfErrors = $numberOfErrors + 1
             }
         }
