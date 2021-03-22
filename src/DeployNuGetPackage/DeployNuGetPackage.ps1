@@ -20,15 +20,15 @@ try {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
     Write-Host "Inputs:"
-    Write-Host "ClientKey: $clientKey"
-    Write-Host "ClientSecret: **** (it is a secret...)"
-    Write-Host "ProjectId: $projectId"
-    Write-Host "TargetEnvironment: $targetEnvironment"
-    Write-Host "SourceApp: $sourceApp"
-    Write-Host "DirectDeploy: $directDeploy"
+    Write-Host "ClientKey:          $clientKey"
+    Write-Host "ClientSecret:       **** (it is a secret...)"
+    Write-Host "ProjectId:          $projectId"
+    Write-Host "TargetEnvironment:  $targetEnvironment"
+    Write-Host "SourceApp:          $sourceApp"
+    Write-Host "DirectDeploy:       $directDeploy"
     Write-Host "UseMaintenancePage: $useMaintenancePage"
-    Write-Host "DropPath: $dropPath"
-    Write-Host "Timeout: $timeout"
+    Write-Host "DropPath:           $dropPath"
+    Write-Host "Timeout:            $timeout"
 
     . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
 
@@ -40,12 +40,7 @@ try {
         $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
     }
 
-    if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
-        Write-Host "Could not find EpiCloud. Installing it."
-        Install-Module EpiCloud -Scope CurrentUser -Force
-    } else {
-        Write-Host "EpiCloud installed."
-    }
+    Initialize-EpiCload
 
     if ($targetEnvironment -ne "Integration" -and $directDeploy){
         Write-Host "DirectDeploy does only support target environment = Integration at the moment. Will set the DirectDeploy=false."
@@ -59,12 +54,12 @@ try {
     Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
     $packageLocation = Get-EpiDeploymentPackageLocation -ProjectId $projectId
-    Write-Host "PackageLocation: $packageLocation"
+    Write-Host "PackageLocation:    $packageLocation"
 
     $resolvedCmsPackagePath = $null
     if ($sourceApp -eq "cms" -or $sourceApp -eq "cms,commerce"){
         $resolvedCmsPackagePath = Get-ChildItem -Path $dropPath -Filter *.cms.*.nupkg
-        Write-Host "Cms PackagePath: $resolvedCmsPackagePath"
+        Write-Host "Cms PackagePath:    $resolvedCmsPackagePath"
     
         if ($null -eq $resolvedCmsPackagePath){
             Write-Host "Following files found in location $dropPath : $(Get-ChildItem -Path $dropPath -File)"

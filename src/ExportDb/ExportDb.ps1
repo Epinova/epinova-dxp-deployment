@@ -18,13 +18,13 @@ try {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     
     Write-Host "Inputs:"
-    Write-Host "ClientKey: $clientKey"
-    Write-Host "ClientSecret: **** (it is a secret...)"
-    Write-Host "ProjectId: $projectId"
-    Write-Host "Environment: $environment"
-    Write-Host "DatabaseName: $databaseName"
-    Write-Host "RetentionHours: $retentionHours"
-    Write-Host "Timeout: $timeout"
+    Write-Host "ClientKey:          $clientKey"
+    Write-Host "ClientSecret:       **** (it is a secret...)"
+    Write-Host "ProjectId:          $projectId"
+    Write-Host "Environment:        $environment"
+    Write-Host "DatabaseName:       $databaseName"
+    Write-Host "RetentionHours:     $retentionHours"
+    Write-Host "Timeout:            $timeout"
 
     . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
 
@@ -32,12 +32,7 @@ try {
         $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
     }
 
-    if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
-        Write-Host "Could not find EpiCloud. Installing it."
-        Install-Module EpiCloud -Scope CurrentUser -Force
-    } else {
-        Write-Host "EpiCloud installed."
-    }
+    Initialize-EpiCload
 
     Write-DxpHostVersion
 
@@ -54,11 +49,11 @@ try {
 
     $export = Start-EpiDatabaseExport @exportDatabaseSplat
     Write-Host "Database export has started:"
-    Write-Host "Id: $($export.id)"
-    Write-Host "ProjectId: $($export.projectId)"
-    Write-Host "DatabaseName: $($export.databaseName)"
-    Write-Host "Environment: $($export.environment)"
-    Write-Host "Status: $($export.status)"
+    Write-Host "Id:             $($export.id)"
+    Write-Host "ProjectId:      $($export.projectId)"
+    Write-Host "DatabaseName:   $($export.databaseName)"
+    Write-Host "Environment:    $($export.environment)"
+    Write-Host "Status:         $($export.status)"
 
     $exportId = $export.id
 

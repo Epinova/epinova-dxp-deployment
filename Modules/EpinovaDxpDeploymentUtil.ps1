@@ -6,6 +6,28 @@
 #>
 
 Set-StrictMode -Version Latest
+
+function Initialize-EpiCload{
+    <#
+    .SYNOPSIS
+        Install the EpiCloud module and print version.
+
+    .DESCRIPTION
+        Install the EpiCloud module and print version.
+
+    .EXAMPLE
+        Initialize-EpiCload
+    #>
+    if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
+        Write-Host "Could not find EpiCloud."
+        Install-Module EpiCloud -Scope CurrentUser -Force
+        Write-Host "Install EpiCloud."
+    }
+    $version = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
+    Write-Host "EpiCloud            $version" 
+
+}
+
 function Write-DxpHostVersion() {
     <#
     .SYNOPSIS
@@ -20,7 +42,7 @@ function Write-DxpHostVersion() {
         Will print out the PowerShell host version in the host. Ex: @{Version=5.1.14393.3866}
     #>
     $version = Get-Host | Select-Object Version
-    Write-Host $version
+    Write-Host "PowerShell          $version" 
 }
 
 function Test-IsGuid {
@@ -153,35 +175,46 @@ function Invoke-DxpProgress {
 
     $sw = [Diagnostics.Stopwatch]::StartNew()
     $sw.Start()
+    $failedApiCalls = 0
     while ($PercentComplete -le 100) {
-        $status = Get-EpiDeployment -ProjectId $ProjectId -Id $DeploymentId
-        if ($PercentComplete -ne $status.percentComplete) {
-            $PercentComplete = $status.percentComplete
-            Write-Host $PercentComplete "%. Status: $($status.status). ElapsedSeconds: $($sw.Elapsed.TotalSeconds)"
+        try {
+            $status = Get-EpiDeployment -ProjectId $ProjectId -Id $DeploymentId
+            if ($PercentComplete -ne $status.percentComplete) {
+                $PercentComplete = $status.percentComplete
+                Write-Host $PercentComplete "%. Status: $($status.status). ElapsedSeconds: $($sw.Elapsed.TotalSeconds)"
+            }
+            if ($PercentComplete -le 100 -or $status.status -ne $ExpectedStatus) {
+                Start-Sleep 5
+            }
+            if ($sw.Elapsed.TotalSeconds -ge $Timeout) { break }
+            if ($status.status -eq "Failed") { break }
+            if ($status.percentComplete -eq 100 -and $status.status -eq $ExpectedStatus) { break }
+    
+        } catch {
+            Write-Host "WARNING: Something in the progress failed. Exception caught : $($_.Exception.ToString())"
+            $failedApiCalls = $failedApiCalls + 1;
+            if ($failedApiCalls -gt 4){
+                Write-Error "There are more then 4 failed calls to DXP API. We will stop the progress."
+                break
+            }
         }
-        if ($PercentComplete -le 100 -or $status.status -ne $ExpectedStatus) {
-            Start-Sleep 5
-        }
-        if ($sw.Elapsed.TotalSeconds -ge $Timeout) { break }
-        if ($status.status -eq "Failed") { break }
-        if ($status.percentComplete -eq 100 -and $status.status -eq $ExpectedStatus) { break }
     }
 
     $sw.Stop()
     Write-Host "Stopped iteration after $($sw.Elapsed.TotalSeconds) seconds."
 
     $status = Get-EpiDeployment -ProjectId $ProjectId -Id $DeploymentId
-    Write-Host "Deployment $DeploymentId"
-    Write-Host "Status: $($status.status)."
-    Write-Host "PercentComplete: $($status.percentComplete)."
-    Write-Host "StartTime: $($status.startTime)."
-    Write-Host "EndTime: $($status.endTime)."
+    Write-Host "Deployment          $DeploymentId"
+    Write-Host "Status:             $($status.status)."
+    Write-Host "PercentComplete:    $($status.percentComplete)."
+    Write-Host "StartTime:          $($status.startTime)."
+    Write-Host "EndTime:            $($status.endTime)."
 
     if ($null -ne $status.deploymentErrors -and $status.deploymentErrors.Length -ne 0){
-        Write-Host "Errors: $($status.deploymentErrors)"
+        Write-Host "Errors:         $($status.deploymentErrors)"
     }
     if ($null -ne $status.deploymentWarnings -and $status.deploymentWarnings.Length -ne 0){
-        Write-Host "Warnings: $($status.deploymentWarnings)"
+        Write-Host "Warnings:       $($status.deploymentWarnings)"
     }
 
     return $status
@@ -304,7 +337,7 @@ function Get-DxpLatestEnvironmentDeployment{
     $deployments = Get-DxpEnvironmentDeployments -ProjectId $ProjectId -TargetEnvironment $TargetEnvironment
 
     $deployment = $null
-    if ($deployments.Count -gt 1){
+    if ($null -ne $deployments -and $deployments.Count -gt 1){
         $deployment = $deployments[0]
     }
 
