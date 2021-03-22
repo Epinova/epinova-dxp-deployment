@@ -77,7 +77,10 @@ try {
                 $response = $_.Exception | Select-Object Response
                 $statusCode = "?"
                 if ($null -ne $response) {
-                    $statusCode = $response.StatusCode.value__
+                    $responseCode = $response  | Select-Object StatusCode
+                    if ($null -ne $responseCode) {
+                        $statusCode = $responseCode.value__
+                    }
                 }
                 $errorMessage = $_.Exception.Message
                 $seconds = $sw.Elapsed.TotalSeconds
