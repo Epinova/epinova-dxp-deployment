@@ -1,5 +1,6 @@
 # Deploy nuget package (Episerver DXP) #
-Take a nuget package from your drop folder in Azure DevOps and upload it to your Episerver DXP project and start a deployment to the targeted environment. 
+Take a nuget package from your drop folder in Azure DevOps and upload it to your Episerver DXP project and start a deployment to the targeted environment.  
+Also support the DirectDeploy function. [Introducing "Direct Deploy", a quicker way to deploy to integration using the deployment API!](https://world.episerver.com/blogs/anders-wahlqvist/dates/2021/3/introducing-direct-deploy-a-quicker-way-to-deploy-to-dxp/)
 
 [<= Back](../README.md)
 
