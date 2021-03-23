@@ -106,6 +106,7 @@ try {
 
     if ($resetOnFail -eq $false -and $resetDeployment -eq $true) {
         Write-Output "##vso[task.logissue type=warning;] Smoke test failed. But ResetOnFail is set to false. No reset will be made."
+        Write-Warning "Smoke test failed. But ResetOnFail is set to false. No reset will be made."
     } 
     elseif ($resetDeployment -eq $true) {
 
