@@ -9,6 +9,7 @@ try {
     $projectId = Get-VstsInput -Name "ProjectId" -Require -ErrorAction "Stop"
     $targetEnvironment = Get-VstsInput -Name "TargetEnvironment" -Require -ErrorAction "Stop"
     $urls = Get-VstsInput -Name "Urls" -Require -ErrorAction "Stop"
+    $resetOnFail = Get-VstsInput -Name "ResetOnFail" -AsBool
     $sleepBeforeStart = Get-VstsInput -Name "SleepBeforeStart" -AsInt -Require -ErrorAction "Stop"
     $retries = Get-VstsInput -Name "NumberOfRetries" -AsInt -Require -ErrorAction "Stop"
     $sleepBeforeRetry = Get-VstsInput -Name "SleepBeforeRetry" -AsInt -Require -ErrorAction "Stop"
@@ -25,6 +26,7 @@ try {
     Write-Host "ProjectId:          $projectId"
     Write-Host "TargetEnvironment:  $targetEnvironment"
     Write-Host "Urls:               $urls"
+    Write-Host "ResetOnFail:        $resetOnFail"
     Write-Host "SleepBeforeStart:   $sleepBeforeStart"
     Write-Host "NumberOfRetries:    $retries"
     Write-Host "SleepBeforeRetry:   $sleepBeforeRetry"
@@ -74,10 +76,9 @@ try {
             }
             catch {
                 $sw.Stop()
-                $statusCode = $_.Exception.Response.StatusCode.value__
                 $errorMessage = $_.Exception.Message
                 $seconds = $sw.Elapsed.TotalSeconds
-                Write-Output "##vso[task.logissue type=warning;] $uri => Error $statusCode after $seconds seconds: $errorMessage "
+                Write-Output "##vso[task.logissue type=warning;] $uri => Error after $seconds seconds: $errorMessage "
                 $numberOfErrors = $numberOfErrors + 1
             }
         }
@@ -103,7 +104,10 @@ try {
         $resetDeployment = $false
     }
 
-    if ($resetDeployment -eq $true) {
+    if ($resetOnFail -eq $false -and $resetDeployment -eq $true) {
+        Write-Output "##vso[task.logissue type=warning;] Smoke test failed. But ResetOnFail is set to false. No reset will be made."
+    } 
+    elseif ($resetDeployment -eq $true) {
 
         Initialize-EpiCload
      

@@ -1,5 +1,11 @@
 # Release notes
 
+## v1.11.1-1.11.3
+- SmokeTestIfFailReset: New prop 'Reset on fail' describes if reset will be made or not when smoke test fails.
+
+## v1.10.24-1.10.30
+- Fix SmokeTestIfFailReset bug with response error when request fails.
+
 ## v1.10.23
 - Polish the script that gets the latest deployment for a specific environment.
 
