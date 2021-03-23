@@ -1,6 +1,8 @@
 # Smoke test if fail reset (Episerver DXP)
 This task smoke test a slot and decide if we should continue the release, or reset the environment slot, because something is not working as expected. The smoke test is a simple check if one or many specified URLs returns HTTPStatus = 200 (OK).  
 
+A new property with the name "Reset on fail" is added that describes if the task will reset when smoke test fail. This can be used when you want to use SmokeTestIfFailReset task when doing a ContentSync.  
+
 *Note: If your website use login so that unauthenticated user not can see your site. You can request the login page to be sure to get HTTP status 200 in the response. Otherwise the HTTP response will be HTTP status 301 redirect to the login page.  
 Example: 'https://fake017znx5inte.dxcloud.episerver.net/Util/login.aspx'*
 
@@ -49,6 +51,12 @@ The sleep time before the script will start to test the URL(s). Most of the time
 **Example:** `30`  
 **Default value:** `20`
 
+#### Reset on fail
+**[boolean]** - **required**  
+If checked it will reset the deployment if smoke test fails. If not checked, only a warning will be posted but no reset. Can be used when you want to use SmokeTestIfFailReset task when doing a ContentSync.  
+**Example:** `true`  
+**Default value:** `true`
+
 ### Group: Retry
 #### Number of retries
 **[int]** - **required**  
@@ -92,6 +100,7 @@ Example:
     TargetEnvironment: 'Integration'
     Urls: '$(Integration.SlotUrl)$(Integration.UrlSuffix)'
     SleepBeforeStart: 20
+    ResetOnFail: true
     NumberOfRetries: 5
     SleepBeforeRetry: 30
     Timeout: 1800

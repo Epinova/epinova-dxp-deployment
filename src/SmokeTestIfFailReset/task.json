@@ -12,8 +12,8 @@
     "author": "Epinova (Ove Lartelius)",
     "version": {
         "Major": 1,
-        "Minor": 1,
-        "Patch": 18
+        "Minor": 2,
+        "Patch": 3
     },
     "groups": [
         {
@@ -37,7 +37,7 @@
             "isExpanded": false
         }
     ],
-    "releaseNotes": "Using EpinovaDxpDeploymentUtil. Fixed bug with $deploymentId.",
+    "releaseNotes": "ResetOnFail. Using EpinovaDxpDeploymentUtil.",
     "minimumAgentVersion": "2.134.0",
     "inputs": [
         {
@@ -97,6 +97,15 @@
             "required": true,
             "defaultValue": "20",
             "helpMarkDown": "The sleep time before the script will start to test the URL(s). Most of the time the slot need some extra time to get up and runing even if the status says that it is up and runing.",
+            "groupName": "Settings"
+        },
+        {
+            "name": "ResetOnFail",
+            "type": "boolean",
+            "label": "Reset on fail",
+            "required": true,
+            "defaultValue": "true",
+            "helpMarkDown": "If checked it will reset the deployment if smoke test fails. If not checked, only a warning will be posted but no reset. Can be used when you want to use SmokeTestIfFailReset task when doing a ContentSync.",
             "groupName": "Settings"
         },
         {
