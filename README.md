@@ -8,6 +8,10 @@ Install the extension to your Azure DevOps project: [https://marketplace.visuals
 Microsoft has general information on how to install an Azure DevOps extension:  [https://docs.microsoft.com/en-us/azure/devops/marketplace/install-extension](https://docs.microsoft.com/en-us/azure/devops/marketplace/install-extension)  
 In the end of that page, there also a link to how to manage extension permission. [https://docs.microsoft.com/en-us/azure/devops/marketplace/how-to/grant-permissions](https://docs.microsoft.com/en-us/azure/devops/marketplace/how-to/grant-permissions)  
 
+## Azure.Storage v4.4.0 or greater is required.
+If you experience the error <span style="color:red">'Azure.Storage' v4.4.0 or greater is required.</span>![Azure.Storage error](documentation/Images/AzureStorageV440Error/AzureStorageV440Error.jpg)  
+[How to solve the Azure.Storage v4.4.0 error](documentation/AzureStorage440Error.md)  
+
 
 ## Tasks ##
 
