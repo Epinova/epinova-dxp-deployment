@@ -3,6 +3,10 @@ This is a collection of problems that we or other has bumped into and how it cou
 
 [<= Back](../README.md)
 
+## Azure.Storage v4.4.0 or greater is required. - Error
+If you experience the error <span style="color:red">'Azure.Storage' v4.4.0 or greater is required.</span>![Azure.Storage error](Images/AzureStorageV440Error/AzureStorageV440Error.jpg)  
+[How to solve the Azure.Storage v4.4.0 error](AzureStorage440Error.md)
+
 ## Exception calling "FromBase64String" with "1" argument(s):...
 ### Error
 If you run into the error message.  "Exception calling "FromBase64String" with "1" argument(s): "The input is not a valid Base-64 string as it contains a non-base 64 character, more than two padding characters, or an illegal character among the padding characters.". That means that some of the parameters sent to the script is wrong.  
