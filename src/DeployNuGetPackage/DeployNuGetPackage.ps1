@@ -32,6 +32,10 @@ try {
 
     . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
 
+    # TEMP code
+    Write-Host "Installing Azure.Storage Powershell Module"
+    Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
+
     if (-not ($env:PSModulePath.Contains("C:\Modules\azurerm_6.7.0"))){
         $env:PSModulePath = "C:\Modules\azurerm_6.7.0;" + $env:PSModulePath   
     }
