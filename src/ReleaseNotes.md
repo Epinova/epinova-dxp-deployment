@@ -1,5 +1,8 @@
 # Release notes
 
+## v1.11.4
+- Install latest Azure.Storage.
+
 ## v1.11.1-1.11.3
 - SmokeTestIfFailReset: New prop 'Reset on fail' describes if reset will be made or not when smoke test fails.
 
