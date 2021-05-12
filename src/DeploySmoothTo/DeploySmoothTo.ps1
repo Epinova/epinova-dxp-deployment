@@ -37,6 +37,8 @@ try {
 
     . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
 
+    Write-Output "##vso[task.logissue type=warning;] Deprecated! You should stop using this task DeploySmoothTo. You should change to DeployTo."
+
     # TEMP code
     Write-Host "Installing Azure.Storage Powershell Module"
     Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber

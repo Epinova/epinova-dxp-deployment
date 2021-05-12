@@ -1,5 +1,8 @@
 # Release notes
 
+## v1.11.5
+- Added ZeroDowntime into DeployTo. Added a warning to DeploySmoothTo that is deprecated. 
+
 ## v1.11.4
 - Install latest Azure.Storage.
 
