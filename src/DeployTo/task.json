@@ -12,8 +12,8 @@
     "author": "Ove Lartelius",
     "version": {
         "Major": 1,
-        "Minor": 1,
-        "Patch": 14
+        "Minor": 2,
+        "Patch": 1
     },
     "groups": [
         {
@@ -32,7 +32,7 @@
             "isExpanded": false
         }
     ],
-    "releaseNotes": "Using EpinovaDxpDeploymentUtil.",
+    "releaseNotes": "Implement Zero Downtime Deployment.",
     "minimumAgentVersion": "2.134.0",
     "inputs": [
         {
@@ -130,6 +130,20 @@
             "defaultValue": "false",
             "helpMarkDown": "If DBs should be copied from source environment to the target environment.",
             "groupName": "Settings"
+        },
+        {
+            "name": "ZeroDowntimeMode",
+            "type": "pickList",
+            "label": "Zero Downtime Mode",
+            "required": false,
+            "defaultValue": "",
+            "helpMarkDown": "The type of smooth deployment you want to use. [More information about zero downtime mode](https://world.episerver.com/documentation/developer-guides/digital-experience-platform/deploying/deployment-process/smooth-deploy/)",
+            "groupName": "Settings",
+            "options": {
+                "Not specified": "",
+                "ReadOnly": "ReadOnly",
+                "ReadWrite": "ReadWrite"
+            }
         },
         {
             "name": "Timeout",

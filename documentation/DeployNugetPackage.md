@@ -92,7 +92,7 @@ Example:
     DropPath: '$(System.DefaultWorkingDirectory)\drop'  
     TargetEnvironment: 'Integration'  
     SourceApp: 'cms'  
-    DirewctDeploy: true  
+    DirectDeploy: true  
     UseMaintenancePage: false  
     Timeout: 1800  
 ```

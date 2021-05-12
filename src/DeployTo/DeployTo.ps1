@@ -14,6 +14,7 @@ try {
     $timeout = Get-VstsInput -Name "Timeout" -AsInt -Require -ErrorAction "Stop"
     $includeBlob = Get-VstsInput -Name "IncludeBlob" -AsBool
     $includeDb = Get-VstsInput -Name "IncludeDb" -AsBool
+    $zeroDowntimeMode = Get-VstsInput -Name "ZeroDowntimeMode"
 
 
     # 30 min timeout
@@ -32,6 +33,7 @@ try {
     Write-Host "Timeout:            $timeout"
     Write-Host "IncludeBlob:        $includeBlob"
     Write-Host "IncludeDb:          $includeDb"
+    Write-Host "ZeroDowntimeMode:   $zeroDowntimeMode"
 
     . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
 
@@ -53,14 +55,27 @@ try {
 
     $sourceApps = $sourceApp.Split(",")
 
-    $startEpiDeploymentSplat = @{
-        ProjectId          = $projectId
-        SourceEnvironment  = $sourceEnvironment
-        TargetEnvironment  = $targetEnvironment
-        SourceApp          = $sourceApps
-        UseMaintenancePage = $useMaintenancePage
-        IncludeBlob = $includeBlob
-        IncludeDb = $includeDb
+    if ($zeroDowntimeMode -eq "") {
+        $startEpiDeploymentSplat = @{
+            ProjectId          = $projectId
+            SourceEnvironment  = $sourceEnvironment
+            TargetEnvironment  = $targetEnvironment
+            SourceApp          = $sourceApps
+            UseMaintenancePage = $useMaintenancePage
+            IncludeBlob = $includeBlob
+            IncludeDb = $includeDb
+        }
+    } else {
+        $startEpiDeploymentSplat = @{
+            ProjectId          = $projectId
+            SourceEnvironment  = $sourceEnvironment
+            TargetEnvironment  = $targetEnvironment
+            SourceApp          = $sourceApps
+            UseMaintenancePage = $useMaintenancePage
+            IncludeBlob = $includeBlob
+            IncludeDb = $includeDb
+            ZeroDowntimeMode = $zeroDowntimeMode
+        }
     }
 
     $deploy = Start-EpiDeployment @startEpiDeploymentSplat
