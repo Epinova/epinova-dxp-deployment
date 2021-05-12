@@ -1,4 +1,10 @@
 # Deploy smooth to (Episerver DXP) #
+
+<span style="color:red">
+Deprecated!   
+You should stop using this task DeploySmoothTo. You should change to DeployTo.
+</span>
+
 Do the same thing as the ["Deploy to" task](DeployTo.md). But this has support for Smooth deployment (Zero downtime deployment).  
 Since this function is still in [closed beta](https://world.episerver.com/service-and-product-lifecycles/#CloudServicesLifecycle). There is not everybody that can use this feature yet. That is why this is like a copy past of the "Deploy To" task but with smooth deployment support.  
 When this feature is public for all DXP users, we will implement this feature on the "Deploy to" task.  
