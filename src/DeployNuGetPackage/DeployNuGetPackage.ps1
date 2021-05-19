@@ -13,6 +13,7 @@ try {
     $useMaintenancePage = Get-VstsInput -Name "UseMaintenancePage" -AsBool
     $dropPath = Get-VstsInput -Name "DropPath" -Require -ErrorAction "Stop"
     $timeout = Get-VstsInput -Name "Timeout" -AsInt -Require -ErrorAction "Stop"
+    $zeroDowntimeMode = Get-VstsInput -Name "ZeroDowntimeMode"
 
     # 30 min timeout
     ####################################################################################
@@ -29,6 +30,7 @@ try {
     Write-Host "UseMaintenancePage: $useMaintenancePage"
     Write-Host "DropPath:           $dropPath"
     Write-Host "Timeout:            $timeout"
+    Write-Host "ZeroDowntimeMode:   $zeroDowntimeMode"
 
     . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
 
@@ -98,12 +100,23 @@ try {
         $myPackages = $resolvedCmsPackagePath, $resolvedCommercePackagePath
     }
 
-    $startEpiDeploymentSplat = @{
-        DeploymentPackage  = $myPackages
-        ProjectId          = $projectId
-        TargetEnvironment  = $targetEnvironment
-        UseMaintenancePage = $useMaintenancePage
+    if ($zeroDowntimeMode -eq "") {
+        $startEpiDeploymentSplat = @{
+            DeploymentPackage  = $myPackages
+            ProjectId          = $projectId
+            TargetEnvironment  = $targetEnvironment
+            UseMaintenancePage = $useMaintenancePage
+        }
+    } else {
+        $startEpiDeploymentSplat = @{
+            DeploymentPackage  = $myPackages
+            ProjectId          = $projectId
+            TargetEnvironment  = $targetEnvironment
+            UseMaintenancePage = $useMaintenancePage
+            ZeroDowntimeMode   = $zeroDowntimeMode
+        }
     }
+
 
     if ($true -eq $directDeploy){
         $expectedStatus = "Succeeded"

@@ -12,8 +12,8 @@
     "author": "Ove Lartelius",
     "version": {
         "Major": 1,
-        "Minor": 2,
-        "Patch": 15
+        "Minor": 3,
+        "Patch": 0
     },
     "groups": [
         {
@@ -116,6 +116,20 @@
             "defaultValue": "false",
             "helpMarkDown": "If maintenance page should be used during deployment.",
             "groupName": "Settings"
+        },
+        {
+            "name": "ZeroDowntimeMode",
+            "type": "pickList",
+            "label": "Zero Downtime Mode",
+            "required": false,
+            "defaultValue": "",
+            "helpMarkDown": "The type of smooth deployment you want to use. [More information about zero downtime mode](https://world.episerver.com/documentation/developer-guides/digital-experience-platform/deploying/deployment-process/smooth-deploy/)",
+            "groupName": "Settings",
+            "options": {
+                "Not specified": "",
+                "ReadOnly": "ReadOnly",
+                "ReadWrite": "ReadWrite"
+            }
         },
         {
             "name": "Timeout",

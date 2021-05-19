@@ -16,11 +16,12 @@ Tasks
 
 ### Deploy nuget package (Episerver DXP) ###  
 Take a NuGet package from your drop folder in Azure DevOps and upload it to your Episerver DXP project and start a deployment to the specified environment.  
-Support DirectDeploy  
+Support DirectDeploy and Smooth deployment (Zero downtime deployment).     
   
 ### Deploy To (Episerver DXP) ###
 Do the same thing like the "Deploy to =>" button in the portal. It moves the deployed code from one environment to another.  
 Can also be used for Content syncdown. With the IncludeBlob and IncludeDb you can now sync/deploy both ways.  
+Support Smooth deployment (Zero downtime deployment).  
 
 ### Deploy Smooth To (Episerver DXP) ###
 <span style="color:red">Deprecated! You should stop using this task DeploySmoothTo. You should change to DeployTo.</span>

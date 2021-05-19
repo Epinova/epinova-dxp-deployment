@@ -63,6 +63,17 @@ Specify if you want to use a maintenance page during the deploy.
 **Example:** `true`  
 **Default value:** `false`
 
+#### Zero Downtime Mode
+**[pickList]** - **required**  
+The type of smooth deployment you want to use. [More information about zero downtime mode](https://world.episerver.com/documentation/developer-guides/digital-experience-platform/deploying/deployment-process/smooth-deploy/)  
+If this parameter is set to empty, no zero downtime deployment will be made. It will be a regular deployment.   
+**Example:** `ReadOnly`  
+**Default value:** ``  
+**Options:**  
+- ''
+- ReadOnly
+- ReadWrite
+
 ### Group: Timeout
 #### Script timeout (in seconds)
 **[int]** - **required**  

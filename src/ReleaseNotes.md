@@ -1,5 +1,8 @@
 # Release notes
 
+## v1.12.0
+- Added ZeroDowntime into DeployNuGetPackage task.
+
 ## v1.11.5
 - Added ZeroDowntime into DeployTo. Added a warning to DeploySmoothTo that is deprecated. 
 
