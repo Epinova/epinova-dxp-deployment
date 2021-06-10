@@ -39,8 +39,11 @@ try {
     #}
 
 
-    Write-Host "Start test ...v1.12.9"
+    Write-Host "Start test ...v1.12.10"
     $azureModuleLoaded = Get-Module -Name "Azure.Storage"
+    Write-Host $azureModuleLoaded
+    Write-Host $azureModuleLoaded.Version
+    Write-Host $azureModuleLoaded.Version.Major
     $azModuleLoaded = Get-Module -Name "Az.Storage"
 
     if (-not ($azureModuleLoaded -or $azModuleLoaded)) {
@@ -48,6 +51,7 @@ try {
             #$null = Import-Module -Name "Az.Storage" -Scope CurrentUser -Repository PSGallery -ErrorAction Stop
             $null = Import-Module -Name "Az.Storage" -ErrorAction Stop
             $azModuleLoaded = $true
+            Write-Host "Az.Storage is imported."
         }
         catch {
             Write-Host "Tried to find 'Az.Storage', module couldn't be imported."
@@ -59,17 +63,18 @@ try {
     $result2 = Get-InstalledModule -Name "Az.Storage"
     Write-Host $result2.Version
 
-    #if (-not ($azureModuleLoaded -or $azModuleLoaded)) {
+    if (-not ($azureModuleLoaded -or $azModuleLoaded)) {
         try {
             $null = Import-Module -Name "Azure.Storage" -ErrorAction Stop
             #$null = Import-Module -Name "Azure.Storage" -MinimumVersion 4.4.0 -ErrorAction Stop
             #$null = Import-Module -Name "Azure.Storage" -MinimumVersion 4.4.0 -Scope CurrentUser -Repository PSGallery -ErrorAction Stop
             $azureModuleLoaded = $true
+            Write-Host "Azure.Storage is imported."
         }
         catch {
             Write-Host "Tried to find 'Azure.Storage', module couldn't be imported."
         }
-    #}
+    }
 
     if ($azModuleLoaded) {
         Write-Host "Az"
