@@ -1,5 +1,8 @@
 # Release notes
 
+## v1.12.1
+- Import module sandbox.
+
 ## v1.12.0
 - Added ZeroDowntime into DeployNuGetPackage task.
 
