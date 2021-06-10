@@ -39,13 +39,14 @@ try {
     #}
 
 
-    Write-Host "Start test ..."
+    Write-Host "Start test ...v1.12.4"
     $azureModuleLoaded = Get-Module -Name "Azure.Storage"
     $azModuleLoaded = Get-Module -Name "Az.Storage"
 
     if (-not ($azureModuleLoaded -or $azModuleLoaded)) {
         try {
-            $null = Import-Module -Name "Az.Storage" -Scope CurrentUser -Repository PSGallery -ErrorAction Stop
+            #$null = Import-Module -Name "Az.Storage" -Scope CurrentUser -Repository PSGallery -ErrorAction Stop
+            $null = Import-Module -Name "Az.Storage" -ErrorAction Stop
             $azModuleLoaded = $true
         }
         catch {
@@ -55,7 +56,7 @@ try {
 
     if (-not ($azureModuleLoaded -or $azModuleLoaded)) {
         try {
-            $null = Import-Module -Name "Azure.Storage" -ErrorAction Stop
+            $null = Import-Module -Name "Azure.Storage" -MinimumVersion 4.4.0 -ErrorAction Stop
             $azureModuleLoaded = $true
         }
         catch {
