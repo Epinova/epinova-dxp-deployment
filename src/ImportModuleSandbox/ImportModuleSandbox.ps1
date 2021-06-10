@@ -39,7 +39,7 @@ try {
     #}
 
 
-    Write-Host "Start test ...v1.12.4"
+    Write-Host "Start test ...v1.12.5"
     $azureModuleLoaded = Get-Module -Name "Azure.Storage"
     $azModuleLoaded = Get-Module -Name "Az.Storage"
 
@@ -54,6 +54,7 @@ try {
         }
     }
 
+    Write-Host $azureModuleLoaded.Version
     if (-not ($azureModuleLoaded -or $azModuleLoaded)) {
         try {
             $null = Import-Module -Name "Azure.Storage" -MinimumVersion 4.4.0 -ErrorAction Stop
