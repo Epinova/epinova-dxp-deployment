@@ -31,7 +31,7 @@ try {
     # TEMP code
     #Write-Host "Installing Azure.Storage Powershell Module"
     #Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
-    Install-Module -Name Az.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
+    #Install-Module -Name Az.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
 
     
     #if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
@@ -45,7 +45,7 @@ try {
 
     if (-not ($azureModuleLoaded -or $azModuleLoaded)) {
         try {
-            $null = Import-Module -Name "Az.Storage" -ErrorAction Stop
+            $null = Import-Module -Name "Az.Storage" -Scope CurrentUser -Repository PSGallery -ErrorAction Stop
             $azModuleLoaded = $true
         }
         catch {
