@@ -39,7 +39,7 @@ try {
     #}
 
 
-    Write-Host "Start test ...v1.12.7"
+    Write-Host "Start test ...v1.12.8"
     $azureModuleLoaded = Get-Module -Name "Azure.Storage"
     $azModuleLoaded = Get-Module -Name "Az.Storage"
 
@@ -54,8 +54,10 @@ try {
         }
     }
 
-    Write-Host Get-InstalledModule -Name Azure.Storage
-    Write-Host Get-InstalledModule -Name Az.Storage
+    $result1 = Get-InstalledModule -Name "Azure.Storage"
+    Write-Host $result1.Version
+    $result2 = Get-InstalledModule -Name "Az.Storage"
+    Write-Host $result2.Version
 
     if (-not ($azureModuleLoaded -or $azModuleLoaded)) {
         try {
