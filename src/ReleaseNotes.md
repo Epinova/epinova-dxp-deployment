@@ -1,6 +1,6 @@
 # Release notes
 
-## v1.12.1
+## v1.12.1-v1.12.x
 - Import module sandbox.
 
 ## v1.12.0

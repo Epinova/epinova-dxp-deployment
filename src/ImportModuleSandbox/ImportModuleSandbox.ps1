@@ -17,7 +17,7 @@ try {
     
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     
-    Write-Host "Inputs:"
+    # Write-Host "Inputs:"
     # Write-Host "ClientKey:          $clientKey"
     # Write-Host "ClientSecret:       **** (it is a secret...)"
     # Write-Host "ProjectId:          $projectId"
@@ -31,13 +31,15 @@ try {
     # TEMP code
     #Write-Host "Installing Azure.Storage Powershell Module"
     #Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
+    Install-Module -Name Az.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
+
     
     #if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
     #    $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
     #}
 
 
-
+    Write-Host "Start test ..."
     $azureModuleLoaded = Get-Module -Name "Azure.Storage"
     $azModuleLoaded = Get-Module -Name "Az.Storage"
 
@@ -75,6 +77,8 @@ try {
     else {
         throw "'Az.Storage' or 'Azure.Storage' module is required to run this cmdlet."
     }
+
+    Write-Host "End test ..."
 
     #Initialize-EpiCload
 
