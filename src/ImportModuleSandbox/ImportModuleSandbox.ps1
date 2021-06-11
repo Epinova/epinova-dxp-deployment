@@ -41,12 +41,24 @@ try {
 
     Write-Host $PSVersionTable.PSVersion
 
-    Write-Host "Start test ...v1.12.11"
+    Write-Host "Start test ...v1.12.12"
+
+    Get-Module -ListAvailable
+
     $azureModuleLoaded = Get-Module -Name "Azure.Storage"
-    Write-Host $azureModuleLoaded
-    Write-Host $azureModuleLoaded.Version
-    Write-Host $azureModuleLoaded.Version.Major
+    if ($azureModuleLoaded -eq $null) { Write-Host "$azureModuleLoaded=null" }
+    else {
+        Write-Host $azureModuleLoaded
+        Write-Host $azureModuleLoaded.Version
+        Write-Host $azureModuleLoaded.Version.Major
+    }
     $azModuleLoaded = Get-Module -Name "Az.Storage"
+    if ($azModuleLoaded -eq $null) { Write-Host "$azModuleLoaded=null" }
+    else {
+        Write-Host $azModuleLoaded
+        Write-Host $azModuleLoaded.Version
+        Write-Host $azModuleLoaded.Version.Major
+    }
 
     if (-not ($azureModuleLoaded -or $azModuleLoaded)) {
         try {
