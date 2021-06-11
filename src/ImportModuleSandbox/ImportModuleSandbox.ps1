@@ -39,7 +39,9 @@ try {
     #}
 
 
-    Write-Host "Start test ...v1.12.10"
+    Write-Host $PSVersionTable.PSVersion
+
+    Write-Host "Start test ...v1.12.11"
     $azureModuleLoaded = Get-Module -Name "Azure.Storage"
     Write-Host $azureModuleLoaded
     Write-Host $azureModuleLoaded.Version
@@ -48,8 +50,8 @@ try {
 
     if (-not ($azureModuleLoaded -or $azModuleLoaded)) {
         try {
-            #$null = Import-Module -Name "Az.Storage" -Scope CurrentUser -Repository PSGallery -ErrorAction Stop
-            $null = Import-Module -Name "Az.Storage" -ErrorAction Stop
+            $null = Import-Module -Name "Az.Storage" -Scope CurrentUser -Repository PSGallery -ErrorAction Stop
+            #$null = Import-Module -Name "Az.Storage" -ErrorAction Stop
             $azModuleLoaded = $true
             Write-Host "Az.Storage is imported."
         }
