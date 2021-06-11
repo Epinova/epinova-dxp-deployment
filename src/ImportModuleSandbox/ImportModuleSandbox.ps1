@@ -41,21 +41,21 @@ try {
 
     Write-Host $PSVersionTable.PSVersion
 
-    Write-Host "Start test ...v1.12.12"
+    Write-Host "Start test ...v1.12.13"
 
     Get-Module -ListAvailable
 
     $azureModuleLoaded = Get-Module -Name "Azure.Storage"
     if ($azureModuleLoaded -eq $null) { Write-Host "$azureModuleLoaded=null" }
     else {
-        Write-Host $azureModuleLoaded
+        $azureModuleLoaded
         Write-Host $azureModuleLoaded.Version
         Write-Host $azureModuleLoaded.Version.Major
     }
     $azModuleLoaded = Get-Module -Name "Az.Storage"
     if ($azModuleLoaded -eq $null) { Write-Host "$azModuleLoaded=null" }
     else {
-        Write-Host $azModuleLoaded
+        $azModuleLoaded
         Write-Host $azModuleLoaded.Version
         Write-Host $azModuleLoaded.Version.Major
     }
@@ -72,14 +72,14 @@ try {
         }
     }
 
-    $result1 = Get-InstalledModule -Name "Azure.Storage"
-    Write-Host $result1.Version
-    $result2 = Get-InstalledModule -Name "Az.Storage"
-    Write-Host $result2.Version
+    #$result1 = Get-InstalledModule -Name "Azure.Storage"
+    #Write-Host $result1.Version
+    #$result2 = Get-InstalledModule -Name "Az.Storage"
+    #Write-Host $result2.Version
 
     if (-not ($azureModuleLoaded -or $azModuleLoaded)) {
         try {
-            $null = Import-Module -Name "Azure.Storage" -ErrorAction Stop
+            Import-Module -Name "Azure.Storage" -ErrorAction Stop
             #$null = Import-Module -Name "Azure.Storage" -MinimumVersion 4.4.0 -ErrorAction Stop
             #$null = Import-Module -Name "Azure.Storage" -MinimumVersion 4.4.0 -Scope CurrentUser -Repository PSGallery -ErrorAction Stop
             $azureModuleLoaded = $true
