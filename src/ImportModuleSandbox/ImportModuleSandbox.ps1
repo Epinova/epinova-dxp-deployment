@@ -41,7 +41,12 @@ try {
 
     Write-Host $PSVersionTable.PSVersion
 
-    Write-Host "Start test ...v1.12.24"
+    Write-Host "Start test ...v1.12.25"
+
+    Write-Host "----------------------------------------------"
+    Write-Host "Remove-Module -Name AzureRM"
+    Remove-Module -Name "AzureRM"
+    Write-Host "----------------------------------------------"
 
     Write-Host "----------------------------------------------"
     Write-Host "Install-Module -Name Az.Storage -Scope CurrentUser -Repository PSGallery -MinimumVersion 3.5.0 -Force -AllowClobber"
@@ -76,15 +81,6 @@ try {
     Get-Module -Name "Az.Storage"
     Write-Host "----------------------------------------------"
 
-    Write-Host "----------------------------------------------"
-    Write-Host "Find-Module -Name Azure.Storage"
-    Find-Module -Name "Azure.Storage"
-    Write-Host "----------------------------------------------"
-
-    Write-Host "----------------------------------------------"
-    Write-Host "Find-Module -Name Az.Storage"
-    Find-Module -Name "Az.Storage"
-    Write-Host "----------------------------------------------"
     #Script     2.1.0      Azure.Storage
 
     $azureModuleLoaded = Get-Module -Name "Azure.Storage"
@@ -153,15 +149,6 @@ try {
     Get-Module -Name "Az.Storage"
     Write-Host "----------------------------------------------"
 
-    # Write-Host "----------------------------------------------"
-    # Write-Host "Find-Module -Name Azure.Storage"
-    # Find-Module -Name "Azure.Storage"
-    # Write-Host "----------------------------------------------"
-
-    Write-Host "----------------------------------------------"
-    Write-Host "Find-Module -Name Az.Storage"
-    Find-Module -Name "Az.Storage"
-    Write-Host "----------------------------------------------"
 
     # $azureModuleLoaded = Get-Module -Name "Azure.Storage"
     #  if ($null -eq $azureModuleLoaded) { 
