@@ -41,9 +41,12 @@ try {
 
     Write-Host $PSVersionTable.PSVersion
 
-    Write-Host "Start test ...v1.12.23"
+    Write-Host "Start test ...v1.12.24"
 
+    Write-Host "----------------------------------------------"
+    Write-Host "Install-Module -Name Az.Storage -Scope CurrentUser -Repository PSGallery -MinimumVersion 3.5.0 -Force -AllowClobber"
     Install-Module -Name "Az.Storage" -Scope CurrentUser -Repository PSGallery -MinimumVersion 3.5.0 -Force -AllowClobber
+    Write-Host "----------------------------------------------"
 
     #Get-Module: List the modules imported in the current session or that can be imported from the PSModulePath.
     Write-Host "----------------------------------------------"
@@ -124,6 +127,53 @@ try {
     #     Write-Host $azModuleLoaded.Version
     #     Write-Host $azModuleLoaded.Version.Major
     # }
+
+
+    $null = Import-Module -Name "Az.Storage" -ErrorAction Stop
+
+
+
+    # Write-Host "----------------------------------------------"
+    # Write-Host "Get-Module -Name Azure.Storage -ListAvailable"
+    # Get-Module -Name "Azure.Storage" -ListAvailable
+    # Write-Host "----------------------------------------------"
+
+    Write-Host "----------------------------------------------"
+    Write-Host "Get-Module -Name Az.Storage -ListAvailable"
+    Get-Module -Name "Az.Storage" -ListAvailable
+    Write-Host "----------------------------------------------"
+
+    # Write-Host "----------------------------------------------"
+    # Write-Host "Get-Module -Name Azure.Storage"
+    # Get-Module -Name "Azure.Storage"
+    # Write-Host "----------------------------------------------"
+
+    Write-Host "----------------------------------------------"
+    Write-Host "Get-Module -Name Az.Storage"
+    Get-Module -Name "Az.Storage"
+    Write-Host "----------------------------------------------"
+
+    # Write-Host "----------------------------------------------"
+    # Write-Host "Find-Module -Name Azure.Storage"
+    # Find-Module -Name "Azure.Storage"
+    # Write-Host "----------------------------------------------"
+
+    Write-Host "----------------------------------------------"
+    Write-Host "Find-Module -Name Az.Storage"
+    Find-Module -Name "Az.Storage"
+    Write-Host "----------------------------------------------"
+
+    # $azureModuleLoaded = Get-Module -Name "Azure.Storage"
+    #  if ($null -eq $azureModuleLoaded) { 
+    #      Write-Host "Get-Module `$azureModuleLoaded=null" 
+    #      $azureModuleLoaded = $false
+    # }
+    $azModuleLoaded = Get-Module -Name "Az.Storage"
+    if ($null -eq $azModuleLoaded) { 
+        Write-Host "Get-Module `$azModuleLoaded=null" 
+        $azModuleLoaded = $false
+    }
+
 
     # if (-not ($azureModuleLoaded -or $azModuleLoaded)) {
     #     try {
