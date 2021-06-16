@@ -41,10 +41,29 @@ try {
 
     Write-Host $PSVersionTable.PSVersion
 
-    Write-Host "Start test ...v1.12.20"
+    Write-Host "Start test ...v1.12.21"
 
+
+    Write-Host "----------------------------------------------"
+    Write-Host "Get-Module -Name Azure.Storage -ListAvailable"
     Get-Module -Name "Azure.Storage" -ListAvailable
+    Write-Host "----------------------------------------------"
+
+    Write-Host "----------------------------------------------"
+    Write-Host "Get-Module -Name Az.Storage -ListAvailable"
     Get-Module -Name "Az.Storage" -ListAvailable
+    Write-Host "----------------------------------------------"
+
+
+    Write-Host "----------------------------------------------"
+    Write-Host "Get-Module -Name Azure.Storage"
+    Get-Module -Name "Azure.Storage"
+    Write-Host "----------------------------------------------"
+
+    Write-Host "----------------------------------------------"
+    Write-Host "Get-Module -Name Az.Storage"
+    Get-Module -Name "Az.Storage"
+    Write-Host "----------------------------------------------"
     #Script     2.1.0      Azure.Storage
 
     # $azureModuleLoaded = Get-Module -Name "Azure.Storage"
