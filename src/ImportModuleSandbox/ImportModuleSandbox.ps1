@@ -41,7 +41,7 @@ try {
 
     Write-Host $PSVersionTable.PSVersion
 
-    Write-Host "Start test ...v1.12.14"
+    Write-Host "Start test ...v1.12.15"
 
     Get-Module -ListAvailable
     #Script     2.1.0      Azure.Storage
@@ -63,7 +63,7 @@ try {
 
     if (-not ($azureModuleLoaded -or $azModuleLoaded)) {
         try {
-            $null = Import-Module -Name "Az.Storage" -Scope CurrentUser -Repository PSGallery -MinimumVersion 3.5.0 -ErrorAction Stop
+            $null = Import-Module -Name "Az.Storage" -Scope CurrentUser -Repository PSGallery -MinimumVersion 3.5.0 -Force -AllowClobber -ErrorAction Stop
             #$null = Import-Module -Name "Az.Storage" -ErrorAction Stop
             $azModuleLoaded = $true
             Write-Host "Az.Storage is imported."
@@ -82,7 +82,7 @@ try {
         try {
             #Import-Module -Name "Azure.Storage" -ErrorAction Stop
             #$null = Import-Module -Name "Azure.Storage" -MinimumVersion 4.4.0 -ErrorAction Stop
-            $null = Import-Module -Name "Azure.Storage" -MinimumVersion 4.4.0 -Scope CurrentUser -Repository PSGallery -ErrorAction Stop
+            $null = Import-Module -Name "Azure.Storage" -MinimumVersion 4.4.0 -Scope CurrentUser -Repository PSGallery -Force -AllowClobber -ErrorAction Stop
             $azureModuleLoaded = $true
             Write-Host "Azure.Storage is imported."
         }
@@ -105,6 +105,8 @@ try {
     else {
         throw "'Az.Storage' or 'Azure.Storage' module is required to run this cmdlet."
     }
+
+    Get-Module -ListAvailable
 
     Write-Host "End test ..."
 
