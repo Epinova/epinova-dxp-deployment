@@ -41,12 +41,14 @@ try {
 
     Write-Host $PSVersionTable.PSVersion
 
-    Write-Host "Start test ...v1.12.25"
+    Write-Host "Start test ...v1.12.26"
 
-    Write-Host "----------------------------------------------"
-    Write-Host "Remove-Module -Name AzureRM"
-    Remove-Module -Name "AzureRM"
-    Write-Host "----------------------------------------------"
+    #Enable-AzureRmAlias
+
+    # Write-Host "----------------------------------------------"
+    # Write-Host "Remove-Module -Name AzureRM"
+    # Remove-Module -Name "AzureRM"
+    # Write-Host "----------------------------------------------"
 
     Write-Host "----------------------------------------------"
     Write-Host "Install-Module -Name Az.Storage -Scope CurrentUser -Repository PSGallery -MinimumVersion 3.5.0 -Force -AllowClobber"
@@ -125,7 +127,9 @@ try {
     # }
 
 
-    $null = Import-Module -Name "Az.Storage" -ErrorAction Stop
+    #$null = Import-Module -Name "Az.Storage" -ErrorAction Stop  ¤ Give warning
+    $null = Import-Module -Name "Az.Storage" -NoClobber -ErrorAction Stop
+    #$null = Import-Module -Name "Az.Storage" -RequiredVersion 3.5.0 -MinimumVersion 3.5.0 -NoClobber -ErrorAction Stop -Force -Global
 
 
 
