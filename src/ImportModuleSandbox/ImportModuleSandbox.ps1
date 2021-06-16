@@ -41,13 +41,19 @@ try {
 
     Write-Host $PSVersionTable.PSVersion
 
-    Write-Host "Start test ...v1.12.21"
+    Write-Host "Start test ...v1.12.22"
 
 
     Write-Host "----------------------------------------------"
     Write-Host "Get-Module -Name Azure.Storage -ListAvailable"
     Get-Module -Name "Azure.Storage" -ListAvailable
     Write-Host "----------------------------------------------"
+    # -ListAvailable
+    #    Gets all installed modules. Get-Module gets modules in paths listed in the PSModulePath environment variable. 
+    #    Without this parameter, Get-Module gets only the modules that are both listed in the PSModulePath environment 
+    #    variable, and that are loaded in the current session. ListAvailable does not return information about modules 
+    #    that are not found in the PSModulePath environment variable, even if those modules are loaded in the current 
+    #    session.
 
     Write-Host "----------------------------------------------"
     Write-Host "Get-Module -Name Az.Storage -ListAvailable"
@@ -64,9 +70,19 @@ try {
     Write-Host "Get-Module -Name Az.Storage"
     Get-Module -Name "Az.Storage"
     Write-Host "----------------------------------------------"
+
+    Write-Host "----------------------------------------------"
+    Write-Host "Find-Module -Name Azure.Storage"
+    Find-Module -Name "Azure.Storage"
+    Write-Host "----------------------------------------------"
+
+    Write-Host "----------------------------------------------"
+    Write-Host "Find-Module -Name Az.Storage"
+    Find-Module -Name "Az.Storage"
+    Write-Host "----------------------------------------------"
     #Script     2.1.0      Azure.Storage
 
-    # $azureModuleLoaded = Get-Module -Name "Azure.Storage"
+    #$azureModuleLoaded = Get-Module -Name "Azure.Storage"
     # if ($null -eq $azureModuleLoaded) { 
     #     Write-Host "Get-Module `$azureModuleLoaded=null" 
     #     $azureModuleLoaded = $false
@@ -157,6 +173,33 @@ try {
     # }
 
     # Get-Module -ListAvailable
+
+    Write-Host "----------------------------------------------"
+    Write-Host "Get-Module -Name Azure.Storage -ListAvailable"
+    Get-Module -Name "Azure.Storage" -ListAvailable
+    Write-Host "----------------------------------------------"
+    # -ListAvailable
+    #    Gets all installed modules. Get-Module gets modules in paths listed in the PSModulePath environment variable. 
+    #    Without this parameter, Get-Module gets only the modules that are both listed in the PSModulePath environment 
+    #    variable, and that are loaded in the current session. ListAvailable does not return information about modules 
+    #    that are not found in the PSModulePath environment variable, even if those modules are loaded in the current 
+    #    session.
+
+    Write-Host "----------------------------------------------"
+    Write-Host "Get-Module -Name Az.Storage -ListAvailable"
+    Get-Module -Name "Az.Storage" -ListAvailable
+    Write-Host "----------------------------------------------"
+
+
+    Write-Host "----------------------------------------------"
+    Write-Host "Get-Module -Name Azure.Storage"
+    Get-Module -Name "Azure.Storage"
+    Write-Host "----------------------------------------------"
+
+    Write-Host "----------------------------------------------"
+    Write-Host "Get-Module -Name Az.Storage"
+    Get-Module -Name "Az.Storage"
+    Write-Host "----------------------------------------------"
 
     Write-Host "End test ..."
 
