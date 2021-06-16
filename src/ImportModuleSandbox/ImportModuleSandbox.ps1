@@ -41,14 +41,24 @@ try {
 
     Write-Host $PSVersionTable.PSVersion
 
-    Write-Host "Start test ...v1.12.18"
+    Write-Host "Start test ...v1.12.19"
 
     Get-Module -ListAvailable
     #Script     2.1.0      Azure.Storage
 
     $azureModuleLoaded = Get-Module -Name "Azure.Storage"
-    if ($azureModuleLoaded -eq $null) { 
-        Write-Host "$azureModuleLoaded=null" 
+    if ($null -eq $azureModuleLoaded) { 
+        Write-Host "Get-Module `$azureModuleLoaded=null" 
+        $azureModuleLoaded = $false
+    }
+    else {
+        $azureModuleLoaded
+        Write-Host $azureModuleLoaded.Version
+        Write-Host $azureModuleLoaded.Version.Major
+    }
+    $azureModuleLoaded = Find-Module -Name "Azure.Storage"
+    if ($null -eq $azureModuleLoaded) { 
+        Write-Host "Find-Module `$azureModuleLoaded=null" 
         $azureModuleLoaded = $false
     }
     else {
@@ -57,8 +67,18 @@ try {
         Write-Host $azureModuleLoaded.Version.Major
     }
     $azModuleLoaded = Get-Module -Name "Az.Storage"
-    if ($azModuleLoaded -eq $null) { 
-        Write-Host "$azModuleLoaded=null" 
+    if ($null -eq $azModuleLoaded) { 
+        Write-Host "Get-Module `$azModuleLoaded=null" 
+        $azModuleLoaded = $false
+    }
+    else {
+        $azModuleLoaded
+        Write-Host $azModuleLoaded.Version
+        Write-Host $azModuleLoaded.Version.Major
+    }
+    $azModuleLoaded = Find-Module -Name "Az.Storage"
+    if ($null -eq $azModuleLoaded) { 
+        Write-Host "Find-Module `$azModuleLoaded=null" 
         $azModuleLoaded = $false
     }
     else {
