@@ -41,7 +41,7 @@ try {
 
     # TEMP code
     Write-Host "Installing Azure.Storage Powershell Module"
-    Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
+    Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -MinimumVersion 4.4.0 -Force -AllowClobber
         
     if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
         $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   

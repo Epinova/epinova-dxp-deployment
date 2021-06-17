@@ -1,7 +1,7 @@
 # Release notes
 
-## v1.12.1-v1.12.x
-- Import module sandbox.
+## v1.13.0
+- Import Azure.Storage with MinVersion 4.4.0 to remove warning.
 
 ## v1.12.0
 - Added ZeroDowntime into DeployNuGetPackage task.
