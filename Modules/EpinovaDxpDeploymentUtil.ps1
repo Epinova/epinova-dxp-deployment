@@ -336,19 +336,14 @@ function Get-DxpLatestEnvironmentDeployment{
 
     $deployments = Get-DxpEnvironmentDeployments -ProjectId $ProjectId -TargetEnvironment $TargetEnvironment
 
+    Write-Host "function Get-DxpLatestEnvironmentDeployment"
+    Write-Host "Deployments:"
+    Write-Host $deployments
+    Write-Host "Count: |$($deployments.Count)|"
+
     $deployment = $null
-    if ($deployments -is [array]){
-        if ($deployments.Count -gt 1){
-        
-            $deployment = $deployments[0]
-        } else {
-            $deployment = $deployments
-        }
-    }
-     else {
-        if ($null -ne $deployments){
-            $deployment = $deployments
-        }
+    if ($null -ne $deployments -and $deployments.Count -gt 1){
+        $deployment = $deployments[0]
     }
 
     return $deployment
