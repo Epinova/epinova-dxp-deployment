@@ -1,6 +1,6 @@
 # Release notes
 
-## v1.13.3
+## v1.13.3-v1.13.4
 - Solve issue with Get-DxpLatestEnvironmentDeployment Count error.
 
 ## v1.13.2
