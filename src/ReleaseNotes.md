@@ -1,5 +1,8 @@
 # Release notes
 
+## v1.14.0
+- Added 'Succeeded or Reset' option in Expected status.
+
 ## v1.13.3-v1.13.4
 - Solve issue with Get-DxpLatestEnvironmentDeployment Count error.
 

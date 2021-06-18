@@ -46,7 +46,17 @@ try {
         Write-Output $lastDeploy | ConvertTo-Json
         Write-Output "Latest found deploy on targetEnvironment $targetEnvironment is in status $($lastDeploy.status)"
 
+        $inExpectedStatus = $false
         if ($lastDeploy.status -eq $expectedStatus) {
+            $inExpectedStatus = $true
+        }
+        elseif ($expectedStatus -eq "SucceededOrReset") {
+            if ($lastDeploy.status -eq "Succeeded" -or $lastDeploy.status -eq "Reset") {
+                $inExpectedStatus = $true
+            }
+        }
+
+        if ($true -eq $inExpectedStatus) {
             Write-Host "Status is as expected."
         }
         else {
