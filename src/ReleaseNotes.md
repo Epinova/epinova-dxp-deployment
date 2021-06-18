@@ -1,5 +1,8 @@
 # Release notes
 
+## v1.13.3
+- Solve issue with Get-DxpLatestEnvironmentDeployment Count error.
+
 ## v1.13.2
 - Add logic to not install modules when exist on agent.
 
