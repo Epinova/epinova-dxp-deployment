@@ -1,5 +1,8 @@
 # Release notes
 
+## v1.13.2
+- Add logic to not install modules when exist on agent.
+
 ## v1.13.0-v1.13.1
 - Import Azure.Storage with MinVersion 4.4.0 to remove warning.
 

@@ -466,3 +466,20 @@ function Invoke-DxpExportProgress {
     Write-Host $status
     return $status
 }
+
+function Install-AzureStorage {
+    <#
+    .SYNOPSIS
+        Install correct version of Azure.Storage.
+
+    .DESCRIPTION
+        Install correct version of Azure.Storage.
+
+    .EXAMPLE
+        Install-AzureStorage
+    #>
+    if ($null -eq (Get-Module -Name "Azure.Storage")) {
+        Write-Host "Installing Azure.Storage Powershell Module -MinimumVersion 4.4.0"
+        Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -MinimumVersion 4.4.0 -Force -AllowClobber
+    }
+}
