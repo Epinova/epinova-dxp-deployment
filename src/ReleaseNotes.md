@@ -1,5 +1,17 @@
 # Release notes
 
+## v1.14.0
+- Added 'Succeeded or Reset' option in Expected status.
+
+## v1.13.3-v1.13.4
+- Solve issue with Get-DxpLatestEnvironmentDeployment Count error.
+
+## v1.13.2
+- Add logic to not install modules when exist on agent.
+
+## v1.13.0-v1.13.1
+- Import Azure.Storage with MinVersion 4.4.0 to remove warning.
+
 ## v1.12.0
 - Added ZeroDowntime into DeployNuGetPackage task.
 

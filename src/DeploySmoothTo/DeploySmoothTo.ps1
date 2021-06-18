@@ -40,8 +40,7 @@ try {
     Write-Output "##vso[task.logissue type=warning;] Deprecated! You should stop using this task DeploySmoothTo. You should change to DeployTo."
 
     # TEMP code
-    Write-Host "Installing Azure.Storage Powershell Module"
-    Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
+    Install-AzureStorage
         
     if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
         $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   

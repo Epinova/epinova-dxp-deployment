@@ -337,8 +337,18 @@ function Get-DxpLatestEnvironmentDeployment{
     $deployments = Get-DxpEnvironmentDeployments -ProjectId $ProjectId -TargetEnvironment $TargetEnvironment
 
     $deployment = $null
-    if ($null -ne $deployments -and $deployments.Count -gt 1){
-        $deployment = $deployments[0]
+    if ($deployments -is [array]){
+        if ($deployments.Count -gt 1){
+        
+            $deployment = $deployments[0]
+        } else {
+            $deployment = $deployments
+        }
+    }
+     else {
+        if ($null -ne $deployments){
+            $deployment = $deployments
+        }
     }
 
     return $deployment
@@ -465,4 +475,21 @@ function Invoke-DxpExportProgress {
     $status = Get-EpiDatabaseExport -ProjectId $ProjectId -Id $ExportId -Environment $Environment -DatabaseName $DatabaseName
     Write-Host $status
     return $status
+}
+
+function Install-AzureStorage {
+    <#
+    .SYNOPSIS
+        Install correct version of Azure.Storage.
+
+    .DESCRIPTION
+        Install correct version of Azure.Storage.
+
+    .EXAMPLE
+        Install-AzureStorage
+    #>
+    if ($null -eq (Get-Module -Name "Azure.Storage")) {
+        Write-Host "Installing Azure.Storage Powershell Module -MinimumVersion 4.4.0"
+        Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -MinimumVersion 4.4.0 -Force -AllowClobber
+    }
 }

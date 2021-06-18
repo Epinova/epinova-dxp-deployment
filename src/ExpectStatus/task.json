@@ -12,8 +12,8 @@
     "author": "Ove Lartelius",
     "version": {
         "Major": 1,
-        "Minor": 0,
-        "Patch": 20
+        "Minor": 1,
+        "Patch": 0
     },
     "groups": [
         {
@@ -32,7 +32,7 @@
             "isExpanded": false
         }
     ],
-    "releaseNotes": "Using EpinovaDxpDeploymentUtil.",
+    "releaseNotes": "Added Expected status option 'Succeeded or Reset'.",
     "minimumAgentVersion": "2.134.0",
     "inputs": [
         {
@@ -89,7 +89,8 @@
                 "InProgress": "InProgress",
                 "Resetting": "Resetting",
                 "Reset": "Reset",
-                "Succeeded": "Succeeded"
+                "Succeeded": "Succeeded",
+                "SucceededOrReset": "Succeeded or Reset"
             }
         },
         {

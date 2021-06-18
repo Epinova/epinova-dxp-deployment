@@ -26,8 +26,7 @@ try {
     . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
 
     # TEMP code
-    Write-Host "Installing Azure.Storage Powershell Module"
-    Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
+    Install-AzureStorage
         
     if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
         $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
@@ -47,7 +46,17 @@ try {
         Write-Output $lastDeploy | ConvertTo-Json
         Write-Output "Latest found deploy on targetEnvironment $targetEnvironment is in status $($lastDeploy.status)"
 
+        $inExpectedStatus = $false
         if ($lastDeploy.status -eq $expectedStatus) {
+            $inExpectedStatus = $true
+        }
+        elseif ($expectedStatus -eq "SucceededOrReset") {
+            if ($lastDeploy.status -eq "Succeeded" -or $lastDeploy.status -eq "Reset") {
+                $inExpectedStatus = $true
+            }
+        }
+
+        if ($true -eq $inExpectedStatus) {
             Write-Host "Status is as expected."
         }
         else {
