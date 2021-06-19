@@ -1,5 +1,8 @@
 # Release notes
 
+## v1.14.1
+- Added SuppressAzureRmModulesRetiringWarning.
+
 ## v1.14.0
 - Added 'Succeeded or Reset' option in Expected status.
 
