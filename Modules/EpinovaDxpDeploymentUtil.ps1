@@ -488,6 +488,9 @@ function Install-AzureStorage {
     .EXAMPLE
         Install-AzureStorage
     #>
+    Write-Host "SuppressAzureRmModulesRetiringWarning"
+    Set-Item -Path Env:\SuppressAzureRmModulesRetiringWarning -Value $true
+
     if ($null -eq (Get-Module -Name "Azure.Storage")) {
         Write-Host "Installing Azure.Storage Powershell Module -MinimumVersion 4.4.0"
         Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -MinimumVersion 4.4.0 -Force -AllowClobber
