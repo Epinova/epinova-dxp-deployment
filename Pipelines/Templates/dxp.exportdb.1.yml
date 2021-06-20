@@ -1,0 +1,54 @@
+parameters:
+- name: databaseType
+  displayName: 'The type of database that you want to export? epicms or epicommerce'
+  type: string
+  default: epicms
+  values:
+  - epicms
+  - epicommerce
+- name: dxpEnvironment
+  displayName: 'The environment that you want to export the database from. Integration/Preproduction/Production'
+  type: string
+  default: ''
+  values:
+  - Integration
+  - Preproduction
+  - Production
+- name: retentionHours
+  displayName: 'How long time the database export file will be availiable.'
+  type: number
+  default: 24
+  values:
+  - 24
+  - 48
+- name: timeout
+  displayName: 'The timeout for the script. This is not affecting the DXP environment.'
+  type: string
+  default: 1800 #30min
+
+steps:
+- bash: |
+    if [ -z "$TEST" ]; then
+      echo "##vso[task.logissue type=error;]Missing template parameter \"dxpEnvironment\""
+      echo "##vso[task.complete result=Failed;]"
+    fi
+  env:
+    TEST: ${{ parameters.dxpEnvironment }}
+  displayName: Check parameter DXP Environment
+- bash: |
+    if [ -z "$TEST" ]; then
+      echo "##vso[task.logissue type=error;]Missing template parameter \"databaseType\""
+      echo "##vso[task.complete result=Failed;]"
+    fi
+  env:
+    TEST: ${{ parameters.databaseType }}
+  displayName: Check parameter DatabaseType
+- task: DxpExportDb@1
+  inputs:
+    ClientKey: '$(ClientKey)'
+    ClientSecret: '$(ClientSecret)'
+    ProjectId: '$(DXP.ProjectId)'
+    Environment: ${{ parameters.dxpEnvironment }}
+    DatabaseName: ${{ parameters.databaseType }} #epicms|epicommerce
+    RetentionHours: ${{ parameters.retentionHours }}
+    Timeout: ${{ parameters.timeout }} 
