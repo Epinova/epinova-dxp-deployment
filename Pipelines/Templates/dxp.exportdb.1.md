@@ -21,6 +21,18 @@ variables:
 - group: DXP-variables
 
 parameters:
+- name: clientKey
+  displayName: ''
+  type: string
+  default: $(ClientKey)
+- name: clientSecret
+  displayName: ''
+  type: string
+  default: $(ClientSecret)
+- name: projectId
+  displayName: ''
+  type: string
+  default: $(DXP.ProjectId)
 - name: databaseType
   displayName: 'The type of database that you want to export? epicms or epicommerce'
   type: string
@@ -42,6 +54,9 @@ steps:
 - ${{ if eq(parameters.databaseType, 'epicms') }}:
   - template: dxp.exportdb.1.yml@pipelines
     parameters:
+      clientKey: ${{ parameters.clientKey }}
+      clientSecret: ${{ parameters.clientSecret }}
+      projectId: ${{ parameters.projectId }}
       dxpEnvironment: ${{ parameters.dxpEnvironment }}
       databaseType: ${{ parameters.databaseType }}
       retentionHours: 24
@@ -49,6 +64,9 @@ steps:
 - ${{ if eq(parameters.databaseType, 'epicommerce') }}:
   - template: dxp.exportdb.1.yml@pipelines
     parameters:
+      clientKey: ${{ parameters.clientKey }}
+      clientSecret: ${{ parameters.clientSecret }}
+      projectId: ${{ parameters.projectId }}
       dxpEnvironment: ${{ parameters.dxpEnvironment }}
       databaseType: ${{ parameters.databaseType }}
       retentionHours: 24
@@ -66,6 +84,18 @@ variables:
 - group: DXP-variables
 
 parameters:
+- name: clientKey
+  displayName: ''
+  type: string
+  default: $(ClientKey)
+- name: clientSecret
+  displayName: ''
+  type: string
+  default: $(ClientSecret)
+- name: projectId
+  displayName: ''
+  type: string
+  default: $(DXP.ProjectId)
 - name: databaseType
   displayName: 'The type of database that you want to export? epicms or epicommerce'
   type: string
@@ -93,6 +123,9 @@ steps:
 - ${{ if eq(parameters.databaseType, 'epicms') }}:
   - template: dxp.exportdb.1.yml@pipelines
     parameters:
+      clientKey: ${{ parameters.clientKey }}
+      clientSecret: ${{ parameters.clientSecret }}
+      projectId: ${{ parameters.projectId }}
       dxpEnvironment: ${{ parameters.dxpEnvironment }}
       databaseType: ${{ parameters.databaseType }}
       retentionHours: 24
@@ -100,6 +133,9 @@ steps:
 - ${{ if eq(parameters.databaseType, 'epicommerce') }}:
   - template: dxp.exportdb.1.yml@pipelines
     parameters:
+      clientKey: ${{ parameters.clientKey }}
+      clientSecret: ${{ parameters.clientSecret }}
+      projectId: ${{ parameters.projectId }}
       dxpEnvironment: ${{ parameters.dxpEnvironment }}
       databaseType: ${{ parameters.databaseType }}
       retentionHours: 24
@@ -117,6 +153,18 @@ variables:
 - group: DXP-variables
 
 parameters:
+- name: clientKey
+  displayName: ''
+  type: string
+  default: $(ClientKey)
+- name: clientSecret
+  displayName: ''
+  type: string
+  default: $(ClientSecret)
+- name: projectId
+  displayName: ''
+  type: string
+  default: $(DXP.ProjectId)
 - name: databaseType
   displayName: 'The type of database that you want to export? epicms or epicommerce'
   type: string
@@ -138,6 +186,9 @@ steps:
 - ${{ if eq(parameters.databaseType, 'epicms') }}:
   - template: dxp.exportdb.1.yml
     parameters:
+      clientKey: ${{ parameters.clientKey }}
+      clientSecret: ${{ parameters.clientSecret }}
+      projectId: ${{ parameters.projectId }}
       dxpEnvironment: ${{ parameters.dxpEnvironment }}
       databaseType: ${{ parameters.databaseType }}
       retentionHours: 24
@@ -145,6 +196,9 @@ steps:
 - ${{ if eq(parameters.databaseType, 'epicommerce') }}:
   - template: dxp.exportdb.1.yml
     parameters:
+      clientKey: ${{ parameters.clientKey }}
+      clientSecret: ${{ parameters.clientSecret }}
+      projectId: ${{ parameters.projectId }}
       dxpEnvironment: ${{ parameters.dxpEnvironment }}
       databaseType: ${{ parameters.databaseType }}
       retentionHours: 24

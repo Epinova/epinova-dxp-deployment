@@ -1,4 +1,13 @@
 parameters:
+- name: clientKey
+  displayName: 'The DXP environment client key.'
+  type: string
+- name: clientSecret
+  displayName: 'The DXP environment client secret.'
+  type: string
+- name: projectId
+  displayName: 'The DXP environment project ID.'
+  type: string
 - name: databaseType
   displayName: 'The type of database that you want to export? epicms or epicommerce'
   type: string
@@ -9,7 +18,7 @@ parameters:
 - name: dxpEnvironment
   displayName: 'The environment that you want to export the database from. Integration/Preproduction/Production'
   type: string
-  default: ''
+  default: 'Integration'
   values:
   - Integration
   - Preproduction
@@ -29,14 +38,6 @@ parameters:
 steps:
 - bash: |
     if [ -z "$TEST" ]; then
-      echo "##vso[task.logissue type=error;]Missing template parameter \"dxpEnvironment\""
-      echo "##vso[task.complete result=Failed;]"
-    fi
-  env:
-    TEST: ${{ parameters.dxpEnvironment }}
-  displayName: Check parameter DXP Environment
-- bash: |
-    if [ -z "$TEST" ]; then
       echo "##vso[task.logissue type=error;]Missing template parameter \"databaseType\""
       echo "##vso[task.complete result=Failed;]"
     fi
@@ -45,9 +46,9 @@ steps:
   displayName: Check parameter DatabaseType
 - task: DxpExportDb@1
   inputs:
-    ClientKey: '$(ClientKey)'
-    ClientSecret: '$(ClientSecret)'
-    ProjectId: '$(DXP.ProjectId)'
+    ClientKey: ${{ parameters.clientKey }}
+    ClientSecret: ${{ parameters.clientSecret }}
+    ProjectId: ${{ parameters.projectId }}
     Environment: ${{ parameters.dxpEnvironment }}
     DatabaseName: ${{ parameters.databaseType }} #epicms|epicommerce
     RetentionHours: ${{ parameters.retentionHours }}
