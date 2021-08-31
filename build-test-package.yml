@@ -17,39 +17,17 @@ steps:
     inputs:
       version: 'v0.8.x'
 
-  - powershell: |
-    $version = (Get-Content vss-extension.json) -join "`n" | ConvertFrom-Json | Select -ExpandProperty "version"
-    $extVersion = "v$version-$(Build.BuildNumber)"
-    Write-Host "Try to set ExtensionVersion to $extVersion"
-    Write-Host "##vso[task.setvariable variable=ExtensionVersion;]"$extVersion
-    
-    workingDirectory: src
-    displayName: 'Create version'
+  - task: PowerShell@2
+    displayName: 'Get/Set extension version'
+    inputs:
+      targetType: filePath
+      filePath: ./BuildScripts/GetExtensionVersion.ps1
 
-  - powershell: |
-    Write-Host "---Start---"
-    $srcRootPath = (Get-Item * | Where-Object {$_.FullName.EndsWith("src")})
-    $dir = Get-ChildItem -Path $srcRootPath -Directory
-    foreach ($d in $dir){
-          $filePath = Join-Path -Path $d.FullName -ChildPath "task.json"
-          if (Test-Path $filePath){
-            #Write-Host "FilePath: $filePath"
-
-            $a = Get-Content $filePath -raw | ConvertFrom-Json
-            
-            $newFriendlyName = "$($a.friendlyName)-TEST"
-            $a.friendlyName = "$newFriendlyName"
-
-            $newName = "$($a.name)-TEST"
-            $a.name = "$newName"
-            
-            $a | ConvertTo-Json -depth 32| set-content $filePath
-            Write-Host "Updated: $filePath"
-          }
-    }
-    Write-Host "---End---"
-    
-    displayName: 'Rename task to Test*'
+  - task: PowerShell@2
+    displayName: 'Rename tasks to -TEST'
+    inputs:
+      targetType: filePath
+      filePath: ./BuildScripts/RenameTasksToTest.ps1
 
   - task: PowerShell@2
     displayName: 'Copy Scripts'
