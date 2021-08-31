@@ -5,13 +5,16 @@ pool:
   vmImage: 'windows-latest'
   demands: npm
 
+variables:
+  buildnumber: $(Build.BuildNumber)
+
 steps:
   # for each Node based task we must transpile it
   - task: PowerShell@2
     displayName: 'Get/Set extension version'
     inputs:
       targetType: filePath
-      filePath: ./BuildScripts/GetExtensionVersion.ps1
+      filePath: ./BuildScripts/GetExtensionVersion.ps1 -buildnumber $(buildnumber)
 
   - task: PowerShell@2
     displayName: 'Rename tasks to -TEST'
