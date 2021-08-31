@@ -7,16 +7,6 @@ pool:
 
 steps:
   # for each Node based task we must transpile it
-  - template: build-node-task.yml
-    parameters:
-      extensionRoot: '$(System.DefaultWorkingDirectory)\src'
-      taskName: 'ExpectStatus\ExpectStatusV2'
-
-  - task: TfxInstaller@3
-    displayName: 'Install Tfx Tool'
-    inputs:
-      version: 'v0.8.x'
-
   - task: PowerShell@2
     displayName: 'Get/Set extension version'
     inputs:
@@ -34,6 +24,23 @@ steps:
     inputs:
       targetType: filePath
       filePath: ./BuildScripts/CopyScripts.ps1
+
+  - task: CmdLine@2 #Debuging. See what is in the folder.
+    inputs:
+      script: |
+        echo All folders and files in this path
+
+        dir /b /s
+
+  - template: build-node-task.yml
+    parameters:
+      extensionRoot: '$(System.DefaultWorkingDirectory)\src'
+      taskName: 'ExpectStatus\ExpectStatusV2'
+
+  - task: TfxInstaller@3
+    displayName: 'Install Tfx Tool'
+    inputs:
+      version: 'v0.8.x'
 
   - task: ms-devlabs.vsts-developer-tools-build-tasks.tfx-installer-build-task.TfxInstaller@3
     displayName: 'Use Node CLI for Azure DevOps (tfx-cli): v0.7.x'
