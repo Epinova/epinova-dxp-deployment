@@ -1,0 +1,76 @@
+trigger: none
+
+pool:
+  name: Azure Pipelines
+  vmImage: 'windows-latest'
+  demands: npm
+
+steps:
+  # for each Node based task we must transpile it
+  - template: build-node-task.yml
+    parameters:
+      extensionRoot: '$(System.DefaultWorkingDirectory)\src'
+      taskName: 'ExpectStatus\ExpectStatusV2'
+
+  - task: TfxInstaller@3
+    displayName: 'Install Tfx Tool'
+    inputs:
+      version: 'v0.8.x'
+
+  - powershell: |
+    $version = (Get-Content vss-extension.json) -join "`n" | ConvertFrom-Json | Select -ExpandProperty "version"
+    $extVersion = "v$version-$(Build.BuildNumber)"
+    Write-Host "Try to set ExtensionVersion to $extVersion"
+    Write-Host "##vso[task.setvariable variable=ExtensionVersion;]"$extVersion
+    
+    workingDirectory: src
+    displayName: 'Create version'
+
+  - powershell: |
+    Write-Host "---Start---"
+    $srcRootPath = (Get-Item * | Where-Object {$_.FullName.EndsWith("src")})
+    $dir = Get-ChildItem -Path $srcRootPath -Directory
+    foreach ($d in $dir){
+          $filePath = Join-Path -Path $d.FullName -ChildPath "task.json"
+          if (Test-Path $filePath){
+            #Write-Host "FilePath: $filePath"
+
+            $a = Get-Content $filePath -raw | ConvertFrom-Json
+            
+            $newFriendlyName = "$($a.friendlyName)-TEST"
+            $a.friendlyName = "$newFriendlyName"
+
+            $newName = "$($a.name)-TEST"
+            $a.name = "$newName"
+            
+            $a | ConvertTo-Json -depth 32| set-content $filePath
+            Write-Host "Updated: $filePath"
+          }
+    }
+    Write-Host "---End---"
+    
+    displayName: 'Rename task to Test*'
+
+  - task: PowerShell@2
+    displayName: 'Copy Scripts'
+    inputs:
+      targetType: filePath
+      filePath: ./BuildScripts/CopyScripts.ps1
+
+  - task: ms-devlabs.vsts-developer-tools-build-tasks.tfx-installer-build-task.TfxInstaller@3
+    displayName: 'Use Node CLI for Azure DevOps (tfx-cli): v0.7.x'
+    inputs:
+      version: v0.7.x      
+
+  - task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageAzureDevOpsExtension@3
+    displayName: 'Package Extension: src'
+    inputs:
+      rootFolder: src
+      outputPath: '$(Build.ArtifactStagingDirectory)\epinova-dxp-deploy-extension-test-$(ExtensionVersion).vsix'
+      extensionId: 'd7aa7a0b-20b5-4d3b-aaea-a46a1d4d53ce'
+      extensionName: 'Epinova DXP deployment - TEST'
+      updateTasksId: true
+      extensionVisibility: private
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: drop'
