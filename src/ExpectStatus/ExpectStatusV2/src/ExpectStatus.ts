@@ -3,29 +3,32 @@ import { basename } from "path";
 
 import {
     logInfo,
-    logError,
-    getSystemAccessToken
+    logError
 }  from "./agentSpecific";
 
 export async function run() {
     try {
 
-        // Get the build and release details
-        let mode = tl.getInput("mode");
-        let usedefaultcreds = tl.getInput("usedefaultcreds");
-        let artifacts = tl.getInput("artifacts");
-        let keepForever = tl.getInput("keepForever");
+        // $ClientKey,
+        // $ClientSecret,
+        // $ProjectId, 
+        // $TargetEnvironment,
+        // $ExpectedStatus,
+        // $Timeout
 
-        let collectionUrl = process.env.SYSTEM_TEAMFOUNDATIONCOLLECTIONURI;
-        let teamproject = process.env.SYSTEM_TEAMPROJECT;
-        let releaseid = process.env.RELEASE_RELEASEID;
-        let buildid = process.env.BUILD_BUILDID;
+        // Get the build and release details
+        let ClientKey = tl.getInput("ClientKey");
+        let ClientSecret = tl.getInput("ClientSecret");
+        let ProjectId = tl.getInput("ProjectId");
+        let TargetEnvironment = tl.getInput("TargetEnvironment");
+        let ExpectedStatus = tl.getInput("ExpectedStatus");
+        let Timeout = tl.getInput("Timeout");
 
         // we need to get the verbose flag passed in as script flag
         var verbose = (tl.getVariable("System.Debug") === "true");
 
-        let url = tl.getEndpointUrl("SYSTEMVSSCONNECTION", false);
-        let token = tl.getEndpointAuthorizationParameter("SYSTEMVSSCONNECTION", "ACCESSTOKEN", false);
+        // let url = tl.getEndpointUrl("SYSTEMVSSCONNECTION", false);
+        // let token = tl.getEndpointAuthorizationParameter("SYSTEMVSSCONNECTION", "ACCESSTOKEN", false);
 
         // find the executeable
         let executable = "pwsh";
@@ -39,51 +42,17 @@ export async function run() {
         }
 
         // we need to not pass the null param
-        var args = [__dirname + "\\BuildRetensionTask.ps1",
-        "-collectionUrl", collectionUrl,
-        "-token", token
+        var args = [__dirname + "\\ExpectStatus.ps1",
+        "-ClientKey", `'${ClientKey}'`,
+        "-ClientSecret", `'${ClientSecret}'`,
+        "-ProjectId", `'${ProjectId}'`,
+        "-TargetEnvironment", `'${TargetEnvironment}'`,
+        "-ExpectedStatus", `'${ExpectedStatus}'`,
+        "-Timeout", Timeout
         ];
-        args.push("-teamproject");
-        if (/\s/.test(teamproject)) {
-            // It has any kind of whitespace
-            args.push(`'${teamproject}'`);
-        } else {
-            args.push(teamproject);
-        }
-
-        if (releaseid) {
-            args.push("-releaseid");
-            args.push(releaseid);
-        }
-
-        if (keepForever) {
-            args.push("-keepForever");
-            args.push(keepForever);
-        }
-
-        if (buildid) {
-            args.push("-buildid");
-            args.push(buildid);
-        }
-
-        if (mode) {
-            args.push("-mode");
-            args.push(mode);
-        }
-
-        if (usedefaultcreds) {
-            args.push("-usedefaultcreds");
-            args.push(usedefaultcreds);
-        }
-
-        if (artifacts) {
-            args.push("-artifacts");
-            args.push(`'${artifacts}'`);
-        }
-
-        if (verbose) {
-            args.push("-Verbose");
-        }
+        // if (verbose) {
+        //     args.push("-Verbose");
+        // }
 
         logInfo(`${executable} ${args.join(" ")}`);
 
