@@ -189,7 +189,10 @@
             "path": "AwaitStatus"
         },
         {
-            "path": "ExpectStatus"
+            "path": "ExpectStatus/ExpectStatusV1"
+        },
+        {
+            "path": "ExpectStatus/ExpectStatusV2"
         },
         {
             "path": "ContentCopy"
