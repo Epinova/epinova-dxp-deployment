@@ -1,12 +1,11 @@
 {
     "compilerOptions": {
-    "target": "ES6",
+    "lib": ["ES6"],
     "module": "commonjs",
     "watch": false,
     "moduleResolution": "node",
     "rootDirs": [
-    "src/",
-    "test/"
+        "src/"
     ],
     "outDir": "dist",
     "sourceMap": true
@@ -14,12 +13,12 @@
     "baseUrl": ".",
     "paths": {
     "*": [
-    "node_modules/*",
-    "src/types/*"
+        "node_modules/*",
+        "src/types/*"
     ]
     },
     "exclude": [
-    "node_modules",
-    "repo"
+        "node_modules",
+        "repo"
     ]
     }

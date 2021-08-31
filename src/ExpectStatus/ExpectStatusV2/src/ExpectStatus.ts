@@ -1,4 +1,4 @@
-import tl = require("vsts-task-lib/task");
+import tl = require("azure-pipelines-task-lib/task");
 import { basename } from "path";
 
 import {
@@ -8,14 +8,6 @@ import {
 
 export async function run() {
     try {
-
-        // $ClientKey,
-        // $ClientSecret,
-        // $ProjectId, 
-        // $TargetEnvironment,
-        // $ExpectedStatus,
-        // $Timeout
-
         // Get the build and release details
         let ClientKey = tl.getInput("ClientKey");
         let ClientSecret = tl.getInput("ClientSecret");
@@ -26,9 +18,6 @@ export async function run() {
 
         // we need to get the verbose flag passed in as script flag
         var verbose = (tl.getVariable("System.Debug") === "true");
-
-        // let url = tl.getEndpointUrl("SYSTEMVSSCONNECTION", false);
-        // let token = tl.getEndpointAuthorizationParameter("SYSTEMVSSCONNECTION", "ACCESSTOKEN", false);
 
         // find the executeable
         let executable = "pwsh";
@@ -50,9 +39,6 @@ export async function run() {
         "-ExpectedStatus", `'${ExpectedStatus}'`,
         "-Timeout", Timeout
         ];
-        // if (verbose) {
-        //     args.push("-Verbose");
-        // }
 
         logInfo(`${executable} ${args.join(" ")}`);
 

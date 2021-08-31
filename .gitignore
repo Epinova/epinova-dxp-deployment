@@ -10,3 +10,13 @@ ru-ru/
 Modules/nuget.exe
 
 Scripts/Downloads
+
+# Exclusions for generated node.js for Node extensions
+src/**/*.js
+src/**/*.js.map
+src/**/node_modules
+src/**/node_modules
+src/**/dist
+src/**/repo
+src/**/private
+src/**/test-output
