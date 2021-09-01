@@ -1,5 +1,7 @@
 trigger: none
 
+name: $(Date:yyyyMMdd)$(Rev:.r)
+
 pool:
   name: Azure Pipelines
   vmImage: 'windows-latest'
@@ -17,11 +19,11 @@ steps:
       filePath: ./BuildScripts/GetExtensionVersion.ps1 
       arguments: -buildnumber $(buildnumber)
 
-  # - task: PowerShell@2
-  #   displayName: 'Rename tasks to -TEST'
-  #   inputs:
-  #     targetType: filePath
-  #     filePath: ./BuildScripts/RenameTasksToTest.ps1
+  - task: PowerShell@2
+    displayName: 'Rename tasks to -TEST'
+    inputs:
+      targetType: filePath
+      filePath: ./BuildScripts/RenameTasksToTest.ps1
 
   # - task: PowerShell@2
   #   displayName: 'Copy Scripts'
