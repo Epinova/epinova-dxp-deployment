@@ -44,6 +44,7 @@ steps:
       taskName: 'ExpectStatus\ExpectStatusV2'
 
   - task: Npm@1
+    displayName: 'npm install extension'
     inputs:
       command: 'install'
       workingDir: '$(System.DefaultWorkingDirectory)\src'
