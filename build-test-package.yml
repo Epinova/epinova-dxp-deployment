@@ -17,49 +17,49 @@ steps:
       filePath: ./BuildScripts/GetExtensionVersion.ps1 
       arguments: -buildnumber $(buildnumber)
 
-  - task: PowerShell@2
-    displayName: 'Rename tasks to -TEST'
-    inputs:
-      targetType: filePath
-      filePath: ./BuildScripts/RenameTasksToTest.ps1
+  # - task: PowerShell@2
+  #   displayName: 'Rename tasks to -TEST'
+  #   inputs:
+  #     targetType: filePath
+  #     filePath: ./BuildScripts/RenameTasksToTest.ps1
 
-  - task: PowerShell@2
-    displayName: 'Copy Scripts'
-    inputs:
-      targetType: filePath
-      filePath: ./BuildScripts/CopyScripts.ps1
+  # - task: PowerShell@2
+  #   displayName: 'Copy Scripts'
+  #   inputs:
+  #     targetType: filePath
+  #     filePath: ./BuildScripts/CopyScripts.ps1
 
-  - task: CmdLine@2 #Debuging. See what is in the folder.
-    inputs:
-      script: |
-        echo All folders and files in this path
+  # - task: CmdLine@2 #Debuging. See what is in the folder.
+  #   inputs:
+  #     script: |
+  #       echo All folders and files in this path
 
-        dir /b /s
+  #       dir /b /s
 
-  - template: build-node-task.yml
-    parameters:
-      extensionRoot: '$(System.DefaultWorkingDirectory)\src'
-      taskName: 'ExpectStatus\ExpectStatusV2'
+  # - template: build-node-task.yml
+  #   parameters:
+  #     extensionRoot: '$(System.DefaultWorkingDirectory)\src'
+  #     taskName: 'ExpectStatus\ExpectStatusV2'
 
-  - task: TfxInstaller@3
-    displayName: 'Install Tfx Tool'
-    inputs:
-      version: 'v0.8.x'
+  # - task: TfxInstaller@3
+  #   displayName: 'Install Tfx Tool'
+  #   inputs:
+  #     version: 'v0.8.x'
 
-  - task: ms-devlabs.vsts-developer-tools-build-tasks.tfx-installer-build-task.TfxInstaller@3
-    displayName: 'Use Node CLI for Azure DevOps (tfx-cli): v0.7.x'
-    inputs:
-      version: v0.7.x      
+  # - task: ms-devlabs.vsts-developer-tools-build-tasks.tfx-installer-build-task.TfxInstaller@3
+  #   displayName: 'Use Node CLI for Azure DevOps (tfx-cli): v0.7.x'
+  #   inputs:
+  #     version: v0.7.x      
 
-  - task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageAzureDevOpsExtension@3
-    displayName: 'Package Extension: src'
-    inputs:
-      rootFolder: src
-      outputPath: '$(Build.ArtifactStagingDirectory)\epinova-dxp-deploy-extension-test-$(ExtensionVersion).vsix'
-      extensionId: 'd7aa7a0b-20b5-4d3b-aaea-a46a1d4d53ce'
-      extensionName: 'Epinova DXP deployment - TEST'
-      updateTasksId: true
-      extensionVisibility: private
+  # - task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageAzureDevOpsExtension@3
+  #   displayName: 'Package Extension: src'
+  #   inputs:
+  #     rootFolder: src
+  #     outputPath: '$(Build.ArtifactStagingDirectory)\epinova-dxp-deploy-extension-test-$(ExtensionVersion).vsix'
+  #     extensionId: 'd7aa7a0b-20b5-4d3b-aaea-a46a1d4d53ce'
+  #     extensionName: 'Epinova DXP deployment - TEST'
+  #     updateTasksId: true
+  #     extensionVisibility: private
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact: drop'
+  # - task: PublishBuildArtifacts@1
+  #   displayName: 'Publish Artifact: drop'
