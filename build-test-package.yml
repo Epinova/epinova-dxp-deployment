@@ -14,7 +14,8 @@ steps:
     displayName: 'Get/Set extension version'
     inputs:
       targetType: filePath
-      filePath: ./BuildScripts/GetExtensionVersion.ps1 -buildnumber $(buildnumber)
+      filePath: ./BuildScripts/GetExtensionVersion.ps1 
+      arguments: -buildnumber $(buildnumber)
 
   - task: PowerShell@2
     displayName: 'Rename tasks to -TEST'
