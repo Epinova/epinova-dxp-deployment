@@ -43,6 +43,11 @@ steps:
       extensionRoot: '$(System.DefaultWorkingDirectory)\src'
       taskName: 'ExpectStatus\ExpectStatusV2'
 
+  - task: Npm@1
+    inputs:
+      command: 'install'
+      workingDir: '$(System.DefaultWorkingDirectory)\src'
+
   - task: TfxInstaller@3
     displayName: 'Install Tfx Tool'
     inputs:
