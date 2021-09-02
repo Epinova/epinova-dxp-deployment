@@ -8,8 +8,8 @@ Param(
     $Timeout
 )
 
-Trace-VstsEnteringInvocation $MyInvocation
-$global:ErrorActionPreference = 'Continue'
+#Trace-VstsEnteringInvocation $MyInvocation
+#$global:ErrorActionPreference = 'Continue'
 #$global:__vstsNoOverrideVerbose = $true
 
 try {
@@ -95,7 +95,7 @@ catch {
     Write-Verbose "Exception caught from task: $($_.Exception.ToString())"
     throw
 }
-finally {
-    Trace-VstsLeavingInvocation $MyInvocation
-}
+#finally {
+#    Trace-VstsLeavingInvocation $MyInvocation
+#}
 
