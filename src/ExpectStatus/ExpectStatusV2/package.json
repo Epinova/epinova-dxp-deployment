@@ -4,8 +4,8 @@
     "scripts": {
         "build": "npm run clean && npm run transpile",
         "package": "npm prune -production && npm run copy",
-        "copy": "ncp ./node_modules ./task/node_modules && ncp ./dist/src ./task && ./task ./",
-        "clean": "rimraf ./dist/src && rimraf ./dist/test && rimraf ./task/*.js && rimraf ./task/*.js.map && rimraf ./task/node_modules && rimraf ./*.js && rimraf ./*.js.map && rimraf ./node_modules && rimraf ./*.ps1 && rimraf ./icon.png && rimraf ./task.json",
+        "copy": "ncp ./dist/src ./",
+        "clean": "rimraf ./dist/src && rimraf ./dist/test && rimraf ./*.js && rimraf ./*.js.map",
         "transpile": "tsc --project ./"
     },
     "main": "test.js",
