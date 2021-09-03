@@ -40,7 +40,9 @@ try {
     Write-Host "ExpectedStatus:     $expectedStatus"
     Write-Host "Timeout:            $timeout"
 
-    . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
+
+    Write-Host "PSScriptRoot: $PSScriptRoot"
+    . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
 
     # TEMP code
     Install-AzureStorage
