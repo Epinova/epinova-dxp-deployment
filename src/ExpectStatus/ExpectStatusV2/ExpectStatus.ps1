@@ -42,7 +42,17 @@ try {
 
 
     Write-Host "PSScriptRoot: $PSScriptRoot"
-    . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
+    $deployUtilScript = "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
+    $psmodulesPath = "$PSScriptRoot\ps_modules"
+    if (Test-Path $psmodulesPath){
+        Write-Host "ps_modules path exist: $psmodulesPath"
+    } else {
+        Write-Host "ps_modules path not found: $psmodulesPath"
+    }
+    $filesInScriptRoot = Get-ChildItem -Path $PSScriptRoot -Recurse -ErrorAction SilentlyContinue -Force
+    $filesInScriptRoot
+
+    . $deployUtilScript
 
     # TEMP code
     Install-AzureStorage

@@ -1,5 +1,5 @@
 # Epinova DXP Deployment
-Bucket of release tasks helping you to deploy to all environments in Optimizley (formerly known as Episerver) DXP (a.k.a DXC) from Azure DevOps. The release tasks use the [Deployment API](https://world.episerver.com/digital-experience-cloud-service/deploying/episerver-digital-experience-cloud-deployment-api/). There are some developers out there that want/need help with deployment to the Optimizley (formerly known as Episerver) DXP enviroment. And that is why this deployment extension is created. 
+Bucket of release tasks helping you to deploy to all environments in Optimizely (formerly known as Episerver) DXP (a.k.a DXC) from Azure DevOps. The release tasks use the [Deployment API](https://world.episerver.com/digital-experience-cloud-service/deploying/episerver-digital-experience-cloud-deployment-api/). There are some developers out there that want/need help with deployment to the Optimizely (formerly known as Episerver) DXP enviroment. And that is why this deployment extension is created. 
 
 ## Install 
 [How to install Epinova DXP Deployment extension](documentation/InstallDxpExtension.md)  
