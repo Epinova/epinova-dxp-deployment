@@ -51,6 +51,11 @@ try {
     # }
     # $filesInScriptRoot = Get-ChildItem -Path $PSScriptRoot -Recurse -ErrorAction SilentlyContinue -Force
     # $filesInScriptRoot
+    Write-Host "----------------------------------------------------------"
+    Get-Module -ListAvailable
+    Write-Host "----------------------------------------------------------"
+    Get-Module -All
+    Write-Host "----------------------------------------------------------"
 
     # . $deployUtilScript
 

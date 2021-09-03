@@ -21,11 +21,14 @@ function Initialize-EpiCload{
     if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
         Write-Host "Could not find EpiCloud."
         Install-Module EpiCloud -Scope CurrentUser -Force
-        Write-Host "Install EpiCloud."
+        Write-Host "Installed EpiCloud."
     }
+    Get-Module -Name EpiCloud -ListAvailable
     $version = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
-    Write-Host "EpiCloud            $version" 
-
+    Write-Host "EpiCloud            [$version]" 
+    if ($null -eq $version -or "" -eq $version) {
+        Write-Error "Could not get version for the installed module EpiCloud"
+    }
 }
 
 function Write-DxpHostVersion() {
@@ -101,6 +104,7 @@ function Test-DxpProjectId
 	
     if ((Test-IsGuid -ObjectGuid $ProjectId) -ne $true){
         Write-Error "The provided ProjectId is not a guid value."
+        exit 1
     }
 }
 
