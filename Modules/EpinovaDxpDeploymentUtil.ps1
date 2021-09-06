@@ -82,8 +82,7 @@ function Test-IsGuid {
 	return $ObjectGuid -match $guidRegex
 }
 
-function Test-DxpProjectId
-{
+function Test-DxpProjectId {
     <#
     .SYNOPSIS
         Test a DXP project id.
@@ -99,20 +98,20 @@ function Test-DxpProjectId
 
         Test if the value in the parameter $projectId is a valid DXP project id.
     #>
-	[OutputType([bool])]
+	[OutputType([System.Void])]
 	param
 	(
 		[Parameter(Mandatory = $true)]
 		[string]$ProjectId
 	)
 	
-    if ($true -ne (Test-IsGuid -ObjectGuid $ProjectId)){
+    if (!(Test-IsGuid -ObjectGuid $ProjectId)) {
         Write-Error "The provided ProjectId $ProjectId is not a guid value."
         exit 1
     }
 }
 
-function Get-DxpDateTimeStamp{
+function Get-DxpDateTimeStamp {
     <#
     .SYNOPSIS
         Create DateTime stamp in correct format.

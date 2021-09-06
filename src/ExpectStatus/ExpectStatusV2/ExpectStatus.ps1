@@ -45,7 +45,6 @@ try {
     # $filesInScriptRoot
 
     # . $deployUtilScript
-    Write-Host "|$([System.IO.Path]::PathSeparator)|"
 
     $deployUtilScript = Join-Path -Path $PSScriptRoot -ChildPath "ps_modules"
     $deployUtilScript = Join-Path -Path $deployUtilScript -ChildPath "EpinovaDxpDeploymentUtil.ps1"
