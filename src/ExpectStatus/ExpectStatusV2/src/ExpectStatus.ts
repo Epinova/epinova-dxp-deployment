@@ -34,7 +34,7 @@ export async function run() {
         var args = [__dirname + "\\ExpectStatus.ps1",
         "-ClientKey", `'${ClientKey}'`,
         "-ClientSecret", `'${ClientSecret}'`,
-        "-ProjectId", `'${ProjectId}'`,
+        "-ProjectId", `"${ProjectId}"`,
         "-TargetEnvironment", `'${TargetEnvironment}'`,
         "-ExpectedStatus", `'${ExpectedStatus}'`,
         "-Timeout", Timeout
