@@ -20,7 +20,7 @@ function Initialize-EpiCload{
     #>
     if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
         Write-Host "Could not find EpiCloud."
-        Install-Module EpiCloud -Scope CurrentUser -Force
+        Install-Module EpiCloud  -Scope CurrentUser -Repository PSGallery -MinimumVersion 0.13.15 -Force -AllowClobber
         Write-Host "Installed EpiCloud."
     }
     Get-Module -Name EpiCloud -ListAvailable
