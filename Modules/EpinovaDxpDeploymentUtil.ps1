@@ -23,10 +23,10 @@ function Initialize-EpiCload{
         #Install-Module EpiCloud  -Scope CurrentUser -MinimumVersion 0.13.15 -Force -AllowClobber
         #Write-Host "Installed EpiCloud."
         Import-Module -Name "EpiCloud" -Verbose
-        Import-Module -Name "$PSScriptRoot/EpiCloud/EpiCloud.psd1" -Verbose -ErrorAction Stop
+        #Import-Module -Name "$PSScriptRoot/EpiCloud/EpiCloud.psd1" -Verbose -ErrorAction Stop
         Write-Host "Import EpiCloud."
     }
-    Get-Module -Name EpiCloud -ListAvailable
+    #Get-Module -Name EpiCloud -ListAvailable
     $version = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
     Write-Host "EpiCloud            [$version]" 
     if ($null -eq $version -or "" -eq $version) {
@@ -47,8 +47,9 @@ function Write-DxpHostVersion() {
 
         Will print out the PowerShell host version in the host. Ex: @{Version=5.1.14393.3866}
     #>
-    $version = Get-Host | Select-Object Version
-    Write-Host "PowerShell          $version" 
+    #$version = Get-Host | Select-Object Version
+    #Write-Host "PowerShell          $version" 
+    $PSVersionTable
 }
 
 function Test-IsGuid {
@@ -105,8 +106,8 @@ function Test-DxpProjectId
 		[string]$ProjectId
 	)
 	
-    if ((Test-IsGuid -ObjectGuid $ProjectId) -ne $true){
-        Write-Error "The provided ProjectId is not a guid value."
+    if ($true -ne (Test-IsGuid -ObjectGuid $ProjectId)){
+        Write-Error "The provided ProjectId $ProjectId is not a guid value."
         exit 1
     }
 }
@@ -506,4 +507,52 @@ function Install-AzureStorage {
     #     Write-Host "Installing Azure.Storage Powershell Module -MinimumVersion 4.4.0"
     #     Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -MinimumVersion 4.4.0 -Force -AllowClobber
     # }
+}
+
+function Mount-PsModulesPath {
+    <#
+    .SYNOPSIS
+        Add task ps_modules folder to env:PSModulePath.
+
+    .DESCRIPTION
+        Add task ps_modules folder to env:PSModulePath.
+
+    .EXAMPLE
+        Mount-ModulePath
+    #>
+    if ($true -eq $IsWindows){
+        if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
+            $taskModulePath = "$PSScriptRoot\ps_modules"
+        }
+    }
+    else {
+        #Linux/MacOS
+        if (-not ($env:PSModulePath.Contains("$PSScriptRoot/ps_modules"))){
+            $taskModulePath = "$PSScriptRoot/ps_modules"
+        }
+
+    }
+    $env:PSModulePath = $env:PSModulePath + "$([System.IO.Path]::PathSeparator)$taskModulePath"
+    Write-Host "Added $taskModulePath to env:PSModulePath" 
+}
+
+function Mount-EpinovaDxpDeploymentUtil {
+    <#
+    .SYNOPSIS
+        Load EpinovaDxpDeploymentUtil.ps1.
+
+    .DESCRIPTION
+        Load EpinovaDxpDeploymentUtil.ps1.
+
+    .EXAMPLE
+        Mount-EpinovaDxpDeploymentUtil
+    #>
+    if ($true -eq $IsWindows){
+        . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
+    }
+    else {
+        #Linux/MacOS
+        . "$PSScriptRoot/ps_modules/EpinovaDxpDeploymentUtil.ps1"
+
+    }
 }
