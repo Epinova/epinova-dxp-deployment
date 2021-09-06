@@ -22,6 +22,7 @@ function Initialize-EpiCload{
         Write-Host "Could not find EpiCloud."
         Install-Module EpiCloud  -Scope CurrentUser -Repository PSGallery -MinimumVersion 0.13.15 -Force -AllowClobber
         Write-Host "Installed EpiCloud."
+        Import-Module -Name "EpiCloud" -ErrorAction Stop
     }
     Get-Module -Name EpiCloud -ListAvailable
     $version = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version

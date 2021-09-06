@@ -65,7 +65,8 @@ try {
     Install-AzureStorage
         
     if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
-        $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
+        $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath 
+        Write-Host "Added $PSScriptRoot\ps_modules to env:PSModulePath" 
     }
 
     Initialize-EpiCload
