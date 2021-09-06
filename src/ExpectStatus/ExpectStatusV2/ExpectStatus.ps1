@@ -59,14 +59,17 @@ try {
 
     # . $deployUtilScript
 
-    . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
+    . "$PSScriptRoot/ps_modules/EpinovaDxpDeploymentUtil.ps1"
 
     # TEMP code
     Install-AzureStorage
         
     if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
-        $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath 
-        Write-Host "Added $PSScriptRoot\ps_modules to env:PSModulePath" 
+        #$env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath 
+        $taskModulePath = "$PSScriptRoot/ps_modules"
+        $env:PSModulePath = $env:PSModulePath + "$([System.IO.Path]::PathSeparator)$taskModulePath"
+
+        Write-Host "Added $taskModulePath to env:PSModulePath" 
     }
 
     Initialize-EpiCload
