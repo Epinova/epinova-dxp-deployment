@@ -22,7 +22,7 @@ function Initialize-EpiCload{
         Write-Host "Could not find EpiCloud."
         #Install-Module EpiCloud  -Scope CurrentUser -MinimumVersion 0.13.15 -Force -AllowClobber
         #Write-Host "Installed EpiCloud."
-        Import-Module -Name "$PSScriptRoot/ps_modules/EpiCloud" -Verbose -ErrorAction Stop
+        Import-Module -Name "$PSScriptRoot/ps_modules/EpiCloud/EpiCloud.psd1" -Verbose -ErrorAction Stop
         Write-Host "Import EpiCloud."
     }
     Get-Module -Name EpiCloud -ListAvailable
