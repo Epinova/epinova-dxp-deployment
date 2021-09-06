@@ -496,17 +496,29 @@ function Install-AzureStorage {
     .EXAMPLE
         Install-AzureStorage
     #>
-    # Write-Host "SuppressAzureRmModulesRetiringWarning"
-    # Set-Item -Path Env:\SuppressAzureRmModulesRetiringWarning -Value $true
+    Write-Host "SuppressAzureRmModulesRetiringWarning"
+    Set-Item -Path Env:\SuppressAzureRmModulesRetiringWarning -Value $true
 
+    if ($null -eq (Get-Module -Name "Azure.Storage")) {
+        Write-Host "Installing Azure.Storage Powershell Module -MinimumVersion 4.4.0"
+        Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -MinimumVersion 4.4.0 -Force -AllowClobber
+    }
+}
+
+function Install-AzStorage {
+    <#
+    .SYNOPSIS
+        Install correct version of Az.Storage.
+
+    .DESCRIPTION
+        Install correct version of Az.Storage.
+
+    .EXAMPLE
+        Install-AzStorage
+    #>
     if ($null -eq (Get-Module -Name "Az.Storage")) {
         Install-Module -Name Az.Storage -Scope CurrentUser -Repository PSGallery -MinimumVersion 3.7.0 -Force -AllowClobber
     }
-
-    # if ($null -eq (Get-Module -Name "Azure.Storage")) {
-    #     Write-Host "Installing Azure.Storage Powershell Module -MinimumVersion 4.4.0"
-    #     Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -MinimumVersion 4.4.0 -Force -AllowClobber
-    # }
 }
 
 function Mount-PsModulesPath {
@@ -520,39 +532,22 @@ function Mount-PsModulesPath {
     .EXAMPLE
         Mount-ModulePath
     #>
-    if ($true -eq $IsWindows){
-        if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
-            $taskModulePath = "$PSScriptRoot\ps_modules"
-        }
-    }
-    else {
-        #Linux/MacOS
-        if (-not ($env:PSModulePath.Contains("$PSScriptRoot/ps_modules"))){
-            $taskModulePath = "$PSScriptRoot/ps_modules"
-        }
 
-    }
-    $env:PSModulePath = $env:PSModulePath + "$([System.IO.Path]::PathSeparator)$taskModulePath"
-    Write-Host "Added $taskModulePath to env:PSModulePath" 
-}
+    # if ($true -eq $IsWindows){
+    #     if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
+    #         $taskModulePath = "$PSScriptRoot\ps_modules"
+    #     }
+    # }
+    # else {
+    #     #Linux/MacOS
+    #     if (-not ($env:PSModulePath.Contains("$PSScriptRoot/ps_modules"))){
+    #         $taskModulePath = "$PSScriptRoot/ps_modules"
+    #     }
 
-function Mount-EpinovaDxpDeploymentUtil {
-    <#
-    .SYNOPSIS
-        Load EpinovaDxpDeploymentUtil.ps1.
-
-    .DESCRIPTION
-        Load EpinovaDxpDeploymentUtil.ps1.
-
-    .EXAMPLE
-        Mount-EpinovaDxpDeploymentUtil
-    #>
-    if ($true -eq $IsWindows){
-        . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
-    }
-    else {
-        #Linux/MacOS
-        . "$PSScriptRoot/ps_modules/EpinovaDxpDeploymentUtil.ps1"
-
+    # }
+    $taskModulePath = Join-Path -Path $PSScriptRoot -ChildPath "ps_modules"
+    if (-not ($env:PSModulePath.Contains($taskModulePath))) {
+        $env:PSModulePath = $env:PSModulePath + "$([System.IO.Path]::PathSeparator)$taskModulePath"
+        Write-Host "Added $taskModulePath to env:PSModulePath" 
     }
 }
