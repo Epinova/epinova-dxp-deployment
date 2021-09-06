@@ -545,7 +545,9 @@ function Mount-PsModulesPath {
     #     }
 
     # }
-    $taskModulePath = Join-Path -Path $PSScriptRoot -ChildPath "ps_modules"
+
+    #$taskModulePath = Join-Path -Path $PSScriptRoot -ChildPath "ps_modules"
+    $taskModulePath = $PSScriptRoot
     if (-not ($env:PSModulePath.Contains($taskModulePath))) {
         $env:PSModulePath = $env:PSModulePath + "$([System.IO.Path]::PathSeparator)$taskModulePath"
         Write-Host "Added $taskModulePath to env:PSModulePath" 
