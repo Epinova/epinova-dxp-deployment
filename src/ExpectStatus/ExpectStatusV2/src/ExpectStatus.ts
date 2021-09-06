@@ -32,11 +32,11 @@ export async function run() {
 
         // we need to not pass the null param
         var args = [__dirname + "\\ExpectStatus.ps1",
-        "-ClientKey", `'${ClientKey}'`,
-        "-ClientSecret", `'${ClientSecret}'`,
-        "-ProjectId", `"${ProjectId}"`,
-        "-TargetEnvironment", `'${TargetEnvironment}'`,
-        "-ExpectedStatus", `'${ExpectedStatus}'`,
+        "-ClientKey", ClientKey,
+        "-ClientSecret", ClientSecret,
+        "-ProjectId", ProjectId,
+        "-TargetEnvironment", TargetEnvironment,
+        "-ExpectedStatus", ExpectedStatus,
         "-Timeout", Timeout
         ];
 
