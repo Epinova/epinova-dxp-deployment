@@ -8,19 +8,8 @@ Param(
     $Timeout
 )
 
-#Trace-VstsEnteringInvocation $MyInvocation
-#$global:ErrorActionPreference = 'Continue'
-#$global:__vstsNoOverrideVerbose = $true
-
 try {
     # Get all inputs for the task
-    # $clientKey = Get-VstsInput -Name "ClientKey" -Require -ErrorAction "Stop"
-    # $clientSecret = Get-VstsInput -Name "ClientSecret" -Require -ErrorAction "Stop"
-    # $projectId = Get-VstsInput -Name "ProjectId" -Require -ErrorAction "Stop"
-    # $targetEnvironment = Get-VstsInput -Name "TargetEnvironment" -Require -ErrorAction "Stop"
-    # $expectedStatus = Get-VstsInput -Name "ExpectedStatus" -Require -ErrorAction "Stop"
-    # $timeout = Get-VstsInput -Name "Timeout" -AsInt -Require -ErrorAction "Stop"
-
     $clientKey = $ClientKey
     $clientSecret = $ClientSecret
     $projectId = $ProjectId
@@ -41,25 +30,9 @@ try {
     Write-Host "Timeout:            $timeout"
 
 
-    # $filesInScriptRoot = Get-ChildItem -Path $PSScriptRoot -Recurse -ErrorAction SilentlyContinue -Force
-    # $filesInScriptRoot
-
-    # . $deployUtilScript
-
-    $deployUtilScript = $PSScriptRoot
-    #if ($IsWindows) {
-        $deployUtilScript = Join-Path -Path $deployUtilScript -ChildPath "ps_modules"
-    #}
+    $deployUtilScript = Join-Path -Path $PSScriptRoot -ChildPath "ps_modules"
     $deployUtilScript = Join-Path -Path $deployUtilScript -ChildPath "EpinovaDxpDeploymentUtil.ps1"
     . $deployUtilScript
-
-    # if ($true -eq $IsWindows){ 
-    #     . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
-    # }
-    # else {
-    #     #Linux/MacOS
-    #     . "$PSScriptRoot/ps_modules/EpinovaDxpDeploymentUtil.ps1"
-    # }
 
     Mount-PsModulesPath
 
@@ -111,7 +84,3 @@ catch {
     Write-Verbose "Exception caught from task: $($_.Exception.ToString())"
     throw
 }
-#finally {
-#    Trace-VstsLeavingInvocation $MyInvocation
-#}
-

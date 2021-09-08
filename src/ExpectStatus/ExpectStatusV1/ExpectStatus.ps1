@@ -28,9 +28,6 @@ try {
     Install-AzStorage
      
     Mount-PsModulesPath
-    #if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
-    #    $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
-    #}
 
     Initialize-EpiCload
     

@@ -1,19 +1,19 @@
 {
-    "id": "908f312f-0aad-46db-8681-042dbf1fd304",
-    "name": "DxpExpectStatus",
-    "friendlyName": "Expect status (Episerver DXP)",
-    "description": "Expect status on specified environment. (Episerver DXP, former DXC)",
-    "helpUrl": "https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/ExpectStatus.md",
-    "helpMarkDown": "[Extension page](https://marketplace.visualstudio.com/items?itemName=epinova-sweden.epinova-dxp-deploy-extension)[Learn more about this task](https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/ExpectStatus.md)",
+    "id": "e1504e83-b561-4513-b504-669af78404a1",
+    "name": "DxpAwaitStatus",
+    "friendlyName": "Await status (Episerver DXP)",
+    "description": "Await status to be in AwaitingVerification/Reset/Succeeded. (Episerver DXP, former DXC)",
+    "helpUrl": "https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/AwaitStatus.md",
+    "helpMarkDown": "[Extension page](https://marketplace.visualstudio.com/items?itemName=epinova-sweden.epinova-dxp-deploy-extension)[Learn more about this task](https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/AwaitStatus.md)",
     "category": "Deploy",
     "visibility": [
         "Release"
     ],
     "author": "Ove Lartelius",
     "version": {
-        "Major": 2,
-        "Minor": 1,
-        "Patch": 27
+        "Major": 1,
+        "Minor": 0,
+        "Patch": 31
     },
     "groups": [
         {
@@ -32,7 +32,7 @@
             "isExpanded": false
         }
     ],
-    "releaseNotes": "Added Expected status option 'Succeeded or Reset'.",
+    "releaseNotes": "Using EpinovaDxpDeploymentUtil.",
     "minimumAgentVersion": "2.134.0",
     "inputs": [
         {
@@ -77,23 +77,6 @@
             }
         },
         {
-            "name": "ExpectedStatus",
-            "type": "pickList",
-            "label": "Expected status",
-            "required": true,
-            "defaultValue": "AwaitingVerification",
-            "helpMarkDown": "The status that you expect the environment to have.",
-            "groupName": "Settings",
-            "options": {
-                "AwaitingVerification": "AwaitingVerification",
-                "InProgress": "InProgress",
-                "Resetting": "Resetting",
-                "Reset": "Reset",
-                "Succeeded": "Succeeded",
-                "SucceededOrReset": "Succeeded or Reset"
-            }
-        },
-        {
             "name": "Timeout",
             "type": "int",
             "label": "Script timeout (in seconds)",
@@ -117,10 +100,13 @@
             "groupName": "ErrorHandlingOptions"
         }
     ],
-    "instanceNameFormat": "Expect status $(ExpectedStatus) on $(TargetEnvironment)",
+    "instanceNameFormat": "Await status on $(TargetEnvironment)",
     "execution": {
-        "Node10": {
-            "target": "ExpectStatus.js"
+        "PowerShell3": {
+            "target": "AwaitStatus.ps1"
         }
+    },
+    "messages": {
+        "PS_TM_ParseSessionVariablesValueNotFound": "Parsing operation failed. ErrorMessage: 'value not found', Token: '{0}', CurrentKey: '{1}'"
     }
 }
