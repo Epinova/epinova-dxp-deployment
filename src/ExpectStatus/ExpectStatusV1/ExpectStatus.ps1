@@ -27,7 +27,7 @@ try {
 
     Install-AzStorage
      
-    Mount-WindowsPsModulesPath
+    Mount-PsModulesPath
     #if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
     #    $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
     #}

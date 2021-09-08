@@ -13,6 +13,11 @@ pool:
 
 variables:
   buildnumber: $(Build.BuildNumber)
+  PublisherID: 'epinova-sweden'
+  ExtensionID: 'd7aa7a0b-20b5-4d3b-aaea-a46a1d4d53ce'
+  ExtensionName: 'Epinova DXP deployment - TEST'
+  ExtensionFileName: 'epinova-dxp-deploy-extension-test-'
+  ExtensionVisibility: 'private'
 
 steps:
   # for each Node based task we must transpile it
@@ -51,20 +56,32 @@ steps:
     inputs:
       version: 'v0.8.x'
 
-  - task: ms-devlabs.vsts-developer-tools-build-tasks.tfx-installer-build-task.TfxInstaller@3
-    displayName: 'Use Node CLI for Azure DevOps (tfx-cli): v0.7.x'
-    inputs:
-      version: v0.7.x      
+  # - task: ms-devlabs.vsts-developer-tools-build-tasks.tfx-installer-build-task.TfxInstaller@3
+  #   displayName: 'Use Node CLI for Azure DevOps (tfx-cli): v0.7.x'
+  #   inputs:
+  #     version: v0.7.x      
 
   - task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageAzureDevOpsExtension@3
     displayName: 'Package Extension: src'
     inputs:
       rootFolder: src
-      outputPath: '$(Build.ArtifactStagingDirectory)\epinova-dxp-deploy-extension-test-$(ExtensionVersion).vsix'
-      extensionId: 'd7aa7a0b-20b5-4d3b-aaea-a46a1d4d53ce'
-      extensionName: 'Epinova DXP deployment - TEST'
-      updateTasksId: true
-      extensionVisibility: private
+      outputPath: '$(Build.ArtifactStagingDirectory)\$(ExtensionFileName)$(ExtensionFileVersion).vsix'
+      publisherId: '$(PublisherID)'
+      extensionId: '$(ExtensionID)'
+      extensionName: '$(ExtensionName)'
+      extensionVersion: '$(ExtensionVersion)'
+      updateTasksId: true # This is for TEST only. Need to find a nice solution for this when deploy the real version.
+      extensionVisibility: $(ExtensionVisibility)
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
+
+  - task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishExtension@3
+    displayName: 'Publish Extension'
+    inputs:
+      connectedServiceName: 'Marketplace'
+      fileType: vsix
+      vsixFile: '$(Build.ArtifactStagingDirectory)\$(ExtensionFileName)$(ExtensionFileVersion).vsix'
+      extensionTag: ''
+      updateTasksVersion: false
+      extensionVisibility: '$(ExtensionVisibility)'

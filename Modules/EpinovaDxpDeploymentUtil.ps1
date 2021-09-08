@@ -533,30 +533,30 @@ function Mount-PsModulesPath {
     #>
 
     $taskModulePath = $PSScriptRoot
-    if ($IsWindows) {
-        $taskModulePath = Join-Path -Path $taskModulePath -ChildPath "ps_modules"
-    }
+    # if ($IsWindows) {
+    #     $taskModulePath = Join-Path -Path $taskModulePath -ChildPath "ps_modules"
+    # }
     if (-not ($env:PSModulePath.Contains($taskModulePath))) {
         $env:PSModulePath = $env:PSModulePath + "$([System.IO.Path]::PathSeparator)$taskModulePath"
         Write-Host "Added $taskModulePath to env:PSModulePath" 
     }
 }
 
-function Mount-WindowsPsModulesPath {
-    <#
-    .SYNOPSIS
-        Add task ps_modules folder to env:PSModulePath.
+# function Mount-WindowsPsModulesPath {
+#     <#
+#     .SYNOPSIS
+#         Add task ps_modules folder to env:PSModulePath.
 
-    .DESCRIPTION
-        Add task ps_modules folder to env:PSModulePath.
+#     .DESCRIPTION
+#         Add task ps_modules folder to env:PSModulePath.
 
-    .EXAMPLE
-        Mount-ModulePath
-    #>
+#     .EXAMPLE
+#         Mount-ModulePath
+#     #>
 
-    $taskModulePath = Join-Path -Path $PSScriptRoot -ChildPath "ps_modules"
-    if (-not ($env:PSModulePath.Contains($taskModulePath))) {
-        $env:PSModulePath = $env:PSModulePath + "$([System.IO.Path]::PathSeparator)$taskModulePath"
-        Write-Host "Added $taskModulePath to env:PSModulePath" 
-    }
-}
+#     $taskModulePath = Join-Path -Path $PSScriptRoot -ChildPath "ps_modules"
+#     if (-not ($env:PSModulePath.Contains($taskModulePath))) {
+#         $env:PSModulePath = $env:PSModulePath + "$([System.IO.Path]::PathSeparator)$taskModulePath"
+#         Write-Host "Added $taskModulePath to env:PSModulePath" 
+#     }
+# }
