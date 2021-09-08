@@ -29,18 +29,18 @@ steps:
       arguments: -buildnumber $(buildnumber)
 
   - task: PowerShell@2
-    displayName: 'Rename tasks to -TEST'
-    inputs:
-      targetType: filePath
-      filePath: ./BuildScripts/RenameTasksToTest.ps1
-
-  - task: PowerShell@2
     displayName: 'Copy Scripts'
     inputs:
       targetType: filePath
       filePath: ./BuildScripts/CopyScripts.ps1
 
   - template: build-node-tasks.yml
+
+  - task: PowerShell@2
+    displayName: 'Rename tasks to -TEST'
+    inputs:
+      targetType: filePath
+      filePath: ./BuildScripts/RenameTasksToTest.ps1
 
   - task: Npm@1
     displayName: 'npm install extension'

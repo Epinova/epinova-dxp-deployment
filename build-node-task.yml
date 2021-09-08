@@ -45,3 +45,14 @@ steps:
     command: 'custom'
     workingDir: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
     customCommand: 'run package'
+
+- task: PowerShell@2
+  displayName: 'Delete unwanted folders'
+  inputs:
+    targetType: 'inline'
+    script: |
+      Remove-Item "${{parameters.extensionRoot}}\\${{parameters.taskName}}\dist"
+      Remove-Item "${{parameters.extensionRoot}}\\${{parameters.taskName}}\src"
+      Remove-Item "${{parameters.extensionRoot}}\\${{parameters.taskName}}\test"
+    workingDirectory: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
+
