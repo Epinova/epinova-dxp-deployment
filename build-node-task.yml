@@ -6,14 +6,14 @@ parameters:
 
 steps:  
 - task: PowerShell@2
-      displayName: 'Calculate and save package.json hash'
-      inputs:
-        targetType: 'inline'
-        script: |
-          # generates a hash of all package.json and saves each on a single line on 'packagejsonhash.txt'
-          Get-FileHash -Algorithm MD5 -Path (Get-ChildItem package.json -Recurse) >> packagejsonhash.txt
-          Write-Host "Hash File saved to ${{parameters.extensionRoot}}\\${{parameters.taskName}}\packagejsonhash.txt"
-        workingDirectory: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
+  displayName: 'Calculate and save package.json hash'
+  inputs:
+    targetType: 'inline'
+    script: |
+      # generates a hash of all package.json and saves each on a single line on 'packagejsonhash.txt'
+      Get-FileHash -Algorithm MD5 -Path (Get-ChildItem package.json -Recurse) >> packagejsonhash.txt
+      Write-Host "Hash File saved to ${{parameters.extensionRoot}}\\${{parameters.taskName}}\packagejsonhash.txt"
+    workingDirectory: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
 
 - task: CacheBeta@0 # speed up builds by caching node_modules folder
   inputs:
