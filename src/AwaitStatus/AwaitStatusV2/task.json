@@ -13,7 +13,7 @@
     "version": {
         "Major": 2,
         "Minor": 0,
-        "Patch": 0
+        "Patch": 1
     },
     "groups": [
         {
@@ -102,11 +102,8 @@
     ],
     "instanceNameFormat": "Await status on $(TargetEnvironment)",
     "execution": {
-        "PowerShell3": {
-            "target": "AwaitStatus.ps1"
+        "Node10": {
+            "target": "AwaitStatus.js"
         }
-    },
-    "messages": {
-        "PS_TM_ParseSessionVariablesValueNotFound": "Parsing operation failed. ErrorMessage: 'value not found', Token: '{0}', CurrentKey: '{1}'"
     }
 }

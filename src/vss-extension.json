@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "epinova-dxp-deploy-extension",
     "publisher": "epinova-sweden",
-    "version": "1.15.27",
+    "version": "1.15.28",
     "name": "Epinova DXP deployment",
     "description": "Tasks to deploy NuGet package to Optimizely (formerly known as Episerver) DXP with DXP API (Former: DXC). Using EpiCloud module.",
     "public": true,
@@ -21,6 +21,7 @@
         "Release",
         "Epinova",
         "Episerver",
+        "Optimizely",
         "Deploy",
         "DXC",
         "DXP",
@@ -32,7 +33,10 @@
         "Release",
         "Azure Pipelines",
         "Episerver Content Cloud",
-        "Episerver Commerce Cloud"
+        "Optimizely Content Cloud",
+        "Episerver Commerce Cloud",
+        "Optimizely Commerce Cloud",
+        "EpiCloud"
     ],
     "branding":{
         "color": "rgb(255,255,255)",
