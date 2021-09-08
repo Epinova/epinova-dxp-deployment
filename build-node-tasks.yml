@@ -8,3 +8,8 @@ steps:
   parameters:
     extensionRoot: '$(System.DefaultWorkingDirectory)\src'
     taskName: 'ExpectStatus\ExpectStatusV2'
+
+- template: build-node-task.yml
+  parameters:
+    extensionRoot: '$(System.DefaultWorkingDirectory)\src'
+    taskName: 'ExportDb\ExportDbV2'

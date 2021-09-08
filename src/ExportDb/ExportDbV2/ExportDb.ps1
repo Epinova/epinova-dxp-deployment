@@ -1,16 +1,22 @@
-Trace-VstsEnteringInvocation $MyInvocation
-$global:ErrorActionPreference = 'Continue'
-$global:__vstsNoOverrideVerbose = $true
-
+[CmdletBinding()]
+Param(
+    $ClientKey,
+    $ClientSecret,
+    $ProjectId, 
+    $Environment,
+    $DatabaseName,
+    $RetentionHours,
+    $Timeout
+)
 try {
     # Get all inputs for the task
-    $clientKey = Get-VstsInput -Name "ClientKey" -Require -ErrorAction "Stop"
-    $clientSecret = Get-VstsInput -Name "ClientSecret" -Require -ErrorAction "Stop"
-    $projectId = Get-VstsInput -Name "ProjectId" -Require -ErrorAction "Stop"
-    $environment = Get-VstsInput -Name "Environment" -Require -ErrorAction "Stop"
-    $databaseName = Get-VstsInput -Name "DatabaseName" -Require -ErrorAction "Stop"
-    $retentionHours = Get-VstsInput -Name "RetentionHours" -AsInt -Require -ErrorAction "Stop"
-    $timeout = Get-VstsInput -Name "Timeout" -AsInt -Require -ErrorAction "Stop"
+    $clientKey = $ClientKey
+    $clientSecret = $ClientSecret
+    $projectId = $ProjectId
+    $environment = $Environment
+    $databaseName = $DatabaseName
+    $retentionHours = $RetentionHours
+    $timeout = $Timeout
 
     # 30 min timeout
     ####################################################################################
@@ -26,14 +32,11 @@ try {
     Write-Host "RetentionHours:     $retentionHours"
     Write-Host "Timeout:            $timeout"
 
-    . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
+    . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
 
-    # TEMP code
-    Install-AzureStorage
-    
-    if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
-        $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
-    }
+    Install-AzStorage
+     
+    Mount-PsModulesPath
 
     Initialize-EpiCload
 
@@ -97,7 +100,3 @@ catch {
     Write-Verbose "Exception caught from task: $($_.Exception.ToString())"
     throw
 }
-finally {
-    Trace-VstsLeavingInvocation $MyInvocation
-}
-
