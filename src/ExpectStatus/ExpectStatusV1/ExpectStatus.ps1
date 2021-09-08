@@ -25,10 +25,9 @@ try {
 
     . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
 
-    # TEMP code
-    Install-AzureStorage
+    Install-AzStorage
      
-    Mount-PsModulesPath
+    Mount-WindowsPsModulesPath
     #if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
     #    $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
     #}

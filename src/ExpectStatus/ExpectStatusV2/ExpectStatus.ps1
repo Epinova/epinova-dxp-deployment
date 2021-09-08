@@ -46,7 +46,10 @@ try {
 
     # . $deployUtilScript
 
-    $deployUtilScript = Join-Path -Path $PSScriptRoot -ChildPath "ps_modules"
+    $deployUtilScript = $PSScriptRoot
+    if ($IsWindows) {
+        $deployUtilScript = Join-Path -Path $deployUtilScript -ChildPath "ps_modules"
+    }
     $deployUtilScript = Join-Path -Path $deployUtilScript -ChildPath "EpinovaDxpDeploymentUtil.ps1"
     . $deployUtilScript
 
