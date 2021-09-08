@@ -44,18 +44,18 @@ steps:
     workingDir: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
     customCommand: 'run build'
 
-- task: Npm@1
-  displayName: '${{parameters.taskName}}: npm run test'
-  inputs:
-    command: 'custom'
-    workingDir: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
-    customCommand: 'run test'
+# - task: Npm@1
+#   displayName: '${{parameters.taskName}}: npm run test'
+#   inputs:
+#     command: 'custom'
+#     workingDir: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
+#     customCommand: 'run test'
 
-- task: PublishTestResults@2
-  displayName: '${{parameters.taskName}}: Publish Test Results'
-  inputs:
-    cwd: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
-    testRunTitle: '${{parameters.taskName}}'
+# - task: PublishTestResults@2
+#   displayName: '${{parameters.taskName}}: Publish Test Results'
+#   inputs:
+#     cwd: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
+#     testRunTitle: '${{parameters.taskName}}'
 
 - task: Npm@1
   displayName: '${{parameters.taskName}}: npm run package'
