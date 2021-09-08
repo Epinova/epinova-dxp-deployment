@@ -40,10 +40,7 @@ steps:
       targetType: filePath
       filePath: ./BuildScripts/CopyScripts.ps1
 
-  - template: build-node-task.yml
-    parameters:
-      extensionRoot: '$(System.DefaultWorkingDirectory)\src'
-      taskName: 'ExpectStatus\ExpectStatusV2'
+  - template: build-node-tasks.yml
 
   - task: Npm@1
     displayName: 'npm install extension'
@@ -55,11 +52,6 @@ steps:
     displayName: 'Install Tfx Tool'
     inputs:
       version: 'v0.8.x'
-
-  # - task: ms-devlabs.vsts-developer-tools-build-tasks.tfx-installer-build-task.TfxInstaller@3
-  #   displayName: 'Use Node CLI for Azure DevOps (tfx-cli): v0.7.x'
-  #   inputs:
-  #     version: v0.7.x      
 
   - task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageAzureDevOpsExtension@3
     displayName: 'Package Extension: src'
@@ -75,13 +67,3 @@ steps:
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
-
-  # - task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishExtension@3
-  #   displayName: 'Publish Extension'
-  #   inputs:
-  #     connectedServiceName: 'Marketplace'
-  #     fileType: vsix
-  #     vsixFile: '$(Build.ArtifactStagingDirectory)\$(ExtensionFileName)$(ExtensionFileVersion).vsix'
-  #     extensionTag: ''
-  #     updateTasksVersion: false
-  #     extensionVisibility: '$(ExtensionVisibility)'
