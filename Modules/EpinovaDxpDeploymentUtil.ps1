@@ -516,7 +516,8 @@ function Install-AzStorage {
         Install-AzStorage
     #>
     if ($null -eq (Get-Module -Name "Az.Storage")) {
-        Install-Module -Name Az.Storage -Scope CurrentUser -Repository PSGallery -MinimumVersion 3.7.0 -Force -AllowClobber
+        Import-Module -Name "Az.Storage" -Verbose
+        #Install-Module -Name Az.Storage -Scope CurrentUser -Repository PSGallery -MinimumVersion 3.7.0 -Force -AllowClobber
     }
 }
 
@@ -533,30 +534,8 @@ function Mount-PsModulesPath {
     #>
 
     $taskModulePath = $PSScriptRoot
-    # if ($IsWindows) {
-    #     $taskModulePath = Join-Path -Path $taskModulePath -ChildPath "ps_modules"
-    # }
     if (-not ($env:PSModulePath.Contains($taskModulePath))) {
         $env:PSModulePath = $env:PSModulePath + "$([System.IO.Path]::PathSeparator)$taskModulePath"
         Write-Host "Added $taskModulePath to env:PSModulePath" 
     }
 }
-
-# function Mount-WindowsPsModulesPath {
-#     <#
-#     .SYNOPSIS
-#         Add task ps_modules folder to env:PSModulePath.
-
-#     .DESCRIPTION
-#         Add task ps_modules folder to env:PSModulePath.
-
-#     .EXAMPLE
-#         Mount-ModulePath
-#     #>
-
-#     $taskModulePath = Join-Path -Path $PSScriptRoot -ChildPath "ps_modules"
-#     if (-not ($env:PSModulePath.Contains($taskModulePath))) {
-#         $env:PSModulePath = $env:PSModulePath + "$([System.IO.Path]::PathSeparator)$taskModulePath"
-#         Write-Host "Added $taskModulePath to env:PSModulePath" 
-#     }
-# }
