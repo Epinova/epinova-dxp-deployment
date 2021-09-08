@@ -76,12 +76,12 @@ steps:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
 
-  - task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishExtension@3
-    displayName: 'Publish Extension'
-    inputs:
-      connectedServiceName: 'Marketplace'
-      fileType: vsix
-      vsixFile: '$(Build.ArtifactStagingDirectory)\$(ExtensionFileName)$(ExtensionFileVersion).vsix'
-      extensionTag: ''
-      updateTasksVersion: false
-      extensionVisibility: '$(ExtensionVisibility)'
+  # - task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishExtension@3
+  #   displayName: 'Publish Extension'
+  #   inputs:
+  #     connectedServiceName: 'Marketplace'
+  #     fileType: vsix
+  #     vsixFile: '$(Build.ArtifactStagingDirectory)\$(ExtensionFileName)$(ExtensionFileVersion).vsix'
+  #     extensionTag: ''
+  #     updateTasksVersion: false
+  #     extensionVisibility: '$(ExtensionVisibility)'
