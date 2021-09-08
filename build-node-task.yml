@@ -47,12 +47,12 @@ steps:
     customCommand: 'run package'
 
 - task: PowerShell@2
-  displayName: 'Delete unwanted folders'
+  displayName: '${{parameters.taskName}}: Delete unwanted folders'
   inputs:
     targetType: 'inline'
     script: |
-      Remove-Item "${{parameters.extensionRoot}}\\${{parameters.taskName}}\dist"
-      Remove-Item "${{parameters.extensionRoot}}\\${{parameters.taskName}}\src"
-      Remove-Item "${{parameters.extensionRoot}}\\${{parameters.taskName}}\test"
+      Remove-Item "${{parameters.extensionRoot}}\\${{parameters.taskName}}\dist -Force -Recurse"
+      Remove-Item "${{parameters.extensionRoot}}\\${{parameters.taskName}}\src -Force -Recurse"
+      Remove-Item "${{parameters.extensionRoot}}\\${{parameters.taskName}}\test -Force -Recurse"
     workingDirectory: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
 
