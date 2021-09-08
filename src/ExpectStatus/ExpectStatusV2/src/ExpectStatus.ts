@@ -40,7 +40,16 @@ export async function run() {
         "-Timeout", Timeout
         ];
 
-        logInfo(`${executable} ${args.join(" ")}`);
+        var argsShow = [__dirname + "\\ExpectStatus.ps1",
+        "-ClientKey", ClientKey,
+        "-ClientSecret", "***",
+        "-ProjectId", ProjectId,
+        "-TargetEnvironment", TargetEnvironment,
+        "-ExpectedStatus", ExpectedStatus,
+        "-Timeout", Timeout
+        ];
+
+        logInfo(`${executable} ${argsShow.join(" ")}`);
 
         var spawn = require("child_process").spawn, child;
         child = spawn(executable, args);
