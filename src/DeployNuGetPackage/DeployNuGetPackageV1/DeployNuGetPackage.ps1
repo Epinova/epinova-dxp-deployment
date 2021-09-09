@@ -32,17 +32,14 @@ try {
     Write-Host "Timeout:            $timeout"
     Write-Host "ZeroDowntimeMode:   $zeroDowntimeMode"
 
-    . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
+    . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
 
-    # TEMP code
-    Install-AzureStorage
+    Install-AzStorage
+     
+    Mount-PsModulesPath
 
     if (-not ($env:PSModulePath.Contains("C:\Modules\azurerm_6.7.0"))){
         $env:PSModulePath = "C:\Modules\azurerm_6.7.0;" + $env:PSModulePath   
-    }
-
-    if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
-        $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
     }
 
     Initialize-EpiCload
