@@ -181,7 +181,10 @@
             "path": "CompleteDeploy/CompleteDeployV2"
         },
         {
-            "path": "DeployTo"
+            "path": "DeployTo/DeployToV1"
+        },
+        {
+            "path": "DeployTo/DeployToV2"
         },
         {
             "path": "DeploySmoothTo"
