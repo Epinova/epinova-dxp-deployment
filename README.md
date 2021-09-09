@@ -1,5 +1,5 @@
 # Epinova DXP Deployment
-Bucket of release tasks helping you to deploy to all environments in Optimizely (formerly known as Episerver) DXP (a.k.a DXC) from Azure DevOps. The release tasks use the [Deployment API](https://world.episerver.com/digital-experience-cloud-service/deploying/episerver-digital-experience-cloud-deployment-api/). There are some developers out there that want/need help with deployment to the Optimizely (formerly known as Episerver) DXP enviroment. And that is why this deployment extension is created. 
+Bucket of release tasks helping you to deploy to all environments in Optimizely (formerly known as Episerver) DXP (a.k.a DXC) from Azure DevOps. The release tasks use the [Deployment API](https://world.optimizely.com/documentation/developer-guides/digital-experience-platform/deploying/optimizely-digital-experience-cloud-deployment-api/). There are some developers out there that want/need help with deployment to the Optimizely (formerly known as Episerver) DXP enviroment. And that is why this deployment extension is created. 
 
 ## Install 
 [How to install Epinova DXP Deployment extension](documentation/InstallDxpExtension.md)  
@@ -28,7 +28,7 @@ Also support Zero Downtime Deployment (aka ZDD or Smooth deployment).
 ### Deploy Smooth To (Optimizely DXP) ###
 <span style="color:red">Deprecated! You should stop using this task DeploySmoothTo. You should change to DeployTo.</span>
 Do the same thing as the "Deploy to" task. But this has support for Smooth deployment (Zero downtime deployment).  
-Since this function is still in [closed beta](https://world.episerver.com/service-and-product-lifecycles/#CloudServicesLifecycle). There is not everybody that can use this feature yet. That is why this is like a copy past of the "Deploy To" task but with smooth deployment support.  
+Since this function is still in [closed beta](https://world.optimizely.com/service-and-product-lifecycles/#CloudServicesLifecycle). There is not everybody that can use this feature yet. That is why this is like a copy past of the "Deploy To" task but with smooth deployment support.  
 When this feature is public for all DXP users, we will implement this feature on the "Deploy to" task.  
 [Deploy smooth to documentation](documentation/DeploySmoothTo.md)  
 

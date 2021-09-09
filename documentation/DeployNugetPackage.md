@@ -1,6 +1,6 @@
 # Deploy nuget package (Optimizely DXP) #
 Take a nuget package from your drop folder in Azure DevOps and upload it to your Optimizely (formerly known as Episerver) DXP project and start a deployment to the targeted environment.  
-Also support the DirectDeploy function. [Introducing "Direct Deploy", a quicker way to deploy to integration using the deployment API!](https://world.episerver.com/blogs/anders-wahlqvist/dates/2021/3/introducing-direct-deploy-a-quicker-way-to-deploy-to-dxp/)
+Also support the DirectDeploy function. [Introducing "Direct Deploy", a quicker way to deploy to integration using the deployment API!](https://world.optimizely.com/blogs/anders-wahlqvist/dates/2021/3/introducing-direct-deploy-a-quicker-way-to-deploy-to-dxp/)
 
 [<= Back](../README.md)
 
@@ -65,7 +65,7 @@ Specify if you want to use a maintenance page during the deploy.
 
 #### Zero Downtime Mode
 **[pickList]** - **required**  
-The type of smooth deployment you want to use. [More information about zero downtime mode](https://world.episerver.com/documentation/developer-guides/digital-experience-platform/deploying/deployment-process/smooth-deploy/)  
+The type of smooth deployment you want to use. [More information about zero downtime mode](https://world.optimizely.com/documentation/developer-guides/digital-experience-platform/deploying/deployment-process/smooth-deploy/)  
 If this parameter is set to empty, no zero downtime deployment will be made. It will be a regular deployment.   
 **Example:** `ReadOnly`  
 **Default value:** ``  

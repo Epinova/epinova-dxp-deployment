@@ -32,12 +32,12 @@ The following variables need to exist.
 ## Gather variable information
 And this is how you get the information that you provide as values to each variable.
 ### DXP.ProjectId
-Go to https://paas.episerver.net and login. Click on the project that you want to create a DXP variable group for. On the project page you should click on the tab “API”.  
+Go to https://paasportal.episerver.net/ and login. Click on the project that you want to create a DXP variable group for. On the project page you should click on the tab “API”.  
 ![Project Id](Images/CreateVariableGroup/ApiTab.png)  
 In the section "Deployment API Credentials" you can see that the "Project Id:" is specified. Copy the GUID to your variable.  
 
 ### ClientKey, ClientSecret
-Go back to https://paas.episerver.net and click on the link to the project that you setup the deploy for. On the project page you should click on the tab “API”.  
+Go back to https://paasportal.episerver.net/ and click on the link to the project that you setup the deploy for. On the project page you should click on the tab “API”.  
 ![Generate API credentials](Images/CreateVariableGroup/GenAPICredentials.png)  
 Click on the “Add API Credentials” and give it a name. Select all environments (Integration, Preproduction, Production). After clicked save you will receive a ClientKey and ClientSecret that you can copy to your variables. These variables can now be used to interact with all environments.  
 
@@ -59,7 +59,7 @@ So from that first URL you can see that our project URL name is `epinova012`. An
 Later during the development you will order/change hostnames. Then these values in the variable group should be updated. In my example above we did not use HTTPS. That is also one thing that could change during development.
 
 There is also a hostname tab in the paas portal that could help you with some information.  
-To get these URLs you go back to https://paas.episerver.net. And select the project that you setup the deploy for. On the project page you should click on the tab “Hostnames”.  
+To get these URLs you go back to https://paasportal.episerver.net/. And select the project that you setup the deploy for. On the project page you should click on the tab “Hostnames”.  
 ![PAAS portal hostnames](Images/CreateVariableGroup/PassProjectHostnames.png)  
  
 ### UrlSuffix
