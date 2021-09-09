@@ -169,7 +169,10 @@
     ],
     "files": [
         {
-            "path": "DeployNuGetPackage"
+            "path": "DeployNuGetPackage/DeployNuGetPackageV1"
+        },
+        {
+            "path": "DeployNuGetPackage/DeployNuGetPackageV2"
         },
         {
             "path": "SmokeTestIfFailReset"
