@@ -32,7 +32,7 @@
             "isExpanded": false
         }
     ],
-    "releaseNotes": "Implement Zero Downtime Deployment.",
+    "releaseNotes": "Cross platform support",
     "minimumAgentVersion": "2.134.0",
     "inputs": [
         {

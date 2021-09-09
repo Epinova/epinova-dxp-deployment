@@ -1,8 +1,8 @@
 {
     "id": "908f312f-0aad-46db-8681-042dbf1fd304",
     "name": "DxpExpectStatus",
-    "friendlyName": "Expect status (Episerver DXP)",
-    "description": "Expect status on specified environment. (Episerver DXP, former DXC)",
+    "friendlyName": "Expect status (Optimizely DXP)",
+    "description": "Expect status on specified environment. (Optimizely DXP, former Episerver DXC)",
     "helpUrl": "https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/ExpectStatus.md",
     "helpMarkDown": "[Extension page](https://marketplace.visualstudio.com/items?itemName=epinova-sweden.epinova-dxp-deploy-extension)[Learn more about this task](https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/ExpectStatus.md)",
     "category": "Deploy",

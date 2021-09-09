@@ -1,5 +1,5 @@
-# Complete deploy (Episerver DXP)
-Both "Deploy nuget package (Episerver DXP)" and "Move deploy (Episerver DXP)" tasks deploy a package to a environment. That will deploy the package to a slot. The task "Complete deploy (Episerver DXP)" will complete the deploy and move the package from slot to the real environment.  
+# Complete deploy (Optimizely DXP)
+Both "Deploy nuget package (Optimizely DXP)" and "Move deploy (Optimizely DXP)" tasks deploy a package to a environment. That will deploy the package to a slot. The task "Complete deploy (Optimizely DXP)" will complete the deploy and move the package from slot to the real environment.  
 
 [<= Back](../README.md)
 

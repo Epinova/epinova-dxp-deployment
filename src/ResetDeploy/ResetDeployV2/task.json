@@ -32,7 +32,7 @@
             "isExpanded": false
         }
     ],
-    "releaseNotes": "Using EpinovaDxpDeploymentUtil.",
+    "releaseNotes": "Cross platform support",
     "minimumAgentVersion": "2.134.0",
     "inputs": [
         {

@@ -131,16 +131,16 @@ function Get-DxpDateTimeStamp {
 function Invoke-DxpProgress {
     <#
     .SYNOPSIS
-        Write the progress of a operation in the Episerver DXP environment to the host.
+        Write the progress of a operation in the Optimizely (formerly known as Episerver) DXP environment to the host.
 
     .DESCRIPTION
-        Write the progress of a operation in the Episerver DXP environment to the host.
+        Write the progress of a operation in the Optimizely (formerly known as Episerver) DXP environment to the host.
 
     .PARAMETER ProjectId
-        Project id for the project in Episerver DXP.
+        Project id for the project in Optimizely (formerly known as Episerver) DXP.
 
     .PARAMETER DeploymentId
-        Deployment id for the specific deployment in Episerver DXP that you want to show the progress for.
+        Deployment id for the specific deployment in Optimizely (formerly known as Episerver) DXP that you want to show the progress for.
 
     .PARAMETER PercentComplete
         The initialized percentComplete value that we got from the invoke of the operation.
@@ -277,7 +277,7 @@ function Get-DxpEnvironmentDeployments{
         Get the latest deployments for the specified environment.
 
     .PARAMETER ProjectId
-        Project id for the project in Episerver DXP.
+        Project id for the project in Optimizely (formerly known as Episerver) DXP.
 
     .PARAMETER TargetEnvironment
         The target environment that should match the deployment.
@@ -318,7 +318,7 @@ function Get-DxpLatestEnvironmentDeployment{
         Get the latest deployment for the specified environment.
 
     .PARAMETER ProjectId
-        Project id for the project in Episerver DXP.
+        Project id for the project in Optimizely (formerly known as Episerver) DXP.
 
     .PARAMETER TargetEnvironment
         The target environment that should match the deployment.
@@ -370,7 +370,7 @@ function Get-DxpAwaitingEnvironmentDeployment{
         Get the latest deployment in status 'AwaitingVerification' for the specified environment.
 
     .PARAMETER ProjectId
-        Project id for the project in Episerver DXP.
+        Project id for the project in Optimizely (formerly known as Episerver) DXP.
 
     .PARAMETER TargetEnvironment
         The target environment that should match the deployment.
@@ -411,7 +411,7 @@ function Invoke-DxpExportProgress {
         Start a export of a database from DXP.
 
     .PARAMETER ProjectId
-        Project id for the project in Episerver DXP.
+        Project id for the project in Optimizely (formerly known as Episerver) DXP.
 
     .PARAMETER ExportId
         .

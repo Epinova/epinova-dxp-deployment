@@ -567,16 +567,16 @@ function Connect-DxpEpiCloud{
 function Invoke-DxpProgress {
     <#
     .SYNOPSIS
-        Write the progress of a operation in the Episerver DXP environment to the host.
+        Write the progress of a operation in the Optimizely (formerly known as Episerver) DXP environment to the host.
 
     .DESCRIPTION
-        Write the progress of a operation in the Episerver DXP environment to the host.
+        Write the progress of a operation in the Optimizely (formerly known as Episerver) DXP environment to the host.
 
     .PARAMETER projectId
-        Project id for the project in Episerver DXP.
+        Project id for the project in Optimizely (formerly known as Episerver) DXP.
 
     .PARAMETER deploymentId
-        Deployment id for the specific deployment in Episerver DXP that you want to show the progress for.
+        Deployment id for the specific deployment in Optimizely (formerly known as Episerver) DXP that you want to show the progress for.
 
     .PARAMETER percentComplete
         The initialized percentComplete value that we got from the invoke of the operation.
@@ -964,7 +964,7 @@ function Invoke-DxpBlobsDownload{
         The type of container you want to download. 
         AppLogs=Application logs that is created by your application in the specified environment.
         WebLogs=Web logs/IIS logs that is created by your webapp in the specified environment.
-        Blobs or *=The container name where your blobs are stored. At present date (2021-02-02) Episerver/Optimizly have no default or standard name of the blobs container. So the script will try to help you find the right one. If not it will list the containers and you will be able to rerun the script and try which one it is.
+        Blobs or *=The container name where your blobs are stored. At present date (2021-02-02) Optimizely (formerly known as Episerver) have no default or standard name of the blobs container. So the script will try to help you find the right one. If not it will list the containers and you will be able to rerun the script and try which one it is.
 
     .PARAMETER OverwriteExistingFiles
         True/False if the downloaded files should overwite existing files (if exist).

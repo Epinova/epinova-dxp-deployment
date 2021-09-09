@@ -1,4 +1,4 @@
-# Reset deploy (Episerver DXP)
+# Reset deploy (Optimizely DXP)
 Reset a specifed environment if the status for the environment is in status "AwaitingVerification".  
 
 [<= Back](../README.md)

@@ -1,10 +1,10 @@
-# Deploy to (Episerver DXP) #
+# Deploy to (Optimizely DXP) #
 Do the same thing like the "Deploy to =>" button in the portal. It moves the deployed code from one environment to another.  
 
 ## Content sync (syncdown/harmonization)
 Have support for IncludeBlob and IncludeDb so that you can deploy your code and move BLOBs and/or DB if you want.  
-Can also be used for Content syncdown. Example: if you want to make your preproduction environment contain the same content as in production. [More about content syncdown can be read on Episerver world.](https://world.episerver.com/blogs/anders-wahlqvist/dates/2020/4/dxp-deployment-improvements/)  
-_*NOTE 2020-09-30:* At present date the sync can not handle just one database type. It will sync both cms AND commerce database. We tried to just sync the cms database but there is no support for that in the Episerver API. So if you have a cms and commerce database, both databases will sync when if you set SourceApp=cms._  
+Can also be used for Content syncdown. Example: if you want to make your preproduction environment contain the same content as in production. [More about content syncdown can be read on Optimizely (formerly known as Episerver) world.](https://world.episerver.com/blogs/anders-wahlqvist/dates/2020/4/dxp-deployment-improvements/)  
+_*NOTE 2020-09-30:* At present date the sync can not handle just one database type. It will sync both cms AND commerce database. We tried to just sync the cms database but there is no support for that in the Optimizely (formerly known as Episerver) API. So if you have a cms and commerce database, both databases will sync when if you set SourceApp=cms._  
 ## Zero Downtime Deployment aka ZDD (Smooth deployment)
 Support for Smooth deployment (Zero downtime deployment).  
 [More about smooth deploy can be read on Episerver world.](https://world.episerver.com/documentation/developer-guides/digital-experience-platform/deploying/deployment-process/smooth-deploy/)   

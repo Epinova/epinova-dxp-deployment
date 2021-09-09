@@ -1,11 +1,11 @@
-# Episerver DXP content harmonization with Epinova DXP deployment #
-**Harmonize content between Episerver DXP environments from Azure DevOps with Epinova DXP Deployment Extension. Without using a single line of PowerShell.**  
+# Optimizely (formerly known as Episerver) DXP content harmonization with Epinova DXP deployment #
+**Harmonize content between Optimizely (formerly known as Episerver) DXP environments from Azure DevOps with Epinova DXP Deployment Extension. Without using a single line of PowerShell.**  
 ![Content harmonization](Images/ContentHarmonization/Intro_DxpContentSync.jpg)
 
 ## What is Epinova DXP deployment extension? ##
-Epinova DXP deployment extension contains Azure DevOps tasks that abstract the interaction with the Episerver DXP deployment API. Shortly we can say that with Epinova DXP deployment tasks enables you to use the functionality in the Episerver DXP deployment API without having to write any PowerShell.  
+Epinova DXP deployment extension contains Azure DevOps tasks that abstract the interaction with the Optimizely (formerly known as Episerver) DXP deployment API. Shortly we can say that with Epinova DXP deployment tasks enables you to use the functionality in the Optimizely (formerly known as Episerver) DXP deployment API without having to write any PowerShell.  
 
-## How to harmonize content between Episerver DXP environments in Azure DevOps? ##
+## How to harmonize content between Optimizely (formerly known as Episerver) DXP environments in Azure DevOps? ##
 There are two ways that you can set this up. Either you like to use YAML to create a pipeline that copy your content or you like to setup a release pipeline in classic mode. Both ways are supported.  
 It as simple as just using the task “**Content copy**” to solve this.
 

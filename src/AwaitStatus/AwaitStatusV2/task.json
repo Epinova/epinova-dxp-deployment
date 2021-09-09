@@ -1,8 +1,8 @@
 {
     "id": "e1504e83-b561-4513-b504-669af78404a1",
     "name": "DxpAwaitStatus",
-    "friendlyName": "Await status (Episerver DXP)",
-    "description": "Await status to be in AwaitingVerification/Reset/Succeeded. (Episerver DXP, former DXC)",
+    "friendlyName": "Await status (Optimizely DXP)",
+    "description": "Await status to be in AwaitingVerification/Reset/Succeeded. (Optimizely DXP, former Episerver DXC)",
     "helpUrl": "https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/AwaitStatus.md",
     "helpMarkDown": "[Extension page](https://marketplace.visualstudio.com/items?itemName=epinova-sweden.epinova-dxp-deploy-extension)[Learn more about this task](https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/AwaitStatus.md)",
     "category": "Deploy",
@@ -32,7 +32,7 @@
             "isExpanded": false
         }
     ],
-    "releaseNotes": "Using EpinovaDxpDeploymentUtil.",
+    "releaseNotes": "Cross platform support",
     "minimumAgentVersion": "2.134.0",
     "inputs": [
         {

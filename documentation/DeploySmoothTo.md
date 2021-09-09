@@ -1,4 +1,4 @@
-# Deploy smooth to (Episerver DXP) #
+# Deploy smooth to (Optimizely DXP) #
 
 <span style="color:red">
 Deprecated!   

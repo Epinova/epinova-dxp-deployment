@@ -42,12 +42,12 @@ Go back to https://paas.episerver.net and click on the link to the project that 
 Click on the “Add API Credentials” and give it a name. Select all environments (Integration, Preproduction, Production). After clicked save you will receive a ClientKey and ClientSecret that you can copy to your variables. These variables can now be used to interact with all environments.  
 
 ### SlotUrl, Url
-When you do a deploy to an environment in Episerver DXC the package will be deployed to a slot. That slot can be verified by you and/or the customer. If everything looks ok and your verification tests passes, the package can be deployed to the environment. The SlotUrl variable is the URL to the slot during deployment. And the URL is the URL to the environment that you deploy to.  
+When you do a deploy to an environment in Optimizely (formerly known as Episerver) DXC the package will be deployed to a slot. That slot can be verified by you and/or the customer. If everything looks ok and your verification tests passes, the package can be deployed to the environment. The SlotUrl variable is the URL to the slot during deployment. And the URL is the URL to the environment that you deploy to.  
 **Example:**  
 SlotUrl: `https://epinova012prod-slot.dxcloud.episerver.net/`  
 Url: `https://www.epinova.com/`  
 
-When the project where ordered from Episerver we got the URL to the integration invironment: `epinova012inte.dxcloud.episerver.net`. And there is a simple pattern that we can use to figure out the rest of all URLs. So from the information a got from Episerver these is our URLS:  
+When the project where ordered from Optimizely (formerly known as Episerver) we got the URL to the integration invironment: `epinova012inte.dxcloud.episerver.net`. And there is a simple pattern that we can use to figure out the rest of all URLs. So from the information a got from Optimizely (formerly known as Episerver) these is our URLS:  
 Integration-slot:   `http://epinova012inte-slot.dxcloud.episerver.net`  
 Integration:        `http://epinova012inte.dxcloud.episerver.net`  
 Preproduction-slot: `http://epinova012prep-slot.dxcloud.episerver.net`  

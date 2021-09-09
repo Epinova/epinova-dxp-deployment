@@ -1,4 +1,4 @@
-# Expect status (Episerver DXP)
+# Expect status (Optimizely DXP)
 Task that check the status for an environment. if environment is not in the expected status the task will fail.  
 
 [<= Back](../README.md)
