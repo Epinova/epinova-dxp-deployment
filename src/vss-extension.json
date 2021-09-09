@@ -175,7 +175,10 @@
             "path": "SmokeTestIfFailReset"
         },
         {
-            "path": "CompleteDeploy"
+            "path": "CompleteDeploy/CompleteDeployV1"
+        },
+        {
+            "path": "CompleteDeploy/CompleteDeployV2"
         },
         {
             "path": "DeployTo"
