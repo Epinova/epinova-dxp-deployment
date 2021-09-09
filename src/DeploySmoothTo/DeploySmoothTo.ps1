@@ -35,16 +35,14 @@ try {
     Write-Host "IncludeDb:          $includeDb"
     Write-Host "ZeroDowntimeMode:   $zeroDowntimeMode"
 
-    . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
 
     Write-Output "##vso[task.logissue type=warning;] Deprecated! You should stop using this task DeploySmoothTo. You should change to DeployTo."
 
-    # TEMP code
-    Install-AzureStorage
-        
-    if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
-        $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
-    }
+    . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
+
+    Install-AzStorage
+     
+    Mount-PsModulesPath
 
     Initialize-EpiCload
 
