@@ -26,14 +26,11 @@ try {
     Write-Host "IncludeBlob:        $includeBlob"
     Write-Host "IncludeDb:          $includeDb"
 
-    . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
+    . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
 
-    # TEMP code
-    Install-AzureStorage
-        
-    if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
-        $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
-    }
+    Install-AzStorage
+     
+    Mount-PsModulesPath
 
     Initialize-EpiCload
 

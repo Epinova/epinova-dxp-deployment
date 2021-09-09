@@ -11,9 +11,9 @@
     ],
     "author": "Ove Lartelius",
     "version": {
-        "Major": 1,
+        "Major": 2,
         "Minor": 0,
-        "Patch": 21
+        "Patch": 0
     },
     "groups": [
         {
@@ -121,11 +121,8 @@
     ],
     "instanceNameFormat": "Content copy $(Environment)",
     "execution": {
-        "PowerShell3": {
-            "target": "ContentCopy.ps1"
+        "Node10": {
+            "target": "ContentCopy.js"
         }
-    },
-    "messages": {
-        "PS_TM_ParseSessionVariablesValueNotFound": "Parsing operation failed. ErrorMessage: 'value not found', Token: '{0}', CurrentKey: '{1}'"
     }
 }

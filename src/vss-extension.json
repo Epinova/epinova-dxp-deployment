@@ -208,7 +208,10 @@
             "path": "ExpectStatus/ExpectStatusV2"
         },
         {
-            "path": "ContentCopy"
+            "path": "ContentCopy/ContentCopyV1"
+        },
+        {
+            "path": "ContentCopy/ContentCopyV2"
         },
         {
             "path": "node_modules/vss-web-extension-sdk/lib",
