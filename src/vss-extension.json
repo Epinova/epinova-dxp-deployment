@@ -193,7 +193,10 @@
             "path": "DeploySmoothTo"
         },
         {
-            "path": "ResetDeploy"
+            "path": "ResetDeploy/ResetDeployV1"
+        },
+        {
+            "path": "ResetDeploy/ResetDeployV2"
         },
         {
             "path": "ExportDb/ExportDbV1"

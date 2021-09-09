@@ -33,3 +33,8 @@ steps:
   parameters:
     extensionRoot: '$(System.DefaultWorkingDirectory)\src'
     taskName: 'ExportDb\ExportDbV2'
+
+- template: build-node-task.yml
+  parameters:
+    extensionRoot: '$(System.DefaultWorkingDirectory)\src'
+    taskName: 'ResetDeploy\ResetDeployV2'
