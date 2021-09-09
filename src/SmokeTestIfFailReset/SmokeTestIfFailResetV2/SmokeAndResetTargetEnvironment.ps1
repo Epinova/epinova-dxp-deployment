@@ -1,24 +1,48 @@
-Trace-VstsEnteringInvocation $MyInvocation
-$global:ErrorActionPreference = 'Continue'
-$global:__vstsNoOverrideVerbose = $true
+[CmdletBinding()]
+Param(
+    $ClientKey,
+    $ClientSecret,
+    $ProjectId, 
+    $TargetEnvironment,
+    $Urls,
+    [bool] $ResetOnFail,
+    [int] $SleepBeforeStart,
+    [int] $NumberOfRetries,
+    [int] $SleepBeforeRetry,
+    [int] $Timeout,
+    $ErrorActionPreference
+)
 
 try {
     # Get all inputs for the task
-    $clientKey = Get-VstsInput -Name "ClientKey" -Require -ErrorAction "Stop"
-    $clientSecret = Get-VstsInput -Name "ClientSecret" -Require -ErrorAction "Stop"
-    $projectId = Get-VstsInput -Name "ProjectId" -Require -ErrorAction "Stop"
-    $targetEnvironment = Get-VstsInput -Name "TargetEnvironment" -Require -ErrorAction "Stop"
-    $urls = Get-VstsInput -Name "Urls" -Require -ErrorAction "Stop"
-    $resetOnFail = Get-VstsInput -Name "ResetOnFail" -AsBool
-    $sleepBeforeStart = Get-VstsInput -Name "SleepBeforeStart" -AsInt -Require -ErrorAction "Stop"
-    $retries = Get-VstsInput -Name "NumberOfRetries" -AsInt -Require -ErrorAction "Stop"
-    $sleepBeforeRetry = Get-VstsInput -Name "SleepBeforeRetry" -AsInt -Require -ErrorAction "Stop"
-    #$headers = Get-VstsInput -Name "Headers"
-    $timeout = Get-VstsInput -Name "Timeout" -AsInt -Require -ErrorAction "Stop"
+    $clientKey = $ClientKey
+    $clientSecret = $ClientSecret
+    $projectId = $ProjectId
+    $targetEnvironment = $TargetEnvironment
+    $urls = $Urls
+    $resetOnFail = $ResetOnFail
+    $sleepBeforeStart = $SleepBeforeStart
+    $retries = $NumberOfRetries
+    $sleepBeforeRetry = $SleepBeforeRetry
+    $timeout = $Timeout
+    $errorAction = $ErrorActionPreference
+    # $clientKey = Get-VstsInput -Name "ClientKey" -Require -ErrorAction "Stop"
+    # $clientSecret = Get-VstsInput -Name "ClientSecret" -Require -ErrorAction "Stop"
+    # $projectId = Get-VstsInput -Name "ProjectId" -Require -ErrorAction "Stop"
+    # $targetEnvironment = Get-VstsInput -Name "TargetEnvironment" -Require -ErrorAction "Stop"
+    # $urls = Get-VstsInput -Name "Urls" -Require -ErrorAction "Stop"
+    # $resetOnFail = Get-VstsInput -Name "ResetOnFail" -AsBool
+    # $sleepBeforeStart = Get-VstsInput -Name "SleepBeforeStart" -AsInt -Require -ErrorAction "Stop"
+    # $retries = Get-VstsInput -Name "NumberOfRetries" -AsInt -Require -ErrorAction "Stop"
+    # $sleepBeforeRetry = Get-VstsInput -Name "SleepBeforeRetry" -AsInt -Require -ErrorAction "Stop"
+    # #$headers = Get-VstsInput -Name "Headers"
+    # $timeout = Get-VstsInput -Name "Timeout" -AsInt -Require -ErrorAction "Stop"
 
-    $errorAction = Get-VstsInput -Name "ErrorActionPreference" -Require -ErrorAction "Stop"
+    # $errorAction = Get-VstsInput -Name "ErrorActionPreference" -Require -ErrorAction "Stop"
     $global:ErrorActionPreference = $errorAction
     ####################################################################################
+
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
     Write-Host "Inputs:"
     Write-Host "ClientKey:          $clientKey"
@@ -35,17 +59,11 @@ try {
 
     Write-Host "ErrorActionPref:    $($global:ErrorActionPreference)"
 
-    $AllProtocols = [System.Net.SecurityProtocolType]'Ssl3,Tls,Tls11,Tls12'
-    [System.Net.ServicePointManager]::SecurityProtocol = $AllProtocols
+    . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
 
-    . "$PSScriptRoot\EpinovaDxpDeploymentUtil.ps1"
-
-    # TEMP code
-    Install-AzureStorage
-        
-    if (-not ($env:PSModulePath.Contains("$PSScriptRoot\ps_modules"))){
-        $env:PSModulePath = "$PSScriptRoot\ps_modules;" + $env:PSModulePath   
-    }
+    Install-AzStorage
+     
+    Mount-PsModulesPath
 
     Write-Host "Start sleep for $($sleepBeforeStart) seconds before we start check URL(s)."
     Start-Sleep $sleepBeforeStart
@@ -184,7 +202,3 @@ catch {
     Write-Verbose "Exception caught from task: $($_.Exception.ToString())"
     throw
 }
-finally {
-    Trace-VstsLeavingInvocation $MyInvocation
-}
-

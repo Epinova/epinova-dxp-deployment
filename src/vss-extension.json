@@ -175,7 +175,10 @@
             "path": "DeployNuGetPackage/DeployNuGetPackageV2"
         },
         {
-            "path": "SmokeTestIfFailReset"
+            "path": "SmokeTestIfFailReset/SmokeTestIfFailResetV1"
+        },
+        {
+            "path": "SmokeTestIfFailReset/SmokeTestIfFailResetV2"
         },
         {
             "path": "CompleteDeploy/CompleteDeployV1"
