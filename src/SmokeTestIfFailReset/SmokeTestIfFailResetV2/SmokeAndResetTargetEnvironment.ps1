@@ -61,7 +61,7 @@ try {
 
     . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
 
-    Install-AzStorage
+    #Install-AzStorage
      
     Mount-PsModulesPath
 
