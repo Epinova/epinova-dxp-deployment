@@ -74,7 +74,7 @@ try {
 
     $sourceApps = $sourceApp.Split(",")
 
-    if ($zeroDowntimeMode -eq "") {
+    if ($null -eq $zeroDowntimeMode -or $zeroDowntimeMode -eq "") {
         $startEpiDeploymentSplat = @{
             ProjectId          = $projectId
             SourceEnvironment  = $sourceEnvironment
