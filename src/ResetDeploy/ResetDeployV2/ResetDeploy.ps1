@@ -101,7 +101,5 @@ catch {
     Write-Verbose "Exception caught from task: $($_.Exception.ToString())"
     throw
 }
-finally {
-    Trace-VstsLeavingInvocation $MyInvocation
-}
+
 
