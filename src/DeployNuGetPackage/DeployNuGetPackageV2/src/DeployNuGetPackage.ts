@@ -46,7 +46,7 @@ export async function run() {
         "-DropPath", DropPath,
         "-Timeout", Timeout
         ];
-        if (ZeroDowntimeMode) {
+        if (ZeroDowntimeMode != "undefined") {
             args.push("-ZeroDowntimeMode");
             args.push(ZeroDowntimeMode);
         }
@@ -60,9 +60,12 @@ export async function run() {
         "-DirectDeploy", DirectDeploy,
         "-UseMaintenancePage", UseMaintenancePage,
         "-DropPath", DropPath,
-        "-Timeout", Timeout,
-        "-ZeroDowntimeMode", ZeroDowntimeMode
+        "-Timeout", Timeout
         ];
+        if (ZeroDowntimeMode != "undefined") {
+            argsShow.push("-ZeroDowntimeMode");
+            argsShow.push(ZeroDowntimeMode);
+        }
 
         logInfo(`${executable} ${argsShow.join(" ")}`);
 

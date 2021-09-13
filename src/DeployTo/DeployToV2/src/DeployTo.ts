@@ -48,7 +48,7 @@ export async function run() {
         "-IncludeBlob", "$" + IncludeBlob,
         "-IncludeDb", "$" + IncludeDb
         ];
-        if (ZeroDowntimeMode) {
+        if (ZeroDowntimeMode != "undefined") {
             args.push("-ZeroDowntimeMode");
             args.push(ZeroDowntimeMode);
         }
@@ -63,9 +63,12 @@ export async function run() {
         "-UseMaintenancePage", UseMaintenancePage,
         "-Timeout", Timeout,
         "-IncludeBlob", IncludeBlob,
-        "-IncludeDb", IncludeDb,
-        "-ZeroDowntimeMode", ZeroDowntimeMode
+        "-IncludeDb", IncludeDb
         ];
+        if (ZeroDowntimeMode != "undefined") {
+            args.push("-ZeroDowntimeMode");
+            args.push(ZeroDowntimeMode);
+        }
 
         logInfo(`${executable} ${argsShow.join(" ")}`);
 
