@@ -36,7 +36,7 @@ export async function run() {
         }
 
         // we need to not pass the null param
-        var args = [__dirname + "\\SmokeTestIfFailReset.ps1",
+        var args = [__dirname + "\\SmokeAndResetTargetEnvironment.ps1",
         "-ClientKey", ClientKey,
         "-ClientSecret", ClientSecret,
         "-ProjectId", ProjectId,
@@ -50,7 +50,7 @@ export async function run() {
         "-Timeout", Timeout
         ];
 
-        var argsShow = [__dirname + "\\SmokeTestIfFailReset.ps1",
+        var argsShow = [__dirname + "\\SmokeAndResetTargetEnvironment.ps1",
         "-ClientKey", ClientKey,
         "-ClientSecret", "***",
         "-ProjectId", ProjectId,

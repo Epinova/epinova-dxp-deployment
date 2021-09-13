@@ -13,7 +13,7 @@
     "version": {
         "Major": 2,
         "Minor": 0,
-        "Patch": 2
+        "Patch": 3
     },
     "groups": [
         {
@@ -153,7 +153,7 @@
     "instanceNameFormat": "Smoke test (if error => reset deploy)",
     "execution": {
         "Node10": {
-            "target": "SmokeAndResetTargetEnvironment.js"
+            "target": "SmokeTestIfFailReset.js"
         }
     }
 }
