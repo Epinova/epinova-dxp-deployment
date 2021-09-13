@@ -516,8 +516,8 @@ function Install-AzStorage {
         Install-AzStorage
     #>
     if ($null -eq (Get-Module -Name "Az.Storage")) {
-        Import-Module -Name "Az.Storage" -Verbose
-        #Install-Module -Name Az.Storage -Scope CurrentUser -Repository PSGallery -MinimumVersion 3.7.0 -Force -AllowClobber
+        #Import-Module -Name "Az.Storage" -Verbose
+        Install-Module -Name Az.Storage -Scope CurrentUser -Repository PSGallery -MinimumVersion 3.7.0 -Force -AllowClobber
     }
 }
 
