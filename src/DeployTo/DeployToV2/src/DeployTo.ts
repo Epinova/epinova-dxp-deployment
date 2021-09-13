@@ -46,9 +46,12 @@ export async function run() {
         "-UseMaintenancePage", "$" + UseMaintenancePage,
         "-Timeout", Timeout,
         "-IncludeBlob", "$" + IncludeBlob,
-        "-IncludeDb", "$" + IncludeDb,
-        "-ZeroDowntimeMode", ZeroDowntimeMode
+        "-IncludeDb", "$" + IncludeDb
         ];
+        if (ZeroDowntimeMode) {
+            args.push("-ZeroDowntimeMode");
+            args.push(ZeroDowntimeMode);
+        }
 
         var argsShow = [__dirname + "\\DeployTo.ps1",
         "-ClientKey", ClientKey,

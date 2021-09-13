@@ -44,9 +44,12 @@ export async function run() {
         "-DirectDeploy", "$" + DirectDeploy,
         "-UseMaintenancePage", "$" + UseMaintenancePage,
         "-DropPath", DropPath,
-        "-Timeout", Timeout,
-        "-ZeroDowntimeMode", ZeroDowntimeMode
+        "-Timeout", Timeout
         ];
+        if (ZeroDowntimeMode) {
+            args.push("-ZeroDowntimeMode");
+            args.push(ZeroDowntimeMode);
+        }
 
         var argsShow = [__dirname + "\\DeployNuGetPackage.ps1",
         "-ClientKey", ClientKey,
