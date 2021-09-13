@@ -42,7 +42,7 @@ export async function run() {
         "-ProjectId", ProjectId,
         "-TargetEnvironment", TargetEnvironment,
         "-Urls", Urls,
-        "-ResetOnFail", ResetOnFail,
+        "-ResetOnFail", "$" + ResetOnFail,
         "-SleepBeforeStart", SleepBeforeStart,
         "-NumberOfRetries", NumberOfRetries,
         "-SleepBeforeRetry", SleepBeforeRetry,

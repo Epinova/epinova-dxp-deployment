@@ -41,8 +41,8 @@ export async function run() {
         "-ProjectId", ProjectId,
         "-TargetEnvironment", TargetEnvironment,
         "-SourceApp", SourceApp,
-        "-DirectDeploy", DirectDeploy,
-        "-UseMaintenancePage", UseMaintenancePage,
+        "-DirectDeploy", "$" + DirectDeploy,
+        "-UseMaintenancePage", "$" + UseMaintenancePage,
         "-DropPath", DropPath,
         "-Timeout", Timeout,
         "-ZeroDowntimeMode", ZeroDowntimeMode

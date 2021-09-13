@@ -43,10 +43,10 @@ export async function run() {
         "-SourceEnvironment", SourceEnvironment,
         "-TargetEnvironment", TargetEnvironment,
         "-SourceApp", SourceApp,
-        "-UseMaintenancePage", UseMaintenancePage,
+        "-UseMaintenancePage", "$" + UseMaintenancePage,
         "-Timeout", Timeout,
-        "-IncludeBlob", IncludeBlob,
-        "-IncludeDb", IncludeDb,
+        "-IncludeBlob", "$" + IncludeBlob,
+        "-IncludeDb", "$" + IncludeDb,
         "-ZeroDowntimeMode", ZeroDowntimeMode
         ];
 
