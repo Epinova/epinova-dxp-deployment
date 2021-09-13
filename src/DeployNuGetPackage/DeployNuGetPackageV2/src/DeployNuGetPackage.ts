@@ -46,7 +46,7 @@ export async function run() {
         "-DropPath", DropPath,
         "-Timeout", Timeout
         ];
-        if (ZeroDowntimeMode != "undefined") {
+        if (ZeroDowntimeMode) {
             args.push("-ZeroDowntimeMode");
             args.push(ZeroDowntimeMode);
         }
@@ -62,7 +62,7 @@ export async function run() {
         "-DropPath", DropPath,
         "-Timeout", Timeout
         ];
-        if (ZeroDowntimeMode != "undefined") {
+        if (ZeroDowntimeMode) {
             argsShow.push("-ZeroDowntimeMode");
             argsShow.push(ZeroDowntimeMode);
         }

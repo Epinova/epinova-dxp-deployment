@@ -48,7 +48,7 @@ export async function run() {
         "-IncludeBlob", "$" + IncludeBlob,
         "-IncludeDb", "$" + IncludeDb
         ];
-        if (ZeroDowntimeMode != "undefined") {
+        if (ZeroDowntimeMode) {
             args.push("-ZeroDowntimeMode");
             args.push(ZeroDowntimeMode);
         }
@@ -65,7 +65,7 @@ export async function run() {
         "-IncludeBlob", IncludeBlob,
         "-IncludeDb", IncludeDb
         ];
-        if (ZeroDowntimeMode != "undefined") {
+        if (ZeroDowntimeMode) {
             args.push("-ZeroDowntimeMode");
             args.push(ZeroDowntimeMode);
         }
