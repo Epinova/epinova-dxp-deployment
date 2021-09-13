@@ -36,7 +36,7 @@ try {
 
     Mount-PsModulesPath
 
-    Install-AzStorage
+    #Install-AzStorage
 
     Initialize-EpiCload
     
