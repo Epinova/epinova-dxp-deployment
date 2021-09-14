@@ -5,8 +5,8 @@ Param(
     $ProjectId, 
     $TargetEnvironment,
     $SourceApp,
-    [bool] $DirectDeploy,
-    [bool] $UseMaintenancePage,
+    $DirectDeploy,
+    $UseMaintenancePage,
     $DropPath,
     $Timeout,
     $ZeroDowntimeMode
@@ -24,13 +24,16 @@ try {
     # $dropPath = Get-VstsInput -Name "DropPath" -Require -ErrorAction "Stop"
     # $timeout = Get-VstsInput -Name "Timeout" -AsInt -Require -ErrorAction "Stop"
     # $zeroDowntimeMode = Get-VstsInput -Name "ZeroDowntimeMode"
+
+    #[Boolean]$a = [System.Convert]::ToBoolean($myXMLFileStingValue)
+
     $clientKey = $ClientKey
     $clientSecret = $ClientSecret
     $projectId = $ProjectId
     $targetEnvironment = $TargetEnvironment
     $sourceApp = $SourceApp
-    $directDeploy = $DirectDeploy
-    $useMaintenancePage = $UseMaintenancePage
+    [Boolean]$directDeploy = [System.Convert]::ToBoolean($DirectDeploy)
+    [Boolean]$useMaintenancePage = [System.Convert]::ToBoolean($UseMaintenancePage)
     $dropPath = $DropPath
     $timeout = $Timeout
     $zeroDowntimeMode = $ZeroDowntimeMode
