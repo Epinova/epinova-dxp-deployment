@@ -14,8 +14,8 @@ export async function run() {
         let ProjectId = tl.getInput("ProjectId");
         let TargetEnvironment = tl.getInput("TargetEnvironment");
         let SourceApp = tl.getInput("SourceApp");
-        let DirectDeploy = tl.getInput("DirectDeploy");
-        let UseMaintenancePage = tl.getInput("UseMaintenancePage");
+        let DirectDeploy = tl.getBoolInput("DirectDeploy", false);
+        let UseMaintenancePage = tl.getBoolInput("UseMaintenancePage", false);
         let DropPath = tl.getInput("DropPath");
         let Timeout = tl.getInput("Timeout");
         let ZeroDowntimeMode = tl.getInput("ZeroDowntimeMode");
@@ -41,8 +41,8 @@ export async function run() {
         "-ProjectId", ProjectId,
         "-TargetEnvironment", TargetEnvironment,
         "-SourceApp", SourceApp,
-        "-DirectDeploy", "$" + DirectDeploy,
-        "-UseMaintenancePage", "$" + UseMaintenancePage,
+        "-DirectDeploy", DirectDeploy,
+        "-UseMaintenancePage", UseMaintenancePage,
         "-DropPath", DropPath,
         "-Timeout", Timeout
         ];
@@ -57,8 +57,8 @@ export async function run() {
         "-ProjectId", ProjectId,
         "-TargetEnvironment", TargetEnvironment,
         "-SourceApp", SourceApp,
-        "-DirectDeploy", "$" + DirectDeploy,
-        "-UseMaintenancePage", "$" + UseMaintenancePage,
+        "-DirectDeploy", DirectDeploy,
+        "-UseMaintenancePage", UseMaintenancePage,
         "-DropPath", DropPath,
         "-Timeout", Timeout
         ];
