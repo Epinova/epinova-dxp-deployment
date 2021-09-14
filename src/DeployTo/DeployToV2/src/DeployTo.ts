@@ -15,10 +15,10 @@ export async function run() {
         let SourceEnvironment = tl.getInput("SourceEnvironment");
         let TargetEnvironment = tl.getInput("TargetEnvironment");
         let SourceApp = tl.getInput("SourceApp");
-        let UseMaintenancePage = tl.getInput("UseMaintenancePage");
+        let UseMaintenancePage = tl.getBoolInput("UseMaintenancePage");
         let Timeout = tl.getInput("Timeout");
-        let IncludeBlob = tl.getInput("IncludeBlob");
-        let IncludeDb = tl.getInput("IncludeDb");
+        let IncludeBlob = tl.getBoolInput("IncludeBlob");
+        let IncludeDb = tl.getBoolInput("IncludeDb");
         let ZeroDowntimeMode = tl.getInput("ZeroDowntimeMode");
 
         // we need to get the verbose flag passed in as script flag
@@ -43,10 +43,10 @@ export async function run() {
         "-SourceEnvironment", SourceEnvironment,
         "-TargetEnvironment", TargetEnvironment,
         "-SourceApp", SourceApp,
-        "-UseMaintenancePage", "$" + UseMaintenancePage,
+        "-UseMaintenancePage", UseMaintenancePage,
         "-Timeout", Timeout,
-        "-IncludeBlob", "$" + IncludeBlob,
-        "-IncludeDb", "$" + IncludeDb
+        "-IncludeBlob", IncludeBlob,
+        "-IncludeDb", IncludeDb
         ];
         if (ZeroDowntimeMode) {
             args.push("-ZeroDowntimeMode");

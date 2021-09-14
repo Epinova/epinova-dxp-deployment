@@ -14,19 +14,6 @@ Param(
 
 try {
     # Get all inputs for the task
-    # $clientKey = Get-VstsInput -Name "ClientKey" -Require -ErrorAction "Stop"
-    # $clientSecret = Get-VstsInput -Name "ClientSecret" -Require -ErrorAction "Stop"
-    # $projectId = Get-VstsInput -Name "ProjectId" -Require -ErrorAction "Stop"
-    # $targetEnvironment = Get-VstsInput -Name "TargetEnvironment" -Require -ErrorAction "Stop"
-    # $sourceApp = Get-VstsInput -Name "SourceApp" -Require -ErrorAction "Stop"
-    # $directDeploy = Get-VstsInput -Name "DirectDeploy" -AsBool
-    # $useMaintenancePage = Get-VstsInput -Name "UseMaintenancePage" -AsBool
-    # $dropPath = Get-VstsInput -Name "DropPath" -Require -ErrorAction "Stop"
-    # $timeout = Get-VstsInput -Name "Timeout" -AsInt -Require -ErrorAction "Stop"
-    # $zeroDowntimeMode = Get-VstsInput -Name "ZeroDowntimeMode"
-
-    #[Boolean]$a = [System.Convert]::ToBoolean($myXMLFileStingValue)
-
     $clientKey = $ClientKey
     $clientSecret = $ClientSecret
     $projectId = $ProjectId

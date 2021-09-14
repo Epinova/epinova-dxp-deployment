@@ -14,7 +14,7 @@ export async function run() {
         let ProjectId = tl.getInput("ProjectId");
         let TargetEnvironment = tl.getInput("TargetEnvironment");
         let Urls = tl.getInput("Urls");
-        let ResetOnFail = tl.getInput("ResetOnFail");
+        let ResetOnFail = tl.getBoolInput("ResetOnFail");
         let SleepBeforeStart = tl.getInput("SleepBeforeStart");
         let NumberOfRetries = tl.getInput("NumberOfRetries");
         let SleepBeforeRetry = tl.getInput("SleepBeforeRetry");
@@ -42,7 +42,7 @@ export async function run() {
         "-ProjectId", ProjectId,
         "-TargetEnvironment", TargetEnvironment,
         "-Urls", Urls,
-        "-ResetOnFail", "$" + ResetOnFail,
+        "-ResetOnFail", ResetOnFail,
         "-SleepBeforeStart", SleepBeforeStart,
         "-NumberOfRetries", NumberOfRetries,
         "-SleepBeforeRetry", SleepBeforeRetry,
