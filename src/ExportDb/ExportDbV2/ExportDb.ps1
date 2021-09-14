@@ -34,8 +34,6 @@ try {
 
     . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
 
-    # Install-AzStorage
-     
     Mount-PsModulesPath
 
     Initialize-EpiCload

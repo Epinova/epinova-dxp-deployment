@@ -5,11 +5,11 @@ Param(
     $ProjectId, 
     $TargetEnvironment,
     $Urls,
-    [bool] $ResetOnFail,
-    [int] $SleepBeforeStart,
-    [int] $NumberOfRetries,
-    [int] $SleepBeforeRetry,
-    [int] $Timeout,
+    $ResetOnFail,
+    $SleepBeforeStart,
+    $NumberOfRetries,
+    $SleepBeforeRetry,
+    $Timeout,
     $ErrorActionPreference
 )
 
@@ -20,25 +20,13 @@ try {
     $projectId = $ProjectId
     $targetEnvironment = $TargetEnvironment
     $urls = $Urls
-    $resetOnFail = $ResetOnFail
+    [Boolean]$resetOnFail = [System.Convert]::ToBoolean($ResetOnFail)
     $sleepBeforeStart = $SleepBeforeStart
     $retries = $NumberOfRetries
     $sleepBeforeRetry = $SleepBeforeRetry
     $timeout = $Timeout
     $errorAction = $ErrorActionPreference
-    # $clientKey = Get-VstsInput -Name "ClientKey" -Require -ErrorAction "Stop"
-    # $clientSecret = Get-VstsInput -Name "ClientSecret" -Require -ErrorAction "Stop"
-    # $projectId = Get-VstsInput -Name "ProjectId" -Require -ErrorAction "Stop"
-    # $targetEnvironment = Get-VstsInput -Name "TargetEnvironment" -Require -ErrorAction "Stop"
-    # $urls = Get-VstsInput -Name "Urls" -Require -ErrorAction "Stop"
-    # $resetOnFail = Get-VstsInput -Name "ResetOnFail" -AsBool
-    # $sleepBeforeStart = Get-VstsInput -Name "SleepBeforeStart" -AsInt -Require -ErrorAction "Stop"
-    # $retries = Get-VstsInput -Name "NumberOfRetries" -AsInt -Require -ErrorAction "Stop"
-    # $sleepBeforeRetry = Get-VstsInput -Name "SleepBeforeRetry" -AsInt -Require -ErrorAction "Stop"
-    # #$headers = Get-VstsInput -Name "Headers"
-    # $timeout = Get-VstsInput -Name "Timeout" -AsInt -Require -ErrorAction "Stop"
 
-    # $errorAction = Get-VstsInput -Name "ErrorActionPreference" -Require -ErrorAction "Stop"
     $global:ErrorActionPreference = $errorAction
     ####################################################################################
 
@@ -61,8 +49,6 @@ try {
 
     . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
 
-    #Install-AzStorage
-     
     Mount-PsModulesPath
 
     Write-Host "Start sleep for $($sleepBeforeStart) seconds before we start check URL(s)."

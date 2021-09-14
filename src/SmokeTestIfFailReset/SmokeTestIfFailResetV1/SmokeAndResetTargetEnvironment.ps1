@@ -39,8 +39,6 @@ try {
 
     . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
 
-    #Install-AzStorage
-     
     Mount-PsModulesPath
 
     Write-Host "Start sleep for $($sleepBeforeStart) seconds before we start check URL(s)."

@@ -14,8 +14,8 @@ export async function run() {
         let ProjectId = tl.getInput("ProjectId");
         let Environment = tl.getInput("Environment");
         let Timeout = tl.getInput("Timeout");
-        let IncludeBlob = tl.getInput("IncludeBlob");
-        let IncludeDb = tl.getInput("IncludeDb");
+        let IncludeBlob = tl.getBoolInput("IncludeBlob");
+        let IncludeDb = tl.getBoolInput("IncludeDb");
 
         // we need to get the verbose flag passed in as script flag
         var verbose = (tl.getVariable("System.Debug") === "true");

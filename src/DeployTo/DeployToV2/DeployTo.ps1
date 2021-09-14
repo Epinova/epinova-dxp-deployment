@@ -6,37 +6,25 @@ Param(
     $SourceEnvironment,
     $TargetEnvironment,
     $SourceApp,
-    [bool] $UseMaintenancePage,
-    [int] $Timeout,
-    [bool] $IncludeBlob,
-    [bool] $IncludeDb,
+    $UseMaintenancePage,
+    $Timeout,
+    $IncludeBlob,
+    $IncludeDb,
     $ZeroDowntimeMode
 )
 
 try {
     # Get all inputs for the task
-    # $clientKey = Get-VstsInput -Name "ClientKey" -Require -ErrorAction "Stop"
-    # $clientSecret = Get-VstsInput -Name "ClientSecret" -Require -ErrorAction "Stop"
-    # $projectId = Get-VstsInput -Name "ProjectId" -Require -ErrorAction "Stop"
-    # $sourceEnvironment = Get-VstsInput -Name "SourceEnvironment" -Require -ErrorAction "Stop"
-    # $targetEnvironment = Get-VstsInput -Name "TargetEnvironment" -Require -ErrorAction "Stop"
-    # $sourceApp = Get-VstsInput -Name "SourceApp" -Require -ErrorAction "Stop"
-    # $useMaintenancePage = Get-VstsInput -Name "UseMaintenancePage" -AsBool
-    # $timeout = Get-VstsInput -Name "Timeout" -AsInt -Require -ErrorAction "Stop"
-    # $includeBlob = Get-VstsInput -Name "IncludeBlob" -AsBool
-    # $includeDb = Get-VstsInput -Name "IncludeDb" -AsBool
-    # $zeroDowntimeMode = Get-VstsInput -Name "ZeroDowntimeMode"
-
     $clientKey = $ClientKey
     $clientSecret = $ClientSecret
     $projectId = $ProjectId
     $sourceEnvironment = $SourceEnvironment
     $targetEnvironment = $TargetEnvironment
     $sourceApp = $SourceApp
-    $useMaintenancePage = $UseMaintenancePage
+    [Boolean]$useMaintenancePage = [System.Convert]::ToBoolean($UseMaintenancePage)
     $timeout = $Timeout
-    $includeBlob = $IncludeBlob
-    $includeDb = $IncludeDb
+    [Boolean]$includeBlob = [System.Convert]::ToBoolean($IncludeBlob)
+    [Boolean]$includeDb = [System.Convert]::ToBoolean($IncludeDb)
     $zeroDowntimeMode = $ZeroDowntimeMode
 
 
@@ -60,8 +48,6 @@ try {
 
     . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
 
-    #Install-AzStorage
-     
     Mount-PsModulesPath
 
     Initialize-EpiCload

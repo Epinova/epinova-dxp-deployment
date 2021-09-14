@@ -5,8 +5,8 @@ Param(
     $ProjectId, 
     $Environment,
     $Timeout,
-    [bool] $IncludeBlob,
-    [bool] $IncludeDb
+    $IncludeBlob,
+    $IncludeDb
 )
 
 try {
@@ -16,8 +16,8 @@ try {
     $projectId = $ProjectId
     $environment = $Environment
     $timeout = $Timeout
-    $includeBlob = $IncludeBlob
-    $includeDb = $IncludeDb
+    [Boolean]$includeBlob = [System.Convert]::ToBoolean($IncludeBlob)
+    [Boolean]$includeDb = [System.Convert]::ToBoolean($IncludeDb)
 
     # 30 min timeout
     ####################################################################################
@@ -35,8 +35,6 @@ try {
 
     . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
 
-    #Install-AzStorage
-     
     Mount-PsModulesPath
 
     Initialize-EpiCload

@@ -36,8 +36,6 @@ try {
 
     Mount-PsModulesPath
 
-    #Install-AzStorage
-
     Initialize-EpiCload
     
     Write-DxpHostVersion

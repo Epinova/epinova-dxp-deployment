@@ -22,8 +22,6 @@ try {
     Write-Host "Timeout:            $timeout"
 
     . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
-
-    #Install-AzStorage
      
     Mount-PsModulesPath
 
