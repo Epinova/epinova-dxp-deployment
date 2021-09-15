@@ -1,7 +1,9 @@
-# Deploy nuget package (Episerver DXP) #
-Take a nuget package from your drop folder in Azure DevOps and upload it to your Episerver DXP project and start a deployment to the targeted environment.  
-Also support the DirectDeploy function. [Introducing "Direct Deploy", a quicker way to deploy to integration using the deployment API!](https://world.episerver.com/blogs/anders-wahlqvist/dates/2021/3/introducing-direct-deploy-a-quicker-way-to-deploy-to-dxp/)
-
+# Deploy nuget package (Optimizely DXP) #
+Take a nuget package from your drop folder in Azure DevOps and upload it to your Optimizely (formerly known as Episerver) DXP project and start a deployment to the targeted environment.  
+Also support the DirectDeploy function. [Introducing "Direct Deploy", a quicker way to deploy to integration using the deployment API!](https://world.optimizely.com/blogs/anders-wahlqvist/dates/2021/3/introducing-direct-deploy-a-quicker-way-to-deploy-to-dxp/)
+  
+_**Note:** v2 task supports windows/ubuntu/MacOS agents. v1 task only support windows._  
+  
 [<= Back](../README.md)
 
 ## Parameters
@@ -65,7 +67,7 @@ Specify if you want to use a maintenance page during the deploy.
 
 #### Zero Downtime Mode
 **[pickList]** - **required**  
-The type of smooth deployment you want to use. [More information about zero downtime mode](https://world.episerver.com/documentation/developer-guides/digital-experience-platform/deploying/deployment-process/smooth-deploy/)  
+The type of smooth deployment you want to use. [More information about zero downtime mode](https://world.optimizely.com/documentation/developer-guides/digital-experience-platform/deploying/deployment-process/smooth-deploy/)  
 If this parameter is set to empty, no zero downtime deployment will be made. It will be a regular deployment.   
 **Example:** `ReadOnly`  
 **Default value:** ``  
@@ -93,9 +95,24 @@ How the task should handle errors.
 - **SilentlyContinue**: Don't display an error message continue to execute subsequent commands.
 
 ## YAML ##
-Example:  
+Example v1:  
 ```yaml
 - task: DxpDeployNuGetPackage@1  
+    inputs:  
+    ClientKey: '$(ClientKey)'  
+    ClientSecret: '$(ClientSecret)'  
+    ProjectId: '$(DXP.ProjectId)'  
+    DropPath: '$(System.DefaultWorkingDirectory)\drop'  
+    TargetEnvironment: 'Integration'  
+    SourceApp: 'cms'  
+    DirectDeploy: true  
+    UseMaintenancePage: false  
+    Timeout: 1800  
+```  
+  
+Example v2:  
+```yaml
+- task: DxpDeployNuGetPackage@2  
     inputs:  
     ClientKey: '$(ClientKey)'  
     ClientSecret: '$(ClientSecret)'  

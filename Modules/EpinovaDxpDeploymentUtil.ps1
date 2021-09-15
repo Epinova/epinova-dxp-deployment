@@ -20,12 +20,18 @@ function Initialize-EpiCload{
     #>
     if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
         Write-Host "Could not find EpiCloud."
-        Install-Module EpiCloud -Scope CurrentUser -Force
-        Write-Host "Install EpiCloud."
+        #Install-Module EpiCloud  -Scope CurrentUser -MinimumVersion 0.13.15 -Force -AllowClobber
+        #Write-Host "Installed EpiCloud."
+        Import-Module -Name "EpiCloud" -Verbose
+        #Import-Module -Name "$PSScriptRoot/EpiCloud/EpiCloud.psd1" -Verbose -ErrorAction Stop
+        Write-Host "Import EpiCloud."
     }
+    #Get-Module -Name EpiCloud -ListAvailable
     $version = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
-    Write-Host "EpiCloud            $version" 
-
+    Write-Host "EpiCloud            [$version]" 
+    if ($null -eq $version -or "" -eq $version) {
+        Write-Error "Could not get version for the installed module EpiCloud"
+    }
 }
 
 function Write-DxpHostVersion() {
@@ -41,8 +47,9 @@ function Write-DxpHostVersion() {
 
         Will print out the PowerShell host version in the host. Ex: @{Version=5.1.14393.3866}
     #>
-    $version = Get-Host | Select-Object Version
-    Write-Host "PowerShell          $version" 
+    #$version = Get-Host | Select-Object Version
+    #Write-Host "PowerShell          $version" 
+    $PSVersionTable
 }
 
 function Test-IsGuid {
@@ -75,8 +82,7 @@ function Test-IsGuid {
 	return $ObjectGuid -match $guidRegex
 }
 
-function Test-DxpProjectId
-{
+function Test-DxpProjectId {
     <#
     .SYNOPSIS
         Test a DXP project id.
@@ -92,19 +98,20 @@ function Test-DxpProjectId
 
         Test if the value in the parameter $projectId is a valid DXP project id.
     #>
-	[OutputType([bool])]
+	[OutputType([System.Void])]
 	param
 	(
 		[Parameter(Mandatory = $true)]
 		[string]$ProjectId
 	)
 	
-    if ((Test-IsGuid -ObjectGuid $ProjectId) -ne $true){
-        Write-Error "The provided ProjectId is not a guid value."
+    if (!(Test-IsGuid -ObjectGuid $ProjectId)) {
+        Write-Error "The provided ProjectId $ProjectId is not a guid value."
+        exit 1
     }
 }
 
-function Get-DxpDateTimeStamp{
+function Get-DxpDateTimeStamp {
     <#
     .SYNOPSIS
         Create DateTime stamp in correct format.
@@ -124,16 +131,16 @@ function Get-DxpDateTimeStamp{
 function Invoke-DxpProgress {
     <#
     .SYNOPSIS
-        Write the progress of a operation in the Episerver DXP environment to the host.
+        Write the progress of a operation in the Optimizely (formerly known as Episerver) DXP environment to the host.
 
     .DESCRIPTION
-        Write the progress of a operation in the Episerver DXP environment to the host.
+        Write the progress of a operation in the Optimizely (formerly known as Episerver) DXP environment to the host.
 
     .PARAMETER ProjectId
-        Project id for the project in Episerver DXP.
+        Project id for the project in Optimizely (formerly known as Episerver) DXP.
 
     .PARAMETER DeploymentId
-        Deployment id for the specific deployment in Episerver DXP that you want to show the progress for.
+        Deployment id for the specific deployment in Optimizely (formerly known as Episerver) DXP that you want to show the progress for.
 
     .PARAMETER PercentComplete
         The initialized percentComplete value that we got from the invoke of the operation.
@@ -270,7 +277,7 @@ function Get-DxpEnvironmentDeployments{
         Get the latest deployments for the specified environment.
 
     .PARAMETER ProjectId
-        Project id for the project in Episerver DXP.
+        Project id for the project in Optimizely (formerly known as Episerver) DXP.
 
     .PARAMETER TargetEnvironment
         The target environment that should match the deployment.
@@ -311,7 +318,7 @@ function Get-DxpLatestEnvironmentDeployment{
         Get the latest deployment for the specified environment.
 
     .PARAMETER ProjectId
-        Project id for the project in Episerver DXP.
+        Project id for the project in Optimizely (formerly known as Episerver) DXP.
 
     .PARAMETER TargetEnvironment
         The target environment that should match the deployment.
@@ -363,7 +370,7 @@ function Get-DxpAwaitingEnvironmentDeployment{
         Get the latest deployment in status 'AwaitingVerification' for the specified environment.
 
     .PARAMETER ProjectId
-        Project id for the project in Episerver DXP.
+        Project id for the project in Optimizely (formerly known as Episerver) DXP.
 
     .PARAMETER TargetEnvironment
         The target environment that should match the deployment.
@@ -404,7 +411,7 @@ function Invoke-DxpExportProgress {
         Start a export of a database from DXP.
 
     .PARAMETER ProjectId
-        Project id for the project in Episerver DXP.
+        Project id for the project in Optimizely (formerly known as Episerver) DXP.
 
     .PARAMETER ExportId
         .
@@ -494,5 +501,41 @@ function Install-AzureStorage {
     if ($null -eq (Get-Module -Name "Azure.Storage")) {
         Write-Host "Installing Azure.Storage Powershell Module -MinimumVersion 4.4.0"
         Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -MinimumVersion 4.4.0 -Force -AllowClobber
+    }
+}
+
+function Install-AzStorage {
+    <#
+    .SYNOPSIS
+        Install correct version of Az.Storage.
+
+    .DESCRIPTION
+        Install correct version of Az.Storage.
+
+    .EXAMPLE
+        Install-AzStorage
+    #>
+    if ($null -eq (Get-Module -Name "Az.Storage")) {
+        #Import-Module -Name "Az.Storage" -Verbose
+        Install-Module -Name Az.Storage -Scope CurrentUser -Repository PSGallery -MinimumVersion 3.7.0 -Force -AllowClobber
+    }
+}
+
+function Mount-PsModulesPath {
+    <#
+    .SYNOPSIS
+        Add task ps_modules folder to env:PSModulePath.
+
+    .DESCRIPTION
+        Add task ps_modules folder to env:PSModulePath.
+
+    .EXAMPLE
+        Mount-ModulePath
+    #>
+
+    $taskModulePath = $PSScriptRoot
+    if (-not ($env:PSModulePath.Contains($taskModulePath))) {
+        $env:PSModulePath = $env:PSModulePath + "$([System.IO.Path]::PathSeparator)$taskModulePath"
+        Write-Host "Added $taskModulePath to env:PSModulePath" 
     }
 }
