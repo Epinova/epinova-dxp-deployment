@@ -1,7 +1,6 @@
 # Epinova DXP Deployment
 Bucket of release tasks helping you to deploy to all environments in Optimizely (formerly known as Episerver) DXP (a.k.a DXC) from Azure DevOps. The release tasks use the [Deployment API](https://world.optimizely.com/documentation/developer-guides/digital-experience-platform/deploying/optimizely-digital-experience-cloud-deployment-api/). There are some developers out there that want/need help with deployment to the Optimizely (formerly known as Episerver) DXP enviroment. And that is why this deployment extension is created. 
   
-  
 Now cross platform support. v2 of tasks support Windows/Ubuntu/MacOS.
 
 ## Install 
@@ -10,11 +9,6 @@ Now cross platform support. v2 of tasks support Windows/Ubuntu/MacOS.
 Install the extension to your Azure DevOps project: [https://marketplace.visualstudio.com/items?itemName=epinova-sweden.epinova-dxp-deploy-extension](https://marketplace.visualstudio.com/items?itemName=epinova-sweden.epinova-dxp-deploy-extension). Click on the green "Get it free" button and follow the instructions.  
 Microsoft has general information on how to install an Azure DevOps extension:  [https://docs.microsoft.com/en-us/azure/devops/marketplace/install-extension](https://docs.microsoft.com/en-us/azure/devops/marketplace/install-extension)  
 In the end of that page, there also a link to how to manage extension permission. [https://docs.microsoft.com/en-us/azure/devops/marketplace/how-to/grant-permissions](https://docs.microsoft.com/en-us/azure/devops/marketplace/how-to/grant-permissions)  
-
-## Azure.Storage v4.4.0 or greater is required.
-If you experience the error <span style="color:red">'Azure.Storage' v4.4.0 or greater is required.</span>![Azure.Storage error](documentation/Images/AzureStorageV440Error/AzureStorageV440Error.jpg)  
-[How to solve the Azure.Storage v4.4.0 error](documentation/AzureStorage440Error.md)  
-
 
 ## Tasks ##
 
@@ -29,10 +23,10 @@ Also support Zero Downtime Deployment (aka ZDD or Smooth deployment).
 [Deploy to documentation](documentation/DeployTo.md)  
 
 ### Deploy Smooth To (Optimizely DXP) ###
-<span style="color:red">Deprecated! You should stop using this task DeploySmoothTo. You should change to DeployTo.</span>
+<span style="color:red">_**Deprecated! You should stop using this task DeploySmoothTo. You should change to DeployTo.**_</span>  
 Do the same thing as the "Deploy to" task. But this has support for Smooth deployment (Zero downtime deployment).  
-Since this function is still in [closed beta](https://world.optimizely.com/service-and-product-lifecycles/#CloudServicesLifecycle). There is not everybody that can use this feature yet. That is why this is like a copy past of the "Deploy To" task but with smooth deployment support.  
-When this feature is public for all DXP users, we will implement this feature on the "Deploy to" task.  
+This task was created during the [closed beta](https://world.optimizely.com/service-and-product-lifecycles/#CloudServicesLifecycle). There was not everybody that could use this feature. That is why this is like a copy past of the "Deploy To" task but with smooth deployment support.  
+Now when this feature is public for all DXP users, it is implemented in to the "Deploy to" task.  
 [Deploy smooth to documentation](documentation/DeploySmoothTo.md)  
 
 ### Content copy (Optimizely DXP) ###
