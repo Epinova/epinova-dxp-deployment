@@ -52,12 +52,6 @@ steps:
     inputs:
       rootFolder: src
       outputPath: '$(Build.ArtifactStagingDirectory)\$(ExtensionFileName)$(ExtensionFileVersion).vsix'
-      publisherId: '$(PublisherID)'
-      extensionId: '$(ExtensionID)'
-      extensionName: '$(ExtensionName)'
-      extensionVersion: '$(ExtensionVersion)'
-      updateTasksId: true # This is for TEST only. Need to find a nice solution for this when deploy the real version.
-      extensionVisibility: $(ExtensionVisibility)
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
