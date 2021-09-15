@@ -13,7 +13,7 @@
     "version": {
         "Major": 1,
         "Minor": 0,
-        "Patch": 13
+        "Patch": 14
     },
     "groups": [
         {
@@ -137,7 +137,7 @@
             "label": "Zero Downtime Mode",
             "required": false,
             "defaultValue": "ReadOnly",
-            "helpMarkDown": "The type of smooth deployment you want to use. [More information about zero downtime mode](https://world.episerver.com/documentation/developer-guides/digital-experience-platform/deploying/deployment-process/smooth-deploy/)",
+            "helpMarkDown": "The type of smooth deployment you want to use. [More information about zero downtime mode](https://world.optimizely.com/documentation/developer-guides/digital-experience-platform/deploying/deployment-process/smooth-deploy/)",
             "groupName": "Settings",
             "options": {
                 "Not specified": "",

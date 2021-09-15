@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.0.0
+- All tasks are updated to v2 and have cross platform (Windows/Ubuntu/MacOS) support.
+
 ## v1.14.1
 - Added SuppressAzureRmModulesRetiringWarning.
 
