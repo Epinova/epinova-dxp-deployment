@@ -14,7 +14,7 @@ pool:
 variables:
   buildnumber: $(Build.BuildNumber)
   PublisherID: 'epinova-sweden'
-  ExtensionID: 'f5e647f2-e6a0-4252-959c-b0eae5697504'
+  ExtensionID: 'epinova-dxp-deploy-extension'
   ExtensionName: 'Epinova DXP deployment'
   ExtensionFileName: 'epinova-dxp-deploy-extension-'
   ExtensionVisibility: 'public'
