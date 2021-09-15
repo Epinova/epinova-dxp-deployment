@@ -4,8 +4,10 @@ This task smoke test a slot and decide if we should continue the release, or res
 A new property with the name "Reset on fail" is added that describes if the task will reset when smoke test fail. This can be used when you want to use SmokeTestIfFailReset task when doing a ContentSync.  
 
 *Note: If your website use login so that unauthenticated user not can see your site. You can request the login page to be sure to get HTTP status 200 in the response. Otherwise the HTTP response will be HTTP status 301 redirect to the login page.  
-Example: 'https://fake017znx5inte.dxcloud.episerver.net/Util/login.aspx'*
-
+Example: 'https://fake017znx5inte.dxcloud.episerver.net/Util/login.aspx'*  
+  
+_**Note:** v2 task supports windows/ubuntu/MacOS agents. v1 task only support windows._  
+  
 [<= Back](../README.md)
 
 ## Parameters
@@ -90,7 +92,7 @@ How the task should handle errors.
 - **SilentlyContinue**: Don't display an error message continue to execute subsequent commands.
 
 ## YAML ##
-Example:  
+Example v1:  
 ```yaml
 - task: DxpSmokeTestIfFailReset@1
     inputs:
@@ -105,5 +107,21 @@ Example:
     SleepBeforeRetry: 30
     Timeout: 1800
 ```
-
+  
+Example v2:  
+```yaml
+- task: DxpSmokeTestIfFailReset@2
+    inputs:
+    ClientKey: '$(ClientKey)'
+    ClientSecret: '$(ClientSecret)'
+    ProjectId: '$(DXP.ProjectId)'
+    TargetEnvironment: 'Integration'
+    Urls: '$(Integration.SlotUrl)$(Integration.UrlSuffix)'
+    SleepBeforeStart: 20
+    ResetOnFail: true
+    NumberOfRetries: 5
+    SleepBeforeRetry: 30
+    Timeout: 1800
+```
+  
 [<= Back](../README.md)

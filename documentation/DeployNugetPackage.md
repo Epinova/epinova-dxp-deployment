@@ -1,7 +1,9 @@
 # Deploy nuget package (Optimizely DXP) #
 Take a nuget package from your drop folder in Azure DevOps and upload it to your Optimizely (formerly known as Episerver) DXP project and start a deployment to the targeted environment.  
 Also support the DirectDeploy function. [Introducing "Direct Deploy", a quicker way to deploy to integration using the deployment API!](https://world.optimizely.com/blogs/anders-wahlqvist/dates/2021/3/introducing-direct-deploy-a-quicker-way-to-deploy-to-dxp/)
-
+  
+_**Note:** v2 task supports windows/ubuntu/MacOS agents. v1 task only support windows._  
+  
 [<= Back](../README.md)
 
 ## Parameters
@@ -93,9 +95,24 @@ How the task should handle errors.
 - **SilentlyContinue**: Don't display an error message continue to execute subsequent commands.
 
 ## YAML ##
-Example:  
+Example v1:  
 ```yaml
 - task: DxpDeployNuGetPackage@1  
+    inputs:  
+    ClientKey: '$(ClientKey)'  
+    ClientSecret: '$(ClientSecret)'  
+    ProjectId: '$(DXP.ProjectId)'  
+    DropPath: '$(System.DefaultWorkingDirectory)\drop'  
+    TargetEnvironment: 'Integration'  
+    SourceApp: 'cms'  
+    DirectDeploy: true  
+    UseMaintenancePage: false  
+    Timeout: 1800  
+```  
+  
+Example v2:  
+```yaml
+- task: DxpDeployNuGetPackage@2  
     inputs:  
     ClientKey: '$(ClientKey)'  
     ClientSecret: '$(ClientSecret)'  

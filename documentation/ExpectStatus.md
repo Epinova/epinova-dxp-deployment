@@ -1,6 +1,8 @@
 # Expect status (Optimizely DXP)
 Task that check the status for an environment. if environment is not in the expected status the task will fail.  
-
+  
+_**Note:** v2 task supports windows/ubuntu/MacOS agents. v1 task only support windows._  
+  
 [<= Back](../README.md)
 
 ## Parameters
@@ -64,9 +66,21 @@ How the task should handle errors.
 - **SilentlyContinue**: Don't display an error message continue to execute subsequent commands.
 
 ## YAML ##
-Example:  
+Example v1:  
 ```yaml
 - task: DxpExpectStatus@1
+    inputs:
+    ClientKey: '$(ClientKey)'
+    ClientSecret: '$(ClientSecret)'
+    ProjectId: '$(DXP.ProjectId)'
+    TargetEnvironment: 'Integration'
+    ExpectedStatus: 'AwaitingVerification'
+    Timeout: 1800
+```
+  
+Example v2:  
+```yaml
+- task: DxpExpectStatus@2
     inputs:
     ClientKey: '$(ClientKey)'
     ClientSecret: '$(ClientSecret)'

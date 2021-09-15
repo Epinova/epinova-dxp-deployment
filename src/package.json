@@ -1,6 +1,6 @@
 {
-  "name": "Epinova.Dxp.Api.DevOps.Tasks",
-  "version": "1.6.0",
+  "name": "EpinovaDxpApiDevOpsTasks",
+  "version": "2.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {

@@ -5,7 +5,9 @@ Does the same thing like the "Content copy" button in the portal. It copy databa
 [More about content syncdown can be read on Episerver world.](https://world.optimizely.com/documentation/developer-guides/digital-experience-platform/self-service/content-synchronization/)  
 [How content syncdown works in Episerver DXP deployment API.](https://world.optimizely.com/blogs/anders-wahlqvist/dates/2020/4/dxp-deployment-improvements/)  
 
-_*NOTE 2020-09-30:* At present date the sync can not handle just one database type. It will sync both cms AND commerce database. We tried to just sync the cms database but there is no support for that in the Episerver API. So if you have a cms and commerce database, both databases will sync when if you set SourceApp=cms._  
+_**Note:** v2 task supports windows/ubuntu/MacOS agents. v1 task only support windows._   
+
+_**Note 2020-09-30:** At present date the sync can not handle just one database type. It will sync both cms AND commerce database. We tried to just sync the cms database but there is no support for that in the Episerver API. So if you have a cms and commerce database, both databases will sync when if you set SourceApp=cms._  
   
 [<= Back](../README.md)
 

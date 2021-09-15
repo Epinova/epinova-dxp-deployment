@@ -1,4 +1,4 @@
-# Optimizely (formerly known as Episerver) DXP API Azure DevOps deplyment tasks
+# Epinova DXP API Azure DevOps deplyment tasks
 
 Tasks
 
