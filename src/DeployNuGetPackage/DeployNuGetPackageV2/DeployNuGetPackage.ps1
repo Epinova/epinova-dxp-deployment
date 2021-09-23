@@ -106,7 +106,7 @@ try {
         $myPackages = $resolvedCmsPackagePath, $resolvedCommercePackagePath
     }
 
-    if ($null -eq $zeroDowntimeMode -or $zeroDowntimeMode -eq "") {
+    if ($null -eq $zeroDowntimeMode -or $zeroDowntimeMode -eq "" -or $zeroDowntimeMode -eq "Not specified") {
         $startEpiDeploymentSplat = @{
             DeploymentPackage  = $myPackages
             ProjectId          = $projectId

@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.0.2
+- Fix #173. DeployNuGetPackage and DeployTo: Updated v1 and v2 tasks to handle param ZeroDowntimeMode = Not specified.
+
 ## v2.0.0
 - All tasks are updated to v2 and have cross platform (Windows/Ubuntu/MacOS) support.
 
