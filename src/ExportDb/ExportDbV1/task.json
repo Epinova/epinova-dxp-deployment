@@ -1,8 +1,8 @@
 {
     "id": "2c912ca7-b6b3-47d8-8c99-0a91e7b059a2",
     "name": "DxpExportDb",
-    "friendlyName": "Export DB (Episerver DXP)",
-    "description": "Export specified database as a bacpac file. (Episerver DXP, former DXC)",
+    "friendlyName": "Export DB (Optimizely DXP)",
+    "description": "Export specified database as a bacpac file. (Optimizely DXP, former Episerver DXC)",
     "helpUrl": "https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/ExportDb.md",
     "helpMarkDown": "[Extension page](https://marketplace.visualstudio.com/items?itemName=epinova-sweden.epinova-dxp-deploy-extension)[Learn more about this task](https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/ExportDb.md)",
     "category": "Deploy",
@@ -13,7 +13,7 @@
     "version": {
         "Major": 1,
         "Minor": 1,
-        "Patch": 0
+        "Patch": 1
     },
     "groups": [
         {

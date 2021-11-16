@@ -1,4 +1,4 @@
-# Smoke test if fail reset (Episerver DXP)
+# Smoke test if fail reset (Optimizely DXP)
 This task smoke test a slot and decide if we should continue the release, or reset the environment slot, because something is not working as expected. The smoke test is a simple check if one or many specified URLs returns HTTPStatus = 200 (OK).  
 
 A new property with the name "Reset on fail" is added that describes if the task will reset when smoke test fail. This can be used when you want to use SmokeTestIfFailReset task when doing a ContentSync.  

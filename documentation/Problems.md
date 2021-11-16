@@ -15,8 +15,8 @@ In our case I have missed to link the Variable Group with DXP.ProjectId etc to t
 
 This was the Inputs before the fix:  
 
-    2020-03-18T23:17:43.8255269Z Task         : Deploy nuget package (Episerver DXP)
-    2020-03-18T23:17:43.8255695Z Description  : Start a deploy of a nuget package to target environment for your DXP project. (Episerver DXP, former DXC)
+    2020-03-18T23:17:43.8255269Z Task         : Deploy nuget package (Optimizely DXP)
+    2020-03-18T23:17:43.8255695Z Description  : Start a deploy of a nuget package to target environment for your DXP project. (Optimizely DXP, former DXC)
     2020-03-18T23:17:43.8256235Z Version      : 1.0.1
     2020-03-18T23:17:43.8256452Z Author       : Ove Lartelius
     2020-03-18T23:17:43.8257005Z Help         : https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/DeployNugetPackage.md
