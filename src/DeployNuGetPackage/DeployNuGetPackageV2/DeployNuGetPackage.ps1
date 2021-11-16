@@ -48,10 +48,6 @@ try {
      
     Mount-PsModulesPath
 
-    # if (-not ($env:PSModulePath.Contains("C:\Modules\azurerm_6.7.0"))){
-    #     $env:PSModulePath = "C:\Modules\azurerm_6.7.0;" + $env:PSModulePath   
-    # }
-
     Initialize-EpiCload
 
     if ($targetEnvironment -ne "Integration" -and $directDeploy){
@@ -80,8 +76,18 @@ try {
             exit 1
         }
     
-        Add-EpiDeploymentPackage -SasUrl $packageLocation -Path $resolvedCmsPackagePath.FullName
-        Write-Host "cms package $resolvedCmsPackagePath is uploaded."
+        try{
+            Add-EpiDeploymentPackage -SasUrl $packageLocation -Path $resolvedCmsPackagePath.FullName
+            Write-Host "cms package $resolvedCmsPackagePath is uploaded."
+        }
+        catch{
+            $errMsg = $_.Exception.ToString()
+            if ($errMsg.Contains("lease")){
+                Write-Host "cms package already exist in container."
+            } else {
+                Write-Error $errMsg
+            }
+        }
         $myPackages = $resolvedCmsPackagePath.Name
     }
 
@@ -97,8 +103,18 @@ try {
             exit 1
         }
     
-        Add-EpiDeploymentPackage -SasUrl $packageLocation -Path $resolvedCommercePackagePath.FullName
-        Write-Host "commerce package $resolvedCommercePackagePath is uploaded."
+        try{
+            Add-EpiDeploymentPackage -SasUrl $packageLocation -Path $resolvedCmsPackagePath.FullName
+            Write-Host "commerce package $resolvedCmsPackagePath is uploaded."
+        }
+        catch{
+            $errMsg = $_.Exception.ToString()
+            if ($errMsg.Contains("lease")){
+                Write-Host "commerce package already exist in container."
+            } else {
+                Write-Error $errMsg
+            }
+        }
         $myPackages = $resolvedCommercePackagePath.Name
     }
 

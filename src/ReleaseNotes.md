@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.0.3
+- Fix #176. Support Linux multiple package uploads.
+
 ## v2.0.2
 - Fix #173. DeployNuGetPackage and DeployTo: Updated v1 and v2 tasks to handle param ZeroDowntimeMode = Not specified.
 
