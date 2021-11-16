@@ -1,6 +1,6 @@
 # Release notes
 
-## v2.1.3
+## v2.1.5
 - Support EpiCloud v1.
 
 ## v2.0.3
