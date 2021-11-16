@@ -18,14 +18,14 @@ function Initialize-EpiCload{
     .EXAMPLE
         Initialize-EpiCload
     #>
-    #if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
+    if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
         Write-Host "Could not find EpiCloud."
         #Install-Module EpiCloud  -Scope CurrentUser -MinimumVersion 0.13.15 -Force -AllowClobber
         #Write-Host "Installed EpiCloud."
         Import-Module -Name "EpiCloud" -MinimumVersion 1.0.0 -Verbose
         #Import-Module -Name "$PSScriptRoot/EpiCloud/EpiCloud.psd1" -Verbose -ErrorAction Stop
         Write-Host "Import EpiCloud."
-    #}
+    }
     #Get-Module -Name EpiCloud -ListAvailable
     $version = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
     Write-Host "EpiCloud            [$version]" 
