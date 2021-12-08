@@ -1,0 +1,18 @@
+{
+    "ConnectionFields": [
+        {
+            "IsEncrypted": false,
+            "IsOptional": false,
+            "Name": "ClientKey",
+            "TypeName": "System.String"
+        },
+        {
+            "IsEncrypted": true,
+            "IsOptional": false,
+            "Name": "ClientSecret",
+            "TypeName": "System.String"
+        }
+    ],
+    "ConnectionTypeName": "EpiCloud v1.0",
+    "IntegrationModuleName": "EpiCloud"
+}

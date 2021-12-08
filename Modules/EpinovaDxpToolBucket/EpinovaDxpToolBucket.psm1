@@ -686,8 +686,7 @@ function Get-DxpStorageContainerSasLink{
         [ValidateNotNullOrEmpty()]
         [string] $Environment,
 
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory = $false)]
         [object] $Containers,
 
         [Parameter(Mandatory = $true)]
@@ -698,6 +697,10 @@ function Get-DxpStorageContainerSasLink{
         [int] $RetentionHours = 2
 
     )
+
+    if ($null -eq $Containers){
+        $Containers = Get-DxpStorageContainers -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment
+    }
 
     $linkSplat = @{
         ClientKey = $ClientKey
@@ -1213,4 +1216,4 @@ function Invoke-DxpDatabaseDownload{
     }
 }
 
-Export-ModuleMember -Function @( 'Invoke-DxpBlobsDownload', 'Invoke-DxpDatabaseDownload', 'Get-DxpStorageContainers' )
+Export-ModuleMember -Function @( 'Invoke-DxpBlobsDownload', 'Invoke-DxpDatabaseDownload', 'Get-DxpStorageContainers', 'Get-DxpStorageContainerSasLink' )

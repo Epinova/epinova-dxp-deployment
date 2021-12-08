@@ -6,18 +6,18 @@ parameters:
 
 steps:  
 - task: PowerShell@2
-  displayName: 'Calculate and save package.json hash'
+  displayName: 'Calculate and save package-lock.json hash'
   inputs:
     targetType: 'inline'
     script: |
-      # generates a hash of all package.json and saves each on a single line on 'packagejsonhash.txt'
-      Get-FileHash -Algorithm MD5 -Path (Get-ChildItem package.json -Recurse) >> packagejsonhash.txt
-      Write-Host "Hash File saved to ${{parameters.extensionRoot}}\${{parameters.taskName}}\packagejsonhash.txt"
+      # generates a hash of all package-lock.json and saves each on a single line on 'packagelockjsonhash.txt'
+      Get-FileHash -Algorithm MD5 -Path (Get-ChildItem package-lock.json -Recurse) >> packagelockjsonhash.txt
+      Write-Host "Hash File saved to ${{parameters.extensionRoot}}\${{parameters.taskName}}\packagelockjsonhash.txt"
     workingDirectory: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
 
 - task: CacheBeta@0 # speed up builds by caching node_modules folder
   inputs:
-    key: nuget|1|$(Agent.OS)|${{parameters.extensionRoot}}\${{parameters.taskName}}\packagejsonhash.txt # hash map generated in previous step
+    key: nuget|1|$(Agent.OS)|${{parameters.extensionRoot}}\${{parameters.taskName}}\packagelockjsonhash.txt # hash map generated in previous step
     path: ${{parameters.extensionRoot}}\${{parameters.taskName}}\node_modules
     cacheHitVar: 'npm_cache_hit' # variable that can be checked to see if it was successful
   displayName: Cache npm packages

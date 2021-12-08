@@ -1,8 +1,8 @@
 {
     "id": "2bc993e5-c27c-4a24-aeaf-0fc403debc8d",
     "name": "DxpDeployNuGetPackage",
-    "friendlyName": "Deploy nuget package (Episerver DXP)",
-    "description": "Start a deploy of a nuget package to target environment for your DXP project. (Episerver DXP, former DXC)",
+    "friendlyName": "Deploy nuget package (Optimizely DXP)",
+    "description": "Start a deploy of a nuget package to target environment for your DXP project. (Optimizely DXP, former Episerver DXC)",
     "helpUrl": "https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/DeployNugetPackage.md",
     "helpMarkDown": "[Extension page](https://marketplace.visualstudio.com/items?itemName=epinova-sweden.epinova-dxp-deploy-extension)[Learn more about this task](https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/DeployNugetPackage.md)",
     "category": "Deploy",
@@ -12,7 +12,7 @@
     "author": "Ove Lartelius",
     "version": {
         "Major": 1,
-        "Minor": 3,
+        "Minor": 4,
         "Patch": 4
     },
     "groups": [

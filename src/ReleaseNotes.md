@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.1.8
+- Support EpiCloud v1.
+
 ## v2.0.3
 - Fix #176. Support Linux multiple package uploads.
 

@@ -1,4 +1,18 @@
 Write-Host "---Start---"
+
+function UpdateJson($jsonFilePath){
+  $a = Get-Content $jsonFilePath -raw | ConvertFrom-Json
+
+  $newFriendlyName = "$($a.friendlyName)-TEST"
+  $a.friendlyName = "$newFriendlyName"
+
+  $newName = "$($a.name)-TEST"
+  $a.name = "$newName"
+
+  $a | ConvertTo-Json -depth 32| set-content $jsonFilePath
+  Write-Host "Updated: $jsonFilePath"
+}
+
 $srcRootPath = (Get-Item * | Where-Object {$_.FullName.EndsWith("src")})
 
 Write-Host "Root: $srcRootPath"
@@ -8,16 +22,20 @@ foreach ($taskfile in $tasksfiles){
   $filePath = $taskfile.FullName
   Write-Host "Load task file: $filePath"
   if (Test-Path $filePath){
-    $a = Get-Content $filePath -raw | ConvertFrom-Json
-    $newFriendlyName = "$($a.friendlyName)-TEST"
-    $a.friendlyName = "$newFriendlyName"
-    Write-Host "Set friendlyName: $newFriendlyName"
-    $newName = "$($a.name)-TEST"
-    $a.name = "$newName"
-    Write-Host "Set name: $newName"
-
-    $a | ConvertTo-Json -depth 32| set-content $filePath
-    Write-Host "Save changes to: $filePath"
+    UpdateJson $filePath
+  }
+  else {
+      # Handle if we have directories for versions.
+      $subdir = Get-ChildItem -Path $d.FullName -Directory
+      foreach ($sd in $subdir){
+          #Write-Host "$($sd.FullName)"
+          $subfilePath = Join-Path -Path $sd.FullName -ChildPath "task.json"
+        
+          if (Test-Path $subfilePath){
+              #Write-Host $subfilePath
+              UpdateJson $subfilePath
+          }
+      }
   }
 }
 
