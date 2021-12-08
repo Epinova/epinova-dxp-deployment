@@ -34,13 +34,13 @@ try {
 
     . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
 
-    Install-AzStorage
+    #Install-AzStorage
      
     Mount-PsModulesPath
 
-    if (-not ($env:PSModulePath.Contains("C:\Modules\azurerm_6.7.0"))){
-        $env:PSModulePath = "C:\Modules\azurerm_6.7.0;" + $env:PSModulePath   
-    }
+    #if (-not ($env:PSModulePath.Contains("C:\Modules\azurerm_6.7.0"))){
+    #    $env:PSModulePath = "C:\Modules\azurerm_6.7.0;" + $env:PSModulePath   
+    #}
 
     Initialize-EpiCload
 
