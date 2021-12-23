@@ -3,7 +3,7 @@ trigger: none
 name: $(Date:yyyyMMdd)$(Rev:.r)
 
 pool:
-  name: EpinovaDxpDeploymentExtensionTestBuild_Ubuntu
+  name: Azure Pipelines
   vmImage: 'ubuntu-latest'
   demands: npm
 
