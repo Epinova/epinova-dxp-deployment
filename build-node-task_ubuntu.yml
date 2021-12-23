@@ -27,7 +27,16 @@ steps:
   displayName: '${{parameters.taskName}}: Cache npm packages'
   continueOnError: true
 
+# - task: PowerShell@2
+#   displayName: '${{parameters.taskName}}: Check cache hit'
+#   inputs:
+#     targetType: 'inline'
+#     script: |
+#       Write-Host "Cachehit: $npm_cache_hit"
+  #  workingDirectory: '${{parameters.extensionRoot}}/${{parameters.taskName}}'
+
 - task: Npm@1
+  condition: ne(variables.npm_cache_hit, 'true')
   displayName: '${{parameters.taskName}}: npm install'
   inputs:
     command: 'install'
