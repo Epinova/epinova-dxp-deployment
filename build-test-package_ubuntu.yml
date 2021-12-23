@@ -42,7 +42,7 @@ steps:
     displayName: 'npm install extension'
     inputs:
       command: 'install'
-      workingDir: '$(System.DefaultWorkingDirectory)\src'
+      workingDir: '$(System.DefaultWorkingDirectory)/src'
 
   - task: TfxInstaller@3
     displayName: 'Install Tfx Tool'
@@ -53,7 +53,7 @@ steps:
     displayName: 'Package Extension: src'
     inputs:
       rootFolder: src
-      outputPath: '$(Build.ArtifactStagingDirectory)\$(ExtensionFileName)$(ExtensionFileVersion).vsix'
+      outputPath: '$(Build.ArtifactStagingDirectory)/$(ExtensionFileName)$(ExtensionFileVersion).vsix'
       publisherId: '$(PublisherID)'
       extensionId: '$(ExtensionID)'
       extensionName: '$(ExtensionName)'
