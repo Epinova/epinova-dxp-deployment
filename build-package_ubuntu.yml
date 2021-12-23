@@ -1,0 +1,57 @@
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+
+name: $(Date:yyyyMMdd)$(Rev:.r)
+
+pool:
+  name: Azure Pipelines
+  vmImage: 'ubuntu-latest'
+  demands: npm
+
+variables:
+  buildnumber: $(Build.BuildNumber)
+  PublisherID: 'epinova-sweden'
+  ExtensionID: 'epinova-dxp-deploy-extension'
+  ExtensionName: 'Epinova DXP deployment'
+  ExtensionFileName: 'epinova-dxp-deploy-extension-'
+  ExtensionVisibility: 'public'
+
+steps:
+  # for each Node based task we must transpile it
+  - task: PowerShell@2
+    displayName: 'Get/Set extension version'
+    inputs:
+      targetType: filePath
+      filePath: ./BuildScripts/GetExtensionVersion.ps1 
+      arguments: -buildnumber $(buildnumber)
+
+  - task: PowerShell@2
+    displayName: 'Copy Scripts'
+    inputs:
+      targetType: filePath
+      filePath: ./BuildScripts/CopyScripts.ps1
+
+  - template: build-node-tasks.yml
+
+  - task: Npm@1
+    displayName: 'npm install extension'
+    inputs:
+      command: 'install'
+      workingDir: '$(System.DefaultWorkingDirectory)/src'
+
+  - task: TfxInstaller@3
+    displayName: 'Install Tfx Tool'
+    inputs:
+      version: 'v0.8.x'
+
+  - task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageAzureDevOpsExtension@3
+    displayName: 'Package Extension: src'
+    inputs:
+      rootFolder: src
+      outputPath: '$(Build.ArtifactStagingDirectory)/$(ExtensionFileName)$(ExtensionFileVersion).vsix'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: drop'
