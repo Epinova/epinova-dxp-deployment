@@ -1,4 +1,8 @@
-trigger: none
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
 
 name: $(Date:yyyyMMdd)$(Rev:.r)
 
@@ -10,10 +14,10 @@ pool:
 variables:
   buildnumber: $(Build.BuildNumber)
   PublisherID: 'epinova-sweden'
-  ExtensionID: 'd7aa7a0b-20b5-4d3b-aaea-a46a1d4d53ce'
-  ExtensionName: 'Epinova DXP deployment - TEST'
-  ExtensionFileName: 'epinova-dxp-deploy-extension-test-'
-  ExtensionVisibility: 'private'
+  ExtensionID: 'epinova-dxp-deploy-extension'
+  ExtensionName: 'Epinova DXP deployment'
+  ExtensionFileName: 'epinova-dxp-deploy-extension-'
+  ExtensionVisibility: 'public'
 
 steps:
   # for each Node based task we must transpile it
@@ -30,13 +34,7 @@ steps:
       targetType: filePath
       filePath: ./BuildScripts/CopyScripts.ps1
 
-  - template: build-node-tasks_ubuntu.yml
-
-  - task: PowerShell@2
-    displayName: 'Rename tasks to -TEST'
-    inputs:
-      targetType: filePath
-      filePath: ./BuildScripts/RenameTasksToTest.ps1
+  - template: build-node-tasks.yml
 
   - task: Npm@1
     displayName: 'npm install extension'
@@ -54,12 +52,6 @@ steps:
     inputs:
       rootFolder: src
       outputPath: '$(Build.ArtifactStagingDirectory)/$(ExtensionFileName)$(ExtensionFileVersion).vsix'
-      publisherId: '$(PublisherID)'
-      extensionId: '$(ExtensionID)'
-      extensionName: '$(ExtensionName)'
-      extensionVersion: '$(ExtensionVersion)'
-      updateTasksId: true # This is for TEST only. Need to find a nice solution for this when deploy the real version.
-      extensionVisibility: $(ExtensionVisibility)
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
