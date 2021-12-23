@@ -15,11 +15,13 @@ steps:
       Write-Host "Hash: $hashValue"
       $hashValue >> packagelockjsonhash.txt
       Write-Host "Hash File saved to ${{parameters.extensionRoot}}/${{parameters.taskName}}/packagelockjsonhash.txt"
+      Write-Host "##vso[task.setvariable variable=myHashValue;]"$hashValue
     workingDirectory: '${{parameters.extensionRoot}}/${{parameters.taskName}}'
 
 - task: CacheBeta@0 # speed up builds by caching node_modules folder
   inputs:
-    key: nuget|1|$(Agent.OS)|${{parameters.extensionRoot}}/${{parameters.taskName}}/packagelockjsonhash.txt # hash map generated in previous step
+    #key: nuget|1|$(Agent.OS)|${{parameters.extensionRoot}}/${{parameters.taskName}}/packagelockjsonhash.txt # hash map generated in previous step
+    key: nuget|1|$(Agent.OS)|$(myHashValue) # hash map generated in previous step
     path: ${{parameters.extensionRoot}}/${{parameters.taskName}}/node_modules
     cacheHitVar: 'npm_cache_hit' # variable that can be checked to see if it was successful
   displayName: '${{parameters.taskName}}: Cache npm packages'
