@@ -11,7 +11,7 @@ steps:
     targetType: 'inline'
     script: |
       # generates a hash of all package-lock.json and saves each on a single line on 'packagelockjsonhash.txt'
-      var hashValue = Get-FileHash -Algorithm MD5 -Path (Get-ChildItem package-lock.json -Recurse) | $.Hash
+      $hashValue = Get-FileHash -Algorithm MD5 -Path (Get-ChildItem package-lock.json -Recurse) | $.Hash
       Write-Host "Hash: $hashValue"
       Get-FileHash -Algorithm MD5 -Path (Get-ChildItem package-lock.json -Recurse) | $.Hash >> packagelockjsonhash.txt
       Write-Host "Hash File saved to ${{parameters.extensionRoot}}/${{parameters.taskName}}/packagelockjsonhash.txt"
