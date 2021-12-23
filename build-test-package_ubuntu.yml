@@ -30,7 +30,7 @@ steps:
       targetType: filePath
       filePath: ./BuildScripts/CopyScripts.ps1
 
-  - template: build-node-tasks.yml
+  - template: build-node-tasks_ubuntu.yml
 
   - task: PowerShell@2
     displayName: 'Rename tasks to -TEST'
