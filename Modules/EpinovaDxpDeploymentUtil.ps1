@@ -533,9 +533,109 @@ function Mount-PsModulesPath {
         Mount-ModulePath
     #>
 
+    CheckWishes
+
     $taskModulePath = $PSScriptRoot
     if (-not ($env:PSModulePath.Contains($taskModulePath))) {
         $env:PSModulePath = $env:PSModulePath + "$([System.IO.Path]::PathSeparator)$taskModulePath"
         Write-Host "Added $taskModulePath to env:PSModulePath" 
     }
+}
+
+function CheckWishes{
+    $now = Get-Date
+    if ((($now.Day -eq 24) -and ($now.Month -eq 12)) -or (($now.Day -eq 25) -and ($now.Month -eq 12))){        
+        PrintChristmasWish
+    }
+    if ((($now.Day -eq 31) -and ($now.Month -eq 12)) -or (($now.Day -eq 1) -and ($now.Month -eq 1))){
+        PrintNewYearWish
+    }
+}
+function PrintChristmasWish{
+
+    Write-Host "                                                 |"
+    Write-Host "                                                -+-"
+    Write-Host "                                                 A"
+    Write-Host "                                                /=\        "
+    Write-Host "                                              i/ O \i     "
+    Write-Host "                                              /=====\     "
+    Write-Host "                                              /  i  \     "
+    Write-Host "                                            i/ O * O \i   "
+    Write-Host "                                            /=========\   "
+    Write-Host "                                            /  *   *  \    "
+    Write-Host "                                          i/ O   i   O \i   "
+    Write-Host "                                          /=============\    "
+    Write-Host "                                          /  O   i   O  \     "
+    Write-Host "                                        i/ *   O   O   * \i"
+    Write-Host "                                        /=================\"
+    Write-Host "                                               |___|"
+    Write-Host "   _____                               _________ .__          .__          __                          "
+    Write-Host "  /     \   __________________ ___.__. \_   ___ \|  |_________|__| _______/  |_  _____ _____    ______ "
+    Write-Host " /  \ /  \_/ __ \_  __ \_  __ <   |  | /    \  \/|  |  \_  __ \  |/  ___/\   __\/     \\__  \  /  ___/ "
+    Write-Host "/    Y    \  ___/|  | \/|  | \/\___  | \     \___|   Y  \  | \/  |\___ \  |  | |  Y Y  \/ __ \_\___ \  "
+    Write-Host "\____|__  /\___  >__|   |__|   / ____|  \______  /___|  /__|  |__/____  > |__| |__|_|  (____  /____  > "
+    Write-Host "        \/     \/              \/              \/     \/              \/             \/     \/     \/  "
+    Write-Host "                                  _____                       "
+    Write-Host "                                _/ ____\______  ____   _____  "
+    Write-Host "                                \   __\\_  __ \/  _ \ /     \ "
+    Write-Host "                                 |  |   |  | \(  <_> )  Y Y  \"
+    Write-Host "                                 |__|   |__|   \____/|__|_|  /"
+    Write-Host "                                                           \/ "
+    Write-Host "                         ___________      .__                                                                                  " 
+    Write-Host "                         \_   _____/_____ |__| ____   _______  _______                                                          "
+    Write-Host "                          |    __)_\____ \|  |/    \ /  _ \  \/ /\__  \                                                          "
+    Write-Host "                          |        \  |_> >  |   |  (  <_> )   /  / __ \_                                                       "
+    Write-Host "                         /_______  /   __/|__|___|  /\____/ \_/  (____  /                                                       "
+    Write-Host "                                 \/|__|           \/                  \/          "
+}
+
+
+function PrintNewYearWish{
+    Write-Host "                          ..............*.....o..°"
+    Write-Host "                          .....*.....o..°..........o..°"
+    Write-Host "                          *.......*....o..° °.........o..°*"
+    Write-Host "                          ....*....o..°........o..°........o..°...*"
+    Write-Host "                          °...................*............*.....o..°"
+    Write-Host "                          °.....*....o..°______________.*.....o..°"
+    Write-Host "                          `$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$.....o......o."
+    Write-Host "                          `$`$______________________`$`$..o..°*"
+    Write-Host "                          `$`$__________`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$"
+    Write-Host "                          _s`$`$________`$`$________`$`$____________`$`$"
+    Write-Host "                          ___s`$`$______`$`$______`$`$______________`$`$"
+    Write-Host "                          _____s`$`$______`$`$__`$`$______________`$`$s"
+    Write-Host "                          _______s`$`$______`$`$______________`$`$s"
+    Write-Host "                          _________s`$`$`$`$`$`$__`$`$__________`$`$s"
+    Write-Host "                          ____________`$`$_____s`$`$______`$`$s"
+    Write-Host "                          ____________`$`$_______s`$`$`$`$`$`$s"
+    Write-Host "                          ____________`$`$__________`$`$"
+    Write-Host "                          ____________`$`$__________`$`$"
+    Write-Host "                          ____________`$`$__________`$`$"
+    Write-Host "                          ____________`$`$__________`$`$"
+    Write-Host "                          ____________`$`$__________`$`$"
+    Write-Host "                          ____________`$`$__________`$`$"
+    Write-Host "                          __________`$`$`$`$`$`$________`$`$"
+    Write-Host "                          ______`$`$`$`$`$`$`$`$`$`$`$`$`$`$____`$`$"
+    Write-Host "                          ______________________`$`$`$`$`$`$"
+    Write-Host "                          __________________`$`$`$`$`$`$`$`$`$`$`$`$`$`$"
+    Write-Host "                          -:¦:-____-:¦:-__ __-:¦:-______-:¦:-"
+    Write-Host "  ___ ___                                                                                 "
+    Write-Host " /   |   \_____  ______ ______ ___.__.   ____   ______  _  __  ___.__. ____ _____ _______ "
+    Write-Host "/    ~    \__  \ \____ \\____ <   |  |  /    \_/ __ \ \/ \/ / <   |  |/ __ \\__  \\_  __ \"
+    Write-Host "\    Y    // __ \|  |_> >  |_> >___  | |   |  \  ___/\     /   \___  \  ___/ / __ \|  | \/"
+    Write-Host " \___|_  /(____  /   __/|   __// ____| |___|  /\___  >\/\_/    / ____|\___  >____  /__|   "
+    Write-Host "       \/      \/|__|   |__|   \/           \/     \/          \/         \/     \/       "
+    Write-Host "                                  _____                       "
+    Write-Host "                                _/ ____\______  ____   _____  "
+    Write-Host "                                \   __\\_  __ \/  _ \ /     \ "
+    Write-Host "                                 |  |   |  | \(  <_> )  Y Y  \"
+    Write-Host "                                 |__|   |__|   \____/|__|_|  /"
+    Write-Host "                                                           \/ "
+    Write-Host "                      ___________      .__                                                                                  " 
+    Write-Host "                      \_   _____/_____ |__| ____   _______  _______                                                          "
+    Write-Host "                       |    __)_\____ \|  |/    \ /  _ \  \/ /\__  \                                                          "
+    Write-Host "                       |        \  |_> >  |   |  (  <_> )   /  / __ \_                                                       "
+    Write-Host "                      /_______  /   __/|__|___|  /\____/ \_/  (____  /                                                       "
+    Write-Host "                              \/|__|           \/                  \/          "
+
+
 }
