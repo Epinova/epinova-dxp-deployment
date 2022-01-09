@@ -82,7 +82,7 @@ try {
         }
         catch{
             $errMsg = $_.Exception.ToString()
-            if ($errMsg.Contains("lease")){
+            if ($errMsg.Contains("is already linked to a deployment and cannot be overwritten")){
                 Write-Host "cms package already exist in container."
             } else {
                 Write-Error $errMsg
@@ -109,7 +109,7 @@ try {
         }
         catch{
             $errMsg = $_.Exception.ToString()
-            if ($errMsg.Contains("lease")){
+            if ($errMsg.Contains("is already linked to a deployment and cannot be overwritten")){
                 Write-Host "commerce package already exist in container."
             } else {
                 Write-Error $errMsg
