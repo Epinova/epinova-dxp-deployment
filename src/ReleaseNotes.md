@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.1.10
+- Handle exception "A package named '$BlobName' is already linked to a deployment and cannot be overwritten." from Linux environment. Do not handle it as error.
+
 ## v2.1.9
 - Treat......
 
