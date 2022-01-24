@@ -353,7 +353,7 @@ function Join-Parts {
         [string]$Separator = ''
     )
 
-    ($Parts | Where-Object { $_ } | ForEach-Object { ([string]$_).trim($Separator) } | Where-Object { $_ } ) -join $Separator 
+    ($Parts | Where-Object { $_ } | ForEach-Object { ([string]$_) } | Where-Object { $_ } ) -join $Separator 
 }
 
 function Get-DxpDateTimeStamp{
@@ -835,7 +835,7 @@ function Invoke-DownloadStorageAccountFiles{
                 break
             }
 
-            $filePath = Join-Parts -Separator '\' -Parts $DownloadFolder, $blobContent.Name
+            $filePath = (Join-Parts -Separator '\' -Parts $DownloadFolder, $blobContent.Name.Replace("/", "\"))
             $fileExist = Test-Path $filePath -PathType Leaf
 
             if ($fileExist -eq $false -or $true -eq $OverwriteExistingFiles){
