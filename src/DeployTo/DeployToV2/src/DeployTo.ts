@@ -66,8 +66,8 @@ export async function run() {
         "-IncludeDb", IncludeDb
         ];
         if (ZeroDowntimeMode) {
-            args.push("-ZeroDowntimeMode");
-            args.push(ZeroDowntimeMode);
+            argsShow.push("-ZeroDowntimeMode");
+            argsShow.push(ZeroDowntimeMode);
         }
 
         logInfo(`${executable} ${argsShow.join(" ")}`);

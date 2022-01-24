@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.1.11
+- DeployToV2 bug fix regarding ZeroDowntimeMode. Thanks @TimotheeWeiss!
+
 ## v2.1.10
 - Handle exception "A package named '$BlobName' is already linked to a deployment and cannot be overwritten." from Linux environment. Do not handle it as error.
 
