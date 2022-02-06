@@ -13,7 +13,7 @@
     "version": {
         "Major": 2,
         "Minor": 2,
-        "Patch": 0
+        "Patch": 1
     },
     "groups": [
         {
@@ -113,8 +113,8 @@
             "type": "string",
             "label": "Warmup after direct deploy",
             "required": false,
-            "defaultValue": "$(Integration.Url)",
-            "helpMarkDown": "Specify the URL to webapplication to warmup after 'Direct deploy'. It will load the specified page and also request all found links on the page.",
+            "defaultValue": "",
+            "helpMarkDown": "Specify the URL to webapplication to warmup after 'Direct deploy'. It will load the specified page and also request all found links on the page. A tip for value is '$(Integration.Url)'.",
             "groupName": "Settings"
         },
         {

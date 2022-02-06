@@ -699,7 +699,7 @@ function Invoke-WarmupSite{
         if ($Url.EndsWith("/")) {
             $Url = $Url.Substring(0, $Url.Length - 1)
         }
-        $response = Invoke-WebRequest -Uri $Url -UseBasicParsing -Verbose:$false -MaximumRedirection 1
+        $response = Invoke-WebRequest -Uri $Url -UseBasicParsing -Verbose:$false -MaximumRedirection 1 -TimeoutSec 300
     
         if ($null -ne $response){ 
             foreach ($link in $response.Links){
