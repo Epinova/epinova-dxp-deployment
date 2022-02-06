@@ -669,6 +669,7 @@ function Invoke-WarmupRequest {
         #$_.Exception.Response
         $statusCode = $_.Exception.Response.StatusCode.value__
         Write-Host "Could not request $RequestUrl. Something went wrong. $statusCode"
+        Write-Host $_.Exception.Message
     }
     $ProgressPreference = 'Continue'
 }
@@ -699,6 +700,7 @@ function Invoke-WarmupSite{
         if ($Url.EndsWith("/")) {
             $Url = $Url.Substring(0, $Url.Length - 1)
         }
+        Write-Host "Invoke-WebRequest -Uri $Url"
         $response = Invoke-WebRequest -Uri $Url -UseBasicParsing -Verbose:$false -MaximumRedirection 1 -TimeoutSec 300
     
         if ($null -ne $response){ 
@@ -722,5 +724,6 @@ function Invoke-WarmupSite{
         }
     } catch {
         Write-Warning "Could not warmup $Url"
+        Write-Host $_.Exception.Message
     }
 }
