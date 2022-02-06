@@ -59,6 +59,15 @@ Specify if you want to do a direct deploy without using slot and warmup.
 **Example:** `true`  
 **Default value:** `false`
 
+#### Warm up URL
+**[string]** 
+Specify if you want to warm-up the webapplication after direct deploy. It will request the specified URL and all links found on the page.  
+If there is some tests running against the webapplication with direct deploy there is a problem that the webapplication is not started and warmed up.  
+This should solve this problem.  
+**Example1:** `https://dikl06mstr3pe5minte.dxcloud.episerver.net/`  
+**Example2:** `$(Integration.Url)`  
+**Default value:** `$(Integration.Url)`
+
 #### Use maintenance page
 **[boolean]** - **required**  
 Specify if you want to use a maintenance page during the deploy.  
@@ -121,6 +130,22 @@ Example v2:
     TargetEnvironment: 'Integration'  
     SourceApp: 'cms'  
     DirectDeploy: true  
+    UseMaintenancePage: false  
+    Timeout: 1800  
+```
+
+Example v3:  
+```yaml
+- task: DxpDeployNuGetPackage@2  
+    inputs:  
+    ClientKey: '$(ClientKey)'  
+    ClientSecret: '$(ClientSecret)'  
+    ProjectId: '$(DXP.ProjectId)'  
+    DropPath: '$(System.DefaultWorkingDirectory)\drop'  
+    TargetEnvironment: 'Integration'  
+    SourceApp: 'cms'  
+    DirectDeploy: true  
+    WarmUpUrl: '$(Integration.Url)'
     UseMaintenancePage: false  
     Timeout: 1800  
 ```
