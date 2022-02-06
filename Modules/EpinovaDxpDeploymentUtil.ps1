@@ -696,34 +696,44 @@ function Invoke-WarmupSite{
         [String] $Url
     )
 
-    try {
-        if ($Url.EndsWith("/")) {
-            $Url = $Url.Substring(0, $Url.Length - 1)
-        }
-        Write-Host "Invoke-WebRequest -Uri $Url"
-        $response = Invoke-WebRequest -Uri $Url -UseBasicParsing -Verbose:$false -MaximumRedirection 1 -TimeoutSec 300
-    
-        if ($null -ne $response){ 
-            foreach ($link in $response.Links){
-                if ($null -ne $link -and $null -ne $link.href) {
-                    if ($link.href.StartsWith("/") -and $false -eq $link.href.StartsWith("//")){
-                        $newUrl = $Url + $link.href
-                        Write-Host $newUrl
-                        Invoke-WarmupRequest -requestUrl $newUrl
-                    } elseif ($link.href.StartsWith($Url)) {
-                        Write-Host $link.href
-                        Invoke-WarmupRequest -requestUrl $link.href
-                    } #else { #Used for debuging
-                    #    Write-Warning "Not: $($link.href)" 
-                    #}
+    if ($Url.EndsWith("/")) {
+        $Url = $Url.Substring(0, $Url.Length - 1)
+    }
+
+    $iterator = 0
+
+    while ($iterator -lt 3) {
+        try {
+            Write-Host "Invoke-WebRequest -Uri $Url"
+            $response = Invoke-WebRequest -Uri $Url -UseBasicParsing -Verbose:$false -MaximumRedirection 1 -TimeoutSec 300
+        
+            if ($null -ne $response){ 
+                foreach ($link in $response.Links){
+                    if ($null -ne $link -and $null -ne $link.href) {
+                        if ($link.href.StartsWith("/") -and $false -eq $link.href.StartsWith("//")){
+                            $newUrl = $Url + $link.href
+                            Write-Host $newUrl
+                            Invoke-WarmupRequest -requestUrl $newUrl
+                        } elseif ($link.href.StartsWith($Url)) {
+                            Write-Host $link.href
+                            Invoke-WarmupRequest -requestUrl $link.href
+                        } #else { #Used for debuging
+                        #    Write-Warning "Not: $($link.href)" 
+                        #}
+                    }
                 }
+                Write-Host "Warm up site $Url - done."
+                $iterator = 999
+            } else {
+                Write-Warning "Could not request $Url. response = null"
             }
-            Write-Host "Warm up site $Url - done."
-        } else {
-            Write-Warning "Could not request $Url. response = null"
+        } catch {
+            Write-Warning "Could not warmup $Url"
+            Write-Host $_.Exception.Message
+            if ($iterator -lt 3){
+                Write-Host "Will try again ($iterator)"
+            }
+            $iterator++
         }
-    } catch {
-        Write-Warning "Could not warmup $Url"
-        Write-Host $_.Exception.Message
     }
 }
