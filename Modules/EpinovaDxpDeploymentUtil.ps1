@@ -706,7 +706,7 @@ function Invoke-WarmupSite{
         try {
             Write-Host "Invoke-WebRequest -Uri $Url"
             $response = Invoke-WebRequest -Uri $Url -UseBasicParsing -Verbose:$false -MaximumRedirection 1 -TimeoutSec 120
-        
+            $iterator = 999
             if ($null -ne $response){ 
                 foreach ($link in $response.Links){
                     if ($null -ne $link -and $null -ne $link.href) {
@@ -723,7 +723,6 @@ function Invoke-WarmupSite{
                     }
                 }
                 Write-Host "Warm up site $Url - done."
-                $iterator = 999
             } else {
                 Write-Warning "Could not request $Url. response = null"
             }
