@@ -702,10 +702,10 @@ function Invoke-WarmupSite{
 
     $iterator = 0
 
-    while ($iterator -lt 3) {
+    while ($iterator -lt 10) {
         try {
             Write-Host "Invoke-WebRequest -Uri $Url"
-            $response = Invoke-WebRequest -Uri $Url -UseBasicParsing -Verbose:$false -MaximumRedirection 1 -TimeoutSec 300
+            $response = Invoke-WebRequest -Uri $Url -UseBasicParsing -Verbose:$false -MaximumRedirection 1 -TimeoutSec 120
         
             if ($null -ne $response){ 
                 foreach ($link in $response.Links){
@@ -730,8 +730,10 @@ function Invoke-WarmupSite{
         } catch {
             Write-Warning "Could not warmup $Url"
             Write-Host $_.Exception.Message
-            if ($iterator -lt 3){
+            if ($iterator -lt 9){
                 Write-Host "Will try again ($iterator)"
+            } else {
+                Write-Host "Will stop trying to warm up the web application."
             }
             $iterator++
         }
