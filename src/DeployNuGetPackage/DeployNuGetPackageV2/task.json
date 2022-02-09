@@ -13,7 +13,7 @@
     "version": {
         "Major": 2,
         "Minor": 2,
-        "Patch": 6
+        "Patch": 7
     },
     "groups": [
         {
@@ -106,7 +106,8 @@
             "required": true,
             "defaultValue": "false",
             "helpMarkDown": "If you should skip slot and other time consuming stuff and just deploy to environment.",
-            "groupName": "Settings"
+            "groupName": "Settings",
+            "visibleRule": "TargetEnvironment = Integration"
         },
         {
             "name": "WarmUpUrl",
@@ -115,7 +116,8 @@
             "required": false,
             "defaultValue": "",
             "helpMarkDown": "Specify the URL to web application to warm-up after 'Direct deploy'. It will load the specified page and also request all found links on the page. A tip for value is '$(Integration.Url)'.",
-            "groupName": "Settings"
+            "groupName": "Settings",
+            "visibleRule": "TargetEnvironment = Integration && DirectDeploy = true"
         },
         {
             "name": "UseMaintenancePage",
