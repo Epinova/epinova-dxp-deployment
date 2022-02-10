@@ -43,11 +43,14 @@ export async function run() {
         "-TargetEnvironment", TargetEnvironment,
         "-SourceApp", SourceApp,
         "-DirectDeploy", DirectDeploy,
-        "-WarmUpUrl", WarmUpUrl,
         "-UseMaintenancePage", UseMaintenancePage,
         "-DropPath", DropPath,
         "-Timeout", Timeout
         ];
+        if (WarmUpUrl) {
+            args.push("-WarmUpUrl");
+            args.push(WarmUpUrl);
+        }
         if (ZeroDowntimeMode) {
             args.push("-ZeroDowntimeMode");
             args.push(ZeroDowntimeMode);
@@ -60,11 +63,14 @@ export async function run() {
         "-TargetEnvironment", TargetEnvironment,
         "-SourceApp", SourceApp,
         "-DirectDeploy", DirectDeploy,
-        "-WarmUpUrl", WarmUpUrl,
         "-UseMaintenancePage", UseMaintenancePage,
         "-DropPath", DropPath,
         "-Timeout", Timeout
         ];
+        if (WarmUpUrl) {
+            argsShow.push("-WarmUpUrl");
+            argsShow.push(WarmUpUrl);
+        }
         if (ZeroDowntimeMode) {
             argsShow.push("-ZeroDowntimeMode");
             argsShow.push(ZeroDowntimeMode);
