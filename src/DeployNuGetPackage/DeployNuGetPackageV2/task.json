@@ -13,7 +13,7 @@
     "version": {
         "Major": 2,
         "Minor": 2,
-        "Patch": 11
+        "Patch": 14
     },
     "groups": [
         {
@@ -130,14 +130,14 @@
         },
         {
             "name": "ZeroDowntimeMode",
-            "type": "radio",
+            "type": "pickList",
             "label": "Zero Downtime Mode",
             "required": false,
             "defaultValue": "",
             "helpMarkDown": "The type of smooth deployment you want to use. [More information about zero downtime mode](https://world.optimizely.com/documentation/developer-guides/digital-experience-platform/deploying/deployment-process/smooth-deploy/)",
             "groupName": "Settings",
             "options": {
-                "NotSpecified": "NotSpecified",
+                "NotSpecified": "",
                 "ReadOnly": "ReadOnly",
                 "ReadWrite": "ReadWrite"
             }

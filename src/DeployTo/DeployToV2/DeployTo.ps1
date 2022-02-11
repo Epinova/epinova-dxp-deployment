@@ -60,7 +60,7 @@ try {
 
     $sourceApps = $sourceApp.Split(",")
 
-    if ($null -eq $zeroDowntimeMode -or $zeroDowntimeMode -eq "" -or $zeroDowntimeMode -eq "Not specified") {
+    if ($null -eq $zeroDowntimeMode -or $zeroDowntimeMode -eq "" -or $zeroDowntimeMode -eq "NotSpecified") {
         $startEpiDeploymentSplat = @{
             ProjectId          = $projectId
             SourceEnvironment  = $sourceEnvironment
