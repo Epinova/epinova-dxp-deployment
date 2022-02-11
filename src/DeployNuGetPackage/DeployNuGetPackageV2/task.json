@@ -13,7 +13,7 @@
     "version": {
         "Major": 2,
         "Minor": 2,
-        "Patch": 9
+        "Patch": 10
     },
     "groups": [
         {
@@ -137,7 +137,7 @@
             "helpMarkDown": "The type of smooth deployment you want to use. [More information about zero downtime mode](https://world.optimizely.com/documentation/developer-guides/digital-experience-platform/deploying/deployment-process/smooth-deploy/)",
             "groupName": "Settings",
             "options": {
-                "Not specified": "",
+                "": "",
                 "ReadOnly": "ReadOnly",
                 "ReadWrite": "ReadWrite"
             }
