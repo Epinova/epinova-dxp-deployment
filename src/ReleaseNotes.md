@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.2.12
+- DeployNuGetPackage.v2: Added warm-up support after Direct deploy when webapplication is not warmed up by environment automatically. This request the specified URL and also follow all the links that can be found on that page.
+
 ## v2.1.11
 - DeployToV2 bug fix regarding ZeroDowntimeMode. Thanks @TimotheeWeiss!
 

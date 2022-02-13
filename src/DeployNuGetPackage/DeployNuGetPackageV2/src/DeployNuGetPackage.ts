@@ -15,6 +15,7 @@ export async function run() {
         let TargetEnvironment = tl.getInput("TargetEnvironment");
         let SourceApp = tl.getInput("SourceApp");
         let DirectDeploy = tl.getBoolInput("DirectDeploy", false);
+        let WarmUpUrl = tl.getInput("WarmUpUrl");
         let UseMaintenancePage = tl.getBoolInput("UseMaintenancePage", false);
         let DropPath = tl.getInput("DropPath");
         let Timeout = tl.getInput("Timeout");
@@ -46,6 +47,10 @@ export async function run() {
         "-DropPath", DropPath,
         "-Timeout", Timeout
         ];
+        if (WarmUpUrl) {
+            args.push("-WarmUpUrl");
+            args.push(WarmUpUrl);
+        }
         if (ZeroDowntimeMode) {
             args.push("-ZeroDowntimeMode");
             args.push(ZeroDowntimeMode);
@@ -62,6 +67,10 @@ export async function run() {
         "-DropPath", DropPath,
         "-Timeout", Timeout
         ];
+        if (WarmUpUrl) {
+            argsShow.push("-WarmUpUrl");
+            argsShow.push(WarmUpUrl);
+        }
         if (ZeroDowntimeMode) {
             argsShow.push("-ZeroDowntimeMode");
             argsShow.push(ZeroDowntimeMode);

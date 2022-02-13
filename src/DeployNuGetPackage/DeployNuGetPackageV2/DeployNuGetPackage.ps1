@@ -6,6 +6,7 @@ Param(
     $TargetEnvironment,
     $SourceApp,
     $DirectDeploy,
+    $WarmUpUrl,
     $UseMaintenancePage,
     $DropPath,
     $Timeout,
@@ -20,6 +21,7 @@ try {
     $targetEnvironment = $TargetEnvironment
     $sourceApp = $SourceApp
     [Boolean]$directDeploy = [System.Convert]::ToBoolean($DirectDeploy)
+    $warmupThisUrl = $WarmUpUrl
     [Boolean]$useMaintenancePage = [System.Convert]::ToBoolean($UseMaintenancePage)
     $dropPath = $DropPath
     $timeout = $Timeout
@@ -37,6 +39,7 @@ try {
     Write-Host "TargetEnvironment:  $targetEnvironment"
     Write-Host "SourceApp:          $sourceApp"
     Write-Host "DirectDeploy:       $directDeploy"
+    Write-Host "Warm-up URL:        $warmupThisUrl"
     Write-Host "UseMaintenancePage: $useMaintenancePage"
     Write-Host "DropPath:           $dropPath"
     Write-Host "Timeout:            $timeout"
@@ -122,7 +125,7 @@ try {
         $myPackages = $resolvedCmsPackagePath, $resolvedCommercePackagePath
     }
 
-    if ($null -eq $zeroDowntimeMode -or $zeroDowntimeMode -eq "" -or $zeroDowntimeMode -eq "Not specified") {
+    if ($null -eq $zeroDowntimeMode -or $zeroDowntimeMode -eq "" -or $zeroDowntimeMode -eq "NotSpecified") {
         $startEpiDeploymentSplat = @{
             DeploymentPackage  = $myPackages
             ProjectId          = $projectId
@@ -164,6 +167,10 @@ try {
 
         if ($status.status -eq $expectedStatus) {
             Write-Host "Deployment $deploymentId has been successful."
+
+            if ($true -eq $directDeploy -and $null -ne $warmupThisUrl -and $warmupThisUrl.length -gt 0){ #Warmup when direct deploy.
+                Invoke-WarmupSite $warmupThisUrl
+            }
         }
         else {
             Write-Warning "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"

@@ -12,8 +12,8 @@
     "author": "Ove Lartelius",
     "version": {
         "Major": 2,
-        "Minor": 1,
-        "Patch": 8
+        "Minor": 2,
+        "Patch": 14
     },
     "groups": [
         {
@@ -32,7 +32,7 @@
             "isExpanded": false
         }
     ],
-    "releaseNotes": "Cross platform support. Support Linux multiple package uploads.",
+    "releaseNotes": "2.2: Warmup support after DirectDeploy.",
     "minimumAgentVersion": "2.134.0",
     "inputs": [
         {
@@ -106,7 +106,18 @@
             "required": true,
             "defaultValue": "false",
             "helpMarkDown": "If you should skip slot and other time consuming stuff and just deploy to environment.",
-            "groupName": "Settings"
+            "groupName": "Settings",
+            "visibleRule": "TargetEnvironment = Integration"
+        },
+        {
+            "name": "WarmUpUrl",
+            "type": "string",
+            "label": "Warm-up after direct deploy",
+            "required": false,
+            "defaultValue": "",
+            "helpMarkDown": "Specify the URL to web application to warm-up after 'Direct deploy'. It will load the specified page and also request all found links on the page. A tip for value is '$(Integration.Url)'.",
+            "groupName": "Settings",
+            "visibleRule": "TargetEnvironment = Integration && DirectDeploy = true"
         },
         {
             "name": "UseMaintenancePage",
@@ -126,7 +137,7 @@
             "helpMarkDown": "The type of smooth deployment you want to use. [More information about zero downtime mode](https://world.optimizely.com/documentation/developer-guides/digital-experience-platform/deploying/deployment-process/smooth-deploy/)",
             "groupName": "Settings",
             "options": {
-                "Not specified": "",
+                "NotSpecified": "",
                 "ReadOnly": "ReadOnly",
                 "ReadWrite": "ReadWrite"
             }
