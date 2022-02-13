@@ -1,5 +1,5 @@
 {
-    "name": "NodePsTaskWrapper",
+    "name": "node-ps-task-wrapper",
     "description": "Node PS Task Wrapper To Load on non Windows OS",
     "scripts": {
         "build": "npm run clean && npm run transpile",

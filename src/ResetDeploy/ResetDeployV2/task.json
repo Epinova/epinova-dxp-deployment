@@ -2,7 +2,7 @@
     "id": "b833e451-9403-4b15-8cd1-478d48236609",
     "name": "DxpResetDeploy",
     "friendlyName": "Reset deploy (Optimizely DXP)",
-    "description": "Reset the verification 'slot'. The script will try to get the deplot that is in AwaitingVerification and start do a reset on that deploy. (Optimizely DXP, former Episerver DXC)",
+    "description": "Reset the verification 'slot'. The script will try to get the deploy that is in AwaitingVerification and start do a reset on that deploy. (Optimizely DXP, former Episerver DXC)",
     "helpUrl": "https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/ResetDeploy.md",
     "helpMarkDown": "[Extension page](https://marketplace.visualstudio.com/items?itemName=epinova-sweden.epinova-dxp-deploy-extension)[Learn more about this task](https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/ResetDeploy.md)",
     "category": "Deploy",
@@ -13,7 +13,7 @@
     "version": {
         "Major": 2,
         "Minor": 1,
-        "Patch": 3
+        "Patch": 4
     },
     "groups": [
         {

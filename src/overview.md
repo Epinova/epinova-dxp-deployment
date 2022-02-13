@@ -17,6 +17,7 @@ Tasks
 ### Deploy nuget package (Optimizely DXP) ###  
 Take a NuGet package from your drop folder in Azure DevOps and upload it to your Optimizely (formerly known as Episerver) DXP project and start a deployment to the specified environment.  
 Support DirectDeploy and Smooth deployment (Zero downtime deployment).     
+Buildt in warm up function exist so that you can warm up your web application after direct deploy when warm up is not done by the DXP environment automatically.
   
 ### Deploy To (Optimizely DXP) ###
 Do the same thing like the "Deploy to =>" button in the portal. It moves the deployed code from one environment to another.  
