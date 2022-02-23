@@ -107,7 +107,7 @@ try {
         }
     
         try{
-            Add-EpiDeploymentPackage -SasUrl $packageLocation -Path $resolvedCmsPackagePath.FullName
+            Add-EpiDeploymentPackage -SasUrl $packageLocation -Path $resolvedCommercePackagePath.FullName
             Write-Host "commerce package $resolvedCmsPackagePath is uploaded."
         }
         catch{
