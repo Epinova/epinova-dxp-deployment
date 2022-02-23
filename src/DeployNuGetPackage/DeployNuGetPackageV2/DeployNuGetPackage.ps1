@@ -107,8 +107,8 @@ try {
         }
     
         try{
-            Add-EpiDeploymentPackage -SasUrl $packageLocation -Path $resolvedCmsPackagePath.FullName
-            Write-Host "commerce package $resolvedCmsPackagePath is uploaded."
+            Add-EpiDeploymentPackage -SasUrl $packageLocation -Path $resolvedCommercePackagePath.FullName
+            Write-Host "commerce package $resolvedCommercePackagePath is uploaded."
         }
         catch{
             $errMsg = $_.Exception.ToString()
