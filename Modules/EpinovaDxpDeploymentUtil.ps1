@@ -589,7 +589,6 @@ function PrintChristmasWish{
     Write-Host "                                 \/|__|           \/                  \/          "
 }
 
-
 function PrintNewYearWish{
     Write-Host "                          ..............*.....o..°"
     Write-Host "                          .....*.....o..°..........o..°"

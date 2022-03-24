@@ -78,6 +78,11 @@ try {
             Write-Error "Could not find the cms package in location $dropPath." -ErrorAction Stop
             exit 1
         }
+
+        if ($true -eq $resolvedCmsPackagePath.Name.Contains(" ")) {
+            $newName = $resolvedCmsPackagePath.Name.Replace(" " , "")
+            Write-Error "Package name contains space(s). Due to none support for spaces in EpiCloud API, you need to change the package name '$($resolvedCmsPackagePath.Name)' => '$newName'."
+        }
     
         try{
             Add-EpiDeploymentPackage -SasUrl $packageLocation -Path $resolvedCmsPackagePath.FullName
@@ -105,7 +110,12 @@ try {
             Write-Error "Could not find the commerce package in location $dropPath." -ErrorAction Stop
             exit 1
         }
-    
+
+        if ($true -eq $resolvedCommercePackagePath.Name.Contains(" ")) {
+            $newName = $resolvedCommercePackagePath.Name.Replace(" " , "")
+            Write-Error "Package name contains space(s). Due to none support for spaces in EpiCloud API, you need to change the package name '$($resolvedCommercePackagePath.Name)' => '$newName'."
+        }
+
         try{
             Add-EpiDeploymentPackage -SasUrl $packageLocation -Path $resolvedCommercePackagePath.FullName
             Write-Host "commerce package $resolvedCommercePackagePath is uploaded."
