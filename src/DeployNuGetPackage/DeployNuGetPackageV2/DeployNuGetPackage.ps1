@@ -67,72 +67,23 @@ try {
     $packageLocation = Get-EpiDeploymentPackageLocation -ProjectId $projectId
     Write-Host "PackageLocation:    $packageLocation"
 
-    $resolvedCmsPackagePath = $null
+    $uploadedCmsPackage = $null
     if ($sourceApp -eq "cms" -or $sourceApp -eq "cms,commerce"){
-        $resolvedCmsPackagePath = Get-ChildItem -Path $dropPath -Filter *.cms.*.nupkg
-        Write-Host "Cms PackagePath:    $resolvedCmsPackagePath"
-    
-        if ($null -eq $resolvedCmsPackagePath){
-            Write-Host "Following files found in location $dropPath : $(Get-ChildItem -Path $dropPath -File)"
-            Write-Host "##vso[task.logissue type=error]Could not find the cms package in location $dropPath."
-            Write-Error "Could not find the cms package in location $dropPath." -ErrorAction Stop
-            exit 1
+        $uploadedCmsPackage = Publish-Package -PackageType "cms" -DropPath $dropPath -PackageLocation $packageLocation
+        if ($uploadedCmsPackage){
+            $myPackages = $uploadedCmsPackage
         }
-
-        if ($true -eq $resolvedCmsPackagePath.Name.Contains(" ")) {
-            $newName = $resolvedCmsPackagePath.Name.Replace(" " , "")
-            Write-Error "Package name contains space(s). Due to none support for spaces in EpiCloud API, you need to change the package name '$($resolvedCmsPackagePath.Name)' => '$newName'."
-        }
-    
-        try{
-            Add-EpiDeploymentPackage -SasUrl $packageLocation -Path $resolvedCmsPackagePath.FullName
-            Write-Host "cms package $resolvedCmsPackagePath is uploaded."
-        }
-        catch{
-            $errMsg = $_.Exception.ToString()
-            if ($errMsg.Contains("is already linked to a deployment and cannot be overwritten")){
-                Write-Host "cms package already exist in container."
-            } else {
-                Write-Error $errMsg
-            }
-        }
-        $myPackages = $resolvedCmsPackagePath.Name
     }
-
-    $resolvedCommercePackagePath = $null
+    $uploadedCommercePackage = $null
     if ($sourceApp -eq "commerce" -or $sourceApp -eq "cms,commerce"){
-        $resolvedCommercePackagePath = Get-ChildItem -Path $dropPath -Filter *.commerce.*.nupkg
-        Write-Host "Commerce PackagePath: $resolvedCommercePackagePath"
-    
-        if ($null -eq $resolvedCommercePackagePath){
-            Write-Host "Following files found in location $dropPath : $(Get-ChildItem -Path $dropPath -File)"
-            Write-Host "##vso[task.logissue type=error]Could not find the commerce package in location $dropPath."
-            Write-Error "Could not find the commerce package in location $dropPath." -ErrorAction Stop
-            exit 1
+        $uploadedCommercePackage = Publish-Package -PackageType "commerce" -DropPath $dropPath -PackageLocation $packageLocation
+        if ($uploadedCommercePackage){
+            $myPackages = $uploadedCommercePackage
         }
-
-        if ($true -eq $resolvedCommercePackagePath.Name.Contains(" ")) {
-            $newName = $resolvedCommercePackagePath.Name.Replace(" " , "")
-            Write-Error "Package name contains space(s). Due to none support for spaces in EpiCloud API, you need to change the package name '$($resolvedCommercePackagePath.Name)' => '$newName'."
-        }
-
-        try{
-            Add-EpiDeploymentPackage -SasUrl $packageLocation -Path $resolvedCommercePackagePath.FullName
-            Write-Host "commerce package $resolvedCommercePackagePath is uploaded."
-        }
-        catch{
-            $errMsg = $_.Exception.ToString()
-            if ($errMsg.Contains("is already linked to a deployment and cannot be overwritten")){
-                Write-Host "commerce package already exist in container."
-            } else {
-                Write-Error $errMsg
-            }
-        }
-        $myPackages = $resolvedCommercePackagePath.Name
     }
 
-    if ($null -ne $resolvedCmsPackagePath -and $null -ne $resolvedCommercePackagePath){
-        $myPackages = $resolvedCmsPackagePath, $resolvedCommercePackagePath
+    if ($uploadedCmsPackage -and $uploadedCommercePackage){
+        $myPackages = $uploadedCmsPackage, $uploadedCommercePackage
     }
 
     if ($null -eq $zeroDowntimeMode -or $zeroDowntimeMode -eq "" -or $zeroDowntimeMode -eq "NotSpecified") {
