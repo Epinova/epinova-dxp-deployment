@@ -589,7 +589,6 @@ function PrintChristmasWish{
     Write-Host "                                 \/|__|           \/                  \/          "
 }
 
-
 function PrintNewYearWish{
     Write-Host "                          ..............*.....o..°"
     Write-Host "                          .....*.....o..°..........o..°"
@@ -737,4 +736,120 @@ function Invoke-WarmupSite{
             $iterator++
         }
     }
+}
+
+function Test-PackageFile {
+    <#
+    .SYNOPSIS
+        Test package file
+
+    .DESCRIPTION
+        Test if package file is empty/null.
+
+    .PARAMETER PackageFile
+
+    .PARAMETER DropPath
+
+    .PARAMETER PackageFile
+
+    .EXAMPLE
+        $packageFile = Get-ChildItem -Path $dropPath -Filter *.cms.*.nupkg
+        Test-PackageFile -PackageType "cms" -DropPath $dropPath -PackageFile $packageFile
+    #>
+	param
+	(
+		[Parameter(Mandatory = $true)]
+		[string]$PackageType,
+		[Parameter(Mandatory = $true)]
+		[string]$DropPath,
+		[Parameter(Mandatory = $true)]
+		[System.IO.FileSystemInfo]$PackageFile
+	)
+
+    if ($null -eq $PackageFile){
+        Write-Host "Following files found in location $DropPath : $(Get-ChildItem -Path $DropPath -File)"
+        Write-Host "##vso[task.logissue type=error]Could not find the $PackageType package in location $DropPath."
+        Write-Error "Could not find the $PackageType package in location $DropPath." -ErrorAction Stop
+        exit 1
+    }
+}
+
+function Test-PackageFileName {
+    <#
+    .SYNOPSIS
+        Test package file name
+
+    .DESCRIPTION
+        Test if package file name contains any spaces. If so it will throw a exception.
+
+    .PARAMETER PackageFile
+        The FileSystemInfo that should be checked.
+
+    .EXAMPLE
+        $packageFile = Get-ChildItem -Path $dropPath -Filter *.cms.*.nupkg
+        Test-PackageFileName -PackageFile $packageFile
+    #>	
+    param
+	(
+		[Parameter(Mandatory = $true)]
+		[System.IO.FileSystemInfo]$PackageFile
+	)
+
+    if ($true -eq $PackageFile.Name.Contains(" ")) {
+        $newName = $PackageFile.Name.Replace(" " , "")
+        Write-Error "Package name contains space(s). Due to none support for spaces in EpiCloud API, you need to change the package name '$($PackageFile.Name)' => '$newName'."
+    }
+}
+
+function Publish-Package {
+    <#
+    .SYNOPSIS
+        Publish package to DXP storage account
+
+    .DESCRIPTION
+        Load the specified type of package, checks for errors, if none, upload package to DXP storage.
+
+    .PARAMETER PackageType
+        
+    .PARAMETER DropPath
+
+    .PARAMETER PackageLocation
+        SAS link
+
+    .EXAMPLE
+        Publish-Package -PackageType "cms" -DropPath $dropPath -PackageLocation $packageLocation
+    #>	
+    param
+	(
+		[Parameter(Mandatory = $true)]
+		[string]$PackageType,
+		[Parameter(Mandatory = $true)]
+		[string]$DropPath,
+		[Parameter(Mandatory = $true)]
+		[string]$PackageLocation 
+	)
+
+    $uploadedPackage = ""
+    $packageFileInfo = Get-ChildItem -Path $DropPath -Filter "*.$PackageType.*.nupkg"
+    Write-Host "Loaded $PackageType package:    $packageFileInfo"
+    
+    Test-PackageFile -PackageType $PackageType -DropPath $DropPath -PackageFile $packageFileInfo
+
+    Test-PackageFileName -PackageFile $packageFileInfo
+    
+    try{
+        Add-EpiDeploymentPackage -SasUrl $PackageLocation -Path $packageFileInfo.FullName
+        Write-Host "$PackageType package $packageFileInfo is uploaded."
+        $uploadedPackage = $packageFileInfo.Name
+    }
+    catch{
+        $errMsg = $_.Exception.ToString()
+        if ($errMsg.Contains("is already linked to a deployment and cannot be overwritten")){
+            Write-Host "$PackageType package already exist in container."
+        } else {
+            Write-Error $errMsg
+        }
+    }
+
+    return $uploadedPackage
 }

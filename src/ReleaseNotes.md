@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.2.14
+- DeployNuGetPackage.v2: Check and throw exception if you have a space in your package name.
+
 ## v2.2.13
 - DeployNuGetPackage.v2: Thanks to @aher8585 he fixed a issue with problem with commerce deploy.
 
