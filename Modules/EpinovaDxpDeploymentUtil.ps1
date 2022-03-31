@@ -850,6 +850,7 @@ function Publish-Package {
         $errMsg = $_.Exception.ToString()
         if ($errMsg.Contains("is already linked to a deployment and cannot be overwritten")){
             Write-Host "$PackageType package '$packageFileName' already exist in container."
+            $uploadedPackage = $packageFileName
         } else {
             Write-Error $errMsg
         }

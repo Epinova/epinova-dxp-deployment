@@ -243,22 +243,50 @@ function Import-Az{
     }
 }
 
- function Import-EpiCloud{
+#  function Import-EpiCloud{
+#     <#
+#     .SYNOPSIS
+#         Import module EpiCloud.
+
+#     .DESCRIPTION
+#         Import module EpiCloud.
+
+#     .EXAMPLE
+#         Import-EpiCloud
+#     #>
+#     if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
+#         Install-Module EpiCloud -Scope CurrentUser -Force
+#     } else {
+#         Write-Host "EpiCloud is installed."
+#     }
+# }
+
+function Initialize-EpiCload{
     <#
     .SYNOPSIS
-        Import module EpiCloud.
+        Install the EpiCloud module and print version.
 
     .DESCRIPTION
-        Import module EpiCloud.
+        Install the EpiCloud module and print version.
 
     .EXAMPLE
-        Import-EpiCloud
+        Initialize-EpiCload
     #>
-    if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
-        Install-Module EpiCloud -Scope CurrentUser -Force
-    } else {
-        Write-Host "EpiCloud is installed."
-    }
+    #if (-not (Get-Module -Name EpiCloud -MinimumVersion 1.0.0 -ListAvailable)) {
+    #    Write-Host "Could not find EpiCloud."
+    #    #Install-Module EpiCloud  -Scope CurrentUser -MinimumVersion 0.13.15 -Force -AllowClobber
+    #    #Write-Host "Installed EpiCloud."
+    #    Import-Module -Name "EpiCloud" -MinimumVersion 1.0.0 -Verbose
+    #    #Import-Module -Name "$PSScriptRoot/EpiCloud/EpiCloud.psd1" -Verbose -ErrorAction Stop
+    #    Write-Host "Import EpiCloud."
+    #}
+    ##Get-Module -Name EpiCloud -ListAvailable
+    #$version = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
+    #Write-Host "EpiCloud            [$version]" 
+    #if ($null -eq $version -or "" -eq $version) {
+    #    Write-Error "Could not get version for the installed module EpiCloud"
+    #}
+    Install-Module EpiCloud -Scope CurrentUser -MinimumVersion 1.0.0 -Force -AllowClobber
 }
 
 function Get-StorageAccountName{
@@ -918,14 +946,16 @@ function Get-DxpStorageContainers{
 
     Test-DxpProjectId -ProjectId $ProjectId
     Test-EnvironmentParam -Environment $Environment
-
-    Import-EpiCloud
+    
+    #Import-EpiCloud
+    Initialize-EpiCload
 
     try {
         $containers = Get-EpiStorageContainer -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment
     }
     catch {
         Write-Error "Could not get storage container information from Epi. Make sure you have specified correct ProjectId/Environment"
+        Write-Error $_.Exception.ToString()
         exit
     }
 
