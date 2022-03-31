@@ -10,6 +10,7 @@
         [string] $environment = "Integration" #Integration | Preproduction | Production
     )
 
+Set-StrictMode -Version Latest 
 ####################################################################################
 
 

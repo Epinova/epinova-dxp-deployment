@@ -68,6 +68,7 @@ try {
     Write-Host "PackageLocation:    $packageLocation"
 
     $uploadedCmsPackage = $null
+    $myPackages = $null
     if ($sourceApp -eq "cms" -or $sourceApp -eq "cms,commerce"){
         $uploadedCmsPackage = Publish-Package -PackageType "cms" -DropPath $dropPath -PackageLocation $packageLocation
         if ($uploadedCmsPackage){
