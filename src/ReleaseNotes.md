@@ -1,6 +1,6 @@
 # Release notes
 
-## v2.2.15
+## v2.2.15-v2.2.16
 - DeployNuGetPackage.v2: #216 Set variable '$myPackages'. Added extra comment for duplicate package name warning.
 
 ## v2.2.14
