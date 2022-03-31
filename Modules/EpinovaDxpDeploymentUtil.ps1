@@ -831,21 +831,25 @@ function Publish-Package {
 
     $uploadedPackage = ""
     $packageFileInfo = Get-ChildItem -Path $DropPath -Filter "*.$PackageType.*.nupkg"
+    
     Write-Host "Loaded $PackageType package:    $packageFileInfo"
     
     Test-PackageFile -PackageType $PackageType -DropPath $DropPath -PackageFile $packageFileInfo
 
     Test-PackageFileName -PackageFile $packageFileInfo
+
+    $packageFileName = $packageFileInfo.Name
     
+    Write-Host "$PackageType package '$packageFileName' start upload..."
     try{
         Add-EpiDeploymentPackage -SasUrl $PackageLocation -Path $packageFileInfo.FullName
-        Write-Host "$PackageType package $packageFileInfo is uploaded."
+        Write-Host "$PackageType package '$packageFileName' is uploaded."
         $uploadedPackage = $packageFileInfo.Name
     }
     catch{
         $errMsg = $_.Exception.ToString()
         if ($errMsg.Contains("is already linked to a deployment and cannot be overwritten")){
-            Write-Host "$PackageType package already exist in container."
+            Write-Host "$PackageType package '$packageFileName' already exist in container."
         } else {
             Write-Error $errMsg
         }

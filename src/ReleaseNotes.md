@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.2.15
+- DeployNuGetPackage.v2: #216 Set variable '$myPackages'. Added extra comment for duplicate package name warning.
+
 ## v2.2.14
 - DeployNuGetPackage.v2: Check and throw exception if you have a space in your package name.
 
