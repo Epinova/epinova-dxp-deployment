@@ -24,6 +24,8 @@
         [int] $timeout = 1800
 )
 
+Set-StrictMode -Version Latest 
+
 ####################################################################################
 
 function Test-IsGuid() {

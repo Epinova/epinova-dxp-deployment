@@ -1,4 +1,6 @@
 
+Set-StrictMode -Version Latest 
+
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 $warmupThisUrl = "https://epinova.se/"

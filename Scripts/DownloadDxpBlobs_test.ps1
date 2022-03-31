@@ -1,4 +1,6 @@
-﻿Remove-Module -Name "EpinovaDxpToolBucket" -Verbose
+﻿Set-StrictMode -Version Latest 
+
+Remove-Module -Name "EpinovaDxpToolBucket" -Verbose
 #Remove-Module -Name "Az.Storage" -Verbose
 Import-Module -Name E:\dev\epinova-dxp-deployment\Modules\EpinovaDxpToolBucket -Verbose
 
