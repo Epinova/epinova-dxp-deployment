@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.2.17
+- EpiCloud v1.1.0
+
 ## v2.2.15-v2.2.16
 - DeployNuGetPackage.v2: #216 Set variable '$myPackages'. Added extra comment for duplicate package name warning.
 
