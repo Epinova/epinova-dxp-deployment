@@ -34,6 +34,12 @@ function AddAzStorageBlob {
     $blobClient = $containerClient.GetBlobClient($BlobName)
     $uploadOptions = New-Object "Azure.Storage.Blobs.Models.BlobUploadOptions"
     $filePath = Resolve-Path -Path $Path
+
+    $storageTransferOptions = New-Object "Azure.Storage.StorageTransferOptions"
+    $storageTransferOptions.InitialTransferSize = 1024*1024*8
+    $storageTransferOptions.MaximumTransferSize = 1024*1024*8
+    $uploadOptions.TransferOptions = $storageTransferOptions
+
     $uploadResult = $blobClient.Upload($filePath, $uploadOptions)
     $response = $uploadResult.GetRawResponse()
 
