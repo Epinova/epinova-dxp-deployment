@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.2.18
+- DeployNuGetPackage.v2: #222 Added support for space(s) in DropPath variable value.
+
 ## v2.2.17
 - EpiCloud v1.1.0
 
