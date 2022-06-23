@@ -31,7 +31,7 @@ The DXP project id.
 
 #### Drop path
 **[string]** - **required**  
-The path in Azure DevOps where the nuget file(s) is placed.  
+The path in Azure DevOps where the nuget file(s) is placed. Will try to find the file with the following pattern: "[DropPath]/*.[SourceApp].*.nupkg". The SourceApp is equal to what you specify for the "SourceApp" parameter. If you specify "cms,commerce", it will try to find both "[DropPath]/*.cms.*.nupkg" and "[DropPath]/*.commerce.*.nupkg" to upload to DXP.
 **Example:** `$(System.DefaultWorkingDirectory)/_ProjectName-CI/drop`  
 **Default value:** `$(DropPath)`
 
