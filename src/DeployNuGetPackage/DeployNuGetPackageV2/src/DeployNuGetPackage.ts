@@ -44,7 +44,7 @@ export async function run() {
         "-SourceApp", SourceApp,
         "-DirectDeploy", DirectDeploy,
         "-UseMaintenancePage", UseMaintenancePage,
-        "-DropPath", `"${DropPath}"`,
+        "-DropPath", DropPath,
         "-Timeout", Timeout
         ];
         if (WarmUpUrl) {
@@ -64,7 +64,7 @@ export async function run() {
         "-SourceApp", SourceApp,
         "-DirectDeploy", DirectDeploy,
         "-UseMaintenancePage", UseMaintenancePage,
-        "-DropPath", `"${DropPath}"`,
+        "-DropPath", DropPath,
         "-Timeout", Timeout
         ];
         if (WarmUpUrl) {

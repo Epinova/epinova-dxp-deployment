@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.2.19
+- DeployNuGetPackage.v2: #222 Rollback of DropPath changes in v2.2.18
+
 ## v2.2.18
 - DeployNuGetPackage.v2: #222 Added support for space(s) in DropPath variable value.
 
