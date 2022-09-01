@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.2.20
+- EpiCloud v1.2.0
+
 ## v2.2.19
 - DeployNuGetPackage.v2: #222 Rollback of DropPath changes in v2.2.18
 

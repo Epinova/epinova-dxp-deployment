@@ -213,30 +213,50 @@ function GetApiRequestSplattingHash {
 #>
 
 $dllPath = $PSScriptRoot
-$dllFiles = Get-ChildItem -Path $dllPath -Filter "*.dll"
+$dllFiles = (Get-ChildItem -Path $dllPath -Filter "*.dll").FullName
 if ($dllFiles.Count -eq 0) {
     $dllPath = (Get-Item -Path $dllPath).Parent.FullName
-    $dllFiles = Get-ChildItem -Path $dllPath -Filter "*.dll"
+    $dllFiles = (Get-ChildItem -Path $dllPath -Filter "*.dll").FullName
 }
 
-$assemblies = @()
-foreach ($dllFile in $dllFiles) {
-    $assembly = [System.Reflection.Assembly]::LoadFrom($dllFile.FullName)
-    $assemblies += $assembly
-}
+$dllFileString = $( ($dllFiles | ForEach-Object { "@`"$_`"" } ) -join ", " )
 
-$onAssemblyResolveEventHandler = [System.ResolveEventHandler] {
-    param($s, $e)
-    # Match assemblies regardless of version to the assembly in the Module folder.
-    foreach ($assembly in $assemblies) {
-        if ($e.Name.StartsWith($assembly.GetName().Name + ",")) {
-            return $assembly
+$epiCloudAssemblyResolver = "
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+
+public static class EpiCloudAssemblyResolver
+{
+    private static readonly Dictionary<string,Assembly> _localAssemblies = new Dictionary<string,Assembly>();
+
+    public static void Initialize()
+    {
+        var dllFiles = new[] { $dllFileString };
+        foreach (var dllFile in dllFiles)
+        {
+            var assembly = Assembly.LoadFrom(dllFile);
+            if (!_localAssemblies.ContainsKey(assembly.GetName().Name))
+                _localAssemblies.Add(assembly.GetName().Name, assembly);
         }
+
+        AppDomain.CurrentDomain.AssemblyResolve += OnAssemblyResolve;
     }
 
-    return $null
+    public static Assembly OnAssemblyResolve(object s, ResolveEventArgs e)
+    {
+        var assemblyName = e.Name;
+        var assemblyCommaPosition = assemblyName.IndexOf("","", StringComparison.InvariantCulture);
+        if (assemblyCommaPosition > -1) assemblyName = assemblyName.Substring (0, assemblyCommaPosition);
+        Assembly assembly;
+        _localAssemblies.TryGetValue(assemblyName, out assembly);
+        return assembly;
+    }
 }
-[System.AppDomain]::CurrentDomain.add_AssemblyResolve($onAssemblyResolveEventHandler)
+"
+
+Add-Type -TypeDefinition $epiCloudAssemblyResolver
+[EpiCloudAssemblyResolver]::Initialize()
 function InvokeApiRequest {
     <#
     .SYNOPSIS
