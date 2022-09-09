@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.3.1
+- Added DirectDeploy support for Additional Development Environment(s) support
+
 ## v2.3.0
 - Additional Development Environment support
 
