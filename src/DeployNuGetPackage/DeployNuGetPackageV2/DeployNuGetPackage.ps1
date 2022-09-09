@@ -53,8 +53,8 @@ try {
 
     Initialize-EpiCload
 
-    if ($targetEnvironment -ne "Integration" -and $directDeploy){
-        Write-Host "DirectDeploy does only support target environment = Integration at the moment. Will set the DirectDeploy=false."
+    if (($targetEnvironment -eq "Preproduction" -or $targetEnvironment -eq "Production") -and $directDeploy){
+        Write-Host "DirectDeploy does only support target environment = Integration|ADE1|ADE2|ADE3 at the moment. Will set the DirectDeploy=false."
         $directDeploy = $false
     }
 
@@ -87,7 +87,7 @@ try {
         $myPackages = $uploadedCmsPackage, $uploadedCommercePackage
     }
 
-    if ($null -eq $zeroDowntimeMode -or $zeroDowntimeMode -eq "" -or $zeroDowntimeMode -eq "NotSpecified") {
+    if ($null -eq $zeroDowntimeMode -or $zeroDowntimeMode -eq "" -or $zeroDowntimeMode -eq "NotSpecified" -or $zeroDowntimeMode -eq "NotApplicable") {
         $startEpiDeploymentSplat = @{
             DeploymentPackage  = $myPackages
             ProjectId          = $projectId
