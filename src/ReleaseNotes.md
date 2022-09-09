@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.3.0
+- Additional Development Environment support
+
 ## v2.2.20
 - EpiCloud v1.2.0
 

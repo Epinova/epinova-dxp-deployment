@@ -34,6 +34,9 @@ Specify the target environment that you want to reset.
 - Integration
 - Preproduction
 - Production
+- ADE1
+- ADE2
+- ADE3
 
 ### Group: Timeout
 #### Script timeout (in seconds)

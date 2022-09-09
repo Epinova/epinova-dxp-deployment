@@ -7,18 +7,8 @@ Param(
     $Timeout
 )
 
-# Trace-VstsEnteringInvocation $MyInvocation
-# $global:ErrorActionPreference = 'Continue'
-# $global:__vstsNoOverrideVerbose = $true
-
 try {
     # Get all inputs for the task
-    # $clientKey = Get-VstsInput -Name "ClientKey" -Require -ErrorAction "Stop"
-    # $clientSecret = Get-VstsInput -Name "ClientSecret" -Require -ErrorAction "Stop"
-    # $projectId = Get-VstsInput -Name "ProjectId" -Require -ErrorAction "Stop"
-    # $targetEnvironment = Get-VstsInput -Name "TargetEnvironment" -Require -ErrorAction "Stop"
-    # $timeout = Get-VstsInput -Name "Timeout" -AsInt -Require -ErrorAction "Stop"
-
     $clientKey = $ClientKey
     $clientSecret = $ClientSecret
     $projectId = $ProjectId

@@ -1027,7 +1027,7 @@ function Invoke-DxpBlobsDownload{
         [string] $ProjectId,
 
         [Parameter(Mandatory=$false)]
-        [ValidateSet('Integration','Preproduction','Production')]
+        [ValidateSet('Integration','Preproduction','Production','ADE1','ADE2','ADE3')]
         [string] $Environment = "Integration",
 
         [Parameter(Mandatory=$false)]
@@ -1151,7 +1151,7 @@ function Invoke-DxpDatabaseDownload{
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [ValidateSet('Integration','Preproduction','Production')]
+        [ValidateSet('Integration','Preproduction','Production','ADE1','ADE2','ADE3')]
         [string] $Environment,
 
         [Parameter(Mandatory=$true)]
