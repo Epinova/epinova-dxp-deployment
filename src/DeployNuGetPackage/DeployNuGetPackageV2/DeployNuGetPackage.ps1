@@ -87,7 +87,7 @@ try {
         $myPackages = $uploadedCmsPackage, $uploadedCommercePackage
     }
 
-    if ($null -eq $zeroDowntimeMode -or $zeroDowntimeMode -eq "" -or $zeroDowntimeMode -eq "NotSpecified") {
+    if ($null -eq $zeroDowntimeMode -or $zeroDowntimeMode -eq "" -or $zeroDowntimeMode -eq "NotSpecified" -or $zeroDowntimeMode -eq "NotApplicable") {
         $startEpiDeploymentSplat = @{
             DeploymentPackage  = $myPackages
             ProjectId          = $projectId
