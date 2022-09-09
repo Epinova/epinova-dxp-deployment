@@ -42,6 +42,9 @@ From witch environment that you want to download from. Integration/Preproduction
 - Integration
 - Preproduction
 - Production
+- ADE1
+- ADE2
+- ADE3
   
 ## Examples ##
 ### List all storage container for the Integration environment

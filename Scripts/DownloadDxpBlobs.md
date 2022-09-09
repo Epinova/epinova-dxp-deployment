@@ -43,6 +43,9 @@ From witch environment that you want to download from. Integration/Preproduction
 - Integration
 - Preproduction
 - Production
+- ADE1
+- ADE2
+- ADE3
 
 ### downloadFolder
 **[string]** - **required**  
