@@ -36,6 +36,9 @@ Specify if you want to complete the deploy to Integration/Preproduction/Producti
 - Integration
 - Preproduction
 - Production
+- ADE1
+- ADE2
+- ADE3
 
 ### Group: Timeout
 #### Script timeout (in seconds)

@@ -36,6 +36,9 @@ Specify from which environment the database export should be done.
 - Integration
 - Preproduction
 - Production
+- ADE1
+- ADE2
+- ADE3
 
 #### DatabaseName
 **[pickList]** - **required**  

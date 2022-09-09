@@ -39,6 +39,9 @@ Specify the target environment that you are going to do smoke test against. If t
 - Integration
 - Preproduction
 - Production
+- ADE1
+- ADE2
+- ADE3
 
 #### URLs
 **[multiline]** - **required**  

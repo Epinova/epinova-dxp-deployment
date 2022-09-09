@@ -27,13 +27,16 @@ The DXP project id.
 
 #### Target environment
 **[pickList]** - **required**  
-Specify if you want to complete the deploy to Integration/Preproduction/Production.  
+Specify which environment that you want to check Integration/Preproduction/Production.  
 **Example:** `Integration`  
 **Default value:** `$(TargetEnvironment)`  
 **Options:**  
 - Integration
 - Preproduction
 - Production
+- ADE1
+- ADE2
+- ADE3
 
 #### Expected status
 **[pickList]** - **required**  

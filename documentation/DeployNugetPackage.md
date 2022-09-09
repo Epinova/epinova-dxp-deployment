@@ -44,6 +44,9 @@ Specify if you want to deploy to Integration/Preproduction/Production.
 - Integration
 - Preproduction
 - Production
+- ADE1
+- ADE2
+- ADE3
 
 #### SourceApp
 **[pickList]** - **required**  
