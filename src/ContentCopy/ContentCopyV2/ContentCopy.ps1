@@ -62,6 +62,90 @@ try {
             $sourceEnvironment = "Integration"
             $targetEnvironment = "Preproduction"
         }
+        ProdAde1{
+            $sourceEnvironment = "Production"
+            $targetEnvironment = "ADE1"
+        }
+        ProdAde2{
+            $sourceEnvironment = "Production"
+            $targetEnvironment = "ADE2"
+        }
+        ProdAde3{
+            $sourceEnvironment = "Production"
+            $targetEnvironment = "ADE3"
+        }
+        PrepAde1{
+            $sourceEnvironment = "Preproduction"
+            $targetEnvironment = "ADE1"
+        }
+        PrepAde2{
+            $sourceEnvironment = "Preproduction"
+            $targetEnvironment = "ADE2"
+        }
+        PrepAde3{
+            $sourceEnvironment = "Preproduction"
+            $targetEnvironment = "ADE3"
+        }
+        InteAde1{
+            $sourceEnvironment = "Integration"
+            $targetEnvironment = "ADE1"
+        }
+        InteAde2{
+            $sourceEnvironment = "Integration"
+            $targetEnvironment = "ADE2"
+        }
+        InteAde3{
+            $sourceEnvironment = "Integration"
+            $targetEnvironment = "ADE3"
+        }
+        Ade1Prep{
+            $sourceEnvironment = "ADE1"
+            $targetEnvironment = "Preproduction"
+        }
+        Ade2Prep{
+            $sourceEnvironment = "ADE2"
+            $targetEnvironment = "Preproduction"
+        }
+        Ade3Prep{
+            $sourceEnvironment = "ADE3"
+            $targetEnvironment = "Preproduction"
+        }
+        Ade1Inte{
+            $sourceEnvironment = "ADE1"
+            $targetEnvironment = "Integration"
+        }
+        Ade2Inte{
+            $sourceEnvironment = "ADE2"
+            $targetEnvironment = "Integration"
+        }
+        Ade3Inte{
+            $sourceEnvironment = "ADE3"
+            $targetEnvironment = "Integration"
+        }
+        Ade1Ade2{
+            $sourceEnvironment = "ADE1"
+            $targetEnvironment = "ADE2"
+        }
+        Ade1Ade3{
+            $sourceEnvironment = "ADE1"
+            $targetEnvironment = "ADE3"
+        }
+        Ade2Ade1{
+            $sourceEnvironment = "ADE2"
+            $targetEnvironment = "ADE1"
+        }
+        Ade2Ade3{
+            $sourceEnvironment = "ADE2"
+            $targetEnvironment = "ADE3"
+        }
+        Ade3Ade1{
+            $sourceEnvironment = "ADE3"
+            $targetEnvironment = "ADE1"
+        }
+        Ade3Ade2{
+            $sourceEnvironment = "ADE3"
+            $targetEnvironment = "ADE2"
+        }
     }
 
     $startEpiDeploymentSplat = @{
