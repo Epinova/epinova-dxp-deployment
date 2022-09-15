@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.3.3
+- Added RunVerbose support
+
 ## v2.3.2
 - Added Additional Development Environment(s) support in Content copy task
 

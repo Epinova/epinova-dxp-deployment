@@ -20,6 +20,7 @@ export async function run() {
         let DropPath = tl.getInput("DropPath");
         let Timeout = tl.getInput("Timeout");
         let ZeroDowntimeMode = tl.getInput("ZeroDowntimeMode");
+        let RunVerbose = tl.getBoolInput("RunVerbose", false);
 
         // we need to get the verbose flag passed in as script flag
         var verbose = (tl.getVariable("System.Debug") === "true");
@@ -55,6 +56,9 @@ export async function run() {
             args.push("-ZeroDowntimeMode");
             args.push(ZeroDowntimeMode);
         }
+        if (RunVerbose) {
+            args.push("-Verbose");
+        }
 
         var argsShow = [__dirname + "\\DeployNuGetPackage.ps1",
         "-ClientKey", ClientKey,
@@ -74,6 +78,9 @@ export async function run() {
         if (ZeroDowntimeMode) {
             argsShow.push("-ZeroDowntimeMode");
             argsShow.push(ZeroDowntimeMode);
+        }
+        if (RunVerbose) {
+            argsShow.push("-Verbose");
         }
 
         logInfo(`${executable} ${argsShow.join(" ")}`);
