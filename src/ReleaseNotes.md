@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.3.2
+- Added Additional Development Environment(s) support in Content copy task
+
 ## v2.3.1
 - Added DirectDeploy support for Additional Development Environment(s) support
 

@@ -12,8 +12,8 @@
     "author": "Ove Lartelius",
     "version": {
         "Major": 2,
-        "Minor": 1,
-        "Patch": 4
+        "Minor": 3,
+        "Patch": 0
     },
     "groups": [
         {
@@ -32,7 +32,7 @@
             "isExpanded": false
         }
     ],
-    "releaseNotes": "Cross platform support",
+    "releaseNotes": "v2.3.0 Added Additional Development Environment(s) support",
     "minimumAgentVersion": "2.134.0",
     "inputs": [
         {
@@ -74,7 +74,28 @@
                 "ProdPrep": "Production => Preproduction",
                 "PrepInte": "Preproduction => Integration",
                 "ProdInte": "Production => Integration",
-                "IntePrep": "Integration => Preproduction"
+                "IntePrep": "Integration => Preproduction",
+                "ProdAde1": "Production => ADE1",
+                "ProdAde2": "Production => ADE2",
+                "ProdAde3": "Production => ADE3",
+                "PrepAde1": "Preproduction => ADE1",
+                "PrepAde2": "Preproduction => ADE2",
+                "PrepAde3": "Preproduction => ADE3",
+                "InteAde1": "Integration => ADE1",
+                "InteAde2": "Integration => ADE2",
+                "InteAde3": "Integration => ADE3",
+                "Ade1Prep": "ADE1 => Preproduction",
+                "Ade2Prep": "ADE2 => Preproduction",
+                "Ade3Prep": "ADE3 => Preproduction",
+                "Ade1Inte": "ADE1 => Integration",
+                "Ade2Inte": "ADE2 => Integration",
+                "Ade3Inte": "ADE3 => Integration",
+                "Ade1Ade2": "ADE1 => ADE2",
+                "Ade1Ade3": "ADE1 => ADE3",
+                "Ade2Ade1": "ADE2 => ADE1",
+                "Ade2Ade3": "ADE2 => ADE3",
+                "Ade3Ade1": "ADE3 => ADE1",
+                "Ade3Ade2": "ADE3 => ADE2"
             }
         },
         {

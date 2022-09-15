@@ -41,6 +41,28 @@ Specify content copy you want to do.
 - Preproduction => Integration (PrepInte)
 - Production => Integration (ProdInte)
 - Integration => Preproduction (IntePrep)
+- Production => ADE1 (ProdAde1)
+- Production => ADE2 (ProdAde2)
+- Production => ADE3 (ProdAde3)
+- Preproduction => ADE1 (PrepAde1)
+- Preproduction => ADE2 (PrepAde2)
+- Preproduction => ADE3 (PrepAde3)
+- Integration => ADE1 (InteAde1)
+- Integration => ADE2 (InteAde2)
+- Integration => ADE3 (InteAde3)
+- ADE1 => Preproduction (Ade1Prep)
+- ADE2 => Preproduction (Ade2Prep)
+- ADE3 => Preproduction (Ade3Prep)
+- ADE1 => Integration (Ade1Inte)
+- ADE2 => Integration (Ade2Inte)
+- ADE3 => Integration (Ade3Inte)
+- ADE1 => ADE2 (Ade1Ade2)
+- ADE1 => ADE3 (Ade1Ade3)
+- ADE2 => ADE1 (Ade2Ade1)
+- ADE2 => ADE3 (Ade2Ade3)
+- ADE3 => ADE1 (Ade3Ade1)
+- ADE3 => ADE2 (Ade3Ade2)
+
 
 #### Include BLOB
 **[boolean]** - **required**  
