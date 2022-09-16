@@ -57,7 +57,8 @@ export async function run() {
             args.push(ZeroDowntimeMode);
         }
         if (RunVerbose) {
-            args.push("-Verbose");
+            args.push("-RunVerbose");
+            args.push(RunVerbose);
         }
 
         var argsShow = [__dirname + "\\DeployNuGetPackage.ps1",
@@ -80,7 +81,8 @@ export async function run() {
             argsShow.push(ZeroDowntimeMode);
         }
         if (RunVerbose) {
-            argsShow.push("-Verbose");
+            argsShow.push("-RunVerbose");
+            args.push(RunVerbose);
         }
 
         logInfo(`${executable} ${argsShow.join(" ")}`);
