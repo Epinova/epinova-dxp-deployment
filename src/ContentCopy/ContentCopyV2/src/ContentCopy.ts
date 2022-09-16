@@ -16,6 +16,7 @@ export async function run() {
         let Timeout = tl.getInput("Timeout");
         let IncludeBlob = tl.getBoolInput("IncludeBlob");
         let IncludeDb = tl.getBoolInput("IncludeDb");
+        let RunVerbose = tl.getBoolInput("RunVerbose", false);
 
         // we need to get the verbose flag passed in as script flag
         var verbose = (tl.getVariable("System.Debug") === "true");
@@ -41,6 +42,10 @@ export async function run() {
         "-IncludeBlob", IncludeBlob,
         "-IncludeDb", IncludeDb
         ];
+        if (RunVerbose) {
+            args.push("-RunVerbose");
+            args.push("true");
+        }
 
         var argsShow = [__dirname + "\\ContentCopy.ps1",
         "-ClientKey", ClientKey,
@@ -51,6 +56,10 @@ export async function run() {
         "-IncludeBlob", IncludeBlob,
         "-IncludeDb", IncludeDb
         ];
+        if (RunVerbose) {
+            argsShow.push("-RunVerbose");
+            argsShow.push("true");
+        }
 
         logInfo(`${executable} ${argsShow.join(" ")}`);
 

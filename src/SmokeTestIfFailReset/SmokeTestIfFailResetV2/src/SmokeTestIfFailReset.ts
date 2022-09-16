@@ -19,6 +19,7 @@ export async function run() {
         let NumberOfRetries = tl.getInput("NumberOfRetries");
         let SleepBeforeRetry = tl.getInput("SleepBeforeRetry");
         let Timeout = tl.getInput("Timeout");
+        let RunVerbose = tl.getBoolInput("RunVerbose", false);
         let ErrorActionPreference = tl.getInput("ErrorActionPreference");
 
         // we need to get the verbose flag passed in as script flag
@@ -49,6 +50,10 @@ export async function run() {
         "-ErrorActionPreference", ErrorActionPreference,
         "-Timeout", Timeout
         ];
+        if (RunVerbose) {
+            args.push("-RunVerbose");
+            args.push("true");
+        }
 
         var argsShow = [__dirname + "\\SmokeAndResetTargetEnvironment.ps1",
         "-ClientKey", ClientKey,
@@ -63,6 +68,10 @@ export async function run() {
         "-ErrorActionPreference", ErrorActionPreference,
         "-Timeout", Timeout
         ];
+        if (RunVerbose) {
+            argsShow.push("-RunVerbose");
+            argsShow.push("true");
+        }
 
         logInfo(`${executable} ${argsShow.join(" ")}`);
 

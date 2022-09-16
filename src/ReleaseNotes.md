@@ -1,6 +1,6 @@
 # Release notes
 
-## v2.3.6
+## v2.4.0
 - Added RunVerbose support
 
 ## v2.3.2

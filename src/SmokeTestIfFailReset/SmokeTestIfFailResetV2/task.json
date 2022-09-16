@@ -12,7 +12,7 @@
     "author": "Epinova (Ove Lartelius)",
     "version": {
         "Major": 2,
-        "Minor": 3,
+        "Minor": 4,
         "Patch": 0
     },
     "groups": [
@@ -37,7 +37,7 @@
             "isExpanded": false
         }
     ],
-    "releaseNotes": "v2.3.0 Additional Development Environment support",
+    "releaseNotes": "v2.4.0: RunVerbose. v2.3.0 Additional Development Environment support",
     "minimumAgentVersion": "2.134.0",
     "inputs": [
         {
@@ -137,6 +137,15 @@
             "defaultValue": "1800",
             "helpMarkDown": "The timeout for the script.",
             "groupName": "Timeout"
+        },
+        {
+            "name": "RunVerbose",
+            "type": "boolean",
+            "label": "Run Verbose",
+            "required": true,
+            "defaultValue": "false",
+            "helpMarkDown": "If tou want to run in verbose mode and see all information.",
+            "groupName": "ErrorHandlingOptions"
         },
         {
             "name": "ErrorActionPreference",
