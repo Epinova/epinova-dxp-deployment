@@ -6,7 +6,8 @@ Param(
     $Environment,
     $DatabaseName,
     $RetentionHours,
-    $Timeout
+    $Timeout,
+    $RunVerbose
 )
 try {
     # Get all inputs for the task
@@ -17,10 +18,16 @@ try {
     $databaseName = $DatabaseName
     $retentionHours = $RetentionHours
     $timeout = $Timeout
+    $runVerbose = [System.Convert]::ToBoolean($RunVerbose)
 
     # 30 min timeout
     ####################################################################################
     
+    if ($runVerbose){
+        ## To Set Verbose output
+        $PSDefaultParameterValues['*:Verbose'] = $true
+    }
+
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     
     Write-Host "Inputs:"
@@ -31,6 +38,7 @@ try {
     Write-Host "DatabaseName:       $databaseName"
     Write-Host "RetentionHours:     $retentionHours"
     Write-Host "Timeout:            $timeout"
+    Write-Host "RunVerbose:         $runVerbose"
 
     . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
 
@@ -97,4 +105,9 @@ try {
 catch {
     Write-Verbose "Exception caught from task: $($_.Exception.ToString())"
     throw
+}
+
+if ($runVerbose){
+    ## To Set Verbose output
+    $PSDefaultParameterValues['*:Verbose'] = $false
 }

@@ -20,6 +20,7 @@ export async function run() {
         let DropPath = tl.getInput("DropPath");
         let Timeout = tl.getInput("Timeout");
         let ZeroDowntimeMode = tl.getInput("ZeroDowntimeMode");
+        let RunVerbose = tl.getBoolInput("RunVerbose", false);
 
         // we need to get the verbose flag passed in as script flag
         var verbose = (tl.getVariable("System.Debug") === "true");
@@ -47,6 +48,10 @@ export async function run() {
         "-DropPath", DropPath,
         "-Timeout", Timeout
         ];
+        if (RunVerbose) {
+            args.push("-RunVerbose");
+            args.push("true");
+        }
         if (WarmUpUrl) {
             args.push("-WarmUpUrl");
             args.push(WarmUpUrl);
@@ -67,6 +72,10 @@ export async function run() {
         "-DropPath", DropPath,
         "-Timeout", Timeout
         ];
+        if (RunVerbose) {
+            argsShow.push("-RunVerbose");
+            argsShow.push("true");
+        }
         if (WarmUpUrl) {
             argsShow.push("-WarmUpUrl");
             argsShow.push(WarmUpUrl);

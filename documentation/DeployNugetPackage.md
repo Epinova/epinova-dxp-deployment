@@ -99,6 +99,12 @@ Specify the number of seconds when the task should timeout.
 **Default value:** `1800` (30 minutes)
 
 ### Group: ErrorHandlingOptions
+#### Run Verbose
+**[boolean]** - **required**  
+If you want to run in Verbose mode and see all verbose messages.  
+**Example:** `true`  
+**Default value:** `false`
+
 #### ErrorActionPreference
 **[pickList]** - **required**  
 How the task should handle errors.  

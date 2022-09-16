@@ -10,7 +10,8 @@ Param(
     $NumberOfRetries,
     $SleepBeforeRetry,
     $Timeout,
-    $ErrorActionPreference
+    $ErrorActionPreference,
+    $RunVerbose
 )
 
 try {
@@ -26,9 +27,15 @@ try {
     $sleepBeforeRetry = $SleepBeforeRetry
     $timeout = $Timeout
     $errorAction = $ErrorActionPreference
+    $runVerbose = [System.Convert]::ToBoolean($RunVerbose)
 
     $global:ErrorActionPreference = $errorAction
     ####################################################################################
+
+    if ($runVerbose){
+        ## To Set Verbose output
+        $PSDefaultParameterValues['*:Verbose'] = $true
+    }
 
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
@@ -44,6 +51,7 @@ try {
     Write-Host "SleepBeforeRetry:   $sleepBeforeRetry"
     Write-Host "Timeout:            $timeout"
     Write-Host "ErrorActionPref:    $errorAction"
+    Write-Host "RunVerbose:         $runVerbose"
 
     Write-Host "ErrorActionPref:    $($global:ErrorActionPreference)"
 
@@ -187,4 +195,9 @@ try {
 catch {
     Write-Verbose "Exception caught from task: $($_.Exception.ToString())"
     throw
+}
+
+if ($runVerbose){
+    ## To Set Verbose output
+    $PSDefaultParameterValues['*:Verbose'] = $false
 }
