@@ -14,6 +14,7 @@ export async function run() {
         let ProjectId = tl.getInput("ProjectId");
         let TargetEnvironment = tl.getInput("TargetEnvironment");
         let Timeout = tl.getInput("Timeout");
+        let RunVerbose = tl.getBoolInput("RunVerbose", false);
 
         // we need to get the verbose flag passed in as script flag
         var verbose = (tl.getVariable("System.Debug") === "true");
@@ -37,6 +38,10 @@ export async function run() {
         "-TargetEnvironment", TargetEnvironment,
         "-Timeout", Timeout
         ];
+        if (RunVerbose) {
+            args.push("-RunVerbose");
+            args.push("true");
+        }
 
         var argsShow = [__dirname + "\\ResetDeploy.ps1",
         "-ClientKey", ClientKey,
@@ -45,6 +50,10 @@ export async function run() {
         "-TargetEnvironment", TargetEnvironment,
         "-Timeout", Timeout
         ];
+        if (RunVerbose) {
+            argsShow.push("-RunVerbose");
+            argsShow.push("true");
+        }
 
         logInfo(`${executable} ${argsShow.join(" ")}`);
 

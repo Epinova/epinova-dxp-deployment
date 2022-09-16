@@ -5,7 +5,8 @@ Param(
     $ProjectId, 
     $TargetEnvironment,
     $ExpectedStatus,
-    $Timeout
+    $Timeout,
+    $RunVerbose
 )
 
 try {
@@ -16,8 +17,14 @@ try {
     $targetEnvironment = $TargetEnvironment
     $expectedStatus = $ExpectedStatus
     $timeout = $Timeout
+    $runVerbose = [System.Convert]::ToBoolean($RunVerbose)
 
     ####################################################################################
+
+    if ($runVerbose){
+        ## To Set Verbose output
+        $PSDefaultParameterValues['*:Verbose'] = $true
+    }
 
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
@@ -28,6 +35,7 @@ try {
     Write-Host "TargetEnvironment:  $targetEnvironment"
     Write-Host "ExpectedStatus:     $expectedStatus"
     Write-Host "Timeout:            $timeout"
+    Write-Host "RunVerbose:         $runVerbose"
 
 
     $deployUtilScript = Join-Path -Path $PSScriptRoot -ChildPath "ps_modules"
@@ -81,4 +89,9 @@ try {
 catch {
     Write-Verbose "Exception caught from task: $($_.Exception.ToString())"
     throw
+}
+
+if ($runVerbose){
+    ## To Set Verbose output
+    $PSDefaultParameterValues['*:Verbose'] = $false
 }

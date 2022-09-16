@@ -15,6 +15,7 @@ export async function run() {
         let TargetEnvironment = tl.getInput("TargetEnvironment");
         let ExpectedStatus = tl.getInput("ExpectedStatus");
         let Timeout = tl.getInput("Timeout");
+        let RunVerbose = tl.getBoolInput("RunVerbose", false);
 
         // we need to get the verbose flag passed in as script flag
         var verbose = (tl.getVariable("System.Debug") === "true");
@@ -39,6 +40,10 @@ export async function run() {
         "-ExpectedStatus", ExpectedStatus,
         "-Timeout", Timeout
         ];
+        if (RunVerbose) {
+            args.push("-RunVerbose");
+            args.push("true");
+        }
 
         var argsShow = [__dirname + "\\ExpectStatus.ps1",
         "-ClientKey", ClientKey,
@@ -48,6 +53,10 @@ export async function run() {
         "-ExpectedStatus", ExpectedStatus,
         "-Timeout", Timeout
         ];
+        if (RunVerbose) {
+            argsShow.push("-RunVerbose");
+            argsShow.push("true");
+        }
 
         logInfo(`${executable} ${argsShow.join(" ")}`);
 

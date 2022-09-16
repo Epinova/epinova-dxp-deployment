@@ -6,7 +6,8 @@ Param(
     $Environment,
     $Timeout,
     $IncludeBlob,
-    $IncludeDb
+    $IncludeDb,
+    $RunVerbose
 )
 
 try {
@@ -18,9 +19,15 @@ try {
     $timeout = $Timeout
     [Boolean]$includeBlob = [System.Convert]::ToBoolean($IncludeBlob)
     [Boolean]$includeDb = [System.Convert]::ToBoolean($IncludeDb)
+    $runVerbose = [System.Convert]::ToBoolean($RunVerbose)
 
     # 30 min timeout
     ####################################################################################
+
+    if ($runVerbose){
+        ## To Set Verbose output
+        $PSDefaultParameterValues['*:Verbose'] = $true
+    }
 
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     
@@ -32,6 +39,7 @@ try {
     Write-Host "Timeout:            $timeout"
     Write-Host "IncludeBlob:        $includeBlob"
     Write-Host "IncludeDb:          $includeDb"
+    Write-Host "RunVerbose:         $runVerbose"
 
     . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
 
@@ -199,3 +207,7 @@ catch {
     throw
 }
 
+if ($runVerbose){
+    ## To Set Verbose output
+    $PSDefaultParameterValues['*:Verbose'] = $false
+}

@@ -4,7 +4,8 @@ Param(
     $ClientSecret,
     $ProjectId, 
     $TargetEnvironment,
-    $Timeout
+    $Timeout,
+    $RunVerbose
 )
 
 try {
@@ -14,9 +15,15 @@ try {
     $projectId = $ProjectId
     $targetEnvironment = $TargetEnvironment
     $timeout = $Timeout
+    $runVerbose = [System.Convert]::ToBoolean($RunVerbose)
 
     # 30 min timeout
     ####################################################################################
+
+    if ($runVerbose){
+        ## To Set Verbose output
+        $PSDefaultParameterValues['*:Verbose'] = $true
+    }
 
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     
@@ -26,6 +33,7 @@ try {
     Write-Host "ProjectId:          $projectId"
     Write-Host "TargetEnvironment:  $targetEnvironment"
     Write-Host "Timeout:            $timeout"
+    Write-Host "RunVerbose:         $runVerbose"
 
     . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
 
@@ -100,4 +108,7 @@ catch {
     throw
 }
 
-
+if ($runVerbose){
+    ## To Set Verbose output
+    $PSDefaultParameterValues['*:Verbose'] = $false
+}
