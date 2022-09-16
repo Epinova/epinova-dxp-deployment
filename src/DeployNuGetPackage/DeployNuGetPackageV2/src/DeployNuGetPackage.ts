@@ -58,7 +58,7 @@ export async function run() {
         }
         if (RunVerbose) {
             args.push("-RunVerbose");
-            args.push(RunVerbose);
+            args.push("true");
         }
 
         var argsShow = [__dirname + "\\DeployNuGetPackage.ps1",
@@ -82,7 +82,7 @@ export async function run() {
         }
         if (RunVerbose) {
             argsShow.push("-RunVerbose");
-            args.push(RunVerbose);
+            args.push("true");
         }
 
         logInfo(`${executable} ${argsShow.join(" ")}`);
