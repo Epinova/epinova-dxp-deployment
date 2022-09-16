@@ -74,7 +74,7 @@ export async function run() {
         ];
         if (RunVerbose) {
             argsShow.push("-RunVerbose");
-            args.push("true");
+            argsShow.push("true");
         }
         if (WarmUpUrl) {
             argsShow.push("-WarmUpUrl");
