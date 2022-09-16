@@ -48,6 +48,10 @@ export async function run() {
         "-DropPath", DropPath,
         "-Timeout", Timeout
         ];
+        if (RunVerbose) {
+            args.push("-RunVerbose");
+            args.push("true");
+        }
         if (WarmUpUrl) {
             args.push("-WarmUpUrl");
             args.push(WarmUpUrl);
@@ -55,10 +59,6 @@ export async function run() {
         if (ZeroDowntimeMode) {
             args.push("-ZeroDowntimeMode");
             args.push(ZeroDowntimeMode);
-        }
-        if (RunVerbose) {
-            args.push("-RunVerbose");
-            args.push("true");
         }
 
         var argsShow = [__dirname + "\\DeployNuGetPackage.ps1",
@@ -72,6 +72,10 @@ export async function run() {
         "-DropPath", DropPath,
         "-Timeout", Timeout
         ];
+        if (RunVerbose) {
+            argsShow.push("-RunVerbose");
+            args.push("true");
+        }
         if (WarmUpUrl) {
             argsShow.push("-WarmUpUrl");
             argsShow.push(WarmUpUrl);
@@ -79,10 +83,6 @@ export async function run() {
         if (ZeroDowntimeMode) {
             argsShow.push("-ZeroDowntimeMode");
             argsShow.push(ZeroDowntimeMode);
-        }
-        if (RunVerbose) {
-            argsShow.push("-RunVerbose");
-            args.push("true");
         }
 
         logInfo(`${executable} ${argsShow.join(" ")}`);
