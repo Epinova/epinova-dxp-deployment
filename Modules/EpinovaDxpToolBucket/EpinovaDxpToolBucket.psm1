@@ -1103,6 +1103,7 @@ function Invoke-DxpDatabaseDownload{
 
     .DESCRIPTION
         Download DXP project DB. You can specify the environment from where the database should be exported from.
+        Will return with the file path to where database is downloaded.
 
     .PARAMETER ClientKey
         Your DXP ClientKey that you can generate in the paas.episerver.net portal.
@@ -1133,6 +1134,9 @@ function Invoke-DxpDatabaseDownload{
 
     .EXAMPLE
         Invoke-DxpDatabaseDownload -ClientKey '644b6926-39b1-42a1-93d6-3771cdc4a04e' -ClientSecret '644b6926-39b1fasrehyjtye-42a1-93d6-3771cdc4asasda04e'-ProjectId '644b6926-39b1-42a1-93d6-3771cdc4a04e' -Environment 'Integration' -DatabaseName 'epicms' -DownloadFolder "c:\temp" -RetentionHours 2 -Timeout 1800
+
+    .EXAMPLE
+        $filePath = Invoke-DxpDatabaseDownload -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -DatabaseName $DatabaseName -DownloadFolder $DownloadFolder -RetentionHours $RetentionHours -Timeout $Timeout
 
     #>
     [CmdletBinding()]
@@ -1234,6 +1238,7 @@ function Invoke-DxpDatabaseDownload{
             Invoke-WebRequest -Uri $status.downloadLink -OutFile $filePath
             Write-Host "Download database to $filePath"
             Write-Host "------------------------------------------------"
+            return $filePath;
         }
         else {
             Write-Error "The database export has not been successful or the script has timedout. CurrentStatus: $($status.status)"

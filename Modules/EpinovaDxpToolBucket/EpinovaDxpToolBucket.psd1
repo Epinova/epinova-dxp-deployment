@@ -1,6 +1,6 @@
 @{
     RootModule        = 'EpinovaDxpToolBucket.psm1'
-    ModuleVersion     = '0.2.0'
+    ModuleVersion     = '0.2.1'
     GUID              = '94759945-9241-47c5-8c9c-72270402b363'
     Author            = 'Ove Lartelius'
     CompanyName       = 'Epinova AB, LOL IT AB'

@@ -11,4 +11,5 @@ Import-Module -Name E:\dev\epinova-dxp-deployment\Modules\EpinovaDxpToolBucket -
 
 Set-ExecutionPolicy -Scope CurrentUser Unrestricted
 #Get-DxpProjectBlobs -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment "Integration" -DownloadFolder "E:\dev\temp\_blobDownloads" -MaxFilesToDownload 10 -Container "Blobs" -OverwriteExistingFiles 1 -RetentionHours 2
-Invoke-DxpDatabaseDownload -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment "Integration" -DatabaseName "epicms" -DownloadFolder "E:\dev\temp\_blobDownloads" -RetentionHours 2 -Timeout 1800
+$filePath = Invoke-DxpDatabaseDownload -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment "Integration" -DatabaseName "epicms" -DownloadFolder "E:\dev\temp\_blobDownloads" -RetentionHours 2 -Timeout 1800
+$filePath
