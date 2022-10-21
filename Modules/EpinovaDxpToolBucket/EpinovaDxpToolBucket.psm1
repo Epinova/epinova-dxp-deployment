@@ -974,6 +974,7 @@ function Invoke-DxpBlobsDownload{
 
     .DESCRIPTION
         Download DXP project blobs. You can specify the environment where the blobs exist.
+        Return with arrayList of blobs downloaded.
 
     .PARAMETER ClientKey
         Your DXP ClientKey that you can generate in the paas.episerver.net portal.
@@ -1010,6 +1011,9 @@ function Invoke-DxpBlobsDownload{
 
     .EXAMPLE
         Invoke-DxpBlobsDownload -ClientKey '644b6926-39b1-42a1-93d6-3771cdc4a04e' -ClientSecret '644b6926-39b1fasrehyjtye-42a1-93d6-3771cdc4asasda04e'-ProjectId '644b6926-39b1-42a1-93d6-3771cdc4a04e' -Environment 'Integration' -DownloadFolder "c:\temp" -MaxFilesToDownload 100 -Container "mysitemedia" -OverwriteExistingFiles $false -RetentionHours 2
+
+    .EXAMPLE
+        $arrayList = Invoke-DxpBlobsDownload -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -DownloadFolder $DownloadFolder -MaxFilesToDownload $MaxFilesToDownload -Container $Container -OverwriteExistingFiles $OverwriteExistingFiles -RetentionHours $RetentionHours
 
     #>
     [CmdletBinding()]
