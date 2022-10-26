@@ -286,7 +286,7 @@ function Initialize-EpiCload{
     #if ($null -eq $version -or "" -eq $version) {
     #    Write-Error "Could not get version for the installed module EpiCloud"
     #}
-    Install-Module EpiCloud -Scope CurrentUser -MinimumVersion 1.0.0 -Force -AllowClobber
+    Install-Module EpiCloud -Scope CurrentUser -MinimumVersion 1.2.0 -Force -AllowClobber
 }
 
 function Get-StorageAccountName{
