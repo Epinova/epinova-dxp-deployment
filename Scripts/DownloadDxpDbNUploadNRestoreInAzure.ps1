@@ -32,7 +32,7 @@ Import-Module -Name C:\DevStuff\Project\Modules\EpinovaDxpToolBucket -Verbose
 
 Set-ExecutionPolicy -Scope CurrentUser Unrestricted
 #Get-DxpProjectBlobs -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment "Integration" -DownloadFolder "E:\dev\temp\_blobDownloads" -MaxFilesToDownload 10 -Container "Blobs" -OverwriteExistingFiles 1 -RetentionHours 2
-Invoke-DxpDatabaseDownload -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment "$environment" -DatabaseName "$databaseName" -DownloadFolder "$downloadFolder" -RetentionHours $retentionHours -Timeout $timeout
+$downloadedBacPacFile = Invoke-DxpDatabaseDownload -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment "$environment" -DatabaseName "$databaseName" -DownloadFolder "$downloadFolder" -RetentionHours $retentionHours -Timeout $timeout
 
  #>
 
@@ -112,8 +112,7 @@ function Import-Bacpac-To-Database{
         [string] $BacpacFilename = "epicms_Integration_20221006124443.bacpac"
     )
 
-
-$importRequest = New-AzSqlDatabaseImport -ResourceGroupName $resourceGroupName `
+    $importRequest = New-AzSqlDatabaseImport -ResourceGroupName $resourceGroupName `
     -ServerName $serverName `
     -DatabaseName $databaseName `
     -DatabaseMaxSizeBytes 10GB `
@@ -125,25 +124,26 @@ $importRequest = New-AzSqlDatabaseImport -ResourceGroupName $resourceGroupName `
     -AdministratorLogin "$adminSqlLogin" `
     -AdministratorLoginPassword $(ConvertTo-SecureString -String $password -AsPlainText -Force)
 
-# Check import status and wait for the import to complete
-$importStatus = Get-AzSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
-[Console]::Write("Importing")
-while ($importStatus.Status -eq "InProgress")
-{
+
+    # Check import status and wait for the import to complete
     $importStatus = Get-AzSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
-    [Console]::Write(".")
-    Start-Sleep -s 10
-}
-[Console]::WriteLine("")
-$importStatus
+    [Console]::Write("Importing")
+    while ($importStatus.Status -eq "InProgress")
+    {
+        $importStatus = Get-AzSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
+        [Console]::Write(".")
+        Start-Sleep -s 10
+    }
+    [Console]::WriteLine("")
+    $importStatus
 
 # Scale down to S0 after import is complete
-Set-AzSqlDatabase -ResourceGroupName $resourceGroupName `
-    -ServerName $serverName `
-    -DatabaseName $databaseName  `
-    -Edition "Standard" `
-    -RequestedServiceObjectiveName "S0"
-   }
+    Set-AzSqlDatabase -ResourceGroupName $resourceGroupName `
+        -ServerName $serverName `
+        -DatabaseName $databaseName  `
+        -Edition "Standard" `
+        -RequestedServiceObjectiveName "S0"
+}
 
  # Upload-Bacpac-File -Subscriptionid "$SubscriptionId" -Resourcegroupname "$Resourcegroupname" -Storageaccountname "$Storageaccountname" -Containername "$Containername" -FileName "$FileName"
 
