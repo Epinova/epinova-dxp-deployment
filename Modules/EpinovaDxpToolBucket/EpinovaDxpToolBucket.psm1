@@ -289,6 +289,20 @@ function Initialize-EpiCload{
     Install-Module EpiCloud -Scope CurrentUser -MinimumVersion 1.2.0 -Force -AllowClobber
 }
 
+function Initialize-EpinovaAzureToolBucket{
+    <#
+    .SYNOPSIS
+        Install the EpinovaAzureToolBucket module and print version.
+
+    .DESCRIPTION
+        Install the EpinovaAzureToolBucket module and print version.
+
+    .EXAMPLE
+        Initialize-EpinovaAzureToolBucket
+    #>
+    Install-Module EpinovaAzureToolBucket -Scope CurrentUser -MinimumVersion 0.11.4 -Force -AllowClobber
+}
+
 function Get-StorageAccountName{
     <#
     .SYNOPSIS

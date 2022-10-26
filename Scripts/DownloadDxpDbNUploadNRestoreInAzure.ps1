@@ -137,7 +137,7 @@ function Import-Bacpac-To-Database{
     [Console]::WriteLine("")
     $importStatus
 
-# Scale down to S0 after import is complete
+    # Scale down to S0 after import is complete
     Set-AzSqlDatabase -ResourceGroupName $resourceGroupName `
         -ServerName $serverName `
         -DatabaseName $databaseName  `
