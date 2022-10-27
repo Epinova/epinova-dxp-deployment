@@ -948,6 +948,7 @@ function Get-DxpStorageContainers{
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
+        [ValidateSet('Integration','Preproduction','Production','ADE1','ADE2','ADE3')]
         [string] $Environment
     )
 
@@ -1085,7 +1086,8 @@ function Invoke-DxpBlobsDownload{
     Test-EnvironmentParam -Environment $Environment
 
     Import-Az
-    Import-EpiCloud
+    #Import-EpiCloud
+    Initialize-EpiCload
 
     #Connect-DxpEpiCloud -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId
 
@@ -1209,7 +1211,8 @@ function Invoke-DxpDatabaseDownload{
     Test-EnvironmentParam -Environment $Environment
     Test-DatabaseName -DatabaseName $DatabaseName
 
-    Import-EpiCloud
+    #Import-EpiCloud
+    Initialize-EpiCload
 
     Connect-DxpEpiCloud -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId
 
