@@ -1138,13 +1138,10 @@ function Invoke-DxpDatabaseDownload{
         The environment that holds the blobs that you want to download.
 
     .PARAMETER DatabaseName
-        The database you want to download. epicms / epicommerce
+        The type of database you want to download from Optimizely DXP. epicms / epicommerce
 
     .PARAMETER DownloadFolder
         The local download folder where you want to download the DB backup file.
-
-    .PARAMETER RetentionHours
-        The number of hours that the SAS token used for download will be ok. Default is 2 hours. This maybe need to be raised if it take longer then 2 hours to download the files requested to download.
 
     .PARAMETER Timeout
         The number of seconds that you will let the script run until it will timeout. Default 1800 (ca 30 minutes)
@@ -1272,4 +1269,181 @@ function Invoke-DxpDatabaseDownload{
     }
 }
 
-Export-ModuleMember -Function @( 'Invoke-DxpBlobsDownload', 'Invoke-DxpDatabaseDownload', 'Get-DxpStorageContainers', 'Get-DxpStorageContainerSasLink' )
+function Sync-DxpDbToAzure{
+    <#
+    .SYNOPSIS
+        Sync/Harmonize DXP DB to a Azure SQL Server.
+
+    .DESCRIPTION
+        Download DXP project DB. You can specify the environment from where the database should be exported from.
+        Will return with the file path to where database is downloaded.
+
+    .PARAMETER ClientKey
+        Your DXP ClientKey that you can generate in the paas.episerver.net portal.
+
+    .PARAMETER ClientSecret
+        Your DXP ClientSecret that you can generate in the paas.episerver.net portal.
+
+    .PARAMETER ProjectId
+        The DXP project id that is related to the ClientKey/Secret.
+
+    .PARAMETER Environment
+        The environment that holds the blobs that you want to download.
+
+    .PARAMETER DatabaseType
+        The type of database you want to download from Optimizely DXP. epicms / epicommerce
+
+    .PARAMETER DownloadFolder
+        The local download folder where you want to download the DB backup file.
+
+    .PARAMETER Timeout
+        The number of seconds that you will let the script run until it will timeout. Default 1800 (ca 30 minutes)
+
+    .PARAMETER SubscriptionId
+        Your Azure SubscriptionId where your resources are located.
+
+    .PARAMETER ResourceGroupName
+        The resource group contains the Azure SQL Server and storage account where the bacpac file is loacated.
+
+    .PARAMETER StorageAccountName
+        The StorageAccount name where the bacpac file is located.
+
+    .PARAMETER StorageAccountContainer
+        The container name where the bacpac file is located.
+
+    .PARAMETER SqlServerName
+        The name on Azure SQL Server that contains the database.
+
+    .PARAMETER SqlDatabaseName
+        The name on the database that will be generated from the bacpac.
+
+    .PARAMETER SqlDatabaseLogin
+        The sa login to the Azure SQL Server.
+
+    .PARAMETER SqlDatabasePassword
+        The password for the login to the Azure SQL Server.
+
+    .PARAMETER RunDatabaseBackup
+
+
+    .PARAMETER SqlSku
+        Specifies which SQL SKU you want to generate. If not specified it will create a "basic" SQL Server. Allowed SKU 'Free', 'Basic', 'S0', 'S1', 'P1', 'P2', 'GP_Gen4_1', 'GP_S_Gen5_1', 'GP_Gen5_2', 'GP_S_Gen5_2', 'BC_Gen4_1', 'BC_Gen5_4'
+
+    .EXAMPLE
+        Sync-DxpDbToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $DxpEnvironment -DatabaseType $DxpDatabaseName -DownloadFolder $DxpDatabaseDownloadFolder -Timeout 1800 -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageAccountContainer $StorageAccountContainer -SqlServerName $SqlServerName -SqlDatabaseName $SqlDatabaseName -SqlDatabaseLogin $SqlDatabaseLogin -SqlDatabasePassword $SqlDatabasePassword -RunDatabaseBackup $RunDatabaseBackup -SqlSku $SqlSku
+
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [String] $ClientKey,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [String] $ClientSecret,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ProjectId,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [ValidateSet('Integration','Preproduction','Production','ADE1','ADE2','ADE3')]
+        [string] $Environment,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateSet('epicms','epicommerce')]
+        [string] $DatabaseType,
+
+        [Parameter(Mandatory=$true)]
+        [string] $DownloadFolder,
+
+        [Parameter(Mandatory = $false)]
+        [int] $Timeout = 1800,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $SubscriptionId,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ResourceGroupName,
+
+        [Parameter(Mandatory = $false)]
+        [string] $StorageAccountName,
+
+        [Parameter(Mandatory = $false)]
+        [string] $StorageAccountContainer,
+
+        [Parameter(Mandatory = $false)]
+        [string] $SqlServerName,
+ 
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $SqlDatabaseName,
+ 
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $SqlDatabaseLogin,
+ 
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $SqlDatabasePassword,
+
+        [Parameter(Mandatory = $true)]
+        [bool] $RunDatabaseBackup,
+
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [ValidateSet('Free', 'Basic', 'S0', 'S1', 'P1', 'P2', 'GP_Gen4_1', 'GP_S_Gen5_1', 'GP_Gen5_2', 'GP_S_Gen5_2', 'BC_Gen4_1', 'BC_Gen5_4')]
+        [string] $SqlSku = "Basic"
+    )
+
+    $RetentionHours = 2
+
+    Write-Host "Sync-DxpDbToAzure - Inputs:---------------------"
+    Write-Host "ClientKey:                $ClientKey"
+    Write-Host "ClientSecret:             **** (it is a secret...)"
+    Write-Host "ProjectId:                $ProjectId"
+    Write-Host "Environment:              $Environment"
+    Write-Host "DatabaseType:             $DatabaseType"
+    Write-Host "DownloadFolder:           $DownloadFolder"
+    Write-Host "RetentionHours:           $RetentionHours"
+    Write-Host "Timeout:                  $Timeout"
+    Write-Host "SubscriptionId:           $SubscriptionId"
+    Write-Host "ResourceGroupName:        $ResourceGroupName"
+    Write-Host "StorageAccountName:       $StorageAccountName"
+    Write-Host "StorageAccountContainer:  $StorageAccountContainer"
+    Write-Host "SqlServerName:            $SqlServerName"
+    Write-Host "SqlDatabaseName:          $SqlDatabaseName"
+    Write-Host "SqlDatabaseLogin:         $SqlDatabaseLogin"
+    Write-Host "SqlDatabasePassword:      **** (it is a secret...)"
+    Write-Host "SqlSku:                   $SqlSku"
+    Write-Host "------------------------------------------------"    
+
+    [string]$filePath = Invoke-DxpDatabaseDownload -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -DatabaseName $DatabaseType -DownloadFolder $DownloadFolder -RetentionHours $RetentionHours -Timeout $Timeout
+    Write-Host "Downloaded database: $filePath"
+
+    if ($null -eq $filePath -or $filePath.Length -eq 0){
+        Write-Host "We do not have any database to work with. Will exit."
+        exit
+    }
+    
+    $filePath = $filePath.Trim()
+    $BlobName = $filePath.Substring($filePath.LastIndexOf("\") + 1)
+    $BlobName
+    
+    $BacpacFilename = Send-Blob -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageAccountContainer $StorageAccountContainer -FilePath $filePath -BlobName $BlobName #-Debug
+    $BacpacFilename
+   
+    if ($null -eq $BacpacFilename -or $BacpacFilename.Length -eq 0){
+        Write-Host "We do not have any database uploaded. Will exit."
+        exit
+    }
+
+    Import-BacpacDatabase -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageAccountContainer $StorageAccountContainer -BacpacFilename $BlobName -SqlServerName $SqlServerName -SqlDatabaseName $SqlDatabaseName -SqlDatabaseLogin $SqlDatabaseLogin -SqlDatabasePassword $SqlDatabasePassword -RunDatabaseBackup $RunDatabaseBackup -SqlSku $SqlSku
+    
+}
+
+Export-ModuleMember -Function @( 'Invoke-DxpBlobsDownload', 'Invoke-DxpDatabaseDownload', 'Get-DxpStorageContainers', 'Get-DxpStorageContainerSasLink', 'Sync-DxpDbToAzure', 'Sync-DxpBlobsToAzure' )
