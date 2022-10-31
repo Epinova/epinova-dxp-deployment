@@ -86,6 +86,7 @@ steps:
       Remove-Item -path "${{parameters.extensionRoot}}/${{parameters.taskName}}\src" -Force -Recurse
       Remove-Item -path "${{parameters.extensionRoot}}/${{parameters.taskName}}\test" -Force -Recurse
       Remove-Item -path "${{parameters.extensionRoot}}/${{parameters.taskName}}\*.js.map" -Force -Recurse
-      Remove-Item -path "${{parameters.extensionRoot}}/${{parameters.taskName}}\node_modules\azure-pipelines-tasks-azure-arm-rest-v2\openssl\OpenSSL License.txt" -Force -Recurse
+      $filePath = "${{parameters.extensionRoot}}/${{parameters.taskName}}\node_modules\azure-pipelines-tasks-azure-arm-rest-v2\openssl\OpenSSL License.txt"
+      if (Test-Path $filePath) { Remove-Item -path $filePath -Force -Recurse }
     workingDirectory: '${{parameters.extensionRoot}}/${{parameters.taskName}}'
 
