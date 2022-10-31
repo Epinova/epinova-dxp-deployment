@@ -1,0 +1,290 @@
+{
+    "id": "268b70f6-e8f9-4c98-b09e-f910ba5e518b",
+    "name": "DxpSyncDbToAzure",
+    "friendlyName": "Sync DXP DB to Azure (Optimizely DXP)",
+    "description": "Sync DXP database to a azure SQL Server. (Optimizely DXP, former Episerver DXC)",
+    "helpUrl": "https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/SyncDxpDbToAzure.md",
+    "helpMarkDown": "[Extension page](https://marketplace.visualstudio.com/items?itemName=epinova-sweden.epinova-dxp-deploy-extension)[Learn more about this task](https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/SyncDxpDbToAzure.md)",
+    "category": "Deploy",
+    "visibility": [
+        "Release"
+    ],
+    "author": "Ove Lartelius",
+    "version": {
+        "Major": 2,
+        "Minor": 0,
+        "Patch": 0
+    },
+    "groups": [
+        {
+            "name": "Settings",
+            "displayName": "Script settings",
+            "isExpanded": true
+        },
+        {
+            "name": "Timeout",
+            "displayName": "Timeout",
+            "isExpanded": false
+        },
+        {
+            "name": "ErrorHandlingOptions",
+            "displayName": "Error handling options",
+            "isExpanded": false
+        }
+    ],
+    "releaseNotes": "v2.0.0: Created",
+    "minimumAgentVersion": "2.134.0",
+    "inputs": [
+        {
+            "name": "ClientKey",
+            "type": "string",
+            "label": "DXP target environment ClientKey",
+            "required": true,
+            "defaultValue": "$(ClientKey)",
+            "helpMarkDown": "The DXP project ClientKey. Generated in the PAAS interface.",
+            "groupName": "Settings"
+        },
+        {
+            "name": "ClientSecret",
+            "type": "string",
+            "label": "DXP target environment ClientSecret",
+            "required": true,
+            "defaultValue": "$(ClientSecret)",
+            "helpMarkDown": "The DXP project ClientSecret. Generated in the PAAS interface.",
+            "groupName": "Settings"
+        },
+        {
+            "name": "ProjectId",
+            "type": "string",
+            "label": "Project Id",
+            "required": true,
+            "defaultValue": "$(DXP.ProjectId)",
+            "helpMarkDown": "The DXP ProjectId (GUID). Look in the URL when in PAAS for your project. You will see the GUID as part of the URL.",
+            "groupName": "Settings"
+        },
+        {
+            "name": "DropPath",
+            "type": "string",
+            "label": "Drop path",
+            "required": true,
+            "defaultValue": "$(DropPath)",
+            "helpMarkDown": "The path to the drop folder where the nuget(artifact) file exist. Example: $(System.DefaultWorkingDirectory)/_[YourBuildName]/drop",
+            "groupName": "Settings"
+        },
+        {
+            "name": "Environment",
+            "type": "pickList",
+            "label": "Source environment",
+            "required": true,
+            "defaultValue": "$(TargetEnvironment)",
+            "helpMarkDown": "The environment that you you want to start the deploy to.",
+            "groupName": "Settings",
+            "options": {
+                "Integration": "Integration",
+                "Preproduction": "Preproduction",
+                "Production": "Production",
+                "ADE1": "ADE1",
+                "ADE2": "ADE2",
+                "ADE3": "ADE3"
+            }
+        },
+        {
+            "name": "DatabaseType",
+            "type": "pickList",
+            "label": "DatabaseType",
+            "required": true,
+            "defaultValue": "epicms",
+            "helpMarkDown": "",
+            "groupName": "Settings",
+            "options": {
+                "epicms": "epicms",
+                "epicommerce": "epicommerce"
+            }
+        },
+        {
+            "name": "ConnectedServiceNameARM",
+            "aliases": [
+                "azureSubscription"
+            ],
+            "type": "connectedService:AzureRM",
+            "label": "Azure Subscription",
+            "defaultValue": "",
+            "required": true,
+            "groupName": "Settings",
+            "helpMarkDown": "Azure Resource Manager subscription to configure before running PowerShell",
+            "properties": {
+                "EndpointFilterRule": "ScopeLevel != AzureMLWorkspace"
+            }
+        },
+        {
+            "name": "ResourceGroupName",
+            "type": "pickList",
+            "label": "Resource group",
+            "defaultValue": "",
+            "required": true,
+            "groupName": "Settings",
+            "properties": {
+                "EditableOptions": "True"
+            },
+            "helpMarkDown": "The Resource group name."
+        },
+        {
+            "name": "StorageAccountName",
+            "type": "string",
+            "label": "Storage account",
+            "defaultValue": "",
+            "required": false,
+            "groupName": "Settings",
+            "helpMarkDown": "StorageAccount help text"
+        },
+        {
+            "name": "StorageAccountContainer",
+            "type": "string",
+            "label": "Storage Account Container",
+            "defaultValue": "",
+            "required": false,
+            "groupName": "Settings",
+            "helpMarkDown": "Storage account container where bacpac will be uploaded before restore."
+        },
+        {
+            "name": "SqlServerName",
+            "type": "pickList",
+            "label": "SQL Server",
+            "defaultValue": "",
+            "required": true,
+            "groupName": "Settings",
+            "properties": {
+                "EditableOptions": "True"
+            },
+            "helpMarkDown": "The Azure SQL Server where we should restore the DXP DB."
+        },
+        {
+            "name": "SqlDatabaseName",
+            "type": "pickList",
+            "label": "SQL Database name",
+            "defaultValue": "",
+            "required": true,
+            "groupName": "Settings",
+            "properties": {
+                "EditableOptions": "True"
+            },
+            "helpMarkDown": "Name on the database when restore."
+        },
+        {
+            "name": "RunDatabaseBackup",
+            "type": "boolean",
+            "label": "Backup destination SQL Database before restore",
+            "defaultValue": "false",
+            "required": false,
+            "groupName": "Settings",
+            "helpMarkDown": "If you want to make a backup of the database. Otherwise you can´t restore your data."
+        },
+        {
+            "name": "SqlDatabaseLogin",
+            "type": "string",
+            "label": "Sql Database Login",
+            "defaultValue": "",
+            "required": false,
+            "groupName": "Settings",
+            "helpMarkDown": "The username / login name to the Azuree SQL Server"
+        },
+        {
+            "name": "SqlDatabasePassword",
+            "type": "string",
+            "label": "Sql Database Password",
+            "defaultValue": "",
+            "required": false,
+            "groupName": "Settings",
+            "helpMarkDown": "The username / login name password."
+        },
+        {
+            "name": "SqlSku",
+            "type": "pickList",
+            "label": "SQL Database SKU",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "The SqlSku that the databsae will be set to after restore",
+            "groupName": "Settings",
+            "options": {
+                "": "", 
+                "Free": "Free", 
+                "Basic": "Basic", 
+                "S0": "S0", 
+                "S1": "S1", 
+                "P1": "P1", 
+                "P2": "P2", 
+                "GP_Gen4_1": "GP_Gen4_1", 
+                "GP_S_Gen5_1": "GP_S_Gen5_1", 
+                "GP_Gen5_2": "GP_Gen5_2", 
+                "GP_S_Gen5_2": "GP_S_Gen5_2", 
+                "BC_Gen4_1": "BC_Gen4_1", 
+                "BC_Gen5_4": "BC_Gen5_4"
+            }
+        },
+        {
+            "name": "Timeout",
+            "type": "int",
+            "label": "Script timeout (in seconds)",
+            "required": true,
+            "defaultValue": "1800",
+            "helpMarkDown": "The timeout for the script.",
+            "groupName": "Timeout"
+        },
+        {
+            "name": "RunVerbose",
+            "type": "boolean",
+            "label": "Run Verbose",
+            "required": true,
+            "defaultValue": "false",
+            "helpMarkDown": "If tou want to run in verbose mode and see all information.",
+            "groupName": "ErrorHandlingOptions"
+        },
+        {
+            "name": "ErrorActionPreference",
+            "type": "pickList",
+            "label": "ErrorActionPreference",
+            "required": false,
+            "defaultValue": "stop",
+            "options": {
+                "stop": "Stop",
+                "continue": "Continue",
+                "silentlyContinue": "SilentlyContinue"
+            },
+            "helpMarkDown": "Prepends the line `$ErrorActionPreference = 'VALUE'` at the top of your script.",
+            "groupName": "ErrorHandlingOptions"
+        }
+    ],
+    "dataSourceBindings": [
+        {
+            "target": "ResourceGroupName",
+            "endpointId": "$(ConnectedServiceNameARM)",
+            "dataSourceName": "AzureResourceGroupsByExplicitSubscription",
+            "parameters": {
+                "subscriptionId": "{{endpoint.subscriptionId}}"
+            }
+        },
+        {            
+            "target": "StorageAccountName",            
+            "endpointId": "$(ConnectedServiceNameARM)",            
+            "dataSourceName": "AzureStorageServiceNames"        
+        },
+        {
+			"target": "SqlServerName",
+			"endpointId": "$(ConnectedServiceNameARM)",
+            "endpointUrl": "{{endpoint.url}}subscriptions/{{endpoint.subscriptionId}}/resourceGroups/$(DestinationResourceGroupName)/providers/Microsoft.Sql/servers?api-version=2015-05-01-preview",
+			"resultSelector": "jsonpath:$.value[*].name"
+		}, 
+        {
+            "target": "SqlDatabaseName",
+            "endpointId": "$(ConnectedServiceNameARM)",
+            "endpointUrl": "{{endpoint.url}}subscriptions/{{endpoint.subscriptionId}}/resourceGroups/$(DestinationResourceGroupName)/providers/Microsoft.Sql/servers/$(DestinationSqlServerName)/databases?api-version=2017-10-01-preview",
+            "resultSelector": "jsonpath:$.value[*].name"
+        }
+    ],
+    "instanceNameFormat": "Sync $(Environment) DB to Azure",
+    "execution": {
+        "Node10": {
+            "target": "SyncDxpDbToAzure.js"
+        }
+    }
+}

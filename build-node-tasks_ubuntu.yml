@@ -43,3 +43,13 @@ steps:
   parameters:
     extensionRoot: '$(System.DefaultWorkingDirectory)/src'
     taskName: 'SmokeTestIfFailReset/SmokeTestIfFailResetV2'
+
+- template: build-node-task_ubuntu.yml
+  parameters:
+    extensionRoot: '$(System.DefaultWorkingDirectory)/src'
+    taskName: 'SyncDxpBlobsToAzure/SyncDxpBlobsToAzureV2'
+
+- template: build-node-task_ubuntu.yml
+  parameters:
+    extensionRoot: '$(System.DefaultWorkingDirectory)/src'
+    taskName: 'SyncDxpDbToAzure/SyncDxpDbToAzureV2'

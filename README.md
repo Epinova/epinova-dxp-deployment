@@ -63,9 +63,8 @@ Task that export DXP database and restore it on Azure SQL Server.
 [Expect status documentation](documentation/SyncDxpDbToAzure.md)  
 
 ### Sync DXP blobs to Azure (Optimizely DXP) ###
-Task that export DXP blobs and restore it on Azure storage account container.  
+Task that export DXP blobs and upload it on Azure storage account container.  
 [Expect status documentation](documentation/SyncDxpBlobsToAzure.md)  
-
 
 ## Setup scenarios ##
 More detailed description how you can setup and use these tasks in different scenarios. Both with YAML and manual setup.  

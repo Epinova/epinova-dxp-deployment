@@ -1446,4 +1446,134 @@ function Sync-DxpDbToAzure{
     
 }
 
+function Sync-DxpBlobsToAzure{
+    <#
+    .SYNOPSIS
+        Sync/Harmonize DXP blobs to a Azure storage account container.
+
+    .DESCRIPTION
+        Sync/Harmonize DXP blobs to a Azure storage account container.
+
+    .PARAMETER ClientKey
+        Your DXP ClientKey that you can generate in the paas.episerver.net portal.
+
+    .PARAMETER ClientSecret
+        Your DXP ClientSecret that you can generate in the paas.episerver.net portal.
+
+    .PARAMETER ProjectId
+        The DXP project id that is related to the ClientKey/Secret.
+
+    .PARAMETER Environment
+        The environment that holds the blobs that you want to download.
+
+    .PARAMETER DxpContainer
+        The container in DXP environment that contains the blobs
+
+    .PARAMETER DownloadFolder
+        The local download folder where you want to download the blob files.
+
+    .PARAMETER Timeout
+        The number of seconds that you will let the script run until it will timeout. Default 1800 (ca 30 minutes)
+
+    .PARAMETER SubscriptionId
+        Your Azure SubscriptionId where your resources are located.
+
+    .PARAMETER ResourceGroupName
+        The resource group contains the Azure SQL Server and storage account where the bacpac file is loacated.
+
+    .PARAMETER StorageAccountName
+        The StorageAccount name where the bacpac file is located.
+
+    .PARAMETER StorageAccountContainer
+        The container name where the bacpac file is located.
+
+    .EXAMPLE
+        Sync-DxpBlobsToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $DxpEnvironment -DxpContainer $DxpContainer -DownloadFolder $DxpDownloadFolder -Timeout 1800 -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageAccountContainer $StorageAccountContainer 
+
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [String] $ClientKey,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [String] $ClientSecret,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ProjectId,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [ValidateSet('Integration','Preproduction','Production','ADE1','ADE2','ADE3')]
+        [string] $Environment,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $DxpContainer,
+
+        [Parameter(Mandatory=$true)]
+        [string] $DownloadFolder,
+
+        [Parameter(Mandatory = $false)]
+        [int] $Timeout = 1800,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $SubscriptionId,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ResourceGroupName,
+
+        [Parameter(Mandatory = $false)]
+        [string] $StorageAccountName,
+
+        [Parameter(Mandatory = $false)]
+        [string] $StorageAccountContainer
+    )
+
+    Write-Host "Sync-DxpBlobsToAzure - Inputs:------------------"
+    Write-Host "ClientKey:                $ClientKey"
+    Write-Host "ClientSecret:             **** (it is a secret...)"
+    Write-Host "ProjectId:                $ProjectId"
+    Write-Host "Environment:              $Environment"
+    Write-Host "DxpContainer:             $DxpContainer"
+    Write-Host "DownloadFolder:           $DownloadFolder"
+    Write-Host "Timeout:                  $Timeout"
+    Write-Host "SubscriptionId:           $SubscriptionId"
+    Write-Host "ResourceGroupName:        $ResourceGroupName"
+    Write-Host "StorageAccountName:       $StorageAccountName"
+    Write-Host "StorageAccountContainer:  $StorageAccountContainer"
+    Write-Host "------------------------------------------------"    
+
+    $files = Invoke-DxpBlobsDownload -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -DownloadFolder $DownloadFolder -MaxFilesToDownload 10 -Container $DxpContainer
+
+    if ($null -ne $files) {
+        $count = $files.Count
+        Write-Host "Downloaded $count blobs"
+        $itterator = 0
+
+        Connect-AzAccount -SubscriptionId $SubscriptionId
+
+        foreach ($file in $files) {
+            $itterator++
+            $file
+            $BlobName = $file.Replace($DownloadFolder, "")
+            if ($BlobName.StartsWith("\")){
+                $BlobName = $BlobName.SubString(1, $BlobName.Length - 1)
+            }
+    
+            #$fileUploaded = Send-Blob -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageAccountContainer $StorageAccountContainer -FilePath $file -BlobName $BlobName #-Debug
+            $fileUploaded = Send-BlobAsConnected -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageAccountContainer $StorageAccountContainer -FilePath $file -BlobName $BlobName #-Debug
+            Write-Host "File $itterator of $count is uploaded: $fileUploaded"
+        }
+        Write-Host "All blobs is now synced"
+    } else {
+        Write-Warning "No blobs where downloaded."
+    }
+}
+
 Export-ModuleMember -Function @( 'Invoke-DxpBlobsDownload', 'Invoke-DxpDatabaseDownload', 'Get-DxpStorageContainers', 'Get-DxpStorageContainerSasLink', 'Sync-DxpDbToAzure', 'Sync-DxpBlobsToAzure' )

@@ -5,7 +5,7 @@ Remove-Module -Name "EpinovaDxpToolBucket" -Verbose
 Import-Module -Name E:\dev\epinova-dxp-deployment\Modules\EpinovaDxpToolBucket -Verbose
 Get-Module -Name "EpinovaDxpToolBucket" -ListAvailable
 
-Remove-Module -Name "EpinovaAzureToolBucket" -Verbose
+Remove-Module -Name "EpinovaAzureToolBucket" -Verbose -Force
 Import-Module -Name E:\dev\EpinovaAzureToolBucket-psmodule\Modules\EpinovaAzureToolBucket -Verbose
 
 . E:\dev\temp\PowerShellSettingFiles\DxpProjects.ps1

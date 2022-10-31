@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.5.0
+- Added SyncDxpDbToAzure and SyncDxpBlobsToAzure
+
 ## v2.4.0
 - Added RunVerbose support
 
