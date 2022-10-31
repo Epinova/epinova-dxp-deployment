@@ -67,8 +67,8 @@
             "type": "string",
             "label": "Drop path",
             "required": true,
-            "defaultValue": "$(DropPath)",
-            "helpMarkDown": "The path to the drop folder where the nuget(artifact) file exist. Example: $(System.DefaultWorkingDirectory)/_[YourBuildName]/drop",
+            "defaultValue": "$(System.DefaultWorkingDirectory)",
+            "helpMarkDown": "The path to the drop folder where the nuget(artifact) file exist. Example: $(System.DefaultWorkingDirectory)",
             "groupName": "Settings"
         },
         {
