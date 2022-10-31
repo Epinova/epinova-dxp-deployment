@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "epinova-dxp-deploy-extension",
     "publisher": "epinova-sweden",
-    "version": "2.5.0",
+    "version": "2.5.1",
     "name": "Epinova DXP deployment",
     "description": "Tasks to deploy NuGet package to Optimizely (formerly known as Episerver) DXP with DXP API (Former: DXC). Using EpiCloud module.",
     "public": true,
@@ -173,7 +173,7 @@
                 "ms.vss-distributed-task.tasks"
             ],
             "properties": {
-                "name": "ContentCopy"
+                "name": "SyncDxpDbToAzure"
             }
         },
         {
@@ -183,7 +183,7 @@
                 "ms.vss-distributed-task.tasks"
             ],
             "properties": {
-                "name": "ContentCopy"
+                "name": "SyncDxpBlobsToAzure"
             }
         }
     ],
@@ -244,6 +244,12 @@
         },
         {
             "path": "ContentCopy/ContentCopyV2"
+        },
+        {
+            "path": "SyncDxpDbToAzure/SyncDxpDbToAzureV2"
+        },
+        {
+            "path": "SyncDxpBlobsToAzure/SyncDxpBlobsToAzureV2"
         },
         {
             "path": "node_modules/vss-web-extension-sdk/lib",

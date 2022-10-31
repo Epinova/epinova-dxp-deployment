@@ -11,6 +11,8 @@ Tasks
 1. **Reset deploy**
 1. **Export DB**
 1. **Await status**
+1. **Sync DXP DB to Azure**
+1. **Sync DXP blobs to Azure**
 
 ## Details
 
