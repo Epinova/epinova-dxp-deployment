@@ -177,7 +177,7 @@
             "defaultValue": "false",
             "required": false,
             "groupName": "Settings",
-            "helpMarkDown": "If you want to make a backup of the database. Otherwise you can´t restore your data."
+            "helpMarkDown": "If you want to make a backup of the database. Otherwise you can not restore your data."
         },
         {
             "name": "SqlDatabaseLogin",
