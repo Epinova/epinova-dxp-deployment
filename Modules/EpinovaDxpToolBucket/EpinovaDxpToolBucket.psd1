@@ -8,7 +8,7 @@
     Description       = 'Module contain help functions for the Epinova DXP vs Azure Portal.'
     PowerShellVersion = '5.1'
     FunctionsToExport = 'Invoke-DxpBlobsDownload', 'Invoke-DxpDatabaseDownload', 'Get-DxpStorageContainers', 'Get-DxpStorageContainerSasLink', 'Sync-DxpDbToAzure', 'Sync-DxpBlobsToAzure'
-    RequiredModules   = @("EpinovaAzureToolBucket", @{ModuleName="EpinovaAzureToolBucket"; ModuleVersion="0.13.2"; GUID="ebd0d848-0687-4de0-8538-c8bccc3b22ae"})
+    RequiredModules   = @("EpinovaAzureToolBucket", @{ModuleName="EpinovaAzureToolBucket"; ModuleVersion="0.13.3"; GUID="ebd0d848-0687-4de0-8538-c8bccc3b22ae"})
     CmdletsToExport   = @()
     AliasesToExport   = @()
 }
