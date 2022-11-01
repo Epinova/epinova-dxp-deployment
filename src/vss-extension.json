@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "epinova-dxp-deploy-extension",
     "publisher": "epinova-sweden",
-    "version": "2.5.1",
+    "version": "2.5.2",
     "name": "Epinova DXP deployment",
     "description": "Tasks to deploy NuGet package to Optimizely (formerly known as Episerver) DXP with DXP API (Former: DXC). Using EpiCloud module.",
     "public": true,

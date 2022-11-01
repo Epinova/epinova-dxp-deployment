@@ -16,6 +16,7 @@ Param(
     $SqlDatabasePassword,
     $SqlSku,
 
+    $DropPath
     $Timeout,
     $RunVerbose
 )
