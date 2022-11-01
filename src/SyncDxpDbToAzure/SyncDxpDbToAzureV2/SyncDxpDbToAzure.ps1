@@ -88,15 +88,37 @@ try {
 
     Test-DxpProjectId -ProjectId $projectId
 
-    Install-Module EpinovaDxpToolBucket -Scope CurrentUser -Force
+    Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
 
-    Get-InstalledModule -Name EpinovaDxpToolBucket
+    Get-InstalledModule -Name EpinovaAzureToolBucket
 
     #Install-Module -Name "EpinovaDxpToolBucket" -MinimumVersion 0.4.2 -Verbose
     #Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
-    Sync-DxpDbToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $environment -DatabaseType $databaseType -DownloadFolder $dropPath -Timeout $timeout -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -SqlServerName $sqlServerName -SqlDatabaseName $sqlDatabaseName -SqlDatabaseLogin $sqlDatabaseLogin -SqlDatabasePassword $sqlDatabasePassword -RunDatabaseBackup $runDatabaseBackup -SqlSku $sqlSku
+    #Sync-DxpDbToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $environment -DatabaseType $databaseType -DownloadFolder $dropPath -Timeout $timeout -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -SqlServerName $sqlServerName -SqlDatabaseName $sqlDatabaseName -SqlDatabaseLogin $sqlDatabaseLogin -SqlDatabasePassword $sqlDatabasePassword -RunDatabaseBackup $runDatabaseBackup -SqlSku $sqlSku
+    $retentionHours = 2
+    [string]$filePath = Invoke-DxpDatabaseDownload -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $environment -DatabaseName $databaseType -DownloadFolder $dropPath -RetentionHours $retentionHours -Timeout $timeout
+    Write-Host "Downloaded database: $filePath"
 
+    if ($null -eq $filePath -or $filePath.Length -eq 0){
+        Write-Host "We do not have any database to work with. Will exit."
+        exit
+    }
+    
+    $filePath = $filePath.Trim()
+    $BlobName = $filePath.Substring($filePath.LastIndexOf("\") + 1)
+    $BlobName
+    
+    $BacpacFilename = Send-Blob -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -FilePath $filePath -BlobName $BlobName #-Debug
+    $BacpacFilename
+   
+    if ($null -eq $BacpacFilename -or $BacpacFilename.Length -eq 0){
+        Write-Host "We do not have any database uploaded. Will exit."
+        exit
+    }
+
+    Import-BacpacDatabase -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -BacpacFilename $BlobName -SqlServerName $sqlServerName -SqlDatabaseName $sqlDatabaseName -SqlDatabaseLogin $sqlDatabaseLogin -SqlDatabasePassword $sqlDatabasePassword -RunDatabaseBackup $runDatabaseBackup -SqlSku $sqlSku
+    
     ####################################################################################
 
     Write-Host "---THE END---"
