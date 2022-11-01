@@ -88,7 +88,11 @@ try {
 
     Test-DxpProjectId -ProjectId $projectId
 
-    Install-Module -Name "EpinovaDxpToolBucket" -MinimumVersion 0.4.2 -Verbose
+    Install-Module EpinovaDxpToolBucket -Scope CurrentUser -Force
+
+    Get-InstalledModule -Name EpinovaDxpToolBucket
+
+    #Install-Module -Name "EpinovaDxpToolBucket" -MinimumVersion 0.4.2 -Verbose
     #Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
     Sync-DxpDbToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $environment -DatabaseType $databaseType -DownloadFolder $dropPath -Timeout $timeout -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -SqlServerName $sqlServerName -SqlDatabaseName $sqlDatabaseName -SqlDatabaseLogin $sqlDatabaseLogin -SqlDatabasePassword $sqlDatabasePassword -RunDatabaseBackup $runDatabaseBackup -SqlSku $sqlSku
