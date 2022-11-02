@@ -858,3 +858,222 @@ function Publish-Package {
 
     return $uploadedPackage
 }
+
+function Invoke-DxpDatabaseExportProgress {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [String] $ClientKey,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [String] $ClientSecret,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ProjectId,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ExportId,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $Environment,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $DatabaseName,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ExpectedStatus,
+
+        [Parameter(Mandatory = $true)]
+        [int] $Timeout
+    )
+    $sw = [Diagnostics.Stopwatch]::StartNew()
+    $sw.Start()
+    $currentStatus = ""
+    $iterator = 0
+    $status = $null
+    while ($currentStatus -ne $expectedStatus) {
+        $status = Get-EpiDatabaseExport -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Id $ExportId -Environment $Environment -DatabaseName $DatabaseName
+        $currentStatus = $status.status
+        if ($iterator % 6 -eq 0) {
+            Write-Host "Database backup status: $($currentStatus). ElapsedSeconds: $($sw.Elapsed.TotalSeconds)"
+        }
+        if ($currentStatus -ne $ExpectedStatus) {
+            Start-Sleep 10
+        }
+        if ($sw.Elapsed.TotalSeconds -ge $timeout) { break }
+        if ($currentStatus -eq $ExpectedStatus) { break }
+        $iterator++
+    }
+
+    $sw.Stop()
+    Write-Host "Stopped iteration after $($sw.Elapsed.TotalSeconds) seconds."
+
+    if ($null -ne $status){
+        Write-Host "################################################"
+        Write-Host "Database export:"
+        Write-Host "Status:       $($status.status)"
+        Write-Host "BacpacName:   $($status.bacpacName)"
+        Write-Host "DownloadLink: $($status.downloadLink)"
+    }
+    return $status
+}
+
+function Invoke-DxpDatabaseDownload{
+    <#
+    .SYNOPSIS
+        Download DXP project DB.
+
+    .DESCRIPTION
+        Download DXP project DB. You can specify the environment from where the database should be exported from.
+        Will return with the file path to where database is downloaded.
+
+    .PARAMETER ClientKey
+        Your DXP ClientKey that you can generate in the paas.episerver.net portal.
+
+    .PARAMETER ClientSecret
+        Your DXP ClientSecret that you can generate in the paas.episerver.net portal.
+
+    .PARAMETER ProjectId
+        The DXP project id that is related to the ClientKey/Secret.
+
+    .PARAMETER Environment
+        The environment that holds the blobs that you want to download.
+
+    .PARAMETER DatabaseName
+        The type of database you want to download from Optimizely DXP. epicms / epicommerce
+
+    .PARAMETER DownloadFolder
+        The local download folder where you want to download the DB backup file.
+
+    .PARAMETER Timeout
+        The number of seconds that you will let the script run until it will timeout. Default 1800 (ca 30 minutes)
+
+    .EXAMPLE
+        Invoke-DxpDatabaseDownload -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -DatabaseName $DatabaseName -DownloadFolder $DownloadFolder -RetentionHours $RetentionHours -Timeout $Timeout
+
+    .EXAMPLE
+        Invoke-DxpDatabaseDownload -ClientKey '644b6926-39b1-42a1-93d6-3771cdc4a04e' -ClientSecret '644b6926-39b1fasrehyjtye-42a1-93d6-3771cdc4asasda04e'-ProjectId '644b6926-39b1-42a1-93d6-3771cdc4a04e' -Environment 'Integration' -DatabaseName 'epicms' -DownloadFolder "c:\temp" -RetentionHours 2 -Timeout 1800
+
+    .EXAMPLE
+        $filePath = Invoke-DxpDatabaseDownload -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -DatabaseName $DatabaseName -DownloadFolder $DownloadFolder -RetentionHours $RetentionHours -Timeout $Timeout
+
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [String] $ClientKey,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [String] $ClientSecret,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ProjectId,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [ValidateSet('Integration','Preproduction','Production','ADE1','ADE2','ADE3')]
+        [string] $Environment,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateSet('epicms','epicommerce')]
+        [string] $DatabaseName,
+
+        [Parameter(Mandatory=$true)]
+        [string] $DownloadFolder,
+
+        [Parameter(Mandatory=$false)]
+        [ValidateRange(1, 168)]
+        [int] $RetentionHours = 2,
+
+        [Parameter(Mandatory = $false)]
+        [int] $Timeout = 1800
+    )
+
+    Write-Host "Invoke-DxpDatabaseDownload - Inputs:-------------"
+    Write-Host "ClientKey:              $ClientKey"
+    Write-Host "ClientSecret:           **** (it is a secret...)"
+    Write-Host "ProjectId:              $ProjectId"
+    Write-Host "Environment:            $Environment"
+    Write-Host "DatabaseName:           $databaseName"
+    Write-Host "DownloadFolder:         $DownloadFolder"
+    Write-Host "RetentionHours:         $RetentionHours"
+    Write-Host "Timeout:                $timeout"
+    Write-Host "------------------------------------------------"
+
+    Write-DxpHostVersion
+
+    Test-DxpProjectId -ProjectId $ProjectId
+    Test-DownloadFolder -DownloadFolder $DownloadFolder
+    Test-EnvironmentParam -Environment $Environment
+    Test-DatabaseName -DatabaseName $DatabaseName
+
+    #Import-EpiCloud
+    Initialize-EpiCload
+
+    Connect-DxpEpiCloud -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId
+
+    $exportDatabaseSplat = @{
+        ClientKey      = $ClientKey
+        ClientSecret   = $ClientSecret
+        ProjectId      = $ProjectId
+        Environment    = $Environment
+        DatabaseName   = $DatabaseName
+        RetentionHours = $RetentionHours
+    }
+
+    $export = Start-EpiDatabaseExport @exportDatabaseSplat
+    Write-Host "Database export has started:--------------------"
+    Write-Host "Id:           $($export.id)"
+    Write-Host "ProjectId:    $($export.projectId)"
+    Write-Host "DatabaseName: $($export.databaseName)"
+    Write-Host "Environment:  $($export.environment)"
+    Write-Host "Status:       $($export.status)"
+    Write-Host "------------------------------------------------"
+
+    $exportId = $export.id 
+
+    if ($export.status -eq "InProgress") {
+        $deployDateTime = Get-DxpDateTimeStamp
+        Write-Host "Export $exportId started $deployDateTime."
+    } else {
+        Write-Error "Status is not in InProgress (Current:$($export.status)). You can not export database at this moment."
+        exit
+    }
+
+    if ($export.status -eq "InProgress" -or $status.status -eq "Succeeded") {
+        Write-Host "----------------PROGRESS-------------------------"
+        $status = Invoke-DxpDatabaseExportProgress -ClientKey $ClientKey -ClientSecret $ClientSecret -Projectid $ProjectId -ExportId $ExportId -Environment $Environment -DatabaseName $DatabaseName -ExpectedStatus "Succeeded" -Timeout $timeout
+        Write-Host "------------------------------------------------"
+        $deployDateTime = Get-DxpDateTimeStamp
+        Write-Host "Export $exportId ended $deployDateTime"
+
+        if ($status.status -eq "Succeeded") {
+            Write-Host "Database export $exportId has been successful."
+            Write-Host "-------------DOWNLOAD----------------------------"
+            Write-Host "Start download database $($status.downloadLink)"
+            $filePath = Join-Parts -Separator '\' -Parts $DownloadFolder, $status.bacpacName
+            Invoke-WebRequest -Uri $status.downloadLink -OutFile $filePath
+            Write-Host "Download database to $filePath"
+            Write-Host "------------------------------------------------"
+            return $filePath;
+        }
+        else {
+            Write-Error "The database export has not been successful or the script has timedout. CurrentStatus: $($status.status)"
+            exit
+        }
+    }
+    else {
+        Write-Error "Status is not in InProgress (Current:$($export.status)). You can not export database at this moment."
+        exit
+    }
+}
