@@ -84,15 +84,16 @@ try {
 
     Initialize-EpiCload
 
+    $retentionHours = 2
     Connect-DxpEpiCloud -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId
 
     $exportDatabaseSplat = @{
-        ClientKey      = $ClientKey
-        ClientSecret   = $ClientSecret
-        ProjectId      = $ProjectId
-        Environment    = $Environment
-        DatabaseName   = $DatabaseName
-        RetentionHours = $RetentionHours
+        ClientKey      = $clientKey
+        ClientSecret   = $clientSecret
+        ProjectId      = $projectId
+        Environment    = $environment
+        DatabaseName   = $databaseName
+        RetentionHours = $retentionHours
     }
 
     $filePath = ""
@@ -117,7 +118,7 @@ try {
 
     if ($export.status -eq "InProgress" -or $status.status -eq "Succeeded") {
         Write-Host "----------------PROGRESS-------------------------"
-        $status = Invoke-DxpDatabaseExportProgress -ClientKey $ClientKey -ClientSecret $ClientSecret -Projectid $ProjectId -ExportId $ExportId -Environment $Environment -DatabaseName $DatabaseName -ExpectedStatus "Succeeded" -Timeout $timeout
+        $status = Invoke-DxpDatabaseExportProgress -ClientKey $clientKey -ClientSecret $clientSecret -Projectid $projectId -ExportId $exportId -Environment $environment -DatabaseName $databaseType -ExpectedStatus "Succeeded" -Timeout $timeout
         Write-Host "------------------------------------------------"
         $deployDateTime = Get-DxpDateTimeStamp
         Write-Host "Export $exportId ended $deployDateTime"
