@@ -132,7 +132,7 @@ try {
             Invoke-WebRequest -Uri $status.downloadLink -OutFile $filePath
             Write-Host "Downloaded database to $filePath"
             Write-Host "------------------------------------------------"
-            return $filePath;
+            $filePath;
         }
         else {
             Write-Error "The database export has not been successful or the script has timedout. CurrentStatus: $($status.status)"
@@ -155,7 +155,7 @@ try {
     # #Sync-DxpDbToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $environment -DatabaseType $databaseType -DownloadFolder $dropPath -Timeout $timeout -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -SqlServerName $sqlServerName -SqlDatabaseName $sqlDatabaseName -SqlDatabaseLogin $sqlDatabaseLogin -SqlDatabasePassword $sqlDatabasePassword -RunDatabaseBackup $runDatabaseBackup -SqlSku $sqlSku
     # $retentionHours = 2
     # [string]$filePath = Invoke-DxpDatabaseDownload -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $environment -DatabaseName $databaseType -DownloadFolder $dropPath -RetentionHours $retentionHours -Timeout $timeout
-    Write-Host "Downloaded database: $filePath"
+    #Write-Host "Downloaded database: $filePath"
 
     if ($null -eq $filePath -or $filePath.Length -eq 0){
         Write-Host "We do not have any database to work with. Will exit."
@@ -164,7 +164,6 @@ try {
 
     $filePath = $filePath.Trim()
     $BlobName = $filePath.Substring($filePath.LastIndexOf("\") + 1)
-
 
     Write-Host "------------------------------------------------"
     Write-Host "Downloaded database: $filePath"
@@ -184,6 +183,8 @@ try {
     Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
     Get-InstalledModule -Name EpinovaAzureToolBucket
 
+    Write-Host "------------------------------------------------"
+    Write-Host "Start upload bacpac to Azure."
     Write-Host "`$BacpacFilename = Send-Blob -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -FilePath $filePath -BlobName $BlobName"
     $BacpacFilename = Send-Blob -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -FilePath $filePath -BlobName $BlobName #-Debug
 
