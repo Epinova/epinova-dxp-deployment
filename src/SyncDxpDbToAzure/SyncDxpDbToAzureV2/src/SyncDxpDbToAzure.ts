@@ -1,10 +1,8 @@
-import tl = require("azure-pipelines-task-lib/task");
-import { basename } from "path";
-
-import {
-    logInfo,
-    logError
-}  from "./agentSpecific";
+import fs = require('fs');
+import path = require('path');
+import os = require('os');
+import tl = require('azure-pipelines-task-lib/task');
+import tr = require('azure-pipelines-task-lib/toolrunner');
 
 import { AzureRMEndpoint } from 'azure-pipelines-tasks-azure-arm-rest-v2/azure-arm-endpoint';
 var uuidV4 = require('uuid/v4');
@@ -15,6 +13,21 @@ function convertToNullIfUndefined<T>(arg: T): T|null {
 
 export async function run() {
     try {
+        // Get the build and release details
+        tl.setResourcePath(path.join(__dirname, 'task.json'));
+
+        let _vsts_input_errorActionPreference: string = tl.getInput('errorActionPreference', false) || 'Stop';
+        switch (_vsts_input_errorActionPreference.toUpperCase()) {
+            case 'STOP':
+            case 'CONTINUE':
+            case 'SILENTLYCONTINUE':
+                break;
+            default:
+                throw new Error(tl.loc('JS_InvalidErrorActionPreference', _vsts_input_errorActionPreference));
+        }
+
+        let _vsts_input_failOnStandardError = convertToNullIfUndefined(tl.getBoolInput('FailOnStandardError', false));
+
         // Get the build and release details
         let ClientKey = tl.getInput("ClientKey");
         let ClientSecret = tl.getInput("ClientSecret");
@@ -43,84 +56,96 @@ export async function run() {
         let Timeout = tl.getInput("Timeout");
         let RunVerbose = tl.getBoolInput("RunVerbose", false);
 
-        // we need to get the verbose flag passed in as script flag
-        var verbose = (tl.getVariable("System.Debug") === "true");
+        // We will not let user specify which PS version.
+        let targetAzurePs = "";
 
-        // find the executeable
-        let executable = "pwsh";
-        if (tl.getVariable("AGENT.OS") === "Windows_NT") {
-            if (!tl.getBoolInput("usePSCore")) {
-                executable = "powershell.exe";
-            }
-            logInfo(`Using executable '${executable}'`);
-        } else {
-            logInfo(`Using executable '${executable}' as only only option on '${tl.getVariable("AGENT.OS")}'`);
+        var endpoint = JSON.stringify(endpointObject);
+
+        // Generate the script contents.
+        console.log('GeneratingScript');
+        let contents: string[] = [];
+
+        if (isDebugEnabled) {
+             contents.push("$VerbosePreference = 'continue'");
         }
 
-        // we need to not pass the null param
-        var args = [__dirname + "\\SyncDxpDbToAzure.ps1",
-        "-ClientKey", ClientKey,
-        "-ClientSecret", ClientSecret,
-        "-ProjectId", ProjectId,
-        "-Environment", Environment,
-        "-DatabaseType", DatabaseType,
-        "-SubscriptionId", SubscriptionId,
-        "-ResourceGroupName", ResourceGroupName,
-        "-StorageAccountName", StorageAccountName,
-        "-StorageAccountContainer", StorageAccountContainer,
-        "-SqlServerName", SqlServerName,
-        "-SqlDatabaseName", SqlDatabaseName,
-        "-RunDatabaseBackup", RunDatabaseBackup,
-        "-SqlDatabaseLogin", SqlDatabaseLogin,
-        "-SqlDatabasePassword", SqlDatabasePassword,
-        "-SqlSku", SqlSku,
-        "-DropPath", DropPath,
-        "-Timeout", Timeout
-        ];
-        if (RunVerbose) {
-            args.push("-RunVerbose");
-            args.push("true");
+        const makeModuleAvailableScriptPath = path.join(path.resolve(__dirname), 'TryMakingModuleAvailable.ps1');
+        contents.push(`${makeModuleAvailableScriptPath} -targetVersion '${targetAzurePs}' -platform Linux`);
+
+
+        let azFilePath = path.join(path.resolve(__dirname), 'InitializeAz.ps1');
+        contents.push(`$ErrorActionPreference = '${_vsts_input_errorActionPreference}'`); 
+        contents.push(`${azFilePath} -endpoint '${endpoint}'`);
+
+        let yourScriptPath = path.join(path.resolve(__dirname), 'SyncDxpDbToAzure.ps1');
+        contents.push(`${yourScriptPath} -ClientKey '${ClientKey}' -ClientSecret '${ClientSecret}' -ProjectId '${ProjectId}' -Environment '${Environment}' -DatabaseType '${DatabaseType}' -SubscriptionId '${SubscriptionId}' -ResourceGroupName '${ResourceGroupName}' -StorageAccountName '${StorageAccountName}' -StorageAccountContainer '${StorageAccountContainer}'-SqlServerName '${SqlServerName}' -SqlDatabaseName '${SqlDatabaseName}' -RunDatabaseBackup ${RunDatabaseBackup} -SqlDatabaseLogin '${SqlDatabaseLogin}' -SqlDatabasePassword '${SqlDatabasePassword}' -SqlSku '${SqlSku}' -DropPath '${DropPath}' -Timeout ${Timeout}`); 
+
+
+
+
+        // Write the script to disk.
+        tl.assertAgent('2.115.0');
+        let tempDirectory = tl.getVariable('agent.tempDirectory');
+        tl.checkPath(tempDirectory, `${tempDirectory} (agent.tempDirectory)`);
+        let filePath = path.join(tempDirectory, uuidV4() + '.ps1');
+
+
+        await fs.writeFile(
+            filePath,
+            '\ufeff' + contents.join(os.EOL), // Prepend the Unicode BOM character.
+            { encoding: 'utf8' }, // Since UTF8 encoding is specified, node will
+                                        // encode the BOM into its UTF8 binary sequence.
+            function (err) {
+                if (err) throw err;
+                console.log('Saved!');
+            });
+
+        // Run the script.
+        //
+        // Note, prefer "pwsh" over "powershell". At some point we can remove support for "powershell".
+        //
+        // Note, use "-Command" instead of "-File" to match the Windows implementation. Refer to
+        // comment on Windows implementation for an explanation why "-Command" is preferred.
+        let powershell = tl.tool(tl.which('pwsh') || tl.which('powershell') || tl.which('pwsh', true))
+            .arg('-NoLogo')
+            .arg('-NoProfile')
+            .arg('-NonInteractive')
+            .arg('-ExecutionPolicy')
+            .arg('Unrestricted')
+            .arg('-Command')
+            .arg(`. '${filePath.replace(/'/g, "''")}'`);
+
+        let options = <tr.IExecOptions>{
+            cwd: input_workingDirectory,
+            failOnStdErr: false,
+            errStream: process.stdout, // Direct all output to STDOUT, otherwise the output may appear out
+            outStream: process.stdout, // of order since Node buffers it's own STDOUT but not STDERR.
+            ignoreReturnCode: true
+        };
+
+        // Listen for stderr.
+        let stderrFailure = false;
+        if (_vsts_input_failOnStandardError) {
+            powershell.on('stderr', (data) => {
+                stderrFailure = true;
+            });
         }
 
-        var argsShow = [__dirname + "\\SyncDxpDbToAzure.ps1",
-        "-ClientKey", ClientKey,
-        "-ClientSecret", "***",
-        "-ProjectId", ProjectId,
-        "-Environment", Environment,
-        "-DatabaseType", DatabaseType,
-        "-SubscriptionId", SubscriptionId,
-        "-ResourceGroupName", ResourceGroupName,
-        "-StorageAccountName", StorageAccountName,
-        "-StorageAccountContainer", StorageAccountContainer,
-        "-SqlServerName", SqlServerName,
-        "-SqlDatabaseName", SqlDatabaseName,
-        "-RunDatabaseBackup", RunDatabaseBackup,
-        "-SqlDatabaseLogin", SqlDatabaseLogin,
-        "-SqlDatabasePassword", SqlDatabasePassword,
-        "-SqlSku", SqlSku,
-        "-DropPath", DropPath,
-        "-Timeout", Timeout
-        ];
-        if (RunVerbose) {
-            argsShow.push("-RunVerbose");
-            argsShow.push("true");
-        }
-        logInfo(`${executable} ${argsShow.join(" ")}`);
+        // Run bash.
+        let exitCode: number = await powershell.exec(options);
 
-        var spawn = require("child_process").spawn, child;
-        child = spawn(executable, args);
-        child.stdout.on("data", function (data) {
-            logInfo(data.toString());
-        });
-        child.stderr.on("data", function (data) {
-            logError(data.toString());
-        });
-        child.on("exit", function () {
-            logInfo("Script finished");
-        });
+        // Fail on exit code.
+        if (exitCode !== 0) {
+            tl.setResult(tl.TaskResult.Failed, tl.loc('JS_ExitCode', exitCode));
+        }
+
+        // Fail on stderr.
+        if (stderrFailure) {
+            tl.setResult(tl.TaskResult.Failed, tl.loc('JS_Stderr'));
+        }
     }
     catch (err) {
-        logError(err);
+        tl.setResult(tl.TaskResult.Failed, err.message || 'run() failed');
     }
 }
 
