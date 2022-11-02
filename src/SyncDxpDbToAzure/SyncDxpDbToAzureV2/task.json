@@ -13,7 +13,7 @@
     "version": {
         "Major": 2,
         "Minor": 0,
-        "Patch": 7
+        "Patch": 8
     },
     "groups": [
         {
@@ -32,7 +32,7 @@
             "isExpanded": false
         }
     ],
-    "releaseNotes": "v2.0.7: Created",
+    "releaseNotes": "v2.0.8: Created",
     "minimumAgentVersion": "2.134.0",
     "inputs": [
         {

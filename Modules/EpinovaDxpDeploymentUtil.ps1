@@ -108,6 +108,35 @@ function Test-DxpProjectId {
     if (!(Test-IsGuid -ObjectGuid $ProjectId)) {
         Write-Error "The provided ProjectId $ProjectId is not a guid value."
         exit 1
+    } else {
+        Write-Host "ProjectId is a GUID."
+    }
+}
+
+function Test-DownloadFolder {
+    <#
+    .SYNOPSIS
+        Test the downloadfolder if it exist.
+
+    .DESCRIPTION
+        Test the downloadfolder if it exist.
+
+    .PARAMETER DownloadFolder
+        The provided folder where the blobs will be downloaded.
+
+    .EXAMPLE
+        Test-DownloadFolder -DownloadFolder $DownloadFolder
+
+    #>
+	[OutputType([bool])]
+	param
+	(
+		[Parameter(Mandatory = $true)]
+		[string]$DownloadFolder
+	)
+    if ((Test-Path $DownloadFolder -PathType Container) -eq $false) {
+        Write-Error "Download folder $DownloadFolder does not exist."
+        exit
     }
 }
 
@@ -1014,8 +1043,6 @@ function Invoke-DxpDatabaseDownload{
 
     Test-DxpProjectId -ProjectId $ProjectId
     Test-DownloadFolder -DownloadFolder $DownloadFolder
-    Test-EnvironmentParam -Environment $Environment
-    Test-DatabaseName -DatabaseName $DatabaseName
 
     #Import-EpiCloud
     Initialize-EpiCload

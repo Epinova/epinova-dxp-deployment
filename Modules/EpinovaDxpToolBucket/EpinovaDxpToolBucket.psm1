@@ -1083,7 +1083,6 @@ function Invoke-DxpBlobsDownload{
 
     Test-DxpProjectId -ProjectId $ProjectId
     Test-DownloadFolder -DownloadFolder $DownloadFolder
-    Test-EnvironmentParam -Environment $Environment
 
     Import-Az
     #Import-EpiCloud
