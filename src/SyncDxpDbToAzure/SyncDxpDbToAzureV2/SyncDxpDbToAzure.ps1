@@ -82,45 +82,118 @@ try {
 
     Mount-PsModulesPath
 
-    #Initialize-EpiCload
+    Initialize-EpiCload
 
-    Write-DxpHostVersion
+    Connect-DxpEpiCloud -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId
 
-    Test-DxpProjectId -ProjectId $projectId
+    $exportDatabaseSplat = @{
+        ClientKey      = $ClientKey
+        ClientSecret   = $ClientSecret
+        ProjectId      = $ProjectId
+        Environment    = $Environment
+        DatabaseName   = $DatabaseName
+        RetentionHours = $RetentionHours
+    }
 
-    Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
-    Get-InstalledModule -Name EpinovaAzureToolBucket
+    $filePath = ""
+    $export = Start-EpiDatabaseExport @exportDatabaseSplat
+    Write-Host "Database export has started:--------------------"
+    Write-Host "Id:           $($export.id)"
+    Write-Host "ProjectId:    $($export.projectId)"
+    Write-Host "DatabaseName: $($export.databaseName)"
+    Write-Host "Environment:  $($export.environment)"
+    Write-Host "Status:       $($export.status)"
+    Write-Host "------------------------------------------------"
 
-    #Install-Module Az -Scope CurrentUser -Force
-    Install-Module Az.Accounts -Scope CurrentUser -Force
-    Install-Module Az.Storage -Scope CurrentUser -Force
-    Install-Module Az.Sql -Scope CurrentUser -Force
-    #Install-Module -Name "EpinovaDxpToolBucket" -MinimumVersion 0.4.2 -Verbose
-    #Install-Module -Name "EpinovaDxpToolBucket" -Verbose
-    Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
+    $exportId = $export.id 
 
-    #Sync-DxpDbToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $environment -DatabaseType $databaseType -DownloadFolder $dropPath -Timeout $timeout -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -SqlServerName $sqlServerName -SqlDatabaseName $sqlDatabaseName -SqlDatabaseLogin $sqlDatabaseLogin -SqlDatabasePassword $sqlDatabasePassword -RunDatabaseBackup $runDatabaseBackup -SqlSku $sqlSku
-    $retentionHours = 2
-    [string]$filePath = Invoke-DxpDatabaseDownload -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $environment -DatabaseName $databaseType -DownloadFolder $dropPath -RetentionHours $retentionHours -Timeout $timeout
+    if ($export.status -eq "InProgress") {
+        $deployDateTime = Get-DxpDateTimeStamp
+        Write-Host "Export $exportId started $deployDateTime."
+    } else {
+        Write-Error "Status is not in InProgress (Current:$($export.status)). You can not export database at this moment."
+        exit
+    }
+
+    if ($export.status -eq "InProgress" -or $status.status -eq "Succeeded") {
+        Write-Host "----------------PROGRESS-------------------------"
+        $status = Invoke-DxpDatabaseExportProgress -ClientKey $ClientKey -ClientSecret $ClientSecret -Projectid $ProjectId -ExportId $ExportId -Environment $Environment -DatabaseName $DatabaseName -ExpectedStatus "Succeeded" -Timeout $timeout
+        Write-Host "------------------------------------------------"
+        $deployDateTime = Get-DxpDateTimeStamp
+        Write-Host "Export $exportId ended $deployDateTime"
+
+        if ($status.status -eq "Succeeded") {
+            Write-Host "Database export $exportId has been successful."
+            Write-Host "-------------DOWNLOAD----------------------------"
+            Write-Host "Start download database $($status.downloadLink)"
+            #$filePath = Join-Parts -Separator '\' -Parts $DownloadFolder, $status.bacpacName
+            $filePath = "$DownloadFolder\$($status.bacpacName)"
+            Invoke-WebRequest -Uri $status.downloadLink -OutFile $filePath
+            Write-Host "Downloaded database to $filePath"
+            Write-Host "------------------------------------------------"
+            return $filePath;
+        }
+        else {
+            Write-Error "The database export has not been successful or the script has timedout. CurrentStatus: $($status.status)"
+            exit
+        }
+    }
+    else {
+        Write-Error "Status is not in InProgress (Current:$($export.status)). You can not export database at this moment."
+        exit
+    }    
+
+    # #Initialize-EpiCload
+
+    # Write-DxpHostVersion
+
+    # Test-DxpProjectId -ProjectId $projectId
+
+    # Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
+
+    # #Sync-DxpDbToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $environment -DatabaseType $databaseType -DownloadFolder $dropPath -Timeout $timeout -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -SqlServerName $sqlServerName -SqlDatabaseName $sqlDatabaseName -SqlDatabaseLogin $sqlDatabaseLogin -SqlDatabasePassword $sqlDatabasePassword -RunDatabaseBackup $runDatabaseBackup -SqlSku $sqlSku
+    # $retentionHours = 2
+    # [string]$filePath = Invoke-DxpDatabaseDownload -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $environment -DatabaseName $databaseType -DownloadFolder $dropPath -RetentionHours $retentionHours -Timeout $timeout
     Write-Host "Downloaded database: $filePath"
 
     if ($null -eq $filePath -or $filePath.Length -eq 0){
         Write-Host "We do not have any database to work with. Will exit."
         exit
     }
-    
+
     $filePath = $filePath.Trim()
     $BlobName = $filePath.Substring($filePath.LastIndexOf("\") + 1)
-    $BlobName
-    
+
+
+    Write-Host "------------------------------------------------"
+    Write-Host "Downloaded database: $filePath"
+    Write-Host "BlobName: $BlobName"
+    Write-Host "------------------------------------------------"
+
+    # Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
+    # Get-InstalledModule -Name EpinovaAzureToolBucket
+
+    # #Install-Module Az -Scope CurrentUser -Force
+    # Install-Module Az.Accounts -Scope CurrentUser -Force
+    # Install-Module Az.Storage -Scope CurrentUser -Force
+    # Install-Module Az.Sql -Scope CurrentUser -Force
+    # #Install-Module -Name "EpinovaDxpToolBucket" -MinimumVersion 0.4.2 -Verbose
+    # #Install-Module -Name "EpinovaDxpToolBucket" -Verbose
+
+    Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
+    Get-InstalledModule -Name EpinovaAzureToolBucket
+
+    Write-Host "`$BacpacFilename = Send-Blob -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -FilePath $filePath -BlobName $BlobName"
     $BacpacFilename = Send-Blob -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -FilePath $filePath -BlobName $BlobName #-Debug
-    $BacpacFilename
+
+    Write-Host "BacpacFilename: $BacpacFilename"
    
     if ($null -eq $BacpacFilename -or $BacpacFilename.Length -eq 0){
         Write-Host "We do not have any database uploaded. Will exit."
         exit
     }
 
+    Write-Host "Import-BacpacDatabase -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -BacpacFilename $BlobName -SqlServerName $sqlServerName -SqlDatabaseName $sqlDatabaseName -SqlDatabaseLogin $sqlDatabaseLogin -SqlDatabasePassword $sqlDatabasePassword -RunDatabaseBackup $runDatabaseBackup -SqlSku $sqlSku"
     Import-BacpacDatabase -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -BacpacFilename $BlobName -SqlServerName $sqlServerName -SqlDatabaseName $sqlDatabaseName -SqlDatabaseLogin $sqlDatabaseLogin -SqlDatabasePassword $sqlDatabasePassword -RunDatabaseBackup $runDatabaseBackup -SqlSku $sqlSku
     
     ####################################################################################
