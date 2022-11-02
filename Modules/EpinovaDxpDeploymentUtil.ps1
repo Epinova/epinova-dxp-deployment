@@ -1088,7 +1088,8 @@ function Invoke-DxpDatabaseDownload{
             Write-Host "Database export $exportId has been successful."
             Write-Host "-------------DOWNLOAD----------------------------"
             Write-Host "Start download database $($status.downloadLink)"
-            $filePath = Join-Parts -Separator '\' -Parts $DownloadFolder, $status.bacpacName
+            #$filePath = Join-Parts -Separator '\' -Parts $DownloadFolder, $status.bacpacName
+            $filePath = "$DownloadFolder\$($status.bacpacName)"
             Invoke-WebRequest -Uri $status.downloadLink -OutFile $filePath
             Write-Host "Download database to $filePath"
             Write-Host "------------------------------------------------"
