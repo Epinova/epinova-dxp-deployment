@@ -1091,7 +1091,7 @@ function Invoke-DxpDatabaseDownload{
             #$filePath = Join-Parts -Separator '\' -Parts $DownloadFolder, $status.bacpacName
             $filePath = "$DownloadFolder\$($status.bacpacName)"
             Invoke-WebRequest -Uri $status.downloadLink -OutFile $filePath
-            Write-Host "Download database to $filePath"
+            Write-Host "Downloaded database to $filePath"
             Write-Host "------------------------------------------------"
             return $filePath;
         }

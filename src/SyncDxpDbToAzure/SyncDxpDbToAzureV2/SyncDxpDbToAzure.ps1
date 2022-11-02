@@ -91,9 +91,10 @@ try {
     Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
     Get-InstalledModule -Name EpinovaAzureToolBucket
 
-    Install-Module Az.Accounts -Scope CurrentUser -Force
-    Install-Module Az.Storage -Scope CurrentUser -Force
-    Install-Module Az.Sql -Scope CurrentUser -Force
+    Install-Module Az -Scope CurrentUser -Force
+    #Install-Module Az.Accounts -Scope CurrentUser -Force
+    #Install-Module Az.Storage -Scope CurrentUser -Force
+    #Install-Module Az.Sql -Scope CurrentUser -Force
     #Install-Module -Name "EpinovaDxpToolBucket" -MinimumVersion 0.4.2 -Verbose
     #Install-Module -Name "EpinovaDxpToolBucket" -Verbose
     Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
