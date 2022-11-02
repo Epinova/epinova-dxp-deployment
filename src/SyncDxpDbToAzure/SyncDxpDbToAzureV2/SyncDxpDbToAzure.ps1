@@ -92,7 +92,7 @@ try {
         ClientSecret   = $clientSecret
         ProjectId      = $projectId
         Environment    = $environment
-        DatabaseName   = $databaseName
+        DatabaseName   = $databaseType
         RetentionHours = $retentionHours
     }
 
