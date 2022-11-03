@@ -84,7 +84,7 @@ try {
 
     Initialize-EpiCload
 
-    $retentionHours = 2
+    $retentionHours = 4
     Connect-DxpEpiCloud -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId
 
     $exportDatabaseSplat = @{
@@ -96,57 +96,73 @@ try {
         RetentionHours = $retentionHours
     }
 
-    $filePath = ""
-    $export = Start-EpiDatabaseExport @exportDatabaseSplat
-    Write-Host "Database export has started:--------------------"
-    Write-Host "Id:           $($export.id)"
-    Write-Host "ProjectId:    $($export.projectId)"
-    Write-Host "DatabaseName: $($export.databaseName)"
-    Write-Host "Environment:  $($export.environment)"
-    Write-Host "Status:       $($export.status)"
-    Write-Host "------------------------------------------------"
-
-    $exportId = $export.id 
-
-    if ($export.status -eq "InProgress") {
-        $deployDateTime = Get-DxpDateTimeStamp
-        Write-Host "Export $exportId started $deployDateTime."
-    } else {
-        Write-Error "Status is not in InProgress (Current:$($export.status)). You can not export database at this moment."
-        exit
-    }
-
-    if ($export.status -eq "InProgress" -or $status.status -eq "Succeeded") {
-        Write-Host "----------------PROGRESS-------------------------"
-        $status = Invoke-DxpDatabaseExportProgress -ClientKey $clientKey -ClientSecret $clientSecret -Projectid $projectId -ExportId $exportId -Environment $environment -DatabaseName $databaseType -ExpectedStatus "Succeeded" -Timeout $timeout
+    $filePath = "https://bofl01mstr5pe8m.blob.core.windows.net/bacpacs/epicms_Integration_20221103145559.bacpac?sv=2018-03-28&sr=b&sig=X1O5PCCa5Wfwr138ydYaNprM%2BtKIRDiOeXP2R6jg628%3D&st=2022-11-03T15%3A00%3A03Z&se=2022-11-03T17%3A00%3A03Z&sp=r"
+    if ($filePath -eq ""){
+        $export = Start-EpiDatabaseExport @exportDatabaseSplat
+        Write-Host "Database export has started:--------------------"
+        Write-Host "Id:           $($export.id)"
+        Write-Host "ProjectId:    $($export.projectId)"
+        Write-Host "DatabaseName: $($export.databaseName)"
+        Write-Host "Environment:  $($export.environment)"
+        Write-Host "Status:       $($export.status)"
         Write-Host "------------------------------------------------"
-        $deployDateTime = Get-DxpDateTimeStamp
-        Write-Host "Export $exportId ended $deployDateTime"
 
-        if ($status.status -eq "Succeeded") {
-            Write-Host "Database export $exportId has been successful."
-            Write-Host "-------------DOWNLOAD----------------------------"
-            Write-Host "Start download database $($status.downloadLink)"
-            #$filePath = Join-Parts -Separator '\' -Parts $dropPath, $status.bacpacName
-            if ($dropPath.Contains("\")){
-                $filePath = "$dropPath\$($status.bacpacName)"
-            } else {
-                $filePath = "$dropPath/$($status.bacpacName)"
-            }
-            Invoke-WebRequest -Uri $status.downloadLink -OutFile $filePath
-            Write-Host "Downloaded database to $filePath"
-            Write-Host "------------------------------------------------"
-            $filePath;
-        }
-        else {
-            Write-Error "The database export has not been successful or the script has timedout. CurrentStatus: $($status.status)"
+        $exportId = $export.id 
+
+        if ($export.status -eq "InProgress") {
+            $deployDateTime = Get-DxpDateTimeStamp
+            Write-Host "Export $exportId started $deployDateTime."
+        } else {
+            Write-Error "Status is not in InProgress (Current:$($export.status)). You can not export database at this moment."
             exit
         }
+
+        if ($export.status -eq "InProgress" -or $status.status -eq "Succeeded") {
+            Write-Host "----------------PROGRESS-------------------------"
+            $status = Invoke-DxpDatabaseExportProgress -ClientKey $clientKey -ClientSecret $clientSecret -Projectid $projectId -ExportId $exportId -Environment $environment -DatabaseName $databaseType -ExpectedStatus "Succeeded" -Timeout $timeout
+            Write-Host "------------------------------------------------"
+            $deployDateTime = Get-DxpDateTimeStamp
+            Write-Host "Export $exportId ended $deployDateTime"
+
+            if ($status.status -eq "Succeeded") {
+                Write-Host "Database export $exportId has been successful."
+                Write-Host "-------------DOWNLOAD----------------------------"
+                Write-Host "Start download database $($status.downloadLink)"
+                #$filePath = Join-Parts -Separator '\' -Parts $dropPath, $status.bacpacName
+                if ($dropPath.Contains("\")){
+                    $filePath = "$dropPath\$($status.bacpacName)"
+                } else {
+                    $filePath = "$dropPath/$($status.bacpacName)"
+                }
+                Invoke-WebRequest -Uri $status.downloadLink -OutFile $filePath
+                Write-Host "Downloaded database to $filePath"
+                Write-Host "------------------------------------------------"
+                $filePath;
+            }
+            else {
+                Write-Error "The database export has not been successful or the script has timedout. CurrentStatus: $($status.status)"
+                exit
+            }
+        }
+        else {
+            Write-Error "Status is not in InProgress (Current:$($export.status)). You can not export database at this moment."
+            exit
+        }    
+
+    } else {
+        Write-Host "-------------DOWNLOAD----------------------------"
+        Write-Host "Start download database $filePath"
+        $BACPACNAME = "epicms_Integration_20221103145559.bacpac"
+        if ($dropPath.Contains("\")){
+            $filePath = "$dropPath\$BACPACNAME"
+        } else {
+            $filePath = "$dropPath/$BACPACNAME"
+        }
+        Invoke-WebRequest -Uri $status.downloadLink -OutFile $filePath
+        Write-Host "Downloaded database to $filePath"
+        Write-Host "------------------------------------------------"
     }
-    else {
-        Write-Error "Status is not in InProgress (Current:$($export.status)). You can not export database at this moment."
-        exit
-    }    
+
 
     # #Initialize-EpiCload
 
@@ -188,7 +204,7 @@ try {
     # #Install-Module -Name "EpinovaDxpToolBucket" -MinimumVersion 0.4.2 -Verbose
     # #Install-Module -Name "EpinovaDxpToolBucket" -Verbose
 
-    Import-Module Az.Storage -Global -PassThru -Force
+    #Import-Module Az.Storage -Global -PassThru -Force
     Get-InstalledModule -Name Az.Storage
 
     Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
