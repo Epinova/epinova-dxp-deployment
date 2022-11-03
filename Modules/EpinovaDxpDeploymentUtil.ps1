@@ -1105,3 +1105,287 @@ function Invoke-DxpDatabaseDownload{
         exit
     }
 }
+
+
+##################################################################################
+function Get-DefaultStorageAccount{
+    <#
+        .SYNOPSIS
+            List all resources for a resource group and grab the first StorageAccount it can find.
+    
+        .DESCRIPTION
+            List all resources for a resource group and grab the first StorageAccount it can find.  
+            Will only work if connection to Azure already exist.
+    
+        .PARAMETER ResourceGroupName
+            The resource group where we will look for the StorageAccount.
+
+        .PARAMETER StorageAccountName
+            The name of the StorageAccount.
+
+        .EXAMPLE
+            Get-DefaultStorageAccount -ResourceGroupName $ResourceGroupName
+    
+        #>
+        param(
+            [Parameter(Mandatory = $true)]
+            [ValidateNotNullOrEmpty()]
+            [string]$ResourceGroupName,
+
+            [Parameter(Mandatory = $false)]
+            [string] $StorageAccountName
+        )
+        if ($null -eq $StorageAccountName -or "" -eq $StorageAccountName) {
+            $storageAccount = Get-AzStorageAccount -ResourceGroupName $ResourceGroupName
+            #$storageAccount #For debuging
+            if ($storageAccount -is [array]){
+                if ($storageAccount.Count -ne 1) {
+                    if ($storageAccount.Count -gt 1) {
+                        Write-Warning "Found more then 1 StorageAccount in ResourceGroup: $ResourceGroupName."
+                    }
+                    if ($storageAccount.Count -eq 0) {
+                        Write-Warning "Could not find a StorageAccount in ResourceGroup: $ResourceGroupName."
+                    }
+                    exit
+                }
+            }
+        } else {
+            $storageAccount = Get-AzStorageAccount -ResourceGroupName $ResourceGroupName -Name $StorageAccountName
+            if ($null -eq $storageAccount) {
+                Write-Error "Did not find StorageAccount in ResourceGroup: $ResourceGroupName."
+                exit
+            }
+        }
+        return $storageAccount
+}
+
+function Get-StorageAccountContainer{
+    <#
+        .SYNOPSIS
+            Get the container for the specified StorageAccount.
+    
+        .DESCRIPTION
+            Get the container for the specified StorageAccount.  
+            Will only work if connection to Azure aleasy exist.
+
+        .PARAMETER StorageAccount
+            The StorageAccount where the container should exist.
+
+        .PARAMETER ContainerName
+            The container name.
+    
+        .EXAMPLE
+            Get-StorageAccountContainer -StorageAccount $StorageAccount -ContainerName $ContainerName
+
+        .EXAMPLE
+            $storageAccount = Get-DefaultStorageAccount ResourceGroupName $ResourceGroupName
+            Get-StorageAccountContainer -StorageAccount $storageAccount -ContainerName $ContainerName
+
+        #>
+        param(
+            [Parameter(Mandatory)]
+            [object]$StorageAccount,
+            [Parameter(Mandatory)]
+            [string]$ContainerName
+        )
+        $storageContainer = Get-AzRmStorageContainer -StorageAccount $StorageAccount -ContainerName $ContainerName
+        #$storageContainer
+        if ($null -eq $storageContainer) {
+            Write-Warning "Could not find a StorageAccount container '$($storageContainer.Name)' in ResourceGroup: $($StorageAccount.ResourceGroupName))."
+            exit
+        } else {
+            Write-Host "Connected to destination StorageAccount container $($storageContainer.Name)"
+        }
+
+        return $storageContainer
+}
+
+function Import-BacpacDatabase{
+    <#
+    .SYNOPSIS
+        Import a bacpac file, from storageaccount container, to a database in Azure.
+    .DESCRIPTION
+        Import a bacpac file, from storageaccount container, to a database in Azure.
+
+    .PARAMETER SubscriptionId
+        Your Azure SubscriptionId where your resources are located.
+
+    .PARAMETER ResourceGroupName
+        The resource group contains the Azure SQL Server and storage account where the bacpac file is loacated.
+
+    .PARAMETER StorageAccountName
+        The StorageAccount name where the bacpac file is located.
+
+    .PARAMETER StorageAccountContainer
+        The container name where the bacpac file is located.
+
+    .PARAMETER BacpacFilename
+        The name on the bacpac file.
+
+    .PARAMETER SqlServerName
+        The name on Azure SQL Server that contains the database.
+
+    .PARAMETER SqlDatabaseName
+        The name on the database that will be generated from the bacpac.
+
+    .PARAMETER SqlDatabaseLogin
+        The sa login to the Azure SQL Server.
+
+    .PARAMETER SqlDatabasePassword
+        The password for the login to the Azure SQL Server.
+
+    .PARAMETER RunDatabaseBackup
+
+
+    .PARAMETER SqlSku
+        Specifies which SQL SKU you want to generate. If not specified it will create a "basic" SQL Server. Allowed SKU 'Free', 'Basic', 'S0', 'S1', 'P1', 'P2', 'GP_Gen4_1', 'GP_S_Gen5_1', 'GP_Gen5_2', 'GP_S_Gen5_2', 'BC_Gen4_1', 'BC_Gen5_4'
+
+    .EXAMPLE
+        Import-BacpacDatabase -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageAccountContainer $StorageAccountContainer -BacpacFilename $BacpacFilename -SqlServerName $SqlServerName -SqlDatabaseName $SqlDatabaseName -SqlDatabaseLogin $SqlDatabaseLogin -SqlDatabasePassword $SqlDatabasePassword -RunDatabaseBackup $RunDatabaseBackup -SqlSku $SqlSku
+
+    .EXAMPLE
+        Import-BacpacDatabase -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -StorageAccountContainer $StorageAccountContainer -BacpacFilename $BacpacFilename -SqlDatabaseName $SqlDatabaseName -SqlDatabaseLogin $SqlDatabaseLogin -SqlDatabasePassword $SqlDatabasePassword -RunDatabaseBackup $RunDatabaseBackup -SqlSku $SqlSku
+
+    #>
+    [cmdletbinding()]
+     param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $SubscriptionId,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ResourceGroupName,
+
+        [Parameter(Mandatory = $false)]
+        [string] $StorageAccountName,
+
+        [Parameter(Mandatory = $false)]
+        [string] $StorageAccountContainer,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $BacpacFilename,
+
+        [Parameter(Mandatory = $false)]
+        [string] $SqlServerName,
+ 
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $SqlDatabaseName,
+ 
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $SqlDatabaseLogin,
+ 
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $SqlDatabasePassword,
+
+        [Parameter(Mandatory = $true)]
+        [bool] $RunDatabaseBackup,
+
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [ValidateSet('Free', 'Basic', 'S0', 'S1', 'P1', 'P2', 'GP_Gen4_1', 'GP_S_Gen5_1', 'GP_Gen5_2', 'GP_S_Gen5_2', 'BC_Gen4_1', 'BC_Gen5_4')]
+        [string] $SqlSku = "Basic"
+    )
+
+    Connect-AzureSubscriptionAccount
+
+    if ($null -eq $StorageAccountName -or "" -eq $StorageAccountName){
+        $storageAccount = Get-DefaultStorageAccount -ResourceGroupName $ResourceGroupName
+        $storageAccountName = $storageAccount.StorageAccountName
+    } else {
+        $storageAccount = Get-DefaultStorageAccount -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName
+        $storageAccountName = $storageAccount.StorageAccountName
+    }
+    Write-Host "Found StorageAccount '$storageAccountName'"
+
+    if ($null -eq $StorageAccountContainer -or "" -eq $StorageAccountContainer){
+        $storageContainer = Get-StorageAccountContainer -StorageAccount $storageAccount -ContainerName $StorageAccountContainer
+        $storageContainerName = $storageContainer.Name
+    } else {
+        $storageContainerName = $StorageAccountContainer
+    }
+    Write-Host "Found StorageAccount container '$storageContainerName'"
+    
+    if ($null -eq $SqlServerName -or "" -eq $SqlServerName) {
+        $SqlServerName = Get-DefaultSqlServer -ResourceGroupName $ResourceGroupName
+    }
+    Write-Host "Found SqlServer '$SqlServerName'"
+
+
+    $databaseExist = $false
+    try {
+        $databaseResult = Get-AzSqlDatabase -ResourceGroupName $ResourceGroupName -ServerName $SqlServerName -DatabaseName $SqlDatabaseName -ErrorAction SilentlyContinue
+        if ($null -ne $databaseResult) {
+            $databaseExist = $true
+            Write-Host "Destination database $SqlDatabaseName exist."
+        } else {
+            Write-Host "Destination database $SqlDatabaseName does not exist."
+        }
+    } catch {
+        Write-Host "Destination database $SqlDatabaseName does not exist."
+        $error.clear()
+    }
+
+    Write-Host "Import-BacpacDatabase - Inputs:-----------------"
+    Write-Host "SubscriptionId:           $SubscriptionId"
+    Write-Host "ResourceGroupName:        $ResourceGroupName"
+    Write-Host "StorageAccountName:       $storageAccountName"
+    Write-Host "StorageAccountContainer:  $storageContainerName"
+    Write-Host "BacpacFilename:           $BacpacFilename"
+    Write-Host "SqlServerName:            $SqlServerName"
+    Write-Host "SqlDatabaseName:          $SqlDatabaseName"
+    Write-Host "SqlDatabaseLogin:         $SqlDatabaseLogin"
+    Write-Host "SqlDatabasePassword:      **** (it is a secret...)"
+    Write-Host "SqlSku:                   $SqlSku"
+    Write-Host "------------------------------------------------"
+
+    Set-Item Env:\SuppressAzurePowerShellBreakingChangeWarnings "true"
+ 
+    if ($true -eq $databaseExist -and $true -eq $RunDatabaseBackup) {
+        Backup-Database -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -SqlServerName $SqlServerName -SqlDatabaseName $SqlDatabaseName -SqlDatabaseLogin $SqlDatabaseLogin -SqlDatabasePassword $SqlDatabasePassword -StorageAccountName $storageAccountName -StorageAccountContainer $StorageAccountContainer
+
+        Unpublish-Database -ResourceGroupName $ResourceGroupName -SqlServerName $SqlServerName -SqlDatabaseName $SqlDatabaseName
+    }
+    
+    $importRequest = New-AzSqlDatabaseImport -ResourceGroupName $ResourceGroupName `
+     -ServerName $SqlServerName `
+     -DatabaseName $SqlDatabaseName `
+     -DatabaseMaxSizeBytes 10GB `
+     -StorageKeyType "StorageAccessKey" `
+     -StorageKey $(Get-AzStorageAccountKey -ResourceGroupName $ResourceGroupName -StorageAccountName $storageAccountName).Value[0] `
+     -StorageUri "https://$storageAccountName.blob.core.windows.net/$storageContainerName/$BacpacFilename" `
+     -Edition "Standard" `
+     -ServiceObjectiveName "S3" `
+     -AdministratorLogin "$SqlDatabaseLogin" `
+     -AdministratorLoginPassword $(ConvertTo-SecureString -String $SqlDatabasePassword -AsPlainText -Force)
+ 
+    # Check import status and wait for the import to complete
+    $importStatus = Get-AzSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
+    [Console]::Write("Importing")
+    $lastStatusMessage = ""
+    while ($importStatus.Status -eq "InProgress")
+    {
+        Start-Sleep -s 10
+        $importStatus = Get-AzSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
+        if ($lastStatusMessage -ne $importStatus.StatusMessage) {
+            $lastStatusMessage = $importStatus.StatusMessage
+            $progress = $lastStatusMessage.Replace("Running, Progress = ", "")
+            [Console]::Write($progress)
+        }
+        [Console]::Write(".")
+    }
+    [Console]::WriteLine("")
+    $importStatus
+    Write-Host "Database '$SqlDatabaseName' is imported."
+
+    # Check the SKU on destination database after copy. 
+    $databaseResult = Get-AzSqlDatabase -ResourceGroupName $ResourceGroupName -ServerName $SqlServerName -DatabaseName $SqlDatabaseName
+    $databaseResult
+ 
+    # Scale down to S0 after import is complete
+    Set-AzSqlDatabase -ResourceGroupName $ResourceGroupName -DatabaseName $SqlDatabaseName -ServerName $SqlServerName -RequestedServiceObjectiveName $SqlSku #-Edition "Standard"
+ }
