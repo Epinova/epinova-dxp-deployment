@@ -80,6 +80,10 @@ try {
 
     . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
 
+    Get-InstalledModule -Name Az.Storage
+    Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
+    Get-InstalledModule -Name EpinovaAzureToolBucket
+
     Mount-PsModulesPath
 
     Initialize-EpiCload
@@ -96,8 +100,8 @@ try {
         RetentionHours = $retentionHours
     }
 
-    $filePath = "https://bofl01mstr5pe8m.blob.core.windows.net/bacpacs/epicms_Integration_20221103145559.bacpac?sv=2018-03-28&sr=b&sig=X1O5PCCa5Wfwr138ydYaNprM%2BtKIRDiOeXP2R6jg628%3D&st=2022-11-03T15%3A00%3A03Z&se=2022-11-03T17%3A00%3A03Z&sp=r"
-    if ($filePath -eq ""){
+    $sasLink = "https://bofl01mstr5pe8m.blob.core.windows.net/bacpacs/epicms_Integration_20221103145559.bacpac?sv=2018-03-28&sr=b&sig=X1O5PCCa5Wfwr138ydYaNprM%2BtKIRDiOeXP2R6jg628%3D&st=2022-11-03T15%3A00%3A03Z&se=2022-11-03T17%3A00%3A03Z&sp=r"
+    if ($sasLink -eq ""){
         $export = Start-EpiDatabaseExport @exportDatabaseSplat
         Write-Host "Database export has started:--------------------"
         Write-Host "Id:           $($export.id)"
@@ -151,14 +155,14 @@ try {
 
     } else {
         Write-Host "-------------DOWNLOAD----------------------------"
-        Write-Host "Start download database $filePath"
+        Write-Host "Start download database $sasLink"
         $BACPACNAME = "epicms_Integration_20221103145559.bacpac"
         if ($dropPath.Contains("\")){
             $filePath = "$dropPath\$BACPACNAME"
         } else {
             $filePath = "$dropPath/$BACPACNAME"
         }
-        Invoke-WebRequest -Uri $status.downloadLink -OutFile $filePath
+        Invoke-WebRequest -Uri $sasLink -OutFile $filePath
         Write-Host "Downloaded database to $filePath"
         Write-Host "------------------------------------------------"
     }
@@ -205,11 +209,10 @@ try {
     # #Install-Module -Name "EpinovaDxpToolBucket" -Verbose
 
     #Import-Module Az.Storage -Global -PassThru -Force
-    Get-InstalledModule -Name Az.Storage
+    # Get-InstalledModule -Name Az.Storage
 
-    Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
-    Get-InstalledModule -Name EpinovaAzureToolBucket
-
+    # Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
+    # Get-InstalledModule -Name EpinovaAzureToolBucket
 
     Write-Host "------------------------------------------------"
     Write-Host "Start upload bacpac to Azure."
