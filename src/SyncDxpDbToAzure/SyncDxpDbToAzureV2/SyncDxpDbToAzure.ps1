@@ -188,7 +188,7 @@ try {
     # #Install-Module -Name "EpinovaDxpToolBucket" -MinimumVersion 0.4.2 -Verbose
     # #Install-Module -Name "EpinovaDxpToolBucket" -Verbose
 
-    Import-Module Az.Storage -Scope CurrentUser -Force
+    Import-Module Az.Storage -Global -PassThru -Force
     Get-InstalledModule -Name Az.Storage
 
     Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
