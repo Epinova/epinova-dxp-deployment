@@ -128,7 +128,11 @@ try {
             Write-Host "-------------DOWNLOAD----------------------------"
             Write-Host "Start download database $($status.downloadLink)"
             #$filePath = Join-Parts -Separator '\' -Parts $dropPath, $status.bacpacName
-            $filePath = "$dropPath\$($status.bacpacName)"
+            if ($dropPath.Contains"\"){
+                $filePath = "$dropPath\$($status.bacpacName)"
+            } else {
+                $filePath = "$dropPath/$($status.bacpacName)"
+            }
             Invoke-WebRequest -Uri $status.downloadLink -OutFile $filePath
             Write-Host "Downloaded database to $filePath"
             Write-Host "------------------------------------------------"
@@ -163,7 +167,11 @@ try {
     }
 
     $filePath = $filePath.Trim()
-    $BlobName = $filePath.Substring($filePath.LastIndexOf("\") + 1)
+    if ($dropPath.Contains"\"){
+        $BlobName = $filePath.Substring($filePath.LastIndexOf("\") + 1)
+    } else {
+        $BlobName = $filePath.Substring($filePath.LastIndexOf("/") + 1)
+    }
 
     Write-Host "------------------------------------------------"
     Write-Host "Downloaded database: $filePath"
@@ -180,8 +188,12 @@ try {
     # #Install-Module -Name "EpinovaDxpToolBucket" -MinimumVersion 0.4.2 -Verbose
     # #Install-Module -Name "EpinovaDxpToolBucket" -Verbose
 
+    Import-Module Az.Storage -Scope CurrentUser -Force
+    Get-InstalledModule -Name Az.Storage
+
     Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
     Get-InstalledModule -Name EpinovaAzureToolBucket
+
 
     Write-Host "------------------------------------------------"
     Write-Host "Start upload bacpac to Azure."

@@ -11,7 +11,7 @@ function convertToNullIfUndefined<T>(arg: T): T|null {
     return arg ? arg : null;
 }
 
-export async function run() {
+async function run() {
     try {
         // Get the build and release details
         tl.setResourcePath(path.join(__dirname, 'task.json'));
