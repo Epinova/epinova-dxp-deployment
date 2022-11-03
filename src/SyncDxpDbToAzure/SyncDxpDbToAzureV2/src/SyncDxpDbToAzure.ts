@@ -75,6 +75,7 @@ async function run() {
 
         let azFilePath = path.join(path.resolve(__dirname), 'InitializeAz.ps1');
         contents.push(`$ErrorActionPreference = '${_vsts_input_errorActionPreference}'`); 
+        console.log('Endpoint:' + endpoint);
         contents.push(`${azFilePath} -endpoint '${endpoint}'`);
 
         let yourScriptPath = path.join(path.resolve(__dirname), 'SyncDxpDbToAzure.ps1');

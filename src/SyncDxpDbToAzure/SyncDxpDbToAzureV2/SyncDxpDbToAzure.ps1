@@ -80,9 +80,9 @@ try {
 
     . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
 
-    Get-InstalledModule -Name Az.Storage
-    Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
-    Get-InstalledModule -Name EpinovaAzureToolBucket
+    # Get-InstalledModule -Name Az.Storage
+    # Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
+    # Get-InstalledModule -Name EpinovaAzureToolBucket
 
     Mount-PsModulesPath
 
@@ -100,8 +100,8 @@ try {
         RetentionHours = $retentionHours
     }
 
-    $sasLink = "https://bofl01mstr5pe8m.blob.core.windows.net/bacpacs/epicms_Integration_20221103145559.bacpac?sv=2018-03-28&sr=b&sig=X1O5PCCa5Wfwr138ydYaNprM%2BtKIRDiOeXP2R6jg628%3D&st=2022-11-03T15%3A00%3A03Z&se=2022-11-03T17%3A00%3A03Z&sp=r"
-    if ($sasLink -eq ""){
+    #$sasLink = "https://bofl01mstr5pe8m.blob.core.windows.net/bacpacs/epicms_Integration_20221103145559.bacpac?sv=2018-03-28&sr=b&sig=X1O5PCCa5Wfwr138ydYaNprM%2BtKIRDiOeXP2R6jg628%3D&st=2022-11-03T15%3A00%3A03Z&se=2022-11-03T17%3A00%3A03Z&sp=r"
+    #if ($sasLink -eq ""){
         $export = Start-EpiDatabaseExport @exportDatabaseSplat
         Write-Host "Database export has started:--------------------"
         Write-Host "Id:           $($export.id)"
@@ -153,19 +153,19 @@ try {
             exit
         }    
 
-    } else {
-        Write-Host "-------------DOWNLOAD----------------------------"
-        Write-Host "Start download database $sasLink"
-        $BACPACNAME = "epicms_Integration_20221103145559.bacpac"
-        if ($dropPath.Contains("\")){
-            $filePath = "$dropPath\$BACPACNAME"
-        } else {
-            $filePath = "$dropPath/$BACPACNAME"
-        }
-        Invoke-WebRequest -Uri $sasLink -OutFile $filePath
-        Write-Host "Downloaded database to $filePath"
-        Write-Host "------------------------------------------------"
-    }
+    # } else {
+    #     Write-Host "-------------DOWNLOAD----------------------------"
+    #     Write-Host "Start download database $sasLink"
+    #     $BACPACNAME = "epicms_Integration_20221103145559.bacpac"
+    #     if ($dropPath.Contains("\")){
+    #         $filePath = "$dropPath\$BACPACNAME"
+    #     } else {
+    #         $filePath = "$dropPath/$BACPACNAME"
+    #     }
+    #     Invoke-WebRequest -Uri $sasLink -OutFile $filePath
+    #     Write-Host "Downloaded database to $filePath"
+    #     Write-Host "------------------------------------------------"
+    # }
 
 
     # #Initialize-EpiCload
@@ -216,8 +216,45 @@ try {
 
     Write-Host "------------------------------------------------"
     Write-Host "Start upload bacpac to Azure."
-    Write-Host "`$BacpacFilename = Send-Blob -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -FilePath $filePath -BlobName $BlobName"
-    $BacpacFilename = Send-Blob -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -FilePath $filePath -BlobName $BlobName #-Debug
+    #Write-Host "`$BacpacFilename = Send-Blob -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -FilePath $filePath -BlobName $BlobName"
+    #$BacpacFilename = Send-Blob -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -FilePath $filePath -BlobName $BlobName #-Debug
+    ###########################################################################################################
+    if ($null -eq $storageAccountName -or "" -eq $storageAccountName){
+        $storageAccount = Get-DefaultStorageAccount -ResourceGroupName $resourceGroupName
+        $storageAccountName = $storageAccount.StorageAccountName
+    } else {
+        $storageAccount = Get-DefaultStorageAccount -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName
+        $storageAccountName = $storageAccount.StorageAccountName
+    }
+    Write-Host "Found StorageAccount '$storageAccountName'"
+
+    if ($null -eq $storageAccountContainer -or "" -eq $storageAccountContainer){
+        $storageContainer = Get-StorageAccountContainer -StorageAccount $storageAccount -ContainerName $storageAccountContainer
+        $storageContainerName = $storageContainer.Name
+    } else {
+        $storageContainerName = $storageAccountContainer
+    }
+    Write-Host "Found StorageAccount container '$storageContainerName'"
+
+    Write-Host "Send-BlobAsConnected - Inputs:----------------------------"
+    Write-Host "ResourceGroupName:        $resourceGroupName"
+    Write-Host "StorageAccountName:       $storageAccountName"
+    Write-Host "StorageAccountContainer:  $storageContainerName"
+    Write-Host "FilePath:                 $filePath"
+    Write-Host "BlobName:                 $BlobName"
+    Write-Host "------------------------------------------------"
+
+    $storageAccount = Get-AzStorageAccount -ResourceGroupName $resourceGroupName -Name $storageAccountName 
+
+    if ($null -ne $storageAccount){
+        Write-Host "Start upload blob $BlobName" 
+        Set-AzStorageBlobContent -Container $storageContainerName -File $filePath -Blob $BlobName -Context $storageAccount.context -Force
+        Write-Host "Blob uploaded"
+        $BacpacFilename = $BlobName
+    } else {
+        Write-Error "Could not connect to StorageAccount: $storageAccountName"
+    }
+    ###########################################################################################################
 
     Write-Host "BacpacFilename: $BacpacFilename"
    
@@ -226,8 +263,8 @@ try {
         exit
     }
 
-    Write-Host "Import-BacpacDatabase -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -BacpacFilename $BlobName -SqlServerName $sqlServerName -SqlDatabaseName $sqlDatabaseName -SqlDatabaseLogin $sqlDatabaseLogin -SqlDatabasePassword $sqlDatabasePassword -RunDatabaseBackup $runDatabaseBackup -SqlSku $sqlSku"
-    Import-BacpacDatabase -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -BacpacFilename $BlobName -SqlServerName $sqlServerName -SqlDatabaseName $sqlDatabaseName -SqlDatabaseLogin $sqlDatabaseLogin -SqlDatabasePassword $sqlDatabasePassword -RunDatabaseBackup $runDatabaseBackup -SqlSku $sqlSku
+    #Write-Host "Import-BacpacDatabase -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -BacpacFilename $BlobName -SqlServerName $sqlServerName -SqlDatabaseName $sqlDatabaseName -SqlDatabaseLogin $sqlDatabaseLogin -SqlDatabasePassword $sqlDatabasePassword -RunDatabaseBackup $runDatabaseBackup -SqlSku $sqlSku"
+    #Import-BacpacDatabase -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -BacpacFilename $BlobName -SqlServerName $sqlServerName -SqlDatabaseName $sqlDatabaseName -SqlDatabaseLogin $sqlDatabaseLogin -SqlDatabasePassword $sqlDatabasePassword -RunDatabaseBackup $runDatabaseBackup -SqlSku $sqlSku
     
     ####################################################################################
 
