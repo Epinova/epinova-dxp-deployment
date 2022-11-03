@@ -98,6 +98,8 @@ try {
     Write-Host "##vso[task.setvariable variable=ExportId;]$($exportId)"
     Write-Host "Setvariable DbExportDownloadLink: $($status.downloadLink)"
     Write-Host "##vso[task.setvariable variable=DbExportDownloadLink;]$($status.downloadLink)"
+    Write-Host "Setvariable DbExportBacpacName: $($status.bacpacName)"
+    Write-Host "##vso[task.setvariable variable=DbExportBacpacName;]$($status.bacpacName)"
     ####################################################################################
     Write-Host "---THE END---"
 
