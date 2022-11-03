@@ -128,7 +128,7 @@ try {
             Write-Host "-------------DOWNLOAD----------------------------"
             Write-Host "Start download database $($status.downloadLink)"
             #$filePath = Join-Parts -Separator '\' -Parts $dropPath, $status.bacpacName
-            if ($dropPath.Contains"\"){
+            if ($dropPath.Contains("\"){
                 $filePath = "$dropPath\$($status.bacpacName)"
             } else {
                 $filePath = "$dropPath/$($status.bacpacName)"
@@ -167,7 +167,7 @@ try {
     }
 
     $filePath = $filePath.Trim()
-    if ($dropPath.Contains"\"){
+    if ($dropPath.Contains("\"){
         $BlobName = $filePath.Substring($filePath.LastIndexOf("\") + 1)
     } else {
         $BlobName = $filePath.Substring($filePath.LastIndexOf("/") + 1)
