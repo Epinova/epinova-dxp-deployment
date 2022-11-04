@@ -52,4 +52,4 @@ steps:
 - template: build-node-task_ubuntu.yml
   parameters:
     extensionRoot: '$(System.DefaultWorkingDirectory)/src'
-    taskName: 'SyncDxpDbToAzure/SyncDxpDbToAzureV2'
+    taskName: 'ImportDxpDbToAzure/ImportDxpDbToAzureV2'
