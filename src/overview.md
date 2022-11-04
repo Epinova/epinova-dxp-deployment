@@ -11,7 +11,7 @@ Tasks
 1. **Reset deploy**
 1. **Export DB**
 1. **Await status**
-1. **Sync DXP DB to Azure**
+1. **Import DXP DB to Azure**
 1. **Sync DXP blobs to Azure**
 
 ## Details
@@ -53,8 +53,8 @@ Task that await for status AwaitingVerification/Reset. Can be used when have a r
 ### Expect status (Optimizely DXP) ###
 Task that check the status for an environment. if environment is not in the expected status the task will fail.  
 
-### Sync DXP DB to Azure (Optimizely DXP) ###
-Task that sync a DXP DB to a Azure SQL Server.  
+### Import DXP DB to Azure (Optimizely DXP) ###
+Task that import a DXP bacpac to a Azure SQL Server.  
 
 ### Sync DXP blobs to Azure (Optimizely DXP) ###
 Task that sync DXP blobs to a Azure storage account container.  

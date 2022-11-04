@@ -72,8 +72,6 @@ function Format-Splat {
 if ($endpointObject.scheme -eq 'ServicePrincipal') {
     try {
         if ($endpointObject.authenticationType -ieq 'SPNKey') {
-            Write-Host("servicePrincipalClientID:$($endpointObject.servicePrincipalClientID)")
-            Write-Host("servicePrincipalKey:$($endpointObject.servicePrincipalKey)")
             $psCredential = New-Object System.Management.Automation.PSCredential(
                     $endpointObject.servicePrincipalClientID,
                     (ConvertTo-SecureString $endpointObject.servicePrincipalKey -AsPlainText -Force))

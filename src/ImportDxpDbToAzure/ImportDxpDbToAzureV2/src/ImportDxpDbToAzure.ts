@@ -29,13 +29,7 @@ async function run() {
         let _vsts_input_failOnStandardError = convertToNullIfUndefined(tl.getBoolInput('FailOnStandardError', false));
 
         // Get the build and release details
-        let ClientKey = tl.getInput("ClientKey");
-        let ClientSecret = tl.getInput("ClientSecret");
-        let ProjectId = tl.getInput("ProjectId");
-        let Environment = tl.getInput("Environment");
-        let DatabaseType = tl.getInput("DatabaseType");
-
-        let DropPath = tl.getInput("DropPath");
+        let BacpacFilePath = tl.getInput("BacpacFilePath");
 
         let serviceName = tl.getInput('ConnectedServiceNameARM',/*required*/true);
         let endpointObject= await new AzureRMEndpoint(serviceName).getEndpoint();
@@ -75,11 +69,10 @@ async function run() {
 
         let azFilePath = path.join(path.resolve(__dirname), 'InitializeAz.ps1');
         contents.push(`$ErrorActionPreference = '${_vsts_input_errorActionPreference}'`); 
-        console.log('Endpoint:' + endpoint);
         contents.push(`${azFilePath} -endpoint '${endpoint}'`);
 
-        let yourScriptPath = path.join(path.resolve(__dirname), 'SyncDxpDbToAzure.ps1');
-        contents.push(`${yourScriptPath} -ClientKey '${ClientKey}' -ClientSecret '${ClientSecret}' -ProjectId '${ProjectId}' -Environment '${Environment}' -DatabaseType '${DatabaseType}' -SubscriptionId '${SubscriptionId}' -ResourceGroupName '${ResourceGroupName}' -StorageAccountName '${StorageAccountName}' -StorageAccountContainer '${StorageAccountContainer}'-SqlServerName '${SqlServerName}' -SqlDatabaseName '${SqlDatabaseName}' -RunDatabaseBackup ${RunDatabaseBackup} -SqlDatabaseLogin '${SqlDatabaseLogin}' -SqlDatabasePassword '${SqlDatabasePassword}' -SqlSku '${SqlSku}' -DropPath '${DropPath}' -Timeout ${Timeout}`); 
+        let yourScriptPath = path.join(path.resolve(__dirname), 'ImportDxpDbToAzure.ps1');
+        contents.push(`${yourScriptPath} -BacpacFilePath '${BacpacFilePath}' -SubscriptionId '${SubscriptionId}' -ResourceGroupName '${ResourceGroupName}' -StorageAccountName '${StorageAccountName}' -StorageAccountContainer '${StorageAccountContainer}'-SqlServerName '${SqlServerName}' -SqlDatabaseName '${SqlDatabaseName}' -RunDatabaseBackup ${RunDatabaseBackup} -SqlDatabaseLogin '${SqlDatabaseLogin}' -SqlDatabasePassword '${SqlDatabasePassword}' -SqlSku '${SqlSku}' -Timeout ${Timeout}`); 
 
 
 

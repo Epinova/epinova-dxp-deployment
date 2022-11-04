@@ -7,7 +7,9 @@ Param(
     $DatabaseName,
     $RetentionHours,
     $Timeout,
-    $RunVerbose
+    $RunVerbose,
+    $DownloadBacpac,
+    $DownloadFolder
 )
 try {
     # Get all inputs for the task
@@ -19,6 +21,9 @@ try {
     $retentionHours = $RetentionHours
     $timeout = $Timeout
     $runVerbose = [System.Convert]::ToBoolean($RunVerbose)
+
+    $downloadBacpac = [System.Convert]::ToBoolean($DownloadBacpac)
+    $downloadFolder = $DownloadFolder
 
     # 30 min timeout
     ####################################################################################
@@ -39,6 +44,8 @@ try {
     Write-Host "RetentionHours:     $retentionHours"
     Write-Host "Timeout:            $timeout"
     Write-Host "RunVerbose:         $runVerbose"
+    Write-Host "DownloadBacpac:     $downloadBacpac"
+    Write-Host "DownloadFolder:     $downloadFolder"
 
     . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
 
@@ -100,9 +107,24 @@ try {
     Write-Host "##vso[task.setvariable variable=DbExportDownloadLink;]$($status.downloadLink)"
     Write-Host "Setvariable DbExportBacpacName: $($status.bacpacName)"
     Write-Host "##vso[task.setvariable variable=DbExportBacpacName;]$($status.bacpacName)"
+
+    if ($downloadBacpac){
+        Write-Host "-------------DOWNLOAD-TO-AGENT---------------------"
+        Write-Host "Start download database $($status.downloadLink)"
+        if ($downloadFolder.Contains("\")){
+            $filePath = "$downloadFolder\$($status.bacpacName)"
+        } else {
+            $filePath = "$downloadFolder/$($status.bacpacName)"
+        }
+        Invoke-WebRequest -Uri $status.downloadLink -OutFile $filePath
+        Write-Host "Downloaded database to $filePath"
+        Write-Host "Setvariable DbExportBacpacFilePath: $filePath"
+        Write-Host "##vso[task.setvariable variable=DbExportBacpacFilePath;]$filePath"
+        Write-Host "------------------------------------------------"
+    }
+
     ####################################################################################
     Write-Host "---THE END---"
-
 }
 catch {
     Write-Verbose "Exception caught from task: $($_.Exception.ToString())"

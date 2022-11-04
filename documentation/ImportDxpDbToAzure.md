@@ -1,56 +1,18 @@
-# Sync DXP DB to Azure (Optimizely DXP)
-Task that export DXP database and restore it on Azure SQL Server.  
+# Import DXP DB to Azure (Optimizely DXP)
+Task that import DXP bacpac database and restore it on Azure SQL Server.  
 
 
 [<= Back](../README.md)
 
 ## Parameters
 ### Group: Settings
-#### DXP target environment ClientKey
+
+#### BacpacFilePath
 **[string]** - **required**  
-The DXP API ClientKey for the current environment.  
-**Example:** `mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9`  
-**Default value:** `$(ClientKey)`
-
-#### DXP target environment ClientSecret
-**[string]** - **required**  
-The DXP API ClientSecret for the current environment.  
-**Example:** `mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9mRgLgE3uCx7RVHc5gzFu1gWtssxcYraL0CvLCMJblkbxweO9`  
-**Default value:** `$(ClientSecret)`
-
-#### Project Id
-**[string]** - **required**  
-The DXP project id.  
-**Example:** `1921827e-2eca-2fb3-8015-a89f016bacc5`  
-**Default value:** `$(DXP.ProjectId)`
-
-#### Source environment
-**[pickList]** - **required**  
-Specify the source environment where we will order the database backup from.  
-**Example:** `Integration`  
-**Default value:** `$(TargetEnvironment)`  
-**Options:**  
-- Integration
-- Preproduction
-- Production
-- ADE1
-- ADE2
-- ADE3
-
-#### DatabaseType
-**[pickList]** - **required**  
-The type of database that you want to backup. The CMS or commerce database.   
-**Example:** `epicms`
-**Default value:** `epicms`  
-**Options:**  
-- epicms
-- epicommerce
-
-#### DownloadFolder
-**[string]** - **required**  
-The   
-**Example:** `30`  
-**Default value:** `20`
+The file path to the bacpac file that you want to restore in Azure. Example: $(DbExportBacpacFilePath). This value will be set automatically if you use task ExportDB.   
+**Example2:** `$(DbExportBacpacFilePath)`  
+**Example2:** `/home/vsts/work/r1/a/epicms_Integration_20221103175350.bacpac`  
+**Default value:** `$(DbExportBacpacFilePath)`
 
 #### SubscriptionId
 **[string]** - **required**  
@@ -139,15 +101,9 @@ How the task should handle errors.
 ## YAML ##
 Example v1:  
 ```yaml
-- task: DxpSyncDbToAzure@2
+- task: DxpImportDbToAzure@2
     inputs:
-    ClientKey: '$(ClientKey)'
-    ClientSecret: '$(ClientSecret)'
-    ProjectId: '$(DXP.ProjectId)'
-    Environment: 'Integration'
-    DatbaseType: 'epicms'
-    DownloadFolder: '$(System.DefaultWorkingDirectory)'
-    Timeout: 1800
+    BacpacFilePath: '$(DbExportBacpacFilePath)'
     SubscriptionId: 'e872f180-979f-xxx-aff7-3bbxxxx7f89'
     ResourceGroupName: 'rg-my-group'
     StorageAccountName: 'my-storage'
@@ -158,13 +114,7 @@ Example v1:
     SqlDatabasePassword: '$(SqlServerLoginPassword)'
     RunDatabaseBackup: true
     SqlSku: 'Basic'
-```
-
-## PowerShell ##
-Example v1:  
-
-```powershell
-Sync-DxpDbToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $DxpEnvironment -DatabaseType $DxpDatabaseName -DownloadFolder $DxpDatabaseDownloadFolder -Timeout 1800 -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageAccountContainer $StorageAccountContainer -SqlServerName $SqlServerName -SqlDatabaseName $SqlDatabaseName -SqlDatabaseLogin $SqlDatabaseLogin -SqlDatabasePassword $SqlDatabasePassword -RunDatabaseBackup $RunDatabaseBackup -SqlSku $SqlSku
+    Timeout: 1800
 ```
 
 [<= Back](../README.md)

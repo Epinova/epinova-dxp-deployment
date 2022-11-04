@@ -58,8 +58,8 @@ Task that await for status AwaitingVerification/Reset. Can be used when have a r
 Task that check the status for an environment. if environment is not in the expected status the task will fail.  
 [Expect status documentation](documentation/ExpectStatus.md)  
 
-### Sync DXP DB to Azure (Optimizely DXP) ###
-Task that export DXP database and restore it on Azure SQL Server.  
+### Import DXP DB to Azure (Optimizely DXP) ###
+Task that upload DXP database bacpac and restore it on Azure SQL Server.  
 [Expect status documentation](documentation/SyncDxpDbToAzure.md)  
 
 ### Sync DXP blobs to Azure (Optimizely DXP) ###

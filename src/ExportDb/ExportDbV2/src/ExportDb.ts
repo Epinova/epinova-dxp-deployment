@@ -18,6 +18,9 @@ export async function run() {
         let Timeout = tl.getInput("Timeout");
         let RunVerbose = tl.getBoolInput("RunVerbose", false);
 
+        let DownloadBacpac = tl.getBoolInput("DownloadBacpac", false);
+        let DownloadFolder = tl.getInput("DownloadFolder");
+
         // we need to get the verbose flag passed in as script flag
         var verbose = (tl.getVariable("System.Debug") === "true");
 
@@ -40,7 +43,9 @@ export async function run() {
         "-Environment", Environment,
         "-DatabaseName", DatabaseName,
         "-RetentionHours", RetentionHours,
-        "-Timeout", Timeout
+        "-Timeout", Timeout,
+        "-DownloadBacpac", DownloadBacpac,
+        "-DownloadFolder", DownloadFolder
         ];
         if (RunVerbose) {
             args.push("-RunVerbose");
@@ -54,7 +59,9 @@ export async function run() {
         "-Environment", Environment,
         "-DatabaseName", DatabaseName,
         "-RetentionHours", RetentionHours,
-        "-Timeout", Timeout
+        "-Timeout", Timeout,
+        "-DownloadBacpac", DownloadBacpac,
+        "-DownloadFolder", DownloadFolder
         ];
         if (RunVerbose) {
             argsShow.push("-RunVerbose");

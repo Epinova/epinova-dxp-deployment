@@ -12,7 +12,7 @@
     "author": "Ove Lartelius",
     "version": {
         "Major": 2,
-        "Minor": 5,
+        "Minor": 6,
         "Patch": 0
     },
     "groups": [
@@ -32,7 +32,7 @@
             "isExpanded": false
         }
     ],
-    "releaseNotes": "v2.5.0: Return/Set variable DbExportBacpacName. \r\n v2.4.0: RunVerbose. v2.3.0 Additional Development Environment support",
+    "releaseNotes": "v2.6.0: Download bacpac \r\n v2.5.0: Return/Set variable DbExportBacpacName. \r\n v2.4.0: RunVerbose. \r\n v2.3.0 Additional Development Environment support",
     "minimumAgentVersion": "2.134.0",
     "inputs": [
         {
@@ -100,6 +100,25 @@
             "defaultValue": "24",
             "helpMarkDown": "By default, the bacpac file is retained for 24 hours unless otherwise the retention hour is overridden.",
             "groupName": "Settings"
+        },
+        {
+            "name": "DownloadBacpac",
+            "type": "boolean",
+            "label": "Download bacpac",
+            "required": true,
+            "defaultValue": "false",
+            "helpMarkDown": "Download bacpac file when it has been exported. Used to export to external Azure Sql Server.",
+            "groupName": "Settings"
+        },
+        {
+            "name": "DownloadFolder",
+            "type": "string",
+            "label": "Download folder",
+            "required": false,
+            "defaultValue": "$(System.DefaultWorkingDirectory)",
+            "helpMarkDown": "By default, the bacpac file is retained for 24 hours unless otherwise the retention hour is overridden.",
+            "groupName": "Settings",
+            "visibleRule": "DownloadBacpac = true"
         },
         {
             "name": "Timeout",

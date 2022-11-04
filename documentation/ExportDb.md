@@ -1,6 +1,6 @@
 # Export DB (Optimizely DXP) #
 Export specified DB from DXP and will be downloadable via link.  
-When the database bacpac file has been created. You can download the file from the specified downloadLink.  
+When the database bacpac file has been created. You can download the file from the specified downloadLink. You can also download the bacpac file to agent so that you can upload it to any other places with another task.  
 There a variable set in the task with the name `DbExportDownloadLink`. That variable can be used by other tasks in the pipeline to retrieve that information and for example send a email with this information to project group members.  
    
 _**Note:** v2 task supports windows/ubuntu/MacOS agents. v1 task only support windows._  
@@ -55,6 +55,17 @@ Specify how long the bacpac file will be available. Default 24 h and max 72 h.
 **Example:** `24`  
 **Default value:** `24`
 
+#### Download bacpac
+**[boolean]** - **required**  
+Specify if the bacpac file should be downloaded to the agent after been generated/exported.  
+**Example:** `true`  
+**Default value:** `false`
+
+#### Download folder
+**[string]**
+Specify the folder on agent where the bacpac file should be downloaded if user has set 'Download bacpac' = true.  
+**Example:** `/home/vsts/work/r1/a`  
+**Default value:** `$(System.DefaultWorkingDirectory)`
 
 ### Group: Timeout
 #### Script timeout (in seconds)
