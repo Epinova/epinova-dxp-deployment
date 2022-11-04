@@ -181,7 +181,8 @@ try {
     # [string]$filePath = Invoke-DxpDatabaseDownload -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $environment -DatabaseName $databaseType -DownloadFolder $dropPath -RetentionHours $retentionHours -Timeout $timeout
     #Write-Host "Downloaded database: $filePath"
 
-    $filePath = "$(System.DefaultWorkingDirectory)/$(DbExportBacpacName)"
+    #$filePath = "$(System.DefaultWorkingDirectory)/$(DbExportBacpacName)"
+    $filePath = "/home/vsts/work/r1/a/epicms_Integration_20221103175350.bacpac"
     #$BlobName = "$(DbExportBacpacName)"
     #$bacpacName = "$(DbExportBacpacName)"
     #$sasLink = "$(DbExportDownloadLink)"
