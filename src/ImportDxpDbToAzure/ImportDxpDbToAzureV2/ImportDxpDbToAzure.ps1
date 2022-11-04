@@ -52,6 +52,8 @@ try {
     Write-Host "SqlDatabaseLogin:           $sqlDatabaseLogin"
     Write-Host "SqlDatabasePassword:        **** (it is a secret...)"
     Write-Host "SqlSku:                     $sqlSku"
+    Write-Host "RunDatabaseBackup:          $runDatabaseBackup"
+
     Write-Host "Timeout:                    $timeout"
     Write-Host "RunVerbose:                 $runVerbose"
 

@@ -42,7 +42,7 @@ async function run() {
         let StorageAccountContainer: string = convertToNullIfUndefined(tl.getInput('StorageAccountContainer', false));
         let SqlServerName: string = convertToNullIfUndefined(tl.getInput('SqlServerName', false));
         let SqlDatabaseName: string = convertToNullIfUndefined(tl.getInput('SqlDatabaseName', false));
-        let RunDatabaseBackup = convertToNullIfUndefined(tl.getBoolInput('RunDatabaseBackup', false));
+        let RunDatabaseBackup = tl.getBoolInput('RunDatabaseBackup', false);
         let SqlDatabaseLogin: string = convertToNullIfUndefined(tl.getInput('SqlDatabaseLogin', false));
         let SqlDatabasePassword: string = convertToNullIfUndefined(tl.getInput('SqlDatabasePassword', false));
         let SqlSku: string = convertToNullIfUndefined(tl.getInput('SqlSku', false));
