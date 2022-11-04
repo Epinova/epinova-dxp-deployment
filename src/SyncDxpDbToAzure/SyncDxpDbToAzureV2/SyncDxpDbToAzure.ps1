@@ -84,7 +84,7 @@ try {
     # Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
     # Get-InstalledModule -Name EpinovaAzureToolBucket
 
-    Mount-PsModulesPath
+    #Mount-PsModulesPath
 
     #Initialize-EpiCload
 
