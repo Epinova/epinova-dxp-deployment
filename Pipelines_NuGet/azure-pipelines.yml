@@ -5,12 +5,7 @@ variables:
 
 name: $(major).$(minor).$(rev:r) #Build.BuildNumber
 
-trigger:
-  batch: true
-  branches:
-    include:
-      - release/*
-      - hotfix/*
+trigger: none
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -21,7 +16,7 @@ resources:
     type: git
     name: Epinova - Modules/Epinova.Pipelines
     ref: refs/heads/main
-    endpoint: Epinova.Epinova-Templates
+    endpoint: "Epinova.Epinova-Pipelines"
 
 steps:
 - template: nuget.3.yml@pipelines
