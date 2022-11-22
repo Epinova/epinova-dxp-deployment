@@ -15,11 +15,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="pipelines\Reset-IntePrepProd.yml" />
+    <None Remove="App_Data\Reset-IntePrepProd.yml" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="pipelines\Reset-IntePrepProd.yml">
+    <Content Include="App_Data\Pipelines\Reset-IntePrepProd.yml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
