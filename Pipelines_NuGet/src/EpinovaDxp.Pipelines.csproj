@@ -15,10 +15,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="App_Data\Pipelines\readme.txt" />
     <None Remove="App_Data\Reset-IntePrepProd.yml" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="App_Data\Pipelines\readme.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="App_Data\Pipelines\Reset-IntePrepProd.yml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
