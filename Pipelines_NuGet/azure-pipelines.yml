@@ -16,14 +16,11 @@ resources:
     type: git
     name: Epinova - Modules/Epinova.Pipelines
     ref: refs/heads/main
-    endpoint: "Epinova.Epinova-Pipelines"
 
 steps:
-- template: tools/set-version.1.yml@pipelines
-
-# - template: nuget.3.yml@pipelines
-#   parameters:
-#     dotnetVersions:
-#       - 6.0.x
-#       - 5.0.x
-#     disablePublish: true
+- template: nuget.3.yml@pipelines
+  parameters:
+    dotnetVersions:
+      - 6.0.x
+      - 5.0.x
+    disablePublish: true
