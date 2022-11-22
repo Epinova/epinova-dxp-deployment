@@ -13,6 +13,16 @@
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <AnalysisLevel>latest</AnalysisLevel>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="pipelines\Reset-IntePrepProd.yml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="pipelines\Reset-IntePrepProd.yml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   
   <ItemGroup>
     <InternalsVisibleTo Include="($AssemblyName).Tests" />
@@ -27,9 +37,5 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Folder Include="pipelines\" />
   </ItemGroup>
 </Project>
