@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32126.317
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nuget", "src\nuget.csproj", "{369CA8A1-D69E-4FE4-A47E-09A1CEC8DFDF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{410572BB-BFD5-454C-9B4A-F3F617316066}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		azure-pipelines.yml = azure-pipelines.yml
+		NuGet.Config = NuGet.Config
+		readme.md = readme.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{369CA8A1-D69E-4FE4-A47E-09A1CEC8DFDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{369CA8A1-D69E-4FE4-A47E-09A1CEC8DFDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{369CA8A1-D69E-4FE4-A47E-09A1CEC8DFDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{369CA8A1-D69E-4FE4-A47E-09A1CEC8DFDF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {30E3333C-7EF6-4900-ADD8-B798D4267E6A}
+	EndGlobalSection
+EndGlobal
