@@ -23,5 +23,5 @@ steps:
     dotnetVersions:
       - 6.0.x
       - 5.0.x
-    workingDirectory: "$(System.DefaultWorkingDirectory)\Pipelines_NuGet"
+    workingDirectory: "$(System.DefaultWorkingDirectory)\Pipelines_NuGet\nuget.sln"
     disablePublish: true
