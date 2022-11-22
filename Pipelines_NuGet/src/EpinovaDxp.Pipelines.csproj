@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
-    <PackageDescription>Insert package description $(GitLog)</PackageDescription>
+    <PackageDescription>Epinova DXP extension Pipelines NuGet $(GitLog)</PackageDescription>
     <Authors>$(GitContributors) @ Epinova</Authors>
-    <PackageTags>Epinova</PackageTags>
+    <PackageTags>Epinova, DXP</PackageTags>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
     <LangVersion>latest</LangVersion>
     <NoWarn>1701;1702</NoWarn>
