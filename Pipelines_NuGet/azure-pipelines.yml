@@ -19,6 +19,8 @@ resources:
     endpoint: "Epinova.Epinova-Pipelines"
 
 steps:
+- template: tools/set-version.1.yml@pipelines
+
 - template: nuget.3.yml@pipelines
   parameters:
     dotnetVersions:
