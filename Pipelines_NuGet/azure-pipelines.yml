@@ -21,6 +21,7 @@ resources:
     type: git
     name: Epinova - Modules/Epinova.Pipelines
     ref: refs/heads/main
+    endpoint: Epinova.Epinova-Templates
 
 steps:
 - template: nuget.3.yml@pipelines
