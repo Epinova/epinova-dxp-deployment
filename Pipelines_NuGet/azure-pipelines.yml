@@ -26,3 +26,4 @@ steps:
   parameters:
     dotnetVersions:
       - 6.0.x
+    workingDirectory: "$(System.DefaultWorkingDirectory)/Pipelines_NuGet"
