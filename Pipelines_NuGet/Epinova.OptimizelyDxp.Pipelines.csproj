@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net5.0;net6.0;net7.0</TargetFrameworks>
-    <PackageDescription>Epinova DXP extension Pipelines NuGet $(GitLog)</PackageDescription>
+    <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+    <PackageDescription>Epinova DXP extension - Pipelines NuGet $(GitLog). Package full of Optimizely DXP YML Pipelines</PackageDescription>
     <Authors>$(GitContributors) @ Epinova</Authors>
     <PackageTags>Epinova, DXP</PackageTags>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
@@ -15,8 +15,8 @@
     
   <ItemGroup>
       <None Include="build\EpinovaDxp.Pipelines.props" Pack="true" PackagePath="build\" />
-    <Content Include="App_Data\Pipelines\readme.txt" Pack="true" PackagePath="content"></Content>
-    <Content Include="App_Data\Pipelines\Reset-IntePrepProd.yml" Pack="true" PackagePath="content"></Content>
+    <Content Include="readme.txt" Pack="true" PackagePath="content"></Content>
+    <Content Include="Reset-IntePrepProd.yml" Pack="true" PackagePath="content"></Content>
   </ItemGroup>
   
 </Project>

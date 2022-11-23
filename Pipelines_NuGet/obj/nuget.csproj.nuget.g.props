@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <RestoreSuccess Condition=" '$(RestoreSuccess)' == '' ">True</RestoreSuccess>
+    <RestoreTool Condition=" '$(RestoreTool)' == '' ">NuGet</RestoreTool>
+    <ProjectAssetsFile Condition=" '$(ProjectAssetsFile)' == '' ">$(MSBuildThisFileDirectory)project.assets.json</ProjectAssetsFile>
+    <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
+    <NuGetPackageFolders Condition=" '$(NuGetPackageFolders)' == '' ">C:\Users\ove_l\.nuget\packages\;C:\Program Files\dotnet\sdk\NuGetFallbackFolder</NuGetPackageFolders>
+    <NuGetProjectStyle Condition=" '$(NuGetProjectStyle)' == '' ">PackageReference</NuGetProjectStyle>
+    <NuGetToolVersion Condition=" '$(NuGetToolVersion)' == '' ">6.2.0</NuGetToolVersion>
+  </PropertyGroup>
+  <ItemGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <SourceRoot Include="C:\Users\ove_l\.nuget\packages\" />
+    <SourceRoot Include="C:\Program Files\dotnet\sdk\NuGetFallbackFolder\" />
+  </ItemGroup>
+  <ImportGroup Condition=" '$(TargetFramework)' == 'net5.0' AND '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)microsoft.codeanalysis.netanalyzers\6.0.0\build\Microsoft.CodeAnalysis.NetAnalyzers.props" Condition="Exists('$(NuGetPackageRoot)microsoft.codeanalysis.netanalyzers\6.0.0\build\Microsoft.CodeAnalysis.NetAnalyzers.props')" />
+  </ImportGroup>
+  <ImportGroup Condition=" '$(TargetFramework)' == 'net6.0' AND '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)microsoft.codeanalysis.netanalyzers\6.0.0\build\Microsoft.CodeAnalysis.NetAnalyzers.props" Condition="Exists('$(NuGetPackageRoot)microsoft.codeanalysis.netanalyzers\6.0.0\build\Microsoft.CodeAnalysis.NetAnalyzers.props')" />
+  </ImportGroup>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net5.0' AND '$(ExcludeRestorePackageImports)' != 'true' ">
+    <PkgSonarAnalyzer_CSharp Condition=" '$(PkgSonarAnalyzer_CSharp)' == '' ">C:\Users\ove_l\.nuget\packages\sonaranalyzer.csharp\8.39.0.47922</PkgSonarAnalyzer_CSharp>
+    <PkgMicrosoft_CodeAnalysis_NetAnalyzers Condition=" '$(PkgMicrosoft_CodeAnalysis_NetAnalyzers)' == '' ">C:\Users\ove_l\.nuget\packages\microsoft.codeanalysis.netanalyzers\6.0.0</PkgMicrosoft_CodeAnalysis_NetAnalyzers>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net6.0' AND '$(ExcludeRestorePackageImports)' != 'true' ">
+    <PkgSonarAnalyzer_CSharp Condition=" '$(PkgSonarAnalyzer_CSharp)' == '' ">C:\Users\ove_l\.nuget\packages\sonaranalyzer.csharp\8.39.0.47922</PkgSonarAnalyzer_CSharp>
+    <PkgMicrosoft_CodeAnalysis_NetAnalyzers Condition=" '$(PkgMicrosoft_CodeAnalysis_NetAnalyzers)' == '' ">C:\Users\ove_l\.nuget\packages\microsoft.codeanalysis.netanalyzers\6.0.0</PkgMicrosoft_CodeAnalysis_NetAnalyzers>
+  </PropertyGroup>
+</Project>
