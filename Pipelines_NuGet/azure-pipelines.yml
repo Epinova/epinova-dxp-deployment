@@ -25,8 +25,4 @@ steps:
 - template: nuget.3.yml@pipelines
   parameters:
     dotnetVersions:
-      - 7.0.x
       - 6.0.x
-      - 5.0.x
-    workingDirectory: "$(System.DefaultWorkingDirectory)/Pipelines_NuGet"
-    disablePublish: false
