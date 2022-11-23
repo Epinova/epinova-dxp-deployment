@@ -12,8 +12,9 @@
       <Company>Epinova</Company>
       <NoDefaultExcludes>true</NoDefaultExcludes>
   </PropertyGroup>
-
+    
   <ItemGroup>
+      <None Include="build\EpinovaDxp.Pipelines.props" Pack="true" PackagePath="build\" />
     <Content Include="App_Data\Pipelines\readme.txt" Pack="true" PackagePath="content"></Content>
     <Content Include="App_Data\Pipelines\Reset-IntePrepProd.yml" Pack="true" PackagePath="content"></Content>
   </ItemGroup>
