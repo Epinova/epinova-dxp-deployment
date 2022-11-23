@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>Any</TargetFrameworks>
+    <TargetFrameworks>net5,net6,net7</TargetFrameworks>
     <PackageDescription>Epinova DXP extension Pipelines NuGet $(GitLog)</PackageDescription>
     <Authors>$(GitContributors) @ Epinova</Authors>
     <PackageTags>Epinova, DXP</PackageTags>
