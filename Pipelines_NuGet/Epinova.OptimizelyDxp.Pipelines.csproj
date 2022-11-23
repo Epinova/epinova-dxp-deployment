@@ -14,7 +14,7 @@
   </PropertyGroup>
     
   <ItemGroup>
-      <None Include="build\EpinovaDxp.Pipelines.props" Pack="true" PackagePath="build\" />
+	  <None Include="build\Epinova.OptimizelyDxp.Pipelines.props" Pack="true" PackagePath="build\" />
     <Content Include="readme.txt" Pack="true" PackagePath="content"></Content>
     <Content Include="Reset-IntePrepProd.yml" Pack="true" PackagePath="content"></Content>
   </ItemGroup>
