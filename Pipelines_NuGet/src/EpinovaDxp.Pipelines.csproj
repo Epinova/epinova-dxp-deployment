@@ -1,17 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
+    <TargetFrameworks>any</TargetFrameworks>
     <PackageDescription>Epinova DXP extension Pipelines NuGet $(GitLog)</PackageDescription>
     <Authors>$(GitContributors) @ Epinova</Authors>
     <PackageTags>Epinova, DXP</PackageTags>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
     <LangVersion>latest</LangVersion>
     <NoWarn>1701;1702</NoWarn>
-    <RunAnalyzersDuringBuild>True</RunAnalyzersDuringBuild>
-    <RunAnalyzersDuringLiveAnalysis>True</RunAnalyzersDuringLiveAnalysis>
-    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
-    <AnalysisLevel>latest</AnalysisLevel>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,26 +16,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="App_Data\Pipelines\readme.txt">
+    <Content Include="App_Data\Pipelines\readme.txt" Pack="true" PackagePath="content">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="App_Data\Pipelines\Reset-IntePrepProd.yml">
+    <Content Include="App_Data\Pipelines\Reset-IntePrepProd.yml" Pack="true" PackagePath="content">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   
-  <ItemGroup>
-    <InternalsVisibleTo Include="($AssemblyName).Tests" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.39.0.47922">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
 </Project>
