@@ -28,5 +28,5 @@ steps:
       - 7.0.x
       - 6.0.x
       - 5.0.x
-    workingDirectory: "$(System.DefaultWorkingDirectory)/Pipelines_NuGet/src"
+    workingDirectory: "$(System.DefaultWorkingDirectory)/Pipelines_NuGet"
     disablePublish: false
