@@ -1,0 +1,25 @@
+trigger: none
+
+variables:
+- group: DXP-variables
+
+stages:
+
+- stage: Reset
+  jobs:
+  - job: ResetIntegration
+    pool:
+      vmImage: 'ubuntu-latest'
+    
+    steps:
+    
+    - checkout: none  # Don't sync sources
+
+    - task: DxpResetDeploy@1
+      displayName: 'Reset Integration'
+      inputs:
+        ClientKey: '$(ClientKey)'
+        ClientSecret: '$(ClientSecret)'
+        ProjectId: '$(DXP.ProjectId)'
+        TargetEnvironment: 'Integration'
+        Timeout: 1800

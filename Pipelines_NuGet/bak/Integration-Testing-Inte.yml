@@ -1,0 +1,71 @@
+trigger: none
+
+stages:
+  - stage: IntegrationTesting
+    jobs:
+    - job: IntegrationTesting
+      pool:
+        vmImage: 'ubuntu-latest'
+      variables:
+      - name: IntegrationTesting
+        value: $(Build.SourcesDirectory)/tests/IntegrationTests/IntegrationTests
+
+      steps:
+      - task: PowerShell@2
+        displayName: 'Calculate and save package.json hash'
+        inputs:
+          targetType: 'inline'
+          script: |
+            # generates a hash of all packages.config and saves each on a single line on 'packagesconfighash.txt'
+            Get-FileHash -Algorithm MD5 -Path (Get-ChildItem package.json -Recurse) >> packagejsonhash.txt
+            Write-Host "Hash File saved to $(IntegrationTesting)\packagesconfighash.txt"
+          workingDirectory: '$(IntegrationTesting)'
+
+      - task: CacheBeta@0 # speed up builds by caching packages folder
+        inputs:
+          key: npm|1|$(Agent.OS)|$(IntegrationTesting)/packagejsonhash.txt # hash map generated in previous step
+          path: $(IntegrationTesting)/node_modules
+          cacheHitVar: 'nuget_cache_hit' # variable that can be checked to see if it was successful
+        displayName: Cache node_modules
+        continueOnError: true
+        
+      - task: Npm@1
+        displayName: "NPM Set progress false (speedup)"
+        inputs:
+          command: custom
+          verbose: false
+          customCommand: "set progress=false"
+
+      - task: Npm@1
+        displayName: "npm ci"
+        inputs:
+          command: custom
+          workingDir: "$(IntegrationTesting)"
+          verbose: false
+          customCommand: "ci"
+
+      - task: Npm@1
+        displayName: Run cypress
+        inputs:
+          command: 'custom'
+          workingDir: '$(IntegrationTesting)'
+          customCommand: 'run cypress:run:inte'
+        condition: succeededOrFailed()
+
+      - task: PublishTestResults@2
+        displayName: 'Publish cypress test reports'
+        inputs:
+          testResultsFiles: '**/reports/junit/*.*.xml'
+          mergeTestResults: true
+          failTaskOnFailedTests: true
+          testRunTitle: 'Cypress'
+        condition: succeededOrFailed()
+        continueOnError: true
+        
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish cypress html test report'
+        inputs:
+          PathtoPublish: '$(IntegrationTesting)'
+          artifactName: cypress
+        condition: succeededOrFailed()
+        continueOnError: true
