@@ -1,0 +1,154 @@
+# ASP.NET
+# Build and test ASP.NET projects.
+# Add steps that publish symbols, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
+
+# trigger:
+# - develop
+
+pool:
+  vmImage: "windows-2019"
+
+variables:
+  solution: "**/*.sln"
+  buildPlatform: "Any CPU"
+  buildConfiguration: "Release"
+  nodeVersion: "12.18.3"
+  artifactName: 'drop'
+
+steps:
+  - task: PowerShell@2
+    displayName: "Calculate and save packages.config hash"
+    inputs:
+      targetType: "inline"
+      script: |
+        # generates a hash of all packages.config and saves each on a single line on 'hash_nuget.txt'
+        Get-FileHash -Algorithm MD5 -Path (Get-ChildItem packages.config -Recurse) >> hash_nuget.txt
+        Write-Host "Hash File saved to $(System.DefaultWorkingDirectory)\hash_nuget.txt"
+      workingDirectory: "$(System.DefaultWorkingDirectory)"
+
+  - task: Cache@2 # speed up builds by caching packages folder
+    inputs:
+      key: nuget|1|$(Agent.OS)|$(Build.SourcesDirectory)\hash_nuget.txt # hash map generated in previous step
+      path: $(Build.SourcesDirectory)\packages
+      cacheHitVar: "nuget_cache_hit" # variable that can be checked to see if it was successful
+    displayName: Cache nuget packages
+    continueOnError: true
+
+  - task: NuGetToolInstaller@1
+    inputs:
+      checkLatest: true
+
+  - task: NuGetCommand@2
+    inputs:
+      command: "restore"
+      restoreSolution: "$(solution)"
+      feedsToUse: config
+      nugetConfigPath: "NuGet.config"
+
+  - task: NodeTool@0
+    displayName: "Node install ($(nodeVersion))"
+    inputs:
+      versionSpec: $(nodeVersion)
+
+  - task: npmAuthenticate@0
+    inputs:
+      workingFile: "src/Site/.npmrc"
+      customEndpoint:
+
+  - task: CmdLine@2
+    displayName: "Ensure that .npm folder exist"
+    inputs:
+      script: "mkdir -p .npm"
+      workingDirectory: "$(Pipeline.Workspace)"
+
+  - task: Cache@2 # speed up builds by caching packages folder
+    inputs:
+      key: npm|$(Agent.OS)|src/Site/package-lock.json
+      restoreKeys: |
+        npm|$(Agent.OS)
+      path: $(Pipeline.Workspace)/.npm
+      cacheHitVar: "npm_cache_hit" # variable that can be checked to see if it was successful
+    displayName: Cache npm packages
+    continueOnError: true
+
+  - task: Npm@1
+    displayName: "NPM Set progress false (speedup)"
+    inputs:
+      command: custom
+      verbose: false
+      customCommand: "set progress=false"
+
+  - task: Npm@1
+    displayName: "npm ci"
+    inputs:
+      command: custom
+      workingDir: "src/Site"
+      verbose: false,
+      customCommand: "ci"
+
+  - task: Npm@1
+    displayName: "npm run test-ci"
+    inputs:
+      command: custom
+      workingDir: "src/Site"
+      verbose: false
+      customCommand: "run test-ci"
+
+  - task: PublishTestResults@2
+    displayName: "Publish front-end test results"
+    condition: succeededOrFailed()
+    inputs:
+      testRunner: JUnit
+      testResultsFiles: "**/junit.xml"
+      testRunTitle: Front-end
+
+  - task: DeleteFiles@1
+    displayName: 'Clean up generated test result files'
+    inputs:
+      contents: |
+        **/junit.xml
+
+  - task: Npm@1
+    displayName: "npm run build"
+    inputs:
+      command: custom
+      workingDir: "src/Site"
+      verbose: false
+      customCommand: "run build"
+
+  - task: VSBuild@1
+    displayName: 'Build solution'
+    inputs:
+      solution: '$(solution)'
+      msbuildArgs: '/p:Configuration=Release;DeployOnBuild=True;DeployDefaultTarget=WebPublish;WebPublishMethod=FileSystem;PublishProvider=FileSystem;LastUsedBuildConfiguration=Release;ExcludeApp_Data=False;PublishBaseUrl="$(build.BinariesDirectory)";DeleteExistingFiles=False;MvcBuildViews=False;MarkWebConfigAssistFilesAsExclude=false;AutoParameterizationWebConfigConnectionStrings=False'
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
+
+  - task: VSTest@2
+    displayName: 'Test Assemblies'
+    inputs:
+      testAssemblyVer2: '**\*test*.dll'
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
+
+  - task: ArchiveFiles@2
+    displayName: 'Create CMS Site Nuget'
+    inputs:
+      rootFolderOrFile: '$(Build.BinariesDirectory)\site'
+      includeRootFolder: false
+      archiveFile: '$(Build.ArtifactStagingDirectory)/episerver.com.cms.app.develop.$(Build.BuildNumber).nupkg'
+
+  - task: ArchiveFiles@2
+    displayName: 'Create Commerce Manager Nuget'
+    inputs:
+      rootFolderOrFile: '$(Build.BinariesDirectory)\Commerce'
+      includeRootFolder: false
+      archiveFile: '$(Build.ArtifactStagingDirectory)/episerver.com.commerce.app.develop.$(Build.BuildNumber).nupkg'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact'
+    inputs:
+      PathtoPublish: '$(build.artifactstagingdirectory)'
+      ArtifactName: '$(artifactName)'
+    condition: succeededOrFailed()
