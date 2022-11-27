@@ -1,0 +1,12 @@
+parameters:
+  - name: warning
+    type: string
+    default: ''
+
+steps:
+  - task: PowerShell@2
+    displayName: Warning
+    inputs:
+      targetType: 'inline'
+      script: |
+        Write-Output "##vso[task.logissue type=warning;]${{ parameters.warning }}"
