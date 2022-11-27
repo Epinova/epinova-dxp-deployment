@@ -1,0 +1,45 @@
+steps:  
+- template: build-node-task.yml
+  parameters:
+    extensionRoot: '$(System.DefaultWorkingDirectory)\src'
+    taskName: 'AwaitStatus\AwaitStatusV2'
+
+- template: build-node-task.yml
+  parameters:
+    extensionRoot: '$(System.DefaultWorkingDirectory)\src'
+    taskName: 'CompleteDeploy\CompleteDeployV2'
+
+- template: build-node-task.yml
+  parameters:
+    extensionRoot: '$(System.DefaultWorkingDirectory)\src'
+    taskName: 'ContentCopy\ContentCopyV2'
+
+- template: build-node-task.yml
+  parameters:
+    extensionRoot: '$(System.DefaultWorkingDirectory)\src'
+    taskName: 'DeployNuGetPackage\DeployNuGetPackageV2'
+
+- template: build-node-task.yml
+  parameters:
+    extensionRoot: '$(System.DefaultWorkingDirectory)\src'
+    taskName: 'DeployTo\DeployToV2'
+
+- template: build-node-task.yml
+  parameters:
+    extensionRoot: '$(System.DefaultWorkingDirectory)\src'
+    taskName: 'ExpectStatus\ExpectStatusV2'
+
+- template: build-node-task.yml
+  parameters:
+    extensionRoot: '$(System.DefaultWorkingDirectory)\src'
+    taskName: 'ExportDb\ExportDbV2'
+
+- template: build-node-task.yml
+  parameters:
+    extensionRoot: '$(System.DefaultWorkingDirectory)\src'
+    taskName: 'ResetDeploy\ResetDeployV2'
+
+- template: build-node-task.yml
+  parameters:
+    extensionRoot: '$(System.DefaultWorkingDirectory)\src'
+    taskName: 'SmokeTestIfFailReset\SmokeTestIfFailResetV2'

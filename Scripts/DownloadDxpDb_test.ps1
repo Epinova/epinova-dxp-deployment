@@ -1,4 +1,6 @@
-﻿Remove-Module -Name "EpinovaDxpToolBucket" -Verbose
+﻿Set-StrictMode -Version Latest 
+
+Remove-Module -Name "EpinovaDxpToolBucket" -Verbose
 Import-Module -Name E:\dev\epinova-dxp-deployment\Modules\EpinovaDxpToolBucket -Verbose
 
 . E:\dev\ps-scripts\dxp-deployment\DxpProjects.ps1

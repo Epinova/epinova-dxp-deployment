@@ -20,12 +20,18 @@ function Initialize-EpiCload{
     #>
     if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
         Write-Host "Could not find EpiCloud."
-        Install-Module EpiCloud -Scope CurrentUser -Force
-        Write-Host "Install EpiCloud."
+        #Install-Module EpiCloud  -Scope CurrentUser -MinimumVersion 0.13.15 -Force -AllowClobber
+        #Write-Host "Installed EpiCloud."
+        Import-Module -Name "EpiCloud" -MinimumVersion 1.2.0 -Verbose
+        #Import-Module -Name "$PSScriptRoot/EpiCloud/EpiCloud.psd1" -Verbose -ErrorAction Stop
+        Write-Host "Import EpiCloud."
     }
+    #Get-Module -Name EpiCloud -ListAvailable
     $version = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
-    Write-Host "EpiCloud            $version" 
-
+    Write-Host "EpiCloud            [$version]" 
+    if ($null -eq $version -or "" -eq $version) {
+        Write-Error "Could not get version for the installed module EpiCloud"
+    }
 }
 
 function Write-DxpHostVersion() {
@@ -41,8 +47,9 @@ function Write-DxpHostVersion() {
 
         Will print out the PowerShell host version in the host. Ex: @{Version=5.1.14393.3866}
     #>
-    $version = Get-Host | Select-Object Version
-    Write-Host "PowerShell          $version" 
+    #$version = Get-Host | Select-Object Version
+    #Write-Host "PowerShell          $version" 
+    $PSVersionTable
 }
 
 function Test-IsGuid {
@@ -75,8 +82,7 @@ function Test-IsGuid {
 	return $ObjectGuid -match $guidRegex
 }
 
-function Test-DxpProjectId
-{
+function Test-DxpProjectId {
     <#
     .SYNOPSIS
         Test a DXP project id.
@@ -92,19 +98,20 @@ function Test-DxpProjectId
 
         Test if the value in the parameter $projectId is a valid DXP project id.
     #>
-	[OutputType([bool])]
+	[OutputType([System.Void])]
 	param
 	(
 		[Parameter(Mandatory = $true)]
 		[string]$ProjectId
 	)
 	
-    if ((Test-IsGuid -ObjectGuid $ProjectId) -ne $true){
-        Write-Error "The provided ProjectId is not a guid value."
+    if (!(Test-IsGuid -ObjectGuid $ProjectId)) {
+        Write-Error "The provided ProjectId $ProjectId is not a guid value."
+        exit 1
     }
 }
 
-function Get-DxpDateTimeStamp{
+function Get-DxpDateTimeStamp {
     <#
     .SYNOPSIS
         Create DateTime stamp in correct format.
@@ -124,16 +131,16 @@ function Get-DxpDateTimeStamp{
 function Invoke-DxpProgress {
     <#
     .SYNOPSIS
-        Write the progress of a operation in the Episerver DXP environment to the host.
+        Write the progress of a operation in the Optimizely (formerly known as Episerver) DXP environment to the host.
 
     .DESCRIPTION
-        Write the progress of a operation in the Episerver DXP environment to the host.
+        Write the progress of a operation in the Optimizely (formerly known as Episerver) DXP environment to the host.
 
     .PARAMETER ProjectId
-        Project id for the project in Episerver DXP.
+        Project id for the project in Optimizely (formerly known as Episerver) DXP.
 
     .PARAMETER DeploymentId
-        Deployment id for the specific deployment in Episerver DXP that you want to show the progress for.
+        Deployment id for the specific deployment in Optimizely (formerly known as Episerver) DXP that you want to show the progress for.
 
     .PARAMETER PercentComplete
         The initialized percentComplete value that we got from the invoke of the operation.
@@ -270,7 +277,7 @@ function Get-DxpEnvironmentDeployments{
         Get the latest deployments for the specified environment.
 
     .PARAMETER ProjectId
-        Project id for the project in Episerver DXP.
+        Project id for the project in Optimizely (formerly known as Episerver) DXP.
 
     .PARAMETER TargetEnvironment
         The target environment that should match the deployment.
@@ -311,7 +318,7 @@ function Get-DxpLatestEnvironmentDeployment{
         Get the latest deployment for the specified environment.
 
     .PARAMETER ProjectId
-        Project id for the project in Episerver DXP.
+        Project id for the project in Optimizely (formerly known as Episerver) DXP.
 
     .PARAMETER TargetEnvironment
         The target environment that should match the deployment.
@@ -363,7 +370,7 @@ function Get-DxpAwaitingEnvironmentDeployment{
         Get the latest deployment in status 'AwaitingVerification' for the specified environment.
 
     .PARAMETER ProjectId
-        Project id for the project in Episerver DXP.
+        Project id for the project in Optimizely (formerly known as Episerver) DXP.
 
     .PARAMETER TargetEnvironment
         The target environment that should match the deployment.
@@ -404,7 +411,7 @@ function Invoke-DxpExportProgress {
         Start a export of a database from DXP.
 
     .PARAMETER ProjectId
-        Project id for the project in Episerver DXP.
+        Project id for the project in Optimizely (formerly known as Episerver) DXP.
 
     .PARAMETER ExportId
         .
@@ -495,4 +502,359 @@ function Install-AzureStorage {
         Write-Host "Installing Azure.Storage Powershell Module -MinimumVersion 4.4.0"
         Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -MinimumVersion 4.4.0 -Force -AllowClobber
     }
+}
+
+function Install-AzStorage {
+    <#
+    .SYNOPSIS
+        Install correct version of Az.Storage.
+
+    .DESCRIPTION
+        Install correct version of Az.Storage.
+
+    .EXAMPLE
+        Install-AzStorage
+    #>
+    if ($null -eq (Get-Module -Name "Az.Storage")) {
+        #Import-Module -Name "Az.Storage" -Verbose
+        Install-Module -Name Az.Storage -Scope CurrentUser -Repository PSGallery -MinimumVersion 3.7.0 -Force -AllowClobber
+    }
+}
+
+function Mount-PsModulesPath {
+    <#
+    .SYNOPSIS
+        Add task ps_modules folder to env:PSModulePath.
+
+    .DESCRIPTION
+        Add task ps_modules folder to env:PSModulePath.
+
+    .EXAMPLE
+        Mount-ModulePath
+    #>
+
+    CheckWishes
+
+    $taskModulePath = $PSScriptRoot
+    if (-not ($env:PSModulePath.Contains($taskModulePath))) {
+        $env:PSModulePath = $env:PSModulePath + "$([System.IO.Path]::PathSeparator)$taskModulePath"
+        Write-Host "Added $taskModulePath to env:PSModulePath" 
+    }
+}
+
+function CheckWishes{
+    $now = Get-Date
+    if ((($now.Day -eq 24) -and ($now.Month -eq 12)) -or (($now.Day -eq 25) -and ($now.Month -eq 12))){        
+        PrintChristmasWish
+    }
+    if ((($now.Day -eq 31) -and ($now.Month -eq 12)) -or (($now.Day -eq 1) -and ($now.Month -eq 1))){
+        PrintNewYearWish
+    }
+}
+function PrintChristmasWish{
+
+    Write-Host "                                                 |"
+    Write-Host "                                                -+-"
+    Write-Host "                                                 A"
+    Write-Host "                                                /=\        "
+    Write-Host "                                              i/ O \i     "
+    Write-Host "                                              /=====\     "
+    Write-Host "                                              /  i  \     "
+    Write-Host "                                            i/ O * O \i   "
+    Write-Host "                                            /=========\   "
+    Write-Host "                                            /  *   *  \    "
+    Write-Host "                                          i/ O   i   O \i   "
+    Write-Host "                                          /=============\    "
+    Write-Host "                                          /  O   i   O  \     "
+    Write-Host "                                        i/ *   O   O   * \i"
+    Write-Host "                                        /=================\"
+    Write-Host "                                               |___|"
+    Write-Host "   _____                               _________ .__          .__          __                          "
+    Write-Host "  /     \   __________________ ___.__. \_   ___ \|  |_________|__| _______/  |_  _____ _____    ______ "
+    Write-Host " /  \ /  \_/ __ \_  __ \_  __ <   |  | /    \  \/|  |  \_  __ \  |/  ___/\   __\/     \\__  \  /  ___/ "
+    Write-Host "/    Y    \  ___/|  | \/|  | \/\___  | \     \___|   Y  \  | \/  |\___ \  |  | |  Y Y  \/ __ \_\___ \  "
+    Write-Host "\____|__  /\___  >__|   |__|   / ____|  \______  /___|  /__|  |__/____  > |__| |__|_|  (____  /____  > "
+    Write-Host "        \/     \/              \/              \/     \/              \/             \/     \/     \/  "
+    Write-Host "                                  _____                       "
+    Write-Host "                                _/ ____\______  ____   _____  "
+    Write-Host "                                \   __\\_  __ \/  _ \ /     \ "
+    Write-Host "                                 |  |   |  | \(  <_> )  Y Y  \"
+    Write-Host "                                 |__|   |__|   \____/|__|_|  /"
+    Write-Host "                                                           \/ "
+    Write-Host "                         ___________      .__                                                                                  " 
+    Write-Host "                         \_   _____/_____ |__| ____   _______  _______                                                          "
+    Write-Host "                          |    __)_\____ \|  |/    \ /  _ \  \/ /\__  \                                                          "
+    Write-Host "                          |        \  |_> >  |   |  (  <_> )   /  / __ \_                                                       "
+    Write-Host "                         /_______  /   __/|__|___|  /\____/ \_/  (____  /                                                       "
+    Write-Host "                                 \/|__|           \/                  \/          "
+}
+
+function PrintNewYearWish{
+    Write-Host "                          ..............*.....o..°"
+    Write-Host "                          .....*.....o..°..........o..°"
+    Write-Host "                          *.......*....o..° °.........o..°*"
+    Write-Host "                          ....*....o..°........o..°........o..°...*"
+    Write-Host "                          °...................*............*.....o..°"
+    Write-Host "                          °.....*....o..°______________.*.....o..°"
+    Write-Host "                          `$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$.....o......o."
+    Write-Host "                          `$`$______________________`$`$..o..°*"
+    Write-Host "                          `$`$__________`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$"
+    Write-Host "                          _s`$`$________`$`$________`$`$____________`$`$"
+    Write-Host "                          ___s`$`$______`$`$______`$`$______________`$`$"
+    Write-Host "                          _____s`$`$______`$`$__`$`$______________`$`$s"
+    Write-Host "                          _______s`$`$______`$`$______________`$`$s"
+    Write-Host "                          _________s`$`$`$`$`$`$__`$`$__________`$`$s"
+    Write-Host "                          ____________`$`$_____s`$`$______`$`$s"
+    Write-Host "                          ____________`$`$_______s`$`$`$`$`$`$s"
+    Write-Host "                          ____________`$`$__________`$`$"
+    Write-Host "                          ____________`$`$__________`$`$"
+    Write-Host "                          ____________`$`$__________`$`$"
+    Write-Host "                          ____________`$`$__________`$`$"
+    Write-Host "                          ____________`$`$__________`$`$"
+    Write-Host "                          ____________`$`$__________`$`$"
+    Write-Host "                          __________`$`$`$`$`$`$________`$`$"
+    Write-Host "                          ______`$`$`$`$`$`$`$`$`$`$`$`$`$`$____`$`$"
+    Write-Host "                          ______________________`$`$`$`$`$`$"
+    Write-Host "                          __________________`$`$`$`$`$`$`$`$`$`$`$`$`$`$"
+    Write-Host "                          -:¦:-____-:¦:-__ __-:¦:-______-:¦:-"
+    Write-Host "  ___ ___                                                                                 "
+    Write-Host " /   |   \_____  ______ ______ ___.__.   ____   ______  _  __  ___.__. ____ _____ _______ "
+    Write-Host "/    ~    \__  \ \____ \\____ <   |  |  /    \_/ __ \ \/ \/ / <   |  |/ __ \\__  \\_  __ \"
+    Write-Host "\    Y    // __ \|  |_> >  |_> >___  | |   |  \  ___/\     /   \___  \  ___/ / __ \|  | \/"
+    Write-Host " \___|_  /(____  /   __/|   __// ____| |___|  /\___  >\/\_/    / ____|\___  >____  /__|   "
+    Write-Host "       \/      \/|__|   |__|   \/           \/     \/          \/         \/     \/       "
+    Write-Host "                                  _____                       "
+    Write-Host "                                _/ ____\______  ____   _____  "
+    Write-Host "                                \   __\\_  __ \/  _ \ /     \ "
+    Write-Host "                                 |  |   |  | \(  <_> )  Y Y  \"
+    Write-Host "                                 |__|   |__|   \____/|__|_|  /"
+    Write-Host "                                                           \/ "
+    Write-Host "                      ___________      .__                                                                                  " 
+    Write-Host "                      \_   _____/_____ |__| ____   _______  _______                                                          "
+    Write-Host "                       |    __)_\____ \|  |/    \ /  _ \  \/ /\__  \                                                          "
+    Write-Host "                       |        \  |_> >  |   |  (  <_> )   /  / __ \_                                                       "
+    Write-Host "                      /_______  /   __/|__|___|  /\____/ \_/  (____  /                                                       "
+    Write-Host "                              \/|__|           \/                  \/          "
+
+
+}
+
+function Invoke-WarmupRequest {
+    <#
+    .SYNOPSIS
+        Make a request against a URL to warm it up.
+
+    .DESCRIPTION
+        Make a request against a URL to warm it up.
+
+    .PARAMETER RequestUrl
+        The URL that should be warmed-up.
+
+    .EXAMPLE
+        Invoke-WarmupRequest -RequestUrl "https://epinova.se/news-and-stuff"
+
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [String] $RequestUrl
+    )
+    $ProgressPreference = 'SilentlyContinue'
+    try {
+        Invoke-WebRequest -Uri $RequestUrl -UseBasicParsing -MaximumRedirection 1 | Out-Null #-Verbose:$false
+        
+    } catch {
+        #$_.Exception.Response
+        $statusCode = $_.Exception.Response.StatusCode.value__
+        Write-Host "Could not request $RequestUrl. Something went wrong. $statusCode"
+        Write-Host $_.Exception.Message
+    }
+    $ProgressPreference = 'Continue'
+}
+
+function Invoke-WarmupSite{
+    <#
+    .SYNOPSIS
+        Warm a site.
+
+    .DESCRIPTION
+        Will make a request to the specified URL. Take all links it can find and make a request for each link to warm up the site.
+
+    .PARAMETER Url
+        The URL that should be warmed-up.
+
+    .EXAMPLE
+        Invoke-WarmupSite -Url "https://epinova.se"
+
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [String] $Url
+    )
+
+    if ($Url.EndsWith("/")) {
+        $Url = $Url.Substring(0, $Url.Length - 1)
+    }
+
+    $iterator = 0
+
+    while ($iterator -lt 10) {
+        try {
+            Write-Host "Invoke-WebRequest -Uri $Url"
+            $response = Invoke-WebRequest -Uri $Url -UseBasicParsing -Verbose:$false -MaximumRedirection 1 -TimeoutSec 120
+            $iterator = 999
+            if ($null -ne $response){ 
+                foreach ($link in $response.Links){
+                    if ($null -ne $link -and $null -ne $link.href) {
+                        if ($link.href.StartsWith("/") -and $false -eq $link.href.StartsWith("//")){
+                            $newUrl = $Url + $link.href
+                            Write-Host $newUrl
+                            Invoke-WarmupRequest -requestUrl $newUrl
+                        } elseif ($link.href.StartsWith($Url)) {
+                            Write-Host $link.href
+                            Invoke-WarmupRequest -requestUrl $link.href
+                        } #else { #Used for debuging
+                        #    Write-Warning "Not: $($link.href)" 
+                        #}
+                    }
+                }
+                Write-Host "Warm up site $Url - done."
+            } else {
+                Write-Warning "Could not request $Url. response = null"
+            }
+        } catch {
+            Write-Warning "Could not warmup $Url"
+            Write-Host $_.Exception.Message
+            if ($iterator -lt 9){
+                Write-Host "Will try again ($iterator)"
+            } else {
+                Write-Host "Will stop trying to warm up the web application."
+            }
+            $iterator++
+        }
+    }
+}
+
+function Test-PackageFile {
+    <#
+    .SYNOPSIS
+        Test package file
+
+    .DESCRIPTION
+        Test if package file is empty/null.
+
+    .PARAMETER PackageFile
+
+    .PARAMETER DropPath
+
+    .PARAMETER PackageFile
+
+    .EXAMPLE
+        $packageFile = Get-ChildItem -Path $dropPath -Filter *.cms.*.nupkg
+        Test-PackageFile -PackageType "cms" -DropPath $dropPath -PackageFile $packageFile
+    #>
+	param
+	(
+		[Parameter(Mandatory = $true)]
+		[string]$PackageType,
+		[Parameter(Mandatory = $true)]
+		[string]$DropPath,
+		[Parameter(Mandatory = $true)]
+		[System.IO.FileSystemInfo]$PackageFile
+	)
+
+    if ($null -eq $PackageFile){
+        Write-Host "Following files found in location $DropPath : $(Get-ChildItem -Path $DropPath -File)"
+        Write-Host "##vso[task.logissue type=error]Could not find the $PackageType package in location $DropPath."
+        Write-Error "Could not find the $PackageType package in location $DropPath." -ErrorAction Stop
+        exit 1
+    }
+}
+
+function Test-PackageFileName {
+    <#
+    .SYNOPSIS
+        Test package file name
+
+    .DESCRIPTION
+        Test if package file name contains any spaces. If so it will throw a exception.
+
+    .PARAMETER PackageFile
+        The FileSystemInfo that should be checked.
+
+    .EXAMPLE
+        $packageFile = Get-ChildItem -Path $dropPath -Filter *.cms.*.nupkg
+        Test-PackageFileName -PackageFile $packageFile
+    #>	
+    param
+	(
+		[Parameter(Mandatory = $true)]
+		[System.IO.FileSystemInfo]$PackageFile
+	)
+
+    if ($true -eq $PackageFile.Name.Contains(" ")) {
+        $newName = $PackageFile.Name.Replace(" " , "")
+        Write-Error "Package name contains space(s). Due to none support for spaces in EpiCloud API, you need to change the package name '$($PackageFile.Name)' => '$newName'."
+    }
+}
+
+function Publish-Package {
+    <#
+    .SYNOPSIS
+        Publish package to DXP storage account
+
+    .DESCRIPTION
+        Load the specified type of package, checks for errors, if none, upload package to DXP storage.
+
+    .PARAMETER PackageType
+        
+    .PARAMETER DropPath
+
+    .PARAMETER PackageLocation
+        SAS link
+
+    .EXAMPLE
+        Publish-Package -PackageType "cms" -DropPath $dropPath -PackageLocation $packageLocation
+    #>	
+    param
+	(
+		[Parameter(Mandatory = $true)]
+		[string]$PackageType,
+		[Parameter(Mandatory = $true)]
+		[string]$DropPath,
+		[Parameter(Mandatory = $true)]
+		[string]$PackageLocation 
+	)
+
+    $uploadedPackage = ""
+    $packageFileInfo = Get-ChildItem -Path $DropPath -Filter "*.$PackageType.*.nupkg"
+    
+    Write-Host "Loaded $PackageType package:    $packageFileInfo"
+    
+    Test-PackageFile -PackageType $PackageType -DropPath $DropPath -PackageFile $packageFileInfo
+
+    Test-PackageFileName -PackageFile $packageFileInfo
+
+    $packageFileName = $packageFileInfo.Name
+    
+    Write-Host "$PackageType package '$packageFileName' start upload..."
+    try{
+        Add-EpiDeploymentPackage -SasUrl $PackageLocation -Path $packageFileInfo.FullName
+        Write-Host "$PackageType package '$packageFileName' is uploaded."
+        $uploadedPackage = $packageFileInfo.Name
+    }
+    catch{
+        $errMsg = $_.Exception.ToString()
+        if ($errMsg.Contains("is already linked to a deployment and cannot be overwritten")){
+            Write-Host "$PackageType package '$packageFileName' already exist in container."
+            $uploadedPackage = $packageFileName
+        } else {
+            Write-Error $errMsg
+        }
+    }
+
+    return $uploadedPackage
 }

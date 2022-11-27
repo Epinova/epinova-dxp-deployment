@@ -1,6 +1,8 @@
-# Complete deploy (Episerver DXP)
-Both "Deploy nuget package (Episerver DXP)" and "Move deploy (Episerver DXP)" tasks deploy a package to a environment. That will deploy the package to a slot. The task "Complete deploy (Episerver DXP)" will complete the deploy and move the package from slot to the real environment.  
-
+# Complete deploy (Optimizely DXP)
+Both "Deploy nuget package (Optimizely DXP)" and "Move deploy (Optimizely DXP)" tasks deploy a package to a environment. That will deploy the package to a slot. The task "Complete deploy (Optimizely DXP)" will complete the deploy and move the package from slot to the real environment.  
+  
+_**Note:** v2 task supports windows/ubuntu/MacOS agents. v1 task only support windows._  
+  
 [<= Back](../README.md)
 
 ## Parameters
@@ -52,9 +54,19 @@ How the task should handle errors.
 - **SilentlyContinue**: Don't display an error message continue to execute subsequent commands.
 
 ## YAML ##
-Example:  
+Example v1:  
 ```yaml
 - task: DxpCompleteDeploy@1
+    inputs:
+    ClientKey: '$(ClientKey)'
+    ClientSecret: '$(ClientSecret)'
+    ProjectId: '$(DXP.ProjectId)'
+    TargetEnvironment: 'Integration'
+    Timeout: 1800
+```  
+Example v2:  
+```yaml
+- task: DxpCompleteDeploy@2
     inputs:
     ClientKey: '$(ClientKey)'
     ClientSecret: '$(ClientSecret)'

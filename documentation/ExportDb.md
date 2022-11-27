@@ -1,8 +1,10 @@
-# Export DB (Episerver DXP) #
+# Export DB (Optimizely DXP) #
 Export specified DB from DXP and will be downloadable via link.  
 When the database bacpac file has been created. You can download the file from the specified downloadLink.  
 There a variable set in the task with the name `DbExportDownloadLink`. That variable can be used by other tasks in the pipeline to retrieve that information and for example send a email with this information to project group members.  
-  
+   
+_**Note:** v2 task supports windows/ubuntu/MacOS agents. v1 task only support windows._  
+
 [<= Back](../README.md)
 
 ## Parameters
@@ -34,6 +36,9 @@ Specify from which environment the database export should be done.
 - Integration
 - Preproduction
 - Production
+- ADE1
+- ADE2
+- ADE3
 
 #### DatabaseName
 **[pickList]** - **required**  
@@ -70,9 +75,22 @@ How the task should handle errors.
 - **SilentlyContinue**: Don't display an error message continue to execute subsequent commands.
 
 ## YAML ##
-Example:  
+Example v1:  
 ```yaml
 - task: DxpExportDb@1
+inputs:
+    ClientKey: '$(ClientKey)'
+    ClientSecret: '$(ClientSecret)'
+    ProjectId: '$(DXP.ProjectId)'
+    Environment: 'Integration'
+    DatabaseName: 'epicms'
+    RetentionHours: 24
+    Timeout: 1800
+``` 
+  
+Example v2:  
+```yaml
+- task: DxpExportDb@2
 inputs:
     ClientKey: '$(ClientKey)'
     ClientSecret: '$(ClientSecret)'

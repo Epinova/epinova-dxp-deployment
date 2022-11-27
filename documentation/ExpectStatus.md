@@ -1,6 +1,8 @@
-# Expect status (Episerver DXP)
+# Expect status (Optimizely DXP)
 Task that check the status for an environment. if environment is not in the expected status the task will fail.  
-
+  
+_**Note:** v2 task supports windows/ubuntu/MacOS agents. v1 task only support windows._  
+  
 [<= Back](../README.md)
 
 ## Parameters
@@ -25,13 +27,16 @@ The DXP project id.
 
 #### Target environment
 **[pickList]** - **required**  
-Specify if you want to complete the deploy to Integration/Preproduction/Production.  
+Specify which environment that you want to check Integration/Preproduction/Production.  
 **Example:** `Integration`  
 **Default value:** `$(TargetEnvironment)`  
 **Options:**  
 - Integration
 - Preproduction
 - Production
+- ADE1
+- ADE2
+- ADE3
 
 #### Expected status
 **[pickList]** - **required**  
@@ -64,9 +69,21 @@ How the task should handle errors.
 - **SilentlyContinue**: Don't display an error message continue to execute subsequent commands.
 
 ## YAML ##
-Example:  
+Example v1:  
 ```yaml
 - task: DxpExpectStatus@1
+    inputs:
+    ClientKey: '$(ClientKey)'
+    ClientSecret: '$(ClientSecret)'
+    ProjectId: '$(DXP.ProjectId)'
+    TargetEnvironment: 'Integration'
+    ExpectedStatus: 'AwaitingVerification'
+    Timeout: 1800
+```
+  
+Example v2:  
+```yaml
+- task: DxpExpectStatus@2
     inputs:
     ClientKey: '$(ClientKey)'
     ClientSecret: '$(ClientSecret)'

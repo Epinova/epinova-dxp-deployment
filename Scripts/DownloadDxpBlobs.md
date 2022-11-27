@@ -1,5 +1,5 @@
-# Download DXP BLOBS (Episerver DXP)
-PowerShell script that make it posible to download BLOBS from Episerver DXP project. You can download from all environments (Integration/Preproduction/Production).
+# Download DXP BLOBS (Optimizely DXP)
+PowerShell script that make it posible to download BLOBS from  Optimizely (formerly known as Episerver) DXP project. You can download from all environments (Integration/Preproduction/Production).
 Also support to download application logs or web logs.
 
 Example:  
@@ -43,6 +43,9 @@ From witch environment that you want to download from. Integration/Preproduction
 - Integration
 - Preproduction
 - Production
+- ADE1
+- ADE2
+- ADE3
 
 ### downloadFolder
 **[string]** - **required**  

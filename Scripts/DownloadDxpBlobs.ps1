@@ -20,6 +20,8 @@
         [int] $retentionHours = 2
     )
 
+Set-StrictMode -Version Latest 
+
 ####################################################################################
 
 
@@ -99,7 +101,7 @@ function Join-Parts {
         $Separator = ''
     )
 
-    ($Parts | Where-Object { $_ } | ForEach-Object { ([string]$_).trim($Separator) } | Where-Object { $_ } ) -join $Separator 
+    ($Parts | Where-Object { $_ } | ForEach-Object { ([string]$_) } | Where-Object { $_ } ) -join $Separator 
 }
 
     ####################################################################################
@@ -276,7 +278,7 @@ else {
             break
         }
 
-       $filePath = Join-Parts -Separator '\' -Parts $downloadFolder, $blobContent.Name
+       $filePath = (Join-Parts -Separator '\' -Parts $downloadFolder, $blobContent.Name.Replace("/", "\"))
        $fileExist = Test-Path $filePath -PathType Leaf
 
        if ($fileExist -eq $false -or $true -eq $overwriteExistingFiles){

@@ -243,22 +243,50 @@ function Import-Az{
     }
 }
 
- function Import-EpiCloud{
+#  function Import-EpiCloud{
+#     <#
+#     .SYNOPSIS
+#         Import module EpiCloud.
+
+#     .DESCRIPTION
+#         Import module EpiCloud.
+
+#     .EXAMPLE
+#         Import-EpiCloud
+#     #>
+#     if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
+#         Install-Module EpiCloud -Scope CurrentUser -Force
+#     } else {
+#         Write-Host "EpiCloud is installed."
+#     }
+# }
+
+function Initialize-EpiCload{
     <#
     .SYNOPSIS
-        Import module EpiCloud.
+        Install the EpiCloud module and print version.
 
     .DESCRIPTION
-        Import module EpiCloud.
+        Install the EpiCloud module and print version.
 
     .EXAMPLE
-        Import-EpiCloud
+        Initialize-EpiCload
     #>
-    if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
-        Install-Module EpiCloud -Scope CurrentUser -Force
-    } else {
-        Write-Host "EpiCloud is installed."
-    }
+    #if (-not (Get-Module -Name EpiCloud -MinimumVersion 1.0.0 -ListAvailable)) {
+    #    Write-Host "Could not find EpiCloud."
+    #    #Install-Module EpiCloud  -Scope CurrentUser -MinimumVersion 0.13.15 -Force -AllowClobber
+    #    #Write-Host "Installed EpiCloud."
+    #    Import-Module -Name "EpiCloud" -MinimumVersion 1.0.0 -Verbose
+    #    #Import-Module -Name "$PSScriptRoot/EpiCloud/EpiCloud.psd1" -Verbose -ErrorAction Stop
+    #    Write-Host "Import EpiCloud."
+    #}
+    ##Get-Module -Name EpiCloud -ListAvailable
+    #$version = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
+    #Write-Host "EpiCloud            [$version]" 
+    #if ($null -eq $version -or "" -eq $version) {
+    #    Write-Error "Could not get version for the installed module EpiCloud"
+    #}
+    Install-Module EpiCloud -Scope CurrentUser -MinimumVersion 1.0.0 -Force -AllowClobber
 }
 
 function Get-StorageAccountName{
@@ -353,7 +381,7 @@ function Join-Parts {
         [string]$Separator = ''
     )
 
-    ($Parts | Where-Object { $_ } | ForEach-Object { ([string]$_).trim($Separator) } | Where-Object { $_ } ) -join $Separator 
+    ($Parts | Where-Object { $_ } | ForEach-Object { ([string]$_) } | Where-Object { $_ } ) -join $Separator 
 }
 
 function Get-DxpDateTimeStamp{
@@ -567,16 +595,16 @@ function Connect-DxpEpiCloud{
 function Invoke-DxpProgress {
     <#
     .SYNOPSIS
-        Write the progress of a operation in the Episerver DXP environment to the host.
+        Write the progress of a operation in the Optimizely (formerly known as Episerver) DXP environment to the host.
 
     .DESCRIPTION
-        Write the progress of a operation in the Episerver DXP environment to the host.
+        Write the progress of a operation in the Optimizely (formerly known as Episerver) DXP environment to the host.
 
     .PARAMETER projectId
-        Project id for the project in Episerver DXP.
+        Project id for the project in Optimizely (formerly known as Episerver) DXP.
 
     .PARAMETER deploymentId
-        Deployment id for the specific deployment in Episerver DXP that you want to show the progress for.
+        Deployment id for the specific deployment in Optimizely (formerly known as Episerver) DXP that you want to show the progress for.
 
     .PARAMETER percentComplete
         The initialized percentComplete value that we got from the invoke of the operation.
@@ -686,8 +714,7 @@ function Get-DxpStorageContainerSasLink{
         [ValidateNotNullOrEmpty()]
         [string] $Environment,
 
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory = $false)]
         [object] $Containers,
 
         [Parameter(Mandatory = $true)]
@@ -698,6 +725,10 @@ function Get-DxpStorageContainerSasLink{
         [int] $RetentionHours = 2
 
     )
+
+    if ($null -eq $Containers){
+        $Containers = Get-DxpStorageContainers -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment
+    }
 
     $linkSplat = @{
         ClientKey = $ClientKey
@@ -832,7 +863,7 @@ function Invoke-DownloadStorageAccountFiles{
                 break
             }
 
-            $filePath = Join-Parts -Separator '\' -Parts $DownloadFolder, $blobContent.Name
+            $filePath = (Join-Parts -Separator '\' -Parts $DownloadFolder, $blobContent.Name.Replace("/", "\"))
             $fileExist = Test-Path $filePath -PathType Leaf
 
             if ($fileExist -eq $false -or $true -eq $OverwriteExistingFiles){
@@ -915,14 +946,16 @@ function Get-DxpStorageContainers{
 
     Test-DxpProjectId -ProjectId $ProjectId
     Test-EnvironmentParam -Environment $Environment
-
-    Import-EpiCloud
+    
+    #Import-EpiCloud
+    Initialize-EpiCload
 
     try {
         $containers = Get-EpiStorageContainer -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment
     }
     catch {
         Write-Error "Could not get storage container information from Epi. Make sure you have specified correct ProjectId/Environment"
+        Write-Error $_.Exception.ToString()
         exit
     }
 
@@ -964,7 +997,7 @@ function Invoke-DxpBlobsDownload{
         The type of container you want to download. 
         AppLogs=Application logs that is created by your application in the specified environment.
         WebLogs=Web logs/IIS logs that is created by your webapp in the specified environment.
-        Blobs or *=The container name where your blobs are stored. At present date (2021-02-02) Episerver/Optimizly have no default or standard name of the blobs container. So the script will try to help you find the right one. If not it will list the containers and you will be able to rerun the script and try which one it is.
+        Blobs or *=The container name where your blobs are stored. At present date (2021-02-02) Optimizely (formerly known as Episerver) have no default or standard name of the blobs container. So the script will try to help you find the right one. If not it will list the containers and you will be able to rerun the script and try which one it is.
 
     .PARAMETER OverwriteExistingFiles
         True/False if the downloaded files should overwite existing files (if exist).
@@ -994,7 +1027,7 @@ function Invoke-DxpBlobsDownload{
         [string] $ProjectId,
 
         [Parameter(Mandatory=$false)]
-        [ValidateSet('Integration','Preproduction','Production')]
+        [ValidateSet('Integration','Preproduction','Production','ADE1','ADE2','ADE3')]
         [string] $Environment = "Integration",
 
         [Parameter(Mandatory=$false)]
@@ -1118,7 +1151,7 @@ function Invoke-DxpDatabaseDownload{
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [ValidateSet('Integration','Preproduction','Production')]
+        [ValidateSet('Integration','Preproduction','Production','ADE1','ADE2','ADE3')]
         [string] $Environment,
 
         [Parameter(Mandatory=$true)]
@@ -1213,4 +1246,4 @@ function Invoke-DxpDatabaseDownload{
     }
 }
 
-Export-ModuleMember -Function @( 'Invoke-DxpBlobsDownload', 'Invoke-DxpDatabaseDownload', 'Get-DxpStorageContainers' )
+Export-ModuleMember -Function @( 'Invoke-DxpBlobsDownload', 'Invoke-DxpDatabaseDownload', 'Get-DxpStorageContainers', 'Get-DxpStorageContainerSasLink' )

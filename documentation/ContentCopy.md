@@ -2,10 +2,12 @@
 In the DXP Management Portal, you can copy content (database and BLOBs) between environments to test your code with the data you want.  
 Does the same thing like the "Content copy" button in the portal. It copy database and/or blobs from one environment to another.  
 
-[More about content syncdown can be read on Episerver world.](https://world.episerver.com/documentation/developer-guides/digital-experience-platform/self-service/content-synchronization/)  
-[How content syncdown works in Episerver DXP deployment API.](https://world.episerver.com/blogs/anders-wahlqvist/dates/2020/4/dxp-deployment-improvements/)  
+[More about content syncdown can be read on Episerver world.](https://world.optimizely.com/documentation/developer-guides/digital-experience-platform/self-service/content-synchronization/)  
+[How content syncdown works in Episerver DXP deployment API.](https://world.optimizely.com/blogs/anders-wahlqvist/dates/2020/4/dxp-deployment-improvements/)  
 
-_*NOTE 2020-09-30:* At present date the sync can not handle just one database type. It will sync both cms AND commerce database. We tried to just sync the cms database but there is no support for that in the Episerver API. So if you have a cms and commerce database, both databases will sync when if you set SourceApp=cms._  
+_**Note:** v2 task supports windows/ubuntu/MacOS agents. v1 task only support windows._   
+
+_**Note 2020-09-30:** At present date the sync can not handle just one database type. It will sync both cms AND commerce database. We tried to just sync the cms database but there is no support for that in the Episerver API. So if you have a cms and commerce database, both databases will sync when if you set SourceApp=cms._  
   
 [<= Back](../README.md)
 
@@ -39,6 +41,28 @@ Specify content copy you want to do.
 - Preproduction => Integration (PrepInte)
 - Production => Integration (ProdInte)
 - Integration => Preproduction (IntePrep)
+- Production => ADE1 (ProdAde1)
+- Production => ADE2 (ProdAde2)
+- Production => ADE3 (ProdAde3)
+- Preproduction => ADE1 (PrepAde1)
+- Preproduction => ADE2 (PrepAde2)
+- Preproduction => ADE3 (PrepAde3)
+- Integration => ADE1 (InteAde1)
+- Integration => ADE2 (InteAde2)
+- Integration => ADE3 (InteAde3)
+- ADE1 => Preproduction (Ade1Prep)
+- ADE2 => Preproduction (Ade2Prep)
+- ADE3 => Preproduction (Ade3Prep)
+- ADE1 => Integration (Ade1Inte)
+- ADE2 => Integration (Ade2Inte)
+- ADE3 => Integration (Ade3Inte)
+- ADE1 => ADE2 (Ade1Ade2)
+- ADE1 => ADE3 (Ade1Ade3)
+- ADE2 => ADE1 (Ade2Ade1)
+- ADE2 => ADE3 (Ade2Ade3)
+- ADE3 => ADE1 (Ade3Ade1)
+- ADE3 => ADE2 (Ade3Ade2)
+
 
 #### Include BLOB
 **[boolean]** - **required**  

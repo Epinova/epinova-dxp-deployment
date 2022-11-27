@@ -1,6 +1,8 @@
-# Reset deploy (Episerver DXP)
+# Reset deploy (Optimizely DXP)
 Reset a specifed environment if the status for the environment is in status "AwaitingVerification".  
-
+  
+_**Note:** v2 task supports windows/ubuntu/MacOS agents. v1 task only support windows._  
+   
 [<= Back](../README.md)
 
 ## Parameters
@@ -32,6 +34,9 @@ Specify the target environment that you want to reset.
 - Integration
 - Preproduction
 - Production
+- ADE1
+- ADE2
+- ADE3
 
 ### Group: Timeout
 #### Script timeout (in seconds)
@@ -52,9 +57,21 @@ How the task should handle errors.
 - **SilentlyContinue**: Don't display an error message continue to execute subsequent commands.
 
 ## YAML ##
-Example:  
+Example v1:  
 ```yaml
 - task: DxpResetDeploy@1
+    displayName: 'Reset Integration'
+    inputs:
+    ClientKey: '$(ClientKey)'
+    ClientSecret: '$(ClientSecret)'
+    ProjectId: '$(DXP.ProjectId)'
+    TargetEnvironment: 'Integration'
+    Timeout: 1800
+``` 
+  
+  Example v2:  
+```yaml
+- task: DxpResetDeploy@2
     displayName: 'Reset Integration'
     inputs:
     ClientKey: '$(ClientKey)'

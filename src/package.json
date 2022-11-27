@@ -1,6 +1,6 @@
 {
-  "name": "Episerver.Dxc.Api.DevOps.Tasks",
-  "version": "1.5.0",
+  "name": "epinova-dxp-api-devops-tasks",
+  "version": "2.3.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -8,11 +8,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@ssh.dev.azure.com:v3/Epinova-Sweden/Episerver.Dxc.Api.DevOps.Tasks/Episerver.Dxc.Api.DevOps.Tasks"
+    "url": "git@github.com:Epinova/epinova-dxp-deployment.git"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Ove Lartelius",
+  "license": "MIT",
   "dependencies": {
     "vss-web-extension-sdk": "^5.141.0"
   }

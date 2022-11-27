@@ -1,4 +1,4 @@
-# Deploy smooth to (Episerver DXP) #
+# Deploy smooth to (Optimizely DXP) #
 
 <span style="color:red">
 Deprecated!   
@@ -6,10 +6,10 @@ You should stop using this task DeploySmoothTo. You should change to DeployTo.
 </span>
 
 Do the same thing as the ["Deploy to" task](DeployTo.md). But this has support for Smooth deployment (Zero downtime deployment).  
-Since this function is still in [closed beta](https://world.episerver.com/service-and-product-lifecycles/#CloudServicesLifecycle). There is not everybody that can use this feature yet. That is why this is like a copy past of the "Deploy To" task but with smooth deployment support.  
+Since this function is still in [closed beta](https://world.optimizely.com/service-and-product-lifecycles/#CloudServicesLifecycle). There is not everybody that can use this feature yet. That is why this is like a copy past of the "Deploy To" task but with smooth deployment support.  
 When this feature is public for all DXP users, we will implement this feature on the "Deploy to" task.  
-[More about smooth deploy can be read on Episerver world.](https://world.episerver.com/documentation/developer-guides/digital-experience-platform/deploying/deployment-process/smooth-deploy/)  
-[https://world.episerver.com/documentation/developer-guides/digital-experience-platform/deploying/episerver-digital-experience-cloud-deployment-api/how-to-deploy-using-deployment-api/](https://world.episerver.com/documentation/developer-guides/digital-experience-platform/deploying/episerver-digital-experience-cloud-deployment-api/how-to-deploy-using-deployment-api/)  
+[More about smooth deploy can be read on Episerver world.](https://world.optimizely.com/documentation/developer-guides/digital-experience-platform/deploying/deployment-process/smooth-deploy/)  
+[https://world.optimizely.com/documentation/developer-guides/digital-experience-platform/deploying/episerver-digital-experience-cloud-deployment-api/how-to-deploy-using-deployment-api/](https://world.optimizely.com/documentation/developer-guides/digital-experience-platform/deploying/episerver-digital-experience-cloud-deployment-api/how-to-deploy-using-deployment-api/)  
   
 [<= Back](../README.md)
 
@@ -83,7 +83,7 @@ If DBs should be copied from source environment to the target environment.
 
 #### Zero Downtime Mode
 **[pickList]** - **required**  
-The type of smooth deployment you want to use. [More information about zero downtime mode](https://world.episerver.com/documentation/developer-guides/digital-experience-platform/deploying/deployment-process/smooth-deploy/)  
+The type of smooth deployment you want to use. [More information about zero downtime mode](https://world.optimizely.com/documentation/developer-guides/digital-experience-platform/deploying/deployment-process/smooth-deploy/)  
 **Example:** `ReadOnly`  
 **Default value:** `ReadOnly`  
 **Options:**  

@@ -1,5 +1,5 @@
-# Download DXP Database and BLOBS (Episerver DXP)
-PowerShell script that make it posible to download both database backup and BLOBS from Episerver DXP project. You can download from all environments (Integration/Preproduction/Production).
+# Download DXP Database and BLOBS (Optimizely DXP)
+PowerShell script that make it posible to download both database backup and BLOBS from Optimizely (formerly known as Episerver) DXP project. You can download from all environments (Integration/Preproduction/Production).
 
 Example:  
 ```powershell
@@ -42,6 +42,9 @@ From witch environment that you want to download from. Integration/Preproduction
 - Integration
 - Preproduction
 - Production
+- ADE1
+- ADE2
+- ADE3
 
 ### databaseName
 **[pickList]** - **required**  

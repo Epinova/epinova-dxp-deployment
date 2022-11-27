@@ -16,5 +16,17 @@ foreach ($d in $dir){
         Write-Host $filePath
         Copy-Item -Path $module -Destination $filePath -Recurse -Force
     }
+    else {
+        # Handle if we have directories for versions.
+        $subdir = Get-ChildItem -Path $d.FullName -Directory
+        foreach ($sd in $subdir){
+            $subfilePath = Join-Path -Path $sd.FullName -ChildPath "ps_modules"
+            
+            if (Test-Path $subfilePath){
+                Write-Host $subfilePath
+                Copy-Item -Path $module -Destination $subfilePath -Recurse -Force
+            }
+        }        
+    }
 }
 Write-Host "---End---"

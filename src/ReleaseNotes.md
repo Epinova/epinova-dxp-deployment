@@ -1,5 +1,62 @@
 # Release notes
 
+## v2.4.0
+- Added RunVerbose support
+
+## v2.3.2
+- Added Additional Development Environment(s) support in Content copy task
+
+## v2.3.1
+- Added DirectDeploy support for Additional Development Environment(s) support
+
+## v2.3.0
+- Additional Development Environment support
+
+## v2.2.20
+- EpiCloud v1.2.0
+
+## v2.2.19
+- DeployNuGetPackage.v2: #222 Rollback of DropPath changes in v2.2.18
+
+## v2.2.18
+- DeployNuGetPackage.v2: #222 Added support for space(s) in DropPath variable value.
+
+## v2.2.17
+- EpiCloud v1.1.0
+
+## v2.2.15-v2.2.16
+- DeployNuGetPackage.v2: #216 Set variable '$myPackages'. Added extra comment for duplicate package name warning.
+
+## v2.2.14
+- DeployNuGetPackage.v2: Check and throw exception if you have a space in your package name.
+
+## v2.2.13
+- DeployNuGetPackage.v2: Thanks to @aher8585 he fixed a issue with problem with commerce deploy.
+
+## v2.2.12
+- DeployNuGetPackage.v2: Added warm-up support after Direct deploy when webapplication is not warmed up by environment automatically. This request the specified URL and also follow all the links that can be found on that page.
+
+## v2.1.11
+- DeployToV2 bug fix regarding ZeroDowntimeMode. Thanks @TimotheeWeiss!
+
+## v2.1.10
+- Handle exception "A package named '$BlobName' is already linked to a deployment and cannot be overwritten." from Linux environment. Do not handle it as error.
+
+## v2.1.9
+- Treat......
+
+## v2.1.8
+- Support EpiCloud v1.
+
+## v2.0.3
+- Fix #176. Support Linux multiple package uploads.
+
+## v2.0.2
+- Fix #173. DeployNuGetPackage and DeployTo: Updated v1 and v2 tasks to handle param ZeroDowntimeMode = Not specified.
+
+## v2.0.0
+- All tasks are updated to v2 and have cross platform (Windows/Ubuntu/MacOS) support.
+
 ## v1.14.1
 - Added SuppressAzureRmModulesRetiringWarning.
 

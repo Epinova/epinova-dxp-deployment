@@ -1,0 +1,158 @@
+{
+    "id": "a83e92ec-576c-489a-b83f-711f0ec6fe77",
+    "name": "DxpContentCopy",
+    "friendlyName": "Content copy (Optimizely DXP)",
+    "description": "Sync database and/or blobs between environments. (Optimizely DXP, former Episerver DXC)",
+    "helpUrl": "https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/ContentCopy.md",
+    "helpMarkDown": "[Extension page](https://marketplace.visualstudio.com/items?itemName=epinova-sweden.epinova-dxp-deploy-extension)[Learn more about this task](https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/ContentCopy.md)",
+    "category": "Deploy",
+    "visibility": [
+        "Release"
+    ],
+    "author": "Ove Lartelius",
+    "version": {
+        "Major": 2,
+        "Minor": 4,
+        "Patch": 0
+    },
+    "groups": [
+        {
+            "name": "Settings",
+            "displayName": "Script settings",
+            "isExpanded": true
+        },
+        {
+            "name": "Timeout",
+            "displayName": "Timeout",
+            "isExpanded": false
+        },
+        {
+            "name": "ErrorHandlingOptions",
+            "displayName": "Error handling options",
+            "isExpanded": false
+        }
+    ],
+    "releaseNotes": "v2.4.0: RunVerbose. v2.3.0 Added Additional Development Environment(s) support",
+    "minimumAgentVersion": "2.134.0",
+    "inputs": [
+        {
+            "name": "ClientKey",
+            "type": "string",
+            "label": "DXP target environment ClientKey",
+            "required": true,
+            "defaultValue": "$(ClientKey)",
+            "helpMarkDown": "The DXP project ClientKey. Generated in the PAAS interface.",
+            "groupName": "Settings"
+        },
+        {
+            "name": "ClientSecret",
+            "type": "string",
+            "label": "DXP target environment ClientSecret",
+            "required": true,
+            "defaultValue": "$(ClientSecret)",
+            "helpMarkDown": "The DXP project ClientSecret. Generated in the PAAS interface.",
+            "groupName": "Settings"
+        },
+        {
+            "name": "ProjectId",
+            "type": "string",
+            "label": "Project Id",
+            "required": true,
+            "defaultValue": "$(DXP.ProjectId)",
+            "helpMarkDown": "The DXP ProjectId (GUID). Look in the URL when in PAAS for your project. You will see the GUID as part of the URL.",
+            "groupName": "Settings"
+        },
+        {
+            "name": "Environment",
+            "type": "pickList",
+            "label": "Environment",
+            "required": true,
+            "defaultValue": "ProdPrep",
+            "helpMarkDown": "The environment that you you want to deploy from.",
+            "groupName": "Settings",
+            "options": {
+                "ProdPrep": "Production => Preproduction",
+                "PrepInte": "Preproduction => Integration",
+                "ProdInte": "Production => Integration",
+                "IntePrep": "Integration => Preproduction",
+                "ProdAde1": "Production => ADE1",
+                "ProdAde2": "Production => ADE2",
+                "ProdAde3": "Production => ADE3",
+                "PrepAde1": "Preproduction => ADE1",
+                "PrepAde2": "Preproduction => ADE2",
+                "PrepAde3": "Preproduction => ADE3",
+                "InteAde1": "Integration => ADE1",
+                "InteAde2": "Integration => ADE2",
+                "InteAde3": "Integration => ADE3",
+                "Ade1Prep": "ADE1 => Preproduction",
+                "Ade2Prep": "ADE2 => Preproduction",
+                "Ade3Prep": "ADE3 => Preproduction",
+                "Ade1Inte": "ADE1 => Integration",
+                "Ade2Inte": "ADE2 => Integration",
+                "Ade3Inte": "ADE3 => Integration",
+                "Ade1Ade2": "ADE1 => ADE2",
+                "Ade1Ade3": "ADE1 => ADE3",
+                "Ade2Ade1": "ADE2 => ADE1",
+                "Ade2Ade3": "ADE2 => ADE3",
+                "Ade3Ade1": "ADE3 => ADE1",
+                "Ade3Ade2": "ADE3 => ADE2"
+            }
+        },
+        {
+            "name": "IncludeBlob",
+            "type": "boolean",
+            "label": "Include BLOB",
+            "required": true,
+            "defaultValue": "true",
+            "helpMarkDown": "If BLOBs should be copied from source environment to the target environment.",
+            "groupName": "Settings"
+        },
+        {
+            "name": "IncludeDb",
+            "type": "boolean",
+            "label": "Include DB",
+            "required": true,
+            "defaultValue": "true",
+            "helpMarkDown": "If DBs should be copied from source environment to the target environment.",
+            "groupName": "Settings"
+        },
+        {
+            "name": "Timeout",
+            "type": "int",
+            "label": "Script timeout (in seconds)",
+            "required": true,
+            "defaultValue": "1800",
+            "helpMarkDown": "The timeout for the script.",
+            "groupName": "Timeout"
+        },
+        {
+            "name": "RunVerbose",
+            "type": "boolean",
+            "label": "Run Verbose",
+            "required": true,
+            "defaultValue": "false",
+            "helpMarkDown": "If tou want to run in verbose mode and see all information.",
+            "groupName": "ErrorHandlingOptions"
+        },
+        {
+            "name": "ErrorActionPreference",
+            "type": "pickList",
+            "label": "ErrorActionPreference",
+            "required": false,
+            "defaultValue": "stop",
+            "options": {
+                "stop": "Stop",
+                "continue": "Continue",
+                "silentlyContinue": "SilentlyContinue"
+            },
+            "helpMarkDown": "Prepends the line `$ErrorActionPreference = 'VALUE'` at the top of your script.",
+            "groupName": "ErrorHandlingOptions"
+        }
+    ],
+    "instanceNameFormat": "Content copy $(Environment)",
+    "execution": {
+        "Node10": {
+            "target": "ContentCopy.js"
+        }
+    }
+}
