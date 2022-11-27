@@ -17,6 +17,7 @@
 	  <None Include="readme.md" Pack="true" PackagePath="\" />
 	  <None Include="build\Epinova.OptimizelyDxp.Pipelines.props" Pack="true" PackagePath="build\" />
     <Content Include="readme.txt" Pack="true" PackagePath="content"></Content>
+    <Content Include="Reset-Inte.yml" Pack="true" PackagePath="content"></Content>
     <Content Include="Reset-IntePrepProd.yml" Pack="true" PackagePath="content"></Content>
   </ItemGroup>
   
