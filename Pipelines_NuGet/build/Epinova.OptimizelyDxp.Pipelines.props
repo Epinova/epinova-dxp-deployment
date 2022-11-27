@@ -8,10 +8,10 @@
 
   <Target Name="CopyReadme" BeforeTargets="BeforeBuild">
     <Message Importance="high" Text="Copying the readme.txt file from '@(ReadmetxtFilesToCopy)' to '$(SolutionDir)'"></Message>
-    <Copy SourceFiles="@(ReadmetxtFilesToCopy)" DestinationFolder="$(SolutionDir)" SkipUnchangedFiles="true" UseHardlinksIfPossible="false" />
+    <Copy SourceFiles="@(ReadmetxtFilesToCopy)" DestinationFolder="$(SolutionDir)\Pipelines" SkipUnchangedFiles="true" UseHardlinksIfPossible="false" />
   </Target>
   <Target Name="CopyResetIntePrepProdyml" BeforeTargets="BeforeBuild" Condition="!Exists('$(SolutionDir)\Reset-IntePrepProd.yml')">
     <Message Importance="high" Text="Copying the Reset-IntePrepProd.yml file from '@(ResetIntePrepProdymlFilesToCopy)' to '$(SolutionDir)'"></Message>
-    <Copy SourceFiles="@(ResetIntePrepProdymlFilesToCopy)" DestinationFolder="$(SolutionDir)" SkipUnchangedFiles="true" UseHardlinksIfPossible="false" />
+    <Copy SourceFiles="@(ResetIntePrepProdymlFilesToCopy)" DestinationFolder="$(SolutionDir)\Pipelines" SkipUnchangedFiles="true" UseHardlinksIfPossible="false" />
   </Target>
 </Project>
