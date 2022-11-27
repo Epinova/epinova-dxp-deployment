@@ -3,20 +3,20 @@
 
   <ItemGroup>
     <ReadmetxtFilesToCopy Include="$(MSBuildThisFileDirectory)..\content\readme.txt" />
-    <RootYmlFilesToCopy Include="$(MSBuildThisFileDirectory)..\content\*.yml" />
-    <!-- <ResetIntePrepProdymlFilesToCopy Include="$(MSBuildThisFileDirectory)..\content\Reset-IntePrepProd.yml" /> -->
+    <ResetInteymlFilesToCopy Include="$(MSBuildThisFileDirectory)..\content\Reset-Inte.yml" />
+    <ResetIntePrepProdymlFilesToCopy Include="$(MSBuildThisFileDirectory)..\content\Reset-IntePrepProd.yml" />
   </ItemGroup>
 
   <Target Name="CopyReadme" BeforeTargets="BeforeBuild">
     <Message Importance="high" Text="Copying the readme.txt file from '@(ReadmetxtFilesToCopy)' to '$(SolutionDir)DxpPipelines'"></Message>
     <Copy SourceFiles="@(ReadmetxtFilesToCopy)" DestinationFolder="$(SolutionDir)\DxpPipelines" SkipUnchangedFiles="true" UseHardlinksIfPossible="false" />
   </Target>
-  <!-- <Target Name="CopyResetIntePrepProdyml" BeforeTargets="BeforeBuild" Condition="!Exists('$(SolutionDir)\DxpPipelines\Reset-IntePrepProd.yml')">
+  <Target Name="CopyResetInteyml" BeforeTargets="BeforeBuild"> <!-- Condition="!Exists('$(SolutionDir)\DxpPipelines\Reset-Inte.yml')" -->
+    <Message Importance="high" Text="Copying the Reset-Inte.yml file from '@(ResetInteymlFilesToCopy)' to '$(SolutionDir)DxpPipelines'"></Message>
+    <Copy SourceFiles="@(ResetInteymlFilesToCopy)" DestinationFolder="$(SolutionDir)\DxpPipelines" SkipUnchangedFiles="true" UseHardlinksIfPossible="false" />
+  </Target>
+  <Target Name="CopyResetIntePrepProdyml" BeforeTargets="BeforeBuild">
     <Message Importance="high" Text="Copying the Reset-IntePrepProd.yml file from '@(ResetIntePrepProdymlFilesToCopy)' to '$(SolutionDir)DxpPipelines'"></Message>
     <Copy SourceFiles="@(ResetIntePrepProdymlFilesToCopy)" DestinationFolder="$(SolutionDir)\DxpPipelines" SkipUnchangedFiles="true" UseHardlinksIfPossible="false" />
-  </Target> -->
-  <Target Name="CopyRootYml" BeforeTargets="BeforeBuild" Condition="!Exists('$(SolutionDir)\DxpPipelines\*.yml')">
-    <Message Importance="high" Text="Copying the *.yml files from '@(RootYmlFilesToCopy)' to '$(SolutionDir)DxpPipelines'"></Message>
-    <Copy SourceFiles="@(RootYmlFilesToCopy)" DestinationFolder="$(SolutionDir)\DxpPipelines" SkipUnchangedFiles="true" UseHardlinksIfPossible="false" />
   </Target>
 </Project>
