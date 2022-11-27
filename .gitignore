@@ -20,3 +20,7 @@ src/**/dist
 src/**/repo
 src/**/private
 src/**/test-output
+
+
+Pipelines_NuGet/.vs
+Pipelines_NuGet/obj
