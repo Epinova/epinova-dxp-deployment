@@ -1,0 +1,110 @@
+pool:
+  name: Azure Pipelines
+  vmImage: "windows-2019"
+  demands:
+  - msbuild
+  - visualstudio
+  - vstest
+
+variables:
+  nodeVersion: '12.18.3'
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+  artifactName: 'drop'
+
+steps:
+- task: NodeTool@0
+  displayName: 'Use Node $(nodeVersion)'
+  inputs:
+    versionSpec: '$(nodeVersion)'
+
+- task: npmAuthenticate@0
+  displayName: 'npm Authenticate src/Site/.npmrc'
+  inputs:
+    workingFile: src/Site/.npmrc
+
+- task: Npm@1
+  displayName: 'npm ci'
+  inputs:
+    command: ci
+    workingDir: src/Site
+    verbose: false
+
+- task: Npm@1
+  displayName: "npm run test-ci"
+  inputs:
+    command: custom
+    workingDir: "src/Site"
+    verbose: false
+    customCommand: "run test-ci"
+
+- task: PublishTestResults@2
+  displayName: "Publish front-end test results"
+  condition: succeededOrFailed()
+  inputs:
+    testRunner: JUnit
+    testResultsFiles: "**/junit.xml"
+    testRunTitle: Front-end
+
+- task: DeleteFiles@1
+  displayName: 'Clean up generated test result files'
+  inputs:
+    contents: |
+      **/junit.xml
+
+- task: Npm@1
+  displayName: 'npm build'
+  inputs:
+    command: custom
+    workingDir: src/Site
+    verbose: false
+    customCommand: 'run build'
+
+- task: NuGetToolInstaller@0
+  displayName: 'Use NuGet 5.*'
+  inputs:
+    versionSpec: '5.*'
+
+- task: NuGetCommand@2
+  displayName: 'NuGet restore'
+  inputs:
+    restoreSolution: '$(solution)'
+    feedsToUse: config
+    nugetConfigPath: NuGet.config
+
+- task: VSBuild@1
+  displayName: 'Build solution'
+  inputs:
+    solution: '$(solution)'
+    msbuildArgs: '/p:Configuration=Release;DeployOnBuild=True;DeployDefaultTarget=WebPublish;WebPublishMethod=FileSystem;PublishProvider=FileSystem;LastUsedBuildConfiguration=Release;ExcludeApp_Data=False;PublishBaseUrl="$(build.BinariesDirectory)";DeleteExistingFiles=False;MvcBuildViews=False;MarkWebConfigAssistFilesAsExclude=false;AutoParameterizationWebConfigConnectionStrings=False'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+- task: VSTest@2
+  displayName: 'Test Assemblies'
+  inputs:
+    testAssemblyVer2: '**\*test*.dll'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+- task: ArchiveFiles@2
+  displayName: 'Create CMS Site Nuget'
+  inputs:
+    rootFolderOrFile: '$(Build.BinariesDirectory)\site'
+    includeRootFolder: false
+    archiveFile: '$(Build.ArtifactStagingDirectory)/episerver.com.cms.app.$(Build.BuildNumber).nupkg'
+
+- task: ArchiveFiles@2
+  displayName: 'Create Commerce Manager Nuget'
+  inputs:
+    rootFolderOrFile: '$(Build.BinariesDirectory)\Commerce'
+    includeRootFolder: false
+    archiveFile: '$(Build.ArtifactStagingDirectory)/episerver.com.commerce.app.$(Build.BuildNumber).nupkg'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)'
+    ArtifactName: '$(artifactName)'
+  condition: succeededOrFailed()

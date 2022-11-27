@@ -1,0 +1,35 @@
+trigger: none
+pr: none
+
+schedules:
+  - cron: '0 3 * * 0'
+    displayName: 'Every Sunday at 3am'
+    branches:
+      include: [develop]
+
+pool:
+  vmImage: "windows-2019"
+
+variables:
+  nodeVersion: "12.18.3"
+  npmRc: ".npmrc"
+
+steps:
+- checkout: self
+  persistCredentials: true
+
+- task: NodeTool@0
+  displayName: "Node install ($(nodeVersion))"
+  inputs:
+    versionSpec: $(nodeVersion)
+
+- task: npmAuthenticate@0
+  inputs:
+    workingFile: $(npmRc)
+
+- bash: |
+    git config --global user.email 'bot@renovateapp.com'
+    git config --global user.name 'Renovate Bot'
+    npx --userconfig $(npmRc) renovate
+  env:
+    TOKEN: $(System.AccessToken)

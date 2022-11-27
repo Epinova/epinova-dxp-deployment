@@ -1,0 +1,42 @@
+trigger: none
+
+variables:
+- group: DXP-variables
+
+pool:
+  name: Azure Pipelines
+  vmImage: 'windows-latest'
+
+steps:
+- checkout: none  # Don't sync sources
+
+- task: DxpDeployTo@1
+  inputs:
+    ClientKey: '$(ClientKey)'
+    ClientSecret: '$(ClientSecret)'
+    ProjectId: '$(DXP.ProjectId)'
+    SourceEnvironment: 'Production'
+    TargetEnvironment: 'Preproduction'
+    SourceApp: 'commerce'
+    UseMaintenancePage: false
+    IncludeBlob: false
+    IncludeDb: true
+    Timeout: 3600
+
+- task: DxpSmokeTestIfFailReset@1
+  inputs:
+    ClientKey: '$(ClientKey)'
+    ClientSecret: '$(ClientSecret)'
+    ProjectId: '$(DXP.ProjectId)'
+    TargetEnvironment: 'Preproduction'
+    Urls: '$(Preproduction.SlotUrl)$(UrlSuffix)'
+    SleepBeforeStart: 20
+    Timeout: 1800
+
+- task: DxpCompleteDeploy@1
+  inputs:
+    ClientKey: '$(ClientKey)'
+    ClientSecret: '$(ClientSecret)'
+    ProjectId: '$(DXP.ProjectId)'
+    TargetEnvironment: 'Preproduction'
+    Timeout: 1800

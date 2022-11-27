@@ -77,3 +77,10 @@ A collection of problems that has been found and how to fix it.
 
 ## Release notes ##
 [Release notes](src/ReleaseNotes.md)
+
+## Epinova.OptimizelyDxp.Pipelines Nuget - YML examples
+We have set togheter a number of YML examples that you can use in your projects to fast get your project deployed to DXP.
+[Epinova.OptimizelyDxp.Pipelines documentation](Pipelines_NuGet/Introduction.md)  
+
+## Epinova.OptimizelyDxp.Pipelines Nuget
+
