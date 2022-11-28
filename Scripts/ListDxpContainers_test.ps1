@@ -2,9 +2,10 @@
 
 Remove-Module -Name "EpinovaDxpToolBucket" -Verbose
 #Remove-Module -Name "Az.Storage" -Verbose
-Import-Module -Name C:\dev\epinova-dxp-deployment\Modules\EpinovaDxpToolBucket -Verbose
+Import-Module -Name E:\dev\epinova-dxp-deployment\Modules\EpinovaDxpToolBucket -Verbose
 
-. C:\dev\ps-scripts\dxp-deployment\DxpProjects.ps1
+#. E:\dev\ps-scripts\dxp-deployment\DxpProjects.ps1
+. E:\dev\temp\PowerShellSettingFiles\DxpProjects.ps1
 
 # [string] $clientKey = "xxx"
 # [string] $clientSecret = "xxx"

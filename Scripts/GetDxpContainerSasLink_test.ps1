@@ -2,9 +2,9 @@
 
 Remove-Module -Name "EpinovaDxpToolBucket" -Verbose
 #Remove-Module -Name "Az.Storage" -Verbose
-Import-Module -Name C:\dev\epinova-dxp-deployment\Modules\EpinovaDxpToolBucket -Verbose
+Import-Module -Name E:\dev\epinova-dxp-deployment\Modules\EpinovaDxpToolBucket -Verbose
 
-. C:\dev\temp\PowerShellSettingFiles\DxpProjects.ps1
+. E:\dev\temp\PowerShellSettingFiles\DxpProjects.ps1
 
 # [string] $clientKey = "xxx"
 # [string] $clientSecret = "xxx"
@@ -21,7 +21,8 @@ Import-Module -Name C:\dev\epinova-dxp-deployment\Modules\EpinovaDxpToolBucket -
 Set-ExecutionPolicy -Scope CurrentUser Unrestricted
 
 #$sasLink = Get-DxpStorageContainerSasLink -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -Container "image-resizer-cache" -RetensionHours $retentionHours
-$sasLink = Get-DxpStorageContainerSasLink -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -Container "baerum-assets"
+#$sasLink = Get-DxpStorageContainerSasLink -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -Container "baerum-assets"
+$sasLink = Get-DxpStorageContainerSasLink -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -Container "mysitemedia"
 Write-Host "Sas link object: $sasLink"
 Write-Host "Sas link: $($sasLink.sasLink)"
 Write-Host "------------------------------"
