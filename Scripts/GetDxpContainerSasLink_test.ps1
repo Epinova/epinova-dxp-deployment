@@ -17,6 +17,7 @@ Import-Module -Name E:\dev\epinova-dxp-deployment\Modules\EpinovaDxpToolBucket -
 # [bool] $overwriteExistingFiles = $true
 [int] $retentionHours = 2
 
+. C:\dev\temp\PowerShellSettingFiles\.ps1
 
 Set-ExecutionPolicy -Scope CurrentUser Unrestricted
 
