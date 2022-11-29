@@ -1468,9 +1468,6 @@ function Sync-DxpBlobsToAzure{
     .PARAMETER DxpContainer
         The container in DXP environment that contains the blobs
 
-    .PARAMETER DownloadFolder
-        The local download folder where you want to download the blob files.
-
     .PARAMETER Timeout
         The number of seconds that you will let the script run until it will timeout. Default 1800 (ca 30 minutes)
 
@@ -1486,8 +1483,11 @@ function Sync-DxpBlobsToAzure{
     .PARAMETER StorageAccountContainer
         The container name where the bacpac file is located.
 
+    .PARAMETER CleanBeforeCopy
+        Set to true if you want thw script to remove all blobs in destination container before we start copy over all blobs.
+
     .EXAMPLE
-        Sync-DxpBlobsToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $DxpEnvironment -DxpContainer $DxpContainer -DownloadFolder $DxpDownloadFolder -Timeout 1800 -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageAccountContainer $StorageAccountContainer 
+        Sync-DxpBlobsToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $DxpEnvironment -DxpContainer $DxpContainer -Timeout 1800 -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageAccountContainer $StorageAccountContainer -CleanBeforeCopy $true
 
     #>
     [CmdletBinding()]
@@ -1513,9 +1513,6 @@ function Sync-DxpBlobsToAzure{
         [ValidateNotNullOrEmpty()]
         [string] $DxpContainer,
 
-        [Parameter(Mandatory=$true)]
-        [string] $DownloadFolder,
-
         [Parameter(Mandatory = $false)]
         [int] $Timeout = 1800,
 
@@ -1531,7 +1528,11 @@ function Sync-DxpBlobsToAzure{
         [string] $StorageAccountName,
 
         [Parameter(Mandatory = $false)]
-        [string] $StorageAccountContainer
+        [string] $StorageAccountContainer,
+
+        [Parameter(Mandatory = $false)]
+        [bool] $CleanBeforeCopy
+
     )
 
     Write-Host "Sync-DxpBlobsToAzure - Inputs:------------------"
@@ -1540,39 +1541,95 @@ function Sync-DxpBlobsToAzure{
     Write-Host "ProjectId:                $ProjectId"
     Write-Host "Environment:              $Environment"
     Write-Host "DxpContainer:             $DxpContainer"
-    Write-Host "DownloadFolder:           $DownloadFolder"
     Write-Host "Timeout:                  $Timeout"
     Write-Host "SubscriptionId:           $SubscriptionId"
     Write-Host "ResourceGroupName:        $ResourceGroupName"
     Write-Host "StorageAccountName:       $StorageAccountName"
     Write-Host "StorageAccountContainer:  $StorageAccountContainer"
+    Write-Host "CleanBeforeCopy:          $CleanBeforeCopy"
     Write-Host "------------------------------------------------"    
 
-    $files = Invoke-DxpBlobsDownload -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -DownloadFolder $DownloadFolder -MaxFilesToDownload 10 -Container $DxpContainer
+    # $linkSplat = @{
+    #     ProjectId = $ProjectId
+    #     Environment = $Environment
+    #     StorageContainer = $DxpContainer
+    #     RetentionHours = $retentionHours
+    # }
 
-    if ($null -ne $files) {
-        $count = $files.Count
-        Write-Host "Downloaded $count blobs"
-        $itterator = 0
-
-        Connect-AzAccount -SubscriptionId $SubscriptionId
-
-        foreach ($file in $files) {
-            $itterator++
-            $file
-            $BlobName = $file.Replace($DownloadFolder, "")
-            if ($BlobName.StartsWith("\")){
-                $BlobName = $BlobName.SubString(1, $BlobName.Length - 1)
-            }
+    # $linkResult = Get-EpiStorageContainerSasLink @linkSplat
+    Test-DxpProjectId -ProjectId $ProjectId
+    Test-EnvironmentParam -Environment $Environment
     
-            #$fileUploaded = Send-Blob -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageAccountContainer $StorageAccountContainer -FilePath $file -BlobName $BlobName #-Debug
-            $fileUploaded = Send-BlobAsConnected -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageAccountContainer $StorageAccountContainer -FilePath $file -BlobName $BlobName #-Debug
-            Write-Host "File $itterator of $count is uploaded: $fileUploaded"
-        }
-        Write-Host "All blobs is now synced"
-    } else {
-        Write-Warning "No blobs where downloaded."
+    #Import-EpiCloud
+    #Initialize-EpiCload
+
+    $RetentionHours = 2 # Set the retantion hours to 2h. Should be good enough to sync the blobs
+
+    $sasLinkInfo = Get-DxpStorageContainerSasLink -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -Containers $null -Container $DxpContainer -RetentionHours $RetentionHours
+    if ($null -eq $sasLinkInfo) {
+        Write-Error "Did not get a SAS link to container $DxpContainer."
+        exit
     }
+    Write-Host "Found SAS link info: ---------------------------"
+    Write-Host "projectId:                $($sasLinkInfo.projectId)"
+    Write-Host "environment:              $($sasLinkInfo.environment)"
+    Write-Host "containerName:            $($sasLinkInfo.containerName)"
+    Write-Host "sasLink:                  $($sasLinkInfo.sasLink)"
+    Write-Host "expiresOn:                $($sasLinkInfo.expiresOn)"
+    Write-Host "------------------------------------------------"
+    $SourceSasLink = $sasLinkInfo.sasLink
+
+
+    #Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
+    #Get-InstalledModule -Name EpinovaAzureToolBucket
+
+    Import-Module -name Az.Storage -debug
+
+    # Set-AzContext -Subscription $SubscriptionId
+
+    $DestinationSubscriptionId = $SubscriptionId
+    $DestinationResourceGroupName = $ResourceGroupName
+    $DestinationStorageAccountName = $StorageAccountName
+    $DestinationContainerName = $StorageAccountContainer 
+
+    $sourceContext = New-AzStorageContext -StorageAccountName "bkom01mstr6a9r6inte" -SASToken "?sv=2018-03-28&sr=c&sig=0mvhCgfY1pTqF9ucj1xFo2RYlt1zRHWpg3kaH7Q3VmU%3D&st=2022-11-29T21%3A52%3A50Z&se=2022-11-29T23%3A52%3A50Z&sp=rl" -ErrorAction Stop
+    if ($null -eq $sourceContext) {
+        Write-Error "Could not create a context against source storage account bkom01mstr6a9r6inte"
+    }
+
+    #Copy-BlobsWithSas -SourceSasLink $SourceSasLink -DestinationSubscriptionId $DestinationSubscriptionId -DestinationResourceGroupName $DestinationResourceGroupName -DestinationStorageAccountName $DestinationStorageAccountName -DestinationContainerName $DestinationContainerName -CleanBeforeCopy $CleanBeforeCopy
+
+    #Set-AzContext -Subscription <subscription name or id>
+
+
+    #Get-DxpStorageContainerSasLink -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -Containers $Containers -Container $Container -RetentionHours $RetentionHours
+
+    #Copy-BlobsWithSas -SourceSasLink $SourceSasLink -DestinationSubscriptionId $DestinationSubscriptionId -DestinationResourceGroupName $DestinationResourceGroupName -DestinationStorageAccountName $DestinationStorageAccountName -DestinationContainerName $DestinationContainerName -CleanBeforeCopy $true
+    # $files = Invoke-DxpBlobsDownload -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -DownloadFolder $DownloadFolder -MaxFilesToDownload 10 -Container $DxpContainer
+
+    # if ($null -ne $files) {
+    #     $count = $files.Count
+    #     Write-Host "Downloaded $count blobs"
+    #     $itterator = 0
+
+    #     Connect-AzAccount -SubscriptionId $SubscriptionId
+
+    #     foreach ($file in $files) {
+    #         $itterator++
+    #         $file
+    #         $BlobName = $file.Replace($DownloadFolder, "")
+    #         if ($BlobName.StartsWith("\")){
+    #             $BlobName = $BlobName.SubString(1, $BlobName.Length - 1)
+    #         }
+    
+    #         #$fileUploaded = Send-Blob -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageAccountContainer $StorageAccountContainer -FilePath $file -BlobName $BlobName #-Debug
+    #         $fileUploaded = Send-BlobAsConnected -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageAccountContainer $StorageAccountContainer -FilePath $file -BlobName $BlobName #-Debug
+    #         Write-Host "File $itterator of $count is uploaded: $fileUploaded"
+    #     }
+    #     Write-Host "All blobs is now synced"
+    # } else {
+    #     Write-Warning "No blobs where downloaded."
+    # }
 }
 
 Export-ModuleMember -Function @( 'Invoke-DxpBlobsDownload', 'Invoke-DxpDatabaseDownload', 'Get-DxpStorageContainers', 'Get-DxpStorageContainerSasLink', 'Sync-DxpDbToAzure', 'Sync-DxpBlobsToAzure' )
