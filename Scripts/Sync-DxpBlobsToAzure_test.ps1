@@ -2,18 +2,18 @@
 $DebugPreference = 'Continue'
 
 Remove-Module -Name "EpinovaAzureToolBucket" -Verbose -Force
-#Import-Module -Name E:\dev\EpinovaAzureToolBucket-psmodule\Modules\EpinovaAzureToolBucket -Verbose
-Import-Module -Name C:\dev\EpinovaAzureToolBucket-psmodule\Modules\EpinovaAzureToolBucket -Verbose
+Import-Module -Name E:\dev\EpinovaAzureToolBucket-psmodule\Modules\EpinovaAzureToolBucket -Verbose
+#Import-Module -Name C:\dev\EpinovaAzureToolBucket-psmodule\Modules\EpinovaAzureToolBucket -Verbose
 
 Remove-Module -Name "EpinovaDxpToolBucket" -Verbose -Force
-#Import-Module -Name E:\dev\epinova-dxp-deployment\Modules\EpinovaDxpToolBucket\EpinovaDxpToolBucket.psd1 -Verbose
-Import-Module -Name C:\dev\epinova-dxp-deployment\Modules\EpinovaDxpToolBucket\EpinovaDxpToolBucket.psd1 -Verbose
+Import-Module -Name E:\dev\epinova-dxp-deployment\Modules\EpinovaDxpToolBucket\EpinovaDxpToolBucket.psd1 -Verbose
+#Import-Module -Name C:\dev\epinova-dxp-deployment\Modules\EpinovaDxpToolBucket\EpinovaDxpToolBucket.psd1 -Verbose
 Get-Module -Name "EpinovaDxpToolBucket" -ListAvailable
 
-#. E:\dev\temp\PowerShellSettingFiles\DxpProjects.ps1
-. C:\dev\temp\PowerShellSettingFiles\DxpProjects.ps1
+. E:\dev\temp\PowerShellSettingFiles\DxpProjects.ps1
+#. C:\dev\temp\PowerShellSettingFiles\DxpProjects.ps1
 [string] $DxpEnvironment = "Integration" #[ValidateSet('Integration','Preproduction','Production','ADE1','ADE2','ADE3')]
-[string] $DxpContainer = "baerum-assets" #"mysitemedia" 
+[string] $DxpContainer = "mysitemedia" #"baerum-assets"
 #[string] $DxpDownloadFolder = "E:\dev\temp\_blobDownloads"
 
 [string] $SubscriptionId = "e872f180-979f-xxx-aff7-3bbxxxx7f89" 
@@ -21,8 +21,8 @@ Get-Module -Name "EpinovaDxpToolBucket" -ListAvailable
 [string] $StorageAccountName = "my-storage"
 [string] $StorageAccountContainer = "mysitemedia"
 
-#. E:\dev\temp\PowerShellSettingFiles\EpinovaDxpExtension_Sync-DxpBlobsToAzure.ps1
-. C:\dev\temp\PowerShellSettingFiles\EpinovaDxpExtension_Sync-DxpBlobsToAzure.ps1
+. E:\dev\temp\PowerShellSettingFiles\EpinovaDxpExtension_Sync-DxpBlobsToAzure.ps1
+#. C:\dev\temp\PowerShellSettingFiles\EpinovaDxpExtension_Sync-DxpBlobsToAzure.ps1
 
 
 # Override with real settings

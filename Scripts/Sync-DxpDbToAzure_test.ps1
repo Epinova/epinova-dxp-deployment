@@ -11,7 +11,7 @@ Import-Module -Name E:\dev\EpinovaAzureToolBucket-psmodule\Modules\EpinovaAzureT
 . E:\dev\temp\PowerShellSettingFiles\DxpProjects.ps1
 [string] $DxpEnvironment = "Integration" #[ValidateSet('Integration','Preproduction','Production','ADE1','ADE2','ADE3')]
 [string] $DxpDatabaseName = "epicms" #[ValidateSet('epicms','epicommerce')]
-[string] $DxpDatabaseDownloadFolder = "E:\dev\temp\_blobDownloads"
+#[string] $DxpDatabaseDownloadFolder = "E:\dev\temp\_blobDownloads"
 
 [string] $SubscriptionId = "e872f180-979f-xxx-aff7-3bbxxxx7f89" 
 [string] $ResourceGroupName = "rg-my-group"
@@ -32,4 +32,5 @@ $SqlSku = "Basic"
 
 Set-ExecutionPolicy -Scope CurrentUser Unrestricted
 
-Sync-DxpDbToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $DxpEnvironment -DatabaseType $DxpDatabaseName -DownloadFolder $DxpDatabaseDownloadFolder -Timeout 1800 -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageAccountContainer $StorageAccountContainer -SqlServerName $SqlServerName -SqlDatabaseName $SqlDatabaseName -SqlDatabaseLogin $SqlDatabaseLogin -SqlDatabasePassword $SqlDatabasePassword -RunDatabaseBackup $RunDatabaseBackup -SqlSku $SqlSku
+#Sync-DxpDbToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $DxpEnvironment -DatabaseType $DxpDatabaseName -DownloadFolder $DxpDatabaseDownloadFolder -Timeout 1800 -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageAccountContainer $StorageAccountContainer -SqlServerName $SqlServerName -SqlDatabaseName $SqlDatabaseName -SqlDatabaseLogin $SqlDatabaseLogin -SqlDatabasePassword $SqlDatabasePassword -RunDatabaseBackup $RunDatabaseBackup -SqlSku $SqlSku
+Sync-DxpDbToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $DxpEnvironment -DatabaseType $DxpDatabaseName -Timeout 1800 -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageAccountContainer $StorageAccountContainer -SqlServerName $SqlServerName -SqlDatabaseName $SqlDatabaseName -SqlDatabaseLogin $SqlDatabaseLogin -SqlDatabasePassword $SqlDatabasePassword -RunDatabaseBackup $RunDatabaseBackup -SqlSku $SqlSku

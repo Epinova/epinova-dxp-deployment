@@ -334,6 +334,42 @@ function Get-StorageAccountName{
     return $storageAccountName
 }
 
+function Get-SasTokenBlobName{
+    <#
+    .SYNOPSIS
+        Get blob name from a SAS link.
+
+    .DESCRIPTION
+        Get blob name from a SAS link.
+
+    .PARAMETER SasLink
+        The SasLink that contain the information about blob.
+
+    .EXAMPLE
+        Get-SasTokenBlobName -SasLink $sasLink
+    #>
+    [OutputType([string])]
+	param
+	(
+		[Parameter(Mandatory = $true)]
+		[string]$SasLink
+	)
+	
+    # $fullSasLink = $SasLink.sasLink
+    # $fullSasLink -match "https:\/\/(.*).blob.core" | Out-Null
+    # $storageAccountName = $Matches[1]
+
+    if ($SasLink.Contains("&sr=b&")) {
+        $SasLink -match "https:\/\/(.*).blob.core.*\/(.*)\/(.*)\?" | Out-Null
+        $blobName = $Matches[3]
+        Write-Host "Blob:                           $blobName"
+    } else {
+        Write-Error "SasLink is not a blob link. Most be 'sr=b'."
+    }
+
+    return $blobName
+}
+
 function Get-SasToken{
     <#
     .SYNOPSIS
@@ -1115,14 +1151,13 @@ function Invoke-DxpBlobsDownload{
     return $ArrayList
 }
 
-function Invoke-DxpDatabaseDownload{
+function Invoke-DxpDatabaseExport{
     <#
     .SYNOPSIS
-        Download DXP project DB.
+        Export of database and return the SAS/download link.
 
     .DESCRIPTION
-        Download DXP project DB. You can specify the environment from where the database should be exported from.
-        Will return with the file path to where database is downloaded.
+        Export of database and return the SAS/download link.
 
     .PARAMETER ClientKey
         Your DXP ClientKey that you can generate in the paas.episerver.net portal.
@@ -1139,20 +1174,17 @@ function Invoke-DxpDatabaseDownload{
     .PARAMETER DatabaseName
         The type of database you want to download from Optimizely DXP. epicms / epicommerce
 
-    .PARAMETER DownloadFolder
-        The local download folder where you want to download the DB backup file.
-
     .PARAMETER Timeout
         The number of seconds that you will let the script run until it will timeout. Default 1800 (ca 30 minutes)
 
     .EXAMPLE
-        Invoke-DxpDatabaseDownload -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -DatabaseName $DatabaseName -DownloadFolder $DownloadFolder -RetentionHours $RetentionHours -Timeout $Timeout
+        Invoke-DxpDatabaseExport -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -DatabaseName $DatabaseName -RetentionHours $RetentionHours -Timeout $Timeout
 
     .EXAMPLE
-        Invoke-DxpDatabaseDownload -ClientKey '644b6926-39b1-42a1-93d6-3771cdc4a04e' -ClientSecret '644b6926-39b1fasrehyjtye-42a1-93d6-3771cdc4asasda04e'-ProjectId '644b6926-39b1-42a1-93d6-3771cdc4a04e' -Environment 'Integration' -DatabaseName 'epicms' -DownloadFolder "c:\temp" -RetentionHours 2 -Timeout 1800
+        Invoke-DxpDatabaseExport -ClientKey '644b6926-39b1-42a1-93d6-3771cdc4a04e' -ClientSecret '644b6926-39b1fasrehyjtye-42a1-93d6-3771cdc4asasda04e'-ProjectId '644b6926-39b1-42a1-93d6-3771cdc4a04e' -Environment 'Integration' -DatabaseName 'epicms' -RetentionHours 2 -Timeout 1800
 
     .EXAMPLE
-        $filePath = Invoke-DxpDatabaseDownload -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -DatabaseName $DatabaseName -DownloadFolder $DownloadFolder -RetentionHours $RetentionHours -Timeout $Timeout
+        $sasLink = Invoke-DxpDatabaseExport -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -DatabaseName $DatabaseName -RetentionHours $RetentionHours -Timeout $Timeout
 
     #>
     [CmdletBinding()]
@@ -1178,9 +1210,6 @@ function Invoke-DxpDatabaseDownload{
         [ValidateSet('epicms','epicommerce')]
         [string] $DatabaseName,
 
-        [Parameter(Mandatory=$true)]
-        [string] $DownloadFolder,
-
         [Parameter(Mandatory=$false)]
         [ValidateRange(1, 168)]
         [int] $RetentionHours = 2,
@@ -1189,13 +1218,12 @@ function Invoke-DxpDatabaseDownload{
         [int] $Timeout = 1800
     )
 
-    Write-Host "Invoke-DxpDatabaseDownload - Inputs:-------------"
+    Write-Host "Invoke-DxpDatabaseExport - Inputs:-------------"
     Write-Host "ClientKey:              $ClientKey"
     Write-Host "ClientSecret:           **** (it is a secret...)"
     Write-Host "ProjectId:              $ProjectId"
     Write-Host "Environment:            $Environment"
     Write-Host "DatabaseName:           $databaseName"
-    Write-Host "DownloadFolder:         $DownloadFolder"
     Write-Host "RetentionHours:         $RetentionHours"
     Write-Host "Timeout:                $timeout"
     Write-Host "------------------------------------------------"
@@ -1203,7 +1231,7 @@ function Invoke-DxpDatabaseDownload{
     Write-DxpHostVersion
 
     Test-DxpProjectId -ProjectId $ProjectId
-    Test-DownloadFolder -DownloadFolder $DownloadFolder
+    #Test-DownloadFolder -DownloadFolder $DownloadFolder
     Test-EnvironmentParam -Environment $Environment
     Test-DatabaseName -DatabaseName $DatabaseName
 
@@ -1249,13 +1277,8 @@ function Invoke-DxpDatabaseDownload{
 
         if ($status.status -eq "Succeeded") {
             Write-Host "Database export $exportId has been successful."
-            Write-Host "-------------DOWNLOAD----------------------------"
-            Write-Host "Start download database $($status.downloadLink)"
-            $filePath = Join-Parts -Separator '\' -Parts $DownloadFolder, $status.bacpacName
-            Invoke-WebRequest -Uri $status.downloadLink -OutFile $filePath
-            Write-Host "Download database to $filePath"
-            Write-Host "------------------------------------------------"
-            return $filePath;
+            Write-Host "Database export SAS: $($status.downloadLink)"
+            return $status.downloadLink;
         }
         else {
             Write-Error "The database export has not been successful or the script has timedout. CurrentStatus: $($status.status)"
@@ -1266,6 +1289,175 @@ function Invoke-DxpDatabaseDownload{
         Write-Error "Status is not in InProgress (Current:$($export.status)). You can not export database at this moment."
         exit
     }
+}
+
+function Invoke-DxpDatabaseDownload{
+    <#
+    .SYNOPSIS
+        Download DXP project DB.
+
+    .DESCRIPTION
+        Download DXP project DB. You can specify the environment from where the database should be exported from.
+        Will return with the file path to where database is downloaded.
+
+    .PARAMETER ClientKey
+        Your DXP ClientKey that you can generate in the paas.episerver.net portal.
+
+    .PARAMETER ClientSecret
+        Your DXP ClientSecret that you can generate in the paas.episerver.net portal.
+
+    .PARAMETER ProjectId
+        The DXP project id that is related to the ClientKey/Secret.
+
+    .PARAMETER Environment
+        The environment that holds the blobs that you want to download.
+
+    .PARAMETER DatabaseName
+        The type of database you want to download from Optimizely DXP. epicms / epicommerce
+
+    # .PARAMETER DownloadFolder
+    #     The local download folder where you want to download the DB backup file.
+
+    .PARAMETER Timeout
+        The number of seconds that you will let the script run until it will timeout. Default 1800 (ca 30 minutes)
+
+    .EXAMPLE
+        Invoke-DxpDatabaseDownload -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -DatabaseName $DatabaseName -DownloadFolder $DownloadFolder -RetentionHours $RetentionHours -Timeout $Timeout
+
+    .EXAMPLE
+        Invoke-DxpDatabaseDownload -ClientKey '644b6926-39b1-42a1-93d6-3771cdc4a04e' -ClientSecret '644b6926-39b1fasrehyjtye-42a1-93d6-3771cdc4asasda04e'-ProjectId '644b6926-39b1-42a1-93d6-3771cdc4a04e' -Environment 'Integration' -DatabaseName 'epicms' -DownloadFolder "c:\temp" -RetentionHours 2 -Timeout 1800
+
+    .EXAMPLE
+        $filePath = Invoke-DxpDatabaseDownload -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -DatabaseName $DatabaseName -DownloadFolder $DownloadFolder -RetentionHours $RetentionHours -Timeout $Timeout
+
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [String] $ClientKey,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [String] $ClientSecret,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ProjectId,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [ValidateSet('Integration','Preproduction','Production','ADE1','ADE2','ADE3')]
+        [string] $Environment,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateSet('epicms','epicommerce')]
+        [string] $DatabaseName,
+
+        # [Parameter(Mandatory=$true)]
+        # [string] $DownloadFolder,
+
+        [Parameter(Mandatory=$false)]
+        [ValidateRange(1, 168)]
+        [int] $RetentionHours = 2,
+
+        [Parameter(Mandatory = $false)]
+        [int] $Timeout = 1800
+    )
+
+    Write-Host "Invoke-DxpDatabaseDownload - Inputs:-------------"
+    Write-Host "ClientKey:              $ClientKey"
+    Write-Host "ClientSecret:           **** (it is a secret...)"
+    Write-Host "ProjectId:              $ProjectId"
+    Write-Host "Environment:            $Environment"
+    Write-Host "DatabaseName:           $databaseName"
+    #Write-Host "DownloadFolder:         $DownloadFolder"
+    Write-Host "RetentionHours:         $RetentionHours"
+    Write-Host "Timeout:                $timeout"
+    Write-Host "------------------------------------------------"
+
+    Write-DxpHostVersion
+
+    Test-DxpProjectId -ProjectId $ProjectId
+    #Test-DownloadFolder -DownloadFolder $DownloadFolder
+    Test-EnvironmentParam -Environment $Environment
+    Test-DatabaseName -DatabaseName $DatabaseName
+
+    #Import-EpiCloud
+    Initialize-EpiCload
+
+    Connect-DxpEpiCloud -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId
+
+    $downloadLink = Invoke-DxpDatabaseExport -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -DatabaseName $DatabaseName -RetentionHours $RetentionHours -Timeout $Timeout
+
+    if ($null -ne $downloadLink) {
+        $SourceSasLink -match "https:\/\/(.*).blob.core.*\/(.*)\/(.*)\?" | Out-Null
+        $bacpacName = $Matches[3]
+        Write-Host "-------------DOWNLOAD----------------------------"
+        Write-Host "Start download database $downloadLink"
+        $filePath = Join-Parts -Separator '\' -Parts $DownloadFolder, $bacpacName
+        Invoke-WebRequest -Uri $downloadLink -OutFile $filePath
+        Write-Host "Download database to $filePath"
+        Write-Host "------------------------------------------------"
+        return $filePath;
+    } else {
+        Write-Error "The database export has not been successful or the script has timedout. CurrentStatus: $($status.status)"
+        exit
+    }
+    # $exportDatabaseSplat = @{
+    #     ClientKey      = $ClientKey
+    #     ClientSecret   = $ClientSecret
+    #     ProjectId      = $ProjectId
+    #     Environment    = $Environment
+    #     DatabaseName   = $DatabaseName
+    #     RetentionHours = $RetentionHours
+    # }
+
+    # $export = Start-EpiDatabaseExport @exportDatabaseSplat
+    # Write-Host "Database export has started:--------------------"
+    # Write-Host "Id:           $($export.id)"
+    # Write-Host "ProjectId:    $($export.projectId)"
+    # Write-Host "DatabaseName: $($export.databaseName)"
+    # Write-Host "Environment:  $($export.environment)"
+    # Write-Host "Status:       $($export.status)"
+    # Write-Host "------------------------------------------------"
+
+    # $exportId = $export.id 
+
+    # if ($export.status -eq "InProgress") {
+    #     $deployDateTime = Get-DxpDateTimeStamp
+    #     Write-Host "Export $exportId started $deployDateTime."
+    # } else {
+    #     Write-Error "Status is not in InProgress (Current:$($export.status)). You can not export database at this moment."
+    #     exit
+    # }
+
+    # if ($export.status -eq "InProgress" -or $status.status -eq "Succeeded") {
+    #     Write-Host "----------------PROGRESS-------------------------"
+    #     $status = Invoke-DxpDatabaseExportProgress -ClientKey $ClientKey -ClientSecret $ClientSecret -Projectid $ProjectId -ExportId $ExportId -Environment $Environment -DatabaseName $DatabaseName -ExpectedStatus "Succeeded" -Timeout $timeout
+    #     Write-Host "------------------------------------------------"
+    #     $deployDateTime = Get-DxpDateTimeStamp
+    #     Write-Host "Export $exportId ended $deployDateTime"
+
+    #     if ($status.status -eq "Succeeded") {
+    #         Write-Host "Database export $exportId has been successful."
+    #         Write-Host "-------------DOWNLOAD----------------------------"
+    #         Write-Host "Start download database $($status.downloadLink)"
+    #         $filePath = Join-Parts -Separator '\' -Parts $DownloadFolder, $status.bacpacName
+    #         Invoke-WebRequest -Uri $status.downloadLink -OutFile $filePath
+    #         Write-Host "Download database to $filePath"
+    #         Write-Host "------------------------------------------------"
+    #         return $filePath;
+    #     }
+    #     else {
+    #         Write-Error "The database export has not been successful or the script has timedout. CurrentStatus: $($status.status)"
+    #         exit
+    #     }
+    # }
+    # else {
+    #     Write-Error "Status is not in InProgress (Current:$($export.status)). You can not export database at this moment."
+    #     exit
+    # }
 }
 
 function Sync-DxpDbToAzure{
@@ -1291,9 +1483,6 @@ function Sync-DxpDbToAzure{
 
     .PARAMETER DatabaseType
         The type of database you want to download from Optimizely DXP. epicms / epicommerce
-
-    .PARAMETER DownloadFolder
-        The local download folder where you want to download the DB backup file.
 
     .PARAMETER Timeout
         The number of seconds that you will let the script run until it will timeout. Default 1800 (ca 30 minutes)
@@ -1355,8 +1544,8 @@ function Sync-DxpDbToAzure{
         [ValidateSet('epicms','epicommerce')]
         [string] $DatabaseType,
 
-        [Parameter(Mandatory=$true)]
-        [string] $DownloadFolder,
+        # [Parameter(Mandatory=$true)]
+        # [string] $DownloadFolder,
 
         [Parameter(Mandatory = $false)]
         [int] $Timeout = 1800,
@@ -1400,6 +1589,7 @@ function Sync-DxpDbToAzure{
     )
 
     $RetentionHours = 2
+    $CleanBeforeCopy = $false
 
     Write-Host "Sync-DxpDbToAzure - Inputs:---------------------"
     Write-Host "ClientKey:                $ClientKey"
@@ -1407,13 +1597,14 @@ function Sync-DxpDbToAzure{
     Write-Host "ProjectId:                $ProjectId"
     Write-Host "Environment:              $Environment"
     Write-Host "DatabaseType:             $DatabaseType"
-    Write-Host "DownloadFolder:           $DownloadFolder"
+    #Write-Host "DownloadFolder:           $DownloadFolder"
     Write-Host "RetentionHours:           $RetentionHours"
     Write-Host "Timeout:                  $Timeout"
     Write-Host "SubscriptionId:           $SubscriptionId"
     Write-Host "ResourceGroupName:        $ResourceGroupName"
     Write-Host "StorageAccountName:       $StorageAccountName"
     Write-Host "StorageAccountContainer:  $StorageAccountContainer"
+    Write-Host "CleanBeforeCopy:          $CleanBeforeCopy"
     Write-Host "SqlServerName:            $SqlServerName"
     Write-Host "SqlDatabaseName:          $SqlDatabaseName"
     Write-Host "SqlDatabaseLogin:         $SqlDatabaseLogin"
@@ -1421,26 +1612,22 @@ function Sync-DxpDbToAzure{
     Write-Host "SqlSku:                   $SqlSku"
     Write-Host "------------------------------------------------"    
 
-    [string]$filePath = Invoke-DxpDatabaseDownload -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -DatabaseName $DatabaseType -DownloadFolder $DownloadFolder -RetentionHours $RetentionHours -Timeout $Timeout
-    Write-Host "Downloaded database: $filePath"
+    #$downloadLink = Invoke-DxpDatabaseExport -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -DatabaseName $DatabaseType -RetentionHours $RetentionHours -Timeout $Timeout
+    $downloadLink = "https://ehos01mstrn567v.blob.core.windows.net/bacpacs/epicms_Integration_20221129232243.bacpac?sv=2018-03-28&sr=b&sig=AfeYJX60vCbEMsynA%2BTKCwuMBol1RQrhNtKtfGqETdQ%3D&st=2022-11-29T23%3A25%3A48Z&se=2022-11-30T01%3A25%3A48Z&sp=r"
 
-    if ($null -eq $filePath -or $filePath.Length -eq 0){
-        Write-Host "We do not have any database to work with. Will exit."
-        exit
-    }
-    
-    $filePath = $filePath.Trim()
-    $BlobName = $filePath.Substring($filePath.LastIndexOf("\") + 1)
-    $BlobName
-    
-    $BacpacFilename = Send-Blob -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageAccountContainer $StorageAccountContainer -FilePath $filePath -BlobName $BlobName #-Debug
-    $BacpacFilename
-   
-    if ($null -eq $BacpacFilename -or $BacpacFilename.Length -eq 0){
-        Write-Host "We do not have any database uploaded. Will exit."
+    $BlobName = $null
+    if ($null -ne $downloadLink) {
+        #Write-Host "Copy-BlobsWithSas -SourceSasLink $downloadLink -DestinationSubscriptionId $SubscriptionId -DestinationResourceGroupName $ResourceGroupName -DestinationStorageAccountName $StorageAccountName -DestinationContainerName $StorageAccountContainer -CleanBeforeCopy $CleanBeforeCopy"
+        Copy-BlobsWithSas -SourceSasLink $downloadLink -DestinationSubscriptionId $SubscriptionId -DestinationResourceGroupName $ResourceGroupName -DestinationStorageAccountName $StorageAccountName -DestinationContainerName $StorageAccountContainer -CleanBeforeCopy $CleanBeforeCopy
+        Write-Host "downloadLink:               $downloadLink"
+        $BlobName = Get-SasTokenBlobName -SasLink $downloadLink
+        Write-Host "BlobName:                   $BlobName"
+    } else {
+        Write-Error "The database export has not been successful. Did not get a downloadLink from Invoke-DxpDatabaseExport as expected."
         exit
     }
 
+    #Write-Host "Import-BacpacDatabase -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageAccountContainer $StorageAccountContainer -BacpacFilename $BlobName -SqlServerName $SqlServerName -SqlDatabaseName $SqlDatabaseName -SqlDatabaseLogin $SqlDatabaseLogin -SqlDatabasePassword *** -RunDatabaseBackup $RunDatabaseBackup -SqlSku $SqlSku"
     Import-BacpacDatabase -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageAccountContainer $StorageAccountContainer -BacpacFilename $BlobName -SqlServerName $SqlServerName -SqlDatabaseName $SqlDatabaseName -SqlDatabaseLogin $SqlDatabaseLogin -SqlDatabasePassword $SqlDatabasePassword -RunDatabaseBackup $RunDatabaseBackup -SqlSku $SqlSku
     
 }
@@ -1549,20 +1736,9 @@ function Sync-DxpBlobsToAzure{
     Write-Host "CleanBeforeCopy:          $CleanBeforeCopy"
     Write-Host "------------------------------------------------"    
 
-    # $linkSplat = @{
-    #     ProjectId = $ProjectId
-    #     Environment = $Environment
-    #     StorageContainer = $DxpContainer
-    #     RetentionHours = $retentionHours
-    # }
-
-    # $linkResult = Get-EpiStorageContainerSasLink @linkSplat
     Test-DxpProjectId -ProjectId $ProjectId
     Test-EnvironmentParam -Environment $Environment
     
-    #Import-EpiCloud
-    #Initialize-EpiCload
-
     $RetentionHours = 2 # Set the retantion hours to 2h. Should be good enough to sync the blobs
 
     $sasLinkInfo = Get-DxpStorageContainerSasLink -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -Containers $null -Container $DxpContainer -RetentionHours $RetentionHours
@@ -1579,57 +1755,9 @@ function Sync-DxpBlobsToAzure{
     Write-Host "------------------------------------------------"
     $SourceSasLink = $sasLinkInfo.sasLink
 
+    Copy-BlobsWithSas -SourceSasLink $SourceSasLink -DestinationSubscriptionId $SubscriptionId -DestinationResourceGroupName $ResourceGroupName -DestinationStorageAccountName $StorageAccountName -DestinationContainerName $StorageAccountContainer -CleanBeforeCopy $CleanBeforeCopy
 
-    #Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
-    #Get-InstalledModule -Name EpinovaAzureToolBucket
-
-    Import-Module -name Az.Storage -debug
-
-    # Set-AzContext -Subscription $SubscriptionId
-
-    $DestinationSubscriptionId = $SubscriptionId
-    $DestinationResourceGroupName = $ResourceGroupName
-    $DestinationStorageAccountName = $StorageAccountName
-    $DestinationContainerName = $StorageAccountContainer 
-
-    $sourceContext = New-AzStorageContext -StorageAccountName "bkom01mstr6a9r6inte" -SASToken "?sv=2018-03-28&sr=c&sig=0mvhCgfY1pTqF9ucj1xFo2RYlt1zRHWpg3kaH7Q3VmU%3D&st=2022-11-29T21%3A52%3A50Z&se=2022-11-29T23%3A52%3A50Z&sp=rl" -ErrorAction Stop
-    if ($null -eq $sourceContext) {
-        Write-Error "Could not create a context against source storage account bkom01mstr6a9r6inte"
-    }
-
-    #Copy-BlobsWithSas -SourceSasLink $SourceSasLink -DestinationSubscriptionId $DestinationSubscriptionId -DestinationResourceGroupName $DestinationResourceGroupName -DestinationStorageAccountName $DestinationStorageAccountName -DestinationContainerName $DestinationContainerName -CleanBeforeCopy $CleanBeforeCopy
-
-    #Set-AzContext -Subscription <subscription name or id>
-
-
-    #Get-DxpStorageContainerSasLink -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -Containers $Containers -Container $Container -RetentionHours $RetentionHours
-
-    #Copy-BlobsWithSas -SourceSasLink $SourceSasLink -DestinationSubscriptionId $DestinationSubscriptionId -DestinationResourceGroupName $DestinationResourceGroupName -DestinationStorageAccountName $DestinationStorageAccountName -DestinationContainerName $DestinationContainerName -CleanBeforeCopy $true
-    # $files = Invoke-DxpBlobsDownload -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -DownloadFolder $DownloadFolder -MaxFilesToDownload 10 -Container $DxpContainer
-
-    # if ($null -ne $files) {
-    #     $count = $files.Count
-    #     Write-Host "Downloaded $count blobs"
-    #     $itterator = 0
-
-    #     Connect-AzAccount -SubscriptionId $SubscriptionId
-
-    #     foreach ($file in $files) {
-    #         $itterator++
-    #         $file
-    #         $BlobName = $file.Replace($DownloadFolder, "")
-    #         if ($BlobName.StartsWith("\")){
-    #             $BlobName = $BlobName.SubString(1, $BlobName.Length - 1)
-    #         }
-    
-    #         #$fileUploaded = Send-Blob -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageAccountContainer $StorageAccountContainer -FilePath $file -BlobName $BlobName #-Debug
-    #         $fileUploaded = Send-BlobAsConnected -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageAccountContainer $StorageAccountContainer -FilePath $file -BlobName $BlobName #-Debug
-    #         Write-Host "File $itterator of $count is uploaded: $fileUploaded"
-    #     }
-    #     Write-Host "All blobs is now synced"
-    # } else {
-    #     Write-Warning "No blobs where downloaded."
-    # }
+    Write-Host "All blobs is now synced"
 }
 
-Export-ModuleMember -Function @( 'Invoke-DxpBlobsDownload', 'Invoke-DxpDatabaseDownload', 'Get-DxpStorageContainers', 'Get-DxpStorageContainerSasLink', 'Sync-DxpDbToAzure', 'Sync-DxpBlobsToAzure' )
+Export-ModuleMember -Function @( 'Invoke-DxpBlobsDownload', 'Invoke-DxpDatabaseExport', 'Invoke-DxpDatabaseDownload', 'Get-DxpStorageContainers', 'Get-DxpStorageContainerSasLink', 'Sync-DxpDbToAzure', 'Sync-DxpBlobsToAzure' )
