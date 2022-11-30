@@ -4,17 +4,12 @@ Param(
     $ClientSecret,
     $ProjectId, 
     $Environment,
-    $DatabaseType,
+    $DxpContainer,
     $SubscriptionId,
     $ResourceGroupName,
     $StorageAccountName,
     $StorageAccountContainer,
-    $SqlServerName,
-    $SqlDatabaseName,
-    $RunDatabaseBackup,
-    $SqlDatabaseLogin,
-    $SqlDatabasePassword,
-    $SqlSku,
+    $CleanBeforeCopy,
 
     $Timeout,
     $RunVerbose
@@ -27,24 +22,14 @@ try {
     $projectId = $ProjectId
     $environment = $Environment
 
-    $databaseType = $DatabaseType
+    $dxpContainer = $DxpContainer
     $subscriptionId = $SubscriptionId
     $resourceGroupName = $ResourceGroupName
     $storageAccountName = $StorageAccountName
     $storageAccountContainer = $StorageAccountContainer
-    $sqlServerName = $SqlServerName
-    $sqlDatabaseName = $SqlDatabaseName
-    $sqlDatabaseLogin = $SqlDatabaseLogin
-    $sqlDatabasePassword = $SqlDatabasePassword
-    $sqlSku = $SqlSku
-    
-    [Boolean]$runDatabaseBackup = [System.Convert]::ToBoolean($RunDatabaseBackup)
-    $dropPath = $DropPath
+    $cleanBeforeCopy = [System.Convert]::ToBoolean($CleanBeforeCopy)
+
     $timeout = $Timeout
-    $zeroDowntimeMode = $ZeroDowntimeMode
-
-    [Boolean]$runDatabaseBackup = [System.Convert]::ToBoolean($RunDatabaseBackup)
-
     $runVerbose = [System.Convert]::ToBoolean($RunVerbose)
 
     # 30 min timeout
@@ -62,18 +47,12 @@ try {
     Write-Host "ClientSecret:               **** (it is a secret...)"
     Write-Host "ProjectId:                  $projectId"
     Write-Host "Environment:                $environment"
-    Write-Host "DatabaseType:               $databaseType"
+    Write-Host "DxpContainer:               $dxpContainer"
     Write-Host "SubscriptionId:             $subscriptionId"
     Write-Host "ResourceGroupName:          $resourceGroupName"
     Write-Host "StorageAccountName:         $storageAccountName"
     Write-Host "StorageAccountContainer:    $storageAccountContainer"
-    Write-Host "SqlServerName:              $sqlServerName"
-    Write-Host "SqlDatabaseName:            $sqlDatabaseName"
-    Write-Host "SqlDatabaseLogin:           $sqlDatabaseLogin"
-    Write-Host "SqlDatabasePassword:        **** (it is a secret...)"
-    Write-Host "SqlSku:                     $sqlSku"
-
-    #Write-Host "DropPath:                   $dropPath"
+    Write-Host "CleanBeforeCopy:            $cleanBeforeCopy"
     Write-Host "Timeout:                    $timeout"
     Write-Host "RunVerbose:                 $runVerbose"
 
@@ -87,10 +66,9 @@ try {
 
     Test-DxpProjectId -ProjectId $projectId
 
-    Install-Module -Name "EpinovaDxpToolBucket" -MinimumVersion 0.4.2 -Verbose
-    #Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
+    Install-Module -Name "EpinovaDxpToolBucket" -MinimumVersion 0.5.0 -Verbose
 
-    Sync-DxpDbToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $environment -DatabaseType $databaseType -Timeout $timeout -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -SqlServerName $sqlServerName -SqlDatabaseName $sqlDatabaseName -SqlDatabaseLogin $sqlDatabaseLogin -SqlDatabasePassword $sqlDatabasePassword -RunDatabaseBackup $runDatabaseBackup -SqlSku $sqlSku
+    Sync-DxpBlobsToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $environment -DxpContainer $dxpContainer -Timeout $timeout -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -CleanBeforeCopy $cleanBeforeCopy
 
     ####################################################################################
 

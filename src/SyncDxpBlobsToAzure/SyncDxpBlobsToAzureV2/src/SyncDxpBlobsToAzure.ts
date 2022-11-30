@@ -22,8 +22,6 @@ export async function run() {
         let Environment = tl.getInput("Environment");
         let DxpContainer = tl.getInput("DxpContainer");
 
-        let DropPath = tl.getInput("DropPath");
-
         let serviceName = tl.getInput('ConnectedServiceNameARM',/*required*/true);
         let endpointObject= await new AzureRMEndpoint(serviceName).getEndpoint();
         let input_workingDirectory = "";
@@ -33,6 +31,7 @@ export async function run() {
         let ResourceGroupName: string = convertToNullIfUndefined(tl.getInput('ResourceGroupName', false));
         let StorageAccountName: string = convertToNullIfUndefined(tl.getInput('StorageAccountName', false));
         let StorageAccountContainer: string = convertToNullIfUndefined(tl.getInput('StorageAccountContainer', false));
+        let CleanBeforeCopy = tl.getBoolInput("CleanBeforeCopy", false);
 
         let Timeout = tl.getInput("Timeout");
         let RunVerbose = tl.getBoolInput("RunVerbose", false);
@@ -62,7 +61,7 @@ export async function run() {
         "-ResourceGroupName", ResourceGroupName,
         "-StorageAccountName", StorageAccountName,
         "-StorageAccountContainer", StorageAccountContainer,
-        "-DropPath", DropPath,
+        "-CleanBeforeCopy", CleanBeforeCopy,
         "-Timeout", Timeout
         ];
         if (RunVerbose) {
@@ -80,7 +79,7 @@ export async function run() {
         "-ResourceGroupName", ResourceGroupName,
         "-StorageAccountName", StorageAccountName,
         "-StorageAccountContainer", StorageAccountContainer,
-        "-DropPath", DropPath,
+        "-CleanBeforeCopy", CleanBeforeCopy,
         "-Timeout", Timeout
         ];
         if (RunVerbose) {

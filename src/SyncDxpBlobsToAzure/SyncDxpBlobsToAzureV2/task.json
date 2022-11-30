@@ -13,7 +13,7 @@
     "version": {
         "Major": 2,
         "Minor": 0,
-        "Patch": 0
+        "Patch": 2
     },
     "groups": [
         {
@@ -60,15 +60,6 @@
             "required": true,
             "defaultValue": "$(DXP.ProjectId)",
             "helpMarkDown": "The DXP ProjectId (GUID). Look in the URL when in PAAS for your project. You will see the GUID as part of the URL.",
-            "groupName": "Settings"
-        },
-        {
-            "name": "DropPath",
-            "type": "string",
-            "label": "Drop path",
-            "required": true,
-            "defaultValue": "$(System.DefaultWorkingDirectory)",
-            "helpMarkDown": "The path to the drop folder where the nuget(artifact) file exist. Example: $(System.DefaultWorkingDirectory)",
             "groupName": "Settings"
         },
         {
@@ -141,6 +132,15 @@
             "required": false,
             "groupName": "Settings",
             "helpMarkDown": "Storage account container where bacpac will be uploaded before restore."
+        },
+        {
+            "name": "CleanBeforeCopy",
+            "type": "boolean",
+            "label": "Clean before copy",
+            "required": false,
+            "defaultValue": "false",
+            "helpMarkDown": "If you want the script to remove all blobs in destination container before we sync the blobs.",
+            "groupName": "Settings"
         },
         {
             "name": "Timeout",
