@@ -73,7 +73,7 @@ try {
     Write-Host "SqlDatabasePassword:        **** (it is a secret...)"
     Write-Host "SqlSku:                     $sqlSku"
 
-    Write-Host "DropPath:                   $dropPath"
+    #Write-Host "DropPath:                   $dropPath"
     Write-Host "Timeout:                    $timeout"
     Write-Host "RunVerbose:                 $runVerbose"
 
@@ -90,7 +90,7 @@ try {
     Install-Module -Name "EpinovaDxpToolBucket" -MinimumVersion 0.4.2 -Verbose
     #Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
-    Sync-DxpDbToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $environment -DatabaseType $databaseType -DownloadFolder $dropPath -Timeout $timeout -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -SqlServerName $sqlServerName -SqlDatabaseName $sqlDatabaseName -SqlDatabaseLogin $sqlDatabaseLogin -SqlDatabasePassword $sqlDatabasePassword -RunDatabaseBackup $runDatabaseBackup -SqlSku $sqlSku
+    Sync-DxpDbToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $environment -DatabaseType $databaseType -Timeout $timeout -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -SqlServerName $sqlServerName -SqlDatabaseName $sqlDatabaseName -SqlDatabaseLogin $sqlDatabaseLogin -SqlDatabasePassword $sqlDatabasePassword -RunDatabaseBackup $runDatabaseBackup -SqlSku $sqlSku
 
     ####################################################################################
 
