@@ -1586,7 +1586,6 @@ function Import-BacpacDatabase{
     Write-Host "------------------------------------------------"    
 
     Test-DxpProjectId -ProjectId $ProjectId
-    Test-EnvironmentParam -Environment $Environment
     
     $RetentionHours = 2 # Set the retantion hours to 2h. Should be good enough to sync the blobs
 
