@@ -1447,12 +1447,6 @@ function Import-BacpacDatabase{
     Write-Host "Environment:            $Environment"
     Write-Host "------------------------------------------------"
 
-    Test-DxpProjectId -ProjectId $ProjectId
-    Test-EnvironmentParam -Environment $Environment
-    
-    #Import-EpiCloud
-    Initialize-EpiCload
-
     try {
         $containers = Get-EpiStorageContainer -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment
     }

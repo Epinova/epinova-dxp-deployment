@@ -60,7 +60,7 @@ try {
 
     Mount-PsModulesPath
 
-    #Initialize-EpiCload
+    Initialize-EpiCload
 
     Write-DxpHostVersion
 
