@@ -1389,3 +1389,222 @@ function Import-BacpacDatabase{
     # Scale down to S0 after import is complete
     Set-AzSqlDatabase -ResourceGroupName $ResourceGroupName -DatabaseName $SqlDatabaseName -ServerName $SqlServerName -RequestedServiceObjectiveName $SqlSku #-Edition "Standard"
  }
+
+ function Get-DxpStorageContainerSasLink{
+    <#
+    .SYNOPSIS
+        ...
+
+    .DESCRIPTION
+        ...
+
+    .PARAMETER ClientKey
+        The client key used to access the project.
+
+    .PARAMETER ClientSecret
+        The client secret used to access the project.
+
+    .PARAMETER ProjectId
+        The id of the DXP project.
+
+    .PARAMETER Environment
+        The environment where we should check for storage containers.
+
+    .PARAMETER Containers
+        List of containers that we should look for the one that match the next parameter Container.
+
+    .PARAMETER Container
+        The name of the container that you want. If it does not exist it will try ti figure out which container you want.
+
+    .EXAMPLE
+        Get-DxpStorageContainerSasLink -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -Containers $Containers -Container $Container -RetentionHours $RetentionHours
+
+    .EXAMPLE
+        Get-DxpStorageContainerSasLink -ClientKey '644b6926-39b1-42a1-93d6-3771cdc4a04e' -ClientSecret '644b6926-39b1fasrehyjtye-42a1-93d6-3771cdc4asasda04e'-ProjectId '644b6926-39b1-42a1-93d6-3771cdc4a04e' -Environment 'Integration' -Containers $Containers -Container "mysitemedia" -RetentionHours 2
+
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ClientKey,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ClientSecret,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ProjectId,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $Environment,
+
+        [Parameter(Mandatory = $false)]
+        [object] $Containers,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $Container,
+
+        [Parameter(Mandatory = $false)]
+        [int] $RetentionHours = 2
+
+    )
+
+    if ($null -eq $Containers){
+        $Containers = Get-DxpStorageContainers -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment
+    }
+
+    $linkSplat = @{
+        ClientKey = $ClientKey
+        ClientSecret = $ClientSecret
+        ProjectId = $ProjectId
+        Environment = $Environment
+        StorageContainer = $Containers.storageContainers
+        RetentionHours = $RetentionHours
+    }
+
+    $linkResult = Get-EpiStorageContainerSasLink @linkSplat
+
+    $sasLink = $null
+    foreach ($link in $linkResult){
+        if ($link.containerName -eq $Container) {
+            Write-Host "Found Sas link for container   : $Container"
+            $sasLink = $link
+        } else {
+            Write-Host "Ignore container   : $($link.containerName)"
+        }
+    }
+
+    return $sasLink
+}
+
+ function Sync-DxpBlobsToAzure{
+    <#
+    .SYNOPSIS
+        Sync/Harmonize DXP blobs to a Azure storage account container.
+
+    .DESCRIPTION
+        Sync/Harmonize DXP blobs to a Azure storage account container.
+
+    .PARAMETER ClientKey
+        Your DXP ClientKey that you can generate in the paas.episerver.net portal.
+
+    .PARAMETER ClientSecret
+        Your DXP ClientSecret that you can generate in the paas.episerver.net portal.
+
+    .PARAMETER ProjectId
+        The DXP project id that is related to the ClientKey/Secret.
+
+    .PARAMETER Environment
+        The environment that holds the blobs that you want to download.
+
+    .PARAMETER DxpContainer
+        The container in DXP environment that contains the blobs
+
+    .PARAMETER Timeout
+        The number of seconds that you will let the script run until it will timeout. Default 1800 (ca 30 minutes)
+
+    .PARAMETER SubscriptionId
+        Your Azure SubscriptionId where your resources are located.
+
+    .PARAMETER ResourceGroupName
+        The resource group contains the Azure SQL Server and storage account where the bacpac file is loacated.
+
+    .PARAMETER StorageAccountName
+        The StorageAccount name where the bacpac file is located.
+
+    .PARAMETER StorageAccountContainer
+        The container name where the bacpac file is located.
+
+    .PARAMETER CleanBeforeCopy
+        Set to true if you want thw script to remove all blobs in destination container before we start copy over all blobs.
+
+    .EXAMPLE
+        Sync-DxpBlobsToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $DxpEnvironment -DxpContainer $DxpContainer -Timeout 1800 -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageAccountContainer $StorageAccountContainer -CleanBeforeCopy $true
+
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [String] $ClientKey,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [String] $ClientSecret,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ProjectId,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [ValidateSet('Integration','Preproduction','Production','ADE1','ADE2','ADE3')]
+        [string] $Environment,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $DxpContainer,
+
+        [Parameter(Mandatory = $false)]
+        [int] $Timeout = 1800,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $SubscriptionId,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ResourceGroupName,
+
+        [Parameter(Mandatory = $false)]
+        [string] $StorageAccountName,
+
+        [Parameter(Mandatory = $false)]
+        [string] $StorageAccountContainer,
+
+        [Parameter(Mandatory = $false)]
+        [bool] $CleanBeforeCopy
+
+    )
+
+    Write-Host "Sync-DxpBlobsToAzure - Inputs:------------------"
+    Write-Host "ClientKey:                $ClientKey"
+    Write-Host "ClientSecret:             **** (it is a secret...)"
+    Write-Host "ProjectId:                $ProjectId"
+    Write-Host "Environment:              $Environment"
+    Write-Host "DxpContainer:             $DxpContainer"
+    Write-Host "Timeout:                  $Timeout"
+    Write-Host "SubscriptionId:           $SubscriptionId"
+    Write-Host "ResourceGroupName:        $ResourceGroupName"
+    Write-Host "StorageAccountName:       $StorageAccountName"
+    Write-Host "StorageAccountContainer:  $StorageAccountContainer"
+    Write-Host "CleanBeforeCopy:          $CleanBeforeCopy"
+    Write-Host "------------------------------------------------"    
+
+    Test-DxpProjectId -ProjectId $ProjectId
+    Test-EnvironmentParam -Environment $Environment
+    
+    $RetentionHours = 2 # Set the retantion hours to 2h. Should be good enough to sync the blobs
+
+    $sasLinkInfo = Get-DxpStorageContainerSasLink -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -Containers $null -Container $DxpContainer -RetentionHours $RetentionHours
+    if ($null -eq $sasLinkInfo) {
+        Write-Error "Did not get a SAS link to container $DxpContainer."
+        exit
+    }
+    Write-Host "Found SAS link info: ---------------------------"
+    Write-Host "projectId:                $($sasLinkInfo.projectId)"
+    Write-Host "environment:              $($sasLinkInfo.environment)"
+    Write-Host "containerName:            $($sasLinkInfo.containerName)"
+    Write-Host "sasLink:                  $($sasLinkInfo.sasLink)"
+    Write-Host "expiresOn:                $($sasLinkInfo.expiresOn)"
+    Write-Host "------------------------------------------------"
+    $SourceSasLink = $sasLinkInfo.sasLink
+
+    Copy-BlobsWithSas -SourceSasLink $SourceSasLink -DestinationSubscriptionId $SubscriptionId -DestinationResourceGroupName $ResourceGroupName -DestinationStorageAccountName $StorageAccountName -DestinationContainerName $StorageAccountContainer -CleanBeforeCopy $CleanBeforeCopy
+
+    Write-Host "All blobs is now synced"
+}

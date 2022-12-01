@@ -67,8 +67,10 @@ try {
     Test-DxpProjectId -ProjectId $projectId
 
     Set-ExecutionPolicy -Scope CurrentUser Unrestricted
-    Install-Module -Name "EpinovaDxpToolBucket" -MinimumVersion 0.5.0 -Verbose
-
+    #Install-Module -Name "EpinovaDxpToolBucket" -MinimumVersion 0.5.0 -Verbose
+    Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
+    Get-InstalledModule -Name EpinovaAzureToolBucket
+    
     Sync-DxpBlobsToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $environment -DxpContainer $dxpContainer -Timeout $timeout -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -CleanBeforeCopy $cleanBeforeCopy
 
     ####################################################################################
