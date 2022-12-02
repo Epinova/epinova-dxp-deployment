@@ -137,7 +137,7 @@ async function run() {
         }
     }
     catch (err) {
-        logError(err);
+        tl.setResult(tl.TaskResult.Failed, err.message || 'run() failed');
     }
 }
 
