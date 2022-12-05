@@ -75,7 +75,7 @@ try {
     Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
     Get-InstalledModule -Name EpinovaAzureToolBucket
 
-    
+    Import-Module Az.Storage
 
 
     #Sync-DxpBlobsToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $environment -DxpContainer $dxpContainer -Timeout $timeout -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -CleanBeforeCopy $cleanBeforeCopy
