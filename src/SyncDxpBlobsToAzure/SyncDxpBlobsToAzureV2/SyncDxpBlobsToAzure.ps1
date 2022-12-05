@@ -1,10 +1,10 @@
 [CmdletBinding()]
 Param(
-    $ClientKey,
-    $ClientSecret,
-    $ProjectId, 
-    $Environment,
-    $DxpContainer,
+    # $ClientKey,
+    # $ClientSecret,
+    # $ProjectId, 
+    # $Environment,
+    # $DxpContainer,
     $SubscriptionId,
     $ResourceGroupName,
     $StorageAccountName,
@@ -17,12 +17,12 @@ Param(
 
 try {
     # Get all inputs for the task
-    $clientKey = $ClientKey
-    $clientSecret = $ClientSecret
-    $projectId = $ProjectId
-    $environment = $Environment
+    # $clientKey = $ClientKey
+    # $clientSecret = $ClientSecret
+    # $projectId = $ProjectId
+    # $environment = $Environment
 
-    $dxpContainer = $DxpContainer
+    # $dxpContainer = $DxpContainer
     $subscriptionId = $SubscriptionId
     $resourceGroupName = $ResourceGroupName
     $storageAccountName = $StorageAccountName
@@ -42,7 +42,7 @@ try {
 
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-    $SourceSasLink = "$(DxpBlobsSasLink)"
+    $SourceSasLink = $(DxpBlobsSasLink)
 
     Write-Host "Inputs - SyncDxpBlobsToAzure:"
     # Write-Host "ClientKey:                  $clientKey"
