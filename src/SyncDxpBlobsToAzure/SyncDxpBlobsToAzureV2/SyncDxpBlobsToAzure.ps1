@@ -42,7 +42,7 @@ try {
 
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-    $SourceSasLink = $(DxpBlobsSasLink)
+    $SourceSasLink = "$(DxpBlobsSasLink)"
 
     Write-Host "Inputs - SyncDxpBlobsToAzure:"
     # Write-Host "ClientKey:                  $clientKey"
