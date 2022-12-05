@@ -62,7 +62,7 @@ try {
 
     # . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
 
-    Mount-PsModulesPath
+    #Mount-PsModulesPath
 
     # Initialize-EpiCload
 
@@ -72,14 +72,14 @@ try {
 
     #Set-ExecutionPolicy -Scope CurrentUser Unrestricted
     #Install-Module -Name "EpinovaDxpToolBucket" -MinimumVersion 0.5.0 -Verbose
-    #Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
-    #Get-InstalledModule -Name EpinovaAzureToolBucket
+    Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
+    Get-InstalledModule -Name EpinovaAzureToolBucket
 
     
 
 
     #Sync-DxpBlobsToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $environment -DxpContainer $dxpContainer -Timeout $timeout -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -CleanBeforeCopy $cleanBeforeCopy
-    #Copy-BlobsWithSas -SourceSasLink $SourceSasLink -DestinationSubscriptionId $SubscriptionId -DestinationResourceGroupName $ResourceGroupName -DestinationStorageAccountName $StorageAccountName -DestinationContainerName $StorageAccountContainer -CleanBeforeCopy $CleanBeforeCopy
+    Copy-BlobsWithSas -SourceSasLink $SourceSasLink -DestinationSubscriptionId $SubscriptionId -DestinationResourceGroupName $ResourceGroupName -DestinationStorageAccountName $StorageAccountName -DestinationContainerName $StorageAccountContainer -CleanBeforeCopy $CleanBeforeCopy
 
     ####################################################################################
 
