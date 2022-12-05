@@ -4,7 +4,7 @@ Param(
     $ClientSecret,
     $ProjectId, 
     $Environment,
-    $DxpContainer
+    $DxpContainer,
 
     $Timeout,
     $RunVerbose
