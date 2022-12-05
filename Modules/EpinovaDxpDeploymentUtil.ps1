@@ -1555,129 +1555,129 @@ function Import-BacpacDatabase{
     return $sasLink
 }
 
- function Sync-DxpBlobsToAzure{
-    <#
-    .SYNOPSIS
-        Sync/Harmonize DXP blobs to a Azure storage account container.
+#  function Sync-DxpBlobsToAzure{
+#     <#
+#     .SYNOPSIS
+#         Sync/Harmonize DXP blobs to a Azure storage account container.
 
-    .DESCRIPTION
-        Sync/Harmonize DXP blobs to a Azure storage account container.
+#     .DESCRIPTION
+#         Sync/Harmonize DXP blobs to a Azure storage account container.
 
-    .PARAMETER ClientKey
-        Your DXP ClientKey that you can generate in the paas.episerver.net portal.
+#     .PARAMETER ClientKey
+#         Your DXP ClientKey that you can generate in the paas.episerver.net portal.
 
-    .PARAMETER ClientSecret
-        Your DXP ClientSecret that you can generate in the paas.episerver.net portal.
+#     .PARAMETER ClientSecret
+#         Your DXP ClientSecret that you can generate in the paas.episerver.net portal.
 
-    .PARAMETER ProjectId
-        The DXP project id that is related to the ClientKey/Secret.
+#     .PARAMETER ProjectId
+#         The DXP project id that is related to the ClientKey/Secret.
 
-    .PARAMETER Environment
-        The environment that holds the blobs that you want to download.
+#     .PARAMETER Environment
+#         The environment that holds the blobs that you want to download.
 
-    .PARAMETER DxpContainer
-        The container in DXP environment that contains the blobs
+#     .PARAMETER DxpContainer
+#         The container in DXP environment that contains the blobs
 
-    .PARAMETER Timeout
-        The number of seconds that you will let the script run until it will timeout. Default 1800 (ca 30 minutes)
+#     .PARAMETER Timeout
+#         The number of seconds that you will let the script run until it will timeout. Default 1800 (ca 30 minutes)
 
-    .PARAMETER SubscriptionId
-        Your Azure SubscriptionId where your resources are located.
+#     .PARAMETER SubscriptionId
+#         Your Azure SubscriptionId where your resources are located.
 
-    .PARAMETER ResourceGroupName
-        The resource group contains the Azure SQL Server and storage account where the bacpac file is loacated.
+#     .PARAMETER ResourceGroupName
+#         The resource group contains the Azure SQL Server and storage account where the bacpac file is loacated.
 
-    .PARAMETER StorageAccountName
-        The StorageAccount name where the bacpac file is located.
+#     .PARAMETER StorageAccountName
+#         The StorageAccount name where the bacpac file is located.
 
-    .PARAMETER StorageAccountContainer
-        The container name where the bacpac file is located.
+#     .PARAMETER StorageAccountContainer
+#         The container name where the bacpac file is located.
 
-    .PARAMETER CleanBeforeCopy
-        Set to true if you want thw script to remove all blobs in destination container before we start copy over all blobs.
+#     .PARAMETER CleanBeforeCopy
+#         Set to true if you want thw script to remove all blobs in destination container before we start copy over all blobs.
 
-    .EXAMPLE
-        Sync-DxpBlobsToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $DxpEnvironment -DxpContainer $DxpContainer -Timeout 1800 -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageAccountContainer $StorageAccountContainer -CleanBeforeCopy $true
+#     .EXAMPLE
+#         Sync-DxpBlobsToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $DxpEnvironment -DxpContainer $DxpContainer -Timeout 1800 -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageAccountContainer $StorageAccountContainer -CleanBeforeCopy $true
 
-    #>
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory=$true)]
-        [ValidateNotNullOrEmpty()]
-        [String] $ClientKey,
+#     #>
+#     [CmdletBinding()]
+#     param(
+#         [Parameter(Mandatory=$true)]
+#         [ValidateNotNullOrEmpty()]
+#         [String] $ClientKey,
 
-        [Parameter(Mandatory=$true)]
-        [ValidateNotNullOrEmpty()]
-        [String] $ClientSecret,
+#         [Parameter(Mandatory=$true)]
+#         [ValidateNotNullOrEmpty()]
+#         [String] $ClientSecret,
 
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [string] $ProjectId,
+#         [Parameter(Mandatory = $true)]
+#         [ValidateNotNullOrEmpty()]
+#         [string] $ProjectId,
 
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [ValidateSet('Integration','Preproduction','Production','ADE1','ADE2','ADE3')]
-        [string] $Environment,
+#         [Parameter(Mandatory = $true)]
+#         [ValidateNotNullOrEmpty()]
+#         [ValidateSet('Integration','Preproduction','Production','ADE1','ADE2','ADE3')]
+#         [string] $Environment,
 
-        [Parameter(Mandatory=$true)]
-        [ValidateNotNullOrEmpty()]
-        [string] $DxpContainer,
+#         [Parameter(Mandatory=$true)]
+#         [ValidateNotNullOrEmpty()]
+#         [string] $DxpContainer,
 
-        [Parameter(Mandatory = $false)]
-        [int] $Timeout = 1800,
+#         [Parameter(Mandatory = $false)]
+#         [int] $Timeout = 1800,
 
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [string] $SubscriptionId,
+#         [Parameter(Mandatory = $true)]
+#         [ValidateNotNullOrEmpty()]
+#         [string] $SubscriptionId,
 
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [string] $ResourceGroupName,
+#         [Parameter(Mandatory = $true)]
+#         [ValidateNotNullOrEmpty()]
+#         [string] $ResourceGroupName,
 
-        [Parameter(Mandatory = $false)]
-        [string] $StorageAccountName,
+#         [Parameter(Mandatory = $false)]
+#         [string] $StorageAccountName,
 
-        [Parameter(Mandatory = $false)]
-        [string] $StorageAccountContainer,
+#         [Parameter(Mandatory = $false)]
+#         [string] $StorageAccountContainer,
 
-        [Parameter(Mandatory = $false)]
-        [bool] $CleanBeforeCopy
+#         [Parameter(Mandatory = $false)]
+#         [bool] $CleanBeforeCopy
 
-    )
+#     )
 
-    Write-Host "Sync-DxpBlobsToAzure - Inputs:------------------"
-    Write-Host "ClientKey:                $ClientKey"
-    Write-Host "ClientSecret:             **** (it is a secret...)"
-    Write-Host "ProjectId:                $ProjectId"
-    Write-Host "Environment:              $Environment"
-    Write-Host "DxpContainer:             $DxpContainer"
-    Write-Host "Timeout:                  $Timeout"
-    Write-Host "SubscriptionId:           $SubscriptionId"
-    Write-Host "ResourceGroupName:        $ResourceGroupName"
-    Write-Host "StorageAccountName:       $StorageAccountName"
-    Write-Host "StorageAccountContainer:  $StorageAccountContainer"
-    Write-Host "CleanBeforeCopy:          $CleanBeforeCopy"
-    Write-Host "------------------------------------------------"    
+#     Write-Host "Sync-DxpBlobsToAzure - Inputs:------------------"
+#     Write-Host "ClientKey:                $ClientKey"
+#     Write-Host "ClientSecret:             **** (it is a secret...)"
+#     Write-Host "ProjectId:                $ProjectId"
+#     Write-Host "Environment:              $Environment"
+#     Write-Host "DxpContainer:             $DxpContainer"
+#     Write-Host "Timeout:                  $Timeout"
+#     Write-Host "SubscriptionId:           $SubscriptionId"
+#     Write-Host "ResourceGroupName:        $ResourceGroupName"
+#     Write-Host "StorageAccountName:       $StorageAccountName"
+#     Write-Host "StorageAccountContainer:  $StorageAccountContainer"
+#     Write-Host "CleanBeforeCopy:          $CleanBeforeCopy"
+#     Write-Host "------------------------------------------------"    
 
-    Test-DxpProjectId -ProjectId $ProjectId
+#     Test-DxpProjectId -ProjectId $ProjectId
     
-    $RetentionHours = 2 # Set the retantion hours to 2h. Should be good enough to sync the blobs
+#     $RetentionHours = 2 # Set the retantion hours to 2h. Should be good enough to sync the blobs
 
-    $sasLinkInfo = Get-DxpStorageContainerSasLink -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -Containers $null -Container $DxpContainer -RetentionHours $RetentionHours
-    if ($null -eq $sasLinkInfo) {
-        Write-Error "Did not get a SAS link to container $DxpContainer."
-        exit
-    }
-    Write-Host "Found SAS link info: ---------------------------"
-    Write-Host "projectId:                $($sasLinkInfo.projectId)"
-    Write-Host "environment:              $($sasLinkInfo.environment)"
-    Write-Host "containerName:            $($sasLinkInfo.containerName)"
-    Write-Host "sasLink:                  $($sasLinkInfo.sasLink)"
-    Write-Host "expiresOn:                $($sasLinkInfo.expiresOn)"
-    Write-Host "------------------------------------------------"
-    $SourceSasLink = $sasLinkInfo.sasLink
+#     $sasLinkInfo = Get-DxpStorageContainerSasLink -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -Containers $null -Container $DxpContainer -RetentionHours $RetentionHours
+#     if ($null -eq $sasLinkInfo) {
+#         Write-Error "Did not get a SAS link to container $DxpContainer."
+#         exit
+#     }
+#     Write-Host "Found SAS link info: ---------------------------"
+#     Write-Host "projectId:                $($sasLinkInfo.projectId)"
+#     Write-Host "environment:              $($sasLinkInfo.environment)"
+#     Write-Host "containerName:            $($sasLinkInfo.containerName)"
+#     Write-Host "sasLink:                  $($sasLinkInfo.sasLink)"
+#     Write-Host "expiresOn:                $($sasLinkInfo.expiresOn)"
+#     Write-Host "------------------------------------------------"
+#     $SourceSasLink = $sasLinkInfo.sasLink
 
-    Copy-BlobsWithSas -SourceSasLink $SourceSasLink -DestinationSubscriptionId $SubscriptionId -DestinationResourceGroupName $ResourceGroupName -DestinationStorageAccountName $StorageAccountName -DestinationContainerName $StorageAccountContainer -CleanBeforeCopy $CleanBeforeCopy
+#     Copy-BlobsWithSas -SourceSasLink $SourceSasLink -DestinationSubscriptionId $SubscriptionId -DestinationResourceGroupName $ResourceGroupName -DestinationStorageAccountName $StorageAccountName -DestinationContainerName $StorageAccountContainer -CleanBeforeCopy $CleanBeforeCopy
 
-    Write-Host "All blobs is now synced"
-}
+#     Write-Host "All blobs is now synced"
+# }

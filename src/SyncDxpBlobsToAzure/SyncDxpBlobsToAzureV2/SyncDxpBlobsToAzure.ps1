@@ -42,12 +42,15 @@ try {
 
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-    Write-Host "Inputs:"
-    Write-Host "ClientKey:                  $clientKey"
-    Write-Host "ClientSecret:               **** (it is a secret...)"
-    Write-Host "ProjectId:                  $projectId"
-    Write-Host "Environment:                $environment"
-    Write-Host "DxpContainer:               $dxpContainer"
+    $SourceSasLink = $(DxpBlobsSasLink)
+
+    Write-Host "Inputs - SyncDxpBlobsToAzure:"
+    # Write-Host "ClientKey:                  $clientKey"
+    # Write-Host "ClientSecret:               **** (it is a secret...)"
+    # Write-Host "ProjectId:                  $projectId"
+    # Write-Host "Environment:                $environment"
+    # Write-Host "DxpContainer:               $dxpContainer"
+    Write-Host "SourceSasLink:              $SourceSasLink"
     Write-Host "SubscriptionId:             $subscriptionId"
     Write-Host "ResourceGroupName:          $resourceGroupName"
     Write-Host "StorageAccountName:         $storageAccountName"
@@ -56,22 +59,26 @@ try {
     Write-Host "Timeout:                    $timeout"
     Write-Host "RunVerbose:                 $runVerbose"
 
-    . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
+    # . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
 
     Mount-PsModulesPath
 
-    Initialize-EpiCload
+    # Initialize-EpiCload
 
-    Write-DxpHostVersion
+    # Write-DxpHostVersion
 
-    Test-DxpProjectId -ProjectId $projectId
+    # Test-DxpProjectId -ProjectId $projectId
 
     #Set-ExecutionPolicy -Scope CurrentUser Unrestricted
     #Install-Module -Name "EpinovaDxpToolBucket" -MinimumVersion 0.5.0 -Verbose
-    Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
-    Get-InstalledModule -Name EpinovaAzureToolBucket
+    #Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
+    #Get-InstalledModule -Name EpinovaAzureToolBucket
 
-    Sync-DxpBlobsToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $environment -DxpContainer $dxpContainer -Timeout $timeout -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -CleanBeforeCopy $cleanBeforeCopy
+    
+
+
+    #Sync-DxpBlobsToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $environment -DxpContainer $dxpContainer -Timeout $timeout -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -CleanBeforeCopy $cleanBeforeCopy
+    #Copy-BlobsWithSas -SourceSasLink $SourceSasLink -DestinationSubscriptionId $SubscriptionId -DestinationResourceGroupName $ResourceGroupName -DestinationStorageAccountName $StorageAccountName -DestinationContainerName $StorageAccountContainer -CleanBeforeCopy $CleanBeforeCopy
 
     ####################################################################################
 

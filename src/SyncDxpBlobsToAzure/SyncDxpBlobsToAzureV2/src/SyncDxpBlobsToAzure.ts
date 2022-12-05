@@ -69,9 +69,13 @@ async function run() {
         contents.push(`$ErrorActionPreference = '${_vsts_input_errorActionPreference}'`); 
         contents.push(`${azFilePath} -endpoint '${endpoint}'`);
 
+        // Execute script to get SAS token first
+        let yourScriptPath1 = path.join(path.resolve(__dirname), 'GetSasTokenFromDxp.ps1');
+        contents.push(`${yourScriptPath1} -ClientKey '${ClientKey}' -ClientSecret '${ClientSecret}' -ProjectId '${ProjectId}' -Environment '${Environment}' -DxpContainer '${DxpContainer}' -Timeout ${Timeout}`); 
 
-        let yourScriptPath = path.join(path.resolve(__dirname), 'SyncDxpBlobsToAzure.ps1');
-        contents.push(`${yourScriptPath} -ClientKey '${ClientKey}' -ClientSecret '${ClientSecret}' -ProjectId '${ProjectId}' -Environment '${Environment}' -DxpContainer '${DxpContainer}' -SubscriptionId '${SubscriptionId}' -ResourceGroupName '${ResourceGroupName}' -StorageAccountName '${StorageAccountName}' -StorageAccountContainer '${StorageAccountContainer}' -CleanBeforeCopy ${CleanBeforeCopy} -Timeout ${Timeout}`); 
+        // Execute script to do the copy.
+        let yourScriptPath2 = path.join(path.resolve(__dirname), 'SyncDxpBlobsToAzure.ps1');
+        contents.push(`${yourScriptPath2} -SubscriptionId '${SubscriptionId}' -ResourceGroupName '${ResourceGroupName}' -StorageAccountName '${StorageAccountName}' -StorageAccountContainer '${StorageAccountContainer}' -CleanBeforeCopy ${CleanBeforeCopy} -Timeout ${Timeout}`); 
 
 
 
