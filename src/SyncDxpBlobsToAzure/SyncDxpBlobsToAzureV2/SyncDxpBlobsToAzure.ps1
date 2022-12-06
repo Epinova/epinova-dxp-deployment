@@ -77,6 +77,9 @@ try {
 
     #Import-Module Az.Storage
     #Get-InstalledModule -Name Az
+    #Import-Module Az.Storage
+    Install-Module -Name Az -AllowClobber -Scope CurrentUser
+    #Install-Module Az.Storage
     Get-InstalledModule -Name Az.Storage
 
 

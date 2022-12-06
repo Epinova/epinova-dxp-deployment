@@ -1612,8 +1612,8 @@ function Sync-DxpDbToAzure{
     Write-Host "SqlSku:                   $SqlSku"
     Write-Host "------------------------------------------------"    
 
-    #$downloadLink = Invoke-DxpDatabaseExport -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -DatabaseName $DatabaseType -RetentionHours $RetentionHours -Timeout $Timeout
-    $downloadLink = "https://ehos01mstrn567v.blob.core.windows.net/bacpacs/epicms_Integration_20221129232243.bacpac?sv=2018-03-28&sr=b&sig=AfeYJX60vCbEMsynA%2BTKCwuMBol1RQrhNtKtfGqETdQ%3D&st=2022-11-29T23%3A25%3A48Z&se=2022-11-30T01%3A25%3A48Z&sp=r"
+    $downloadLink = Invoke-DxpDatabaseExport -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -DatabaseName $DatabaseType -RetentionHours $RetentionHours -Timeout $Timeout
+    #$downloadLink = "https://ehos01mstrn567v.blob.core.windows.net/bacpacs/epicms_Integration_20221129232243.bacpac?sv=2018-03-28&sr=b&sig=AfeYJX60vCbEMsynA%2BTKCwuMBol1RQrhNtKtfGqETdQ%3D&st=2022-11-29T23%3A25%3A48Z&se=2022-11-30T01%3A25%3A48Z&sp=r"
 
     $BlobName = $null
     if ($null -ne $downloadLink) {
