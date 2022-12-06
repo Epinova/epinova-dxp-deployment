@@ -75,8 +75,8 @@ try {
     Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
     Get-InstalledModule -Name EpinovaAzureToolBucket
 
-    Import-Module Az.Storage
-    Get-InstalledModule -Name Az
+    #Import-Module Az.Storage
+    #Get-InstalledModule -Name Az
     Get-InstalledModule -Name Az.Storage
 
 
