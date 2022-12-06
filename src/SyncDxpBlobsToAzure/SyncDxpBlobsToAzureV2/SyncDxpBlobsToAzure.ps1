@@ -60,7 +60,7 @@ try {
     Write-Host "Timeout:                    $timeout"
     Write-Host "RunVerbose:                 $runVerbose"
 
-    # . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
+    . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
 
     #Mount-PsModulesPath
 
@@ -75,16 +75,19 @@ try {
     Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
     Get-InstalledModule -Name EpinovaAzureToolBucket
 
+    Install-AzStorage
+    
     #Import-Module Az.Storage
     #Get-InstalledModule -Name Az
     #Import-Module Az.Storage
-    Install-Module -Name Az -AllowClobber -Scope CurrentUser
+    #Install-Module -Name Az -AllowClobber -Scope CurrentUser
     #Install-Module Az.Storage
-    Get-InstalledModule -Name Az.Storage
+    #Get-InstalledModule -Name Az.Storage
 
 
     #Sync-DxpBlobsToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $environment -DxpContainer $dxpContainer -Timeout $timeout -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -CleanBeforeCopy $cleanBeforeCopy
     Copy-BlobsWithSas -SourceSasLink $SourceSasLink -DestinationSubscriptionId $SubscriptionId -DestinationResourceGroupName $ResourceGroupName -DestinationStorageAccountName $StorageAccountName -DestinationContainerName $StorageAccountContainer -CleanBeforeCopy $CleanBeforeCopy
+
 
     ####################################################################################
 
