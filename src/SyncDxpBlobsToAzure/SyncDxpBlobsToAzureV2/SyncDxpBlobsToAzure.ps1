@@ -60,7 +60,7 @@ try {
     Write-Host "Timeout:                    $timeout"
     Write-Host "RunVerbose:                 $runVerbose"
 
-    . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
+    #. "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
 
     #Mount-PsModulesPath
 
@@ -75,8 +75,8 @@ try {
     Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
     Get-InstalledModule -Name EpinovaAzureToolBucket
 
-    Install-AzStorage
-    
+    #Install-AzStorage
+
     #Import-Module Az.Storage
     #Get-InstalledModule -Name Az
     #Import-Module Az.Storage
