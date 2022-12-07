@@ -10,7 +10,7 @@ param
 
 $endpointObject =  ConvertFrom-Json  $endpoint
 $moduleName = "Az.Accounts"
-$moduleName2 = "Az.Storage"
+# $moduleName2 = "Az.Storage"
 $environmentName = $endpointObject.environment
 
 . "$PSScriptRoot/Utility.ps1"
@@ -18,7 +18,7 @@ Update-PSModulePathForHostedAgentLinux -targetAzurePs $targetAzurePs
 
 if($targetAzurePs -eq ""){
     $module = Get-Module -Name $moduleName -ListAvailable | Sort-Object Version -Descending | Select-Object -First 1
-    $module2 = Get-Module -Name $moduleName2 -ListAvailable | Sort-Object Version -Descending | Select-Object -First 1
+    # $module2 = Get-Module -Name $moduleName2 -ListAvailable | Sort-Object Version -Descending | Select-Object -First 1
 }
 else{
     $modules = Get-Module -Name $moduleName -ListAvailable
@@ -33,17 +33,17 @@ else{
         }   
     }
 
-    $modules2 = Get-Module -Name $moduleName2 -ListAvailable
-    foreach ($moduleVal2 in $modules2) {
-        # $moduleVal2.Path will have value like /usr/local/share/powershell/Modules/Az.Storage/1.2.1/Az.Storage.psd1
-        $azModulePath2 = Split-Path (Split-Path (Split-Path $moduleVal2.Path -Parent) -Parent) -Parent
-        $azModulePath2 = $azModulePath2 + "/Az/*"
-        $azModuleVersion2 = split-path -path $azModulePath2 -Leaf -Resolve
-        if($azModuleVersion2 -eq $targetAzurePs) {
-            $module2 = $moduleVal2
-            break
-        }   
-    }
+    # $modules2 = Get-Module -Name $moduleName2 -ListAvailable
+    # foreach ($moduleVal2 in $modules2) {
+    #     # $moduleVal2.Path will have value like /usr/local/share/powershell/Modules/Az.Storage/1.2.1/Az.Storage.psd1
+    #     $azModulePath2 = Split-Path (Split-Path (Split-Path $moduleVal2.Path -Parent) -Parent) -Parent
+    #     $azModulePath2 = $azModulePath2 + "/Az/*"
+    #     $azModuleVersion2 = split-path -path $azModulePath2 -Leaf -Resolve
+    #     if($azModuleVersion2 -eq $targetAzurePs) {
+    #         $module2 = $moduleVal2
+    #         break
+    #     }   
+    # }
 }
       
 if (!$module) {
@@ -52,19 +52,19 @@ if (!$module) {
     throw ("Could not find the module Az.Accounts with given version. If the module was recently installed, retry after restarting the Azure Pipelines task agent.")
 }
 
-if (!$module2) {
-    # Will handle localization later
-    Write-Verbose "No module found with name: $moduleName2"
-    throw ("Could not find the module Az.Storage with given version. If the module was recently installed, retry after restarting the Azure Pipelines task agent.")
-}
+# if (!$module2) {
+#     # Will handle localization later
+#     Write-Verbose "No module found with name: $moduleName2"
+#     throw ("Could not find the module Az.Storage with given version. If the module was recently installed, retry after restarting the Azure Pipelines task agent.")
+# }
 
 # Import the module.
 Write-Host "##[command]Import-Module -Name $($module.Path) -Global"
 $module = Import-Module -Name $module.Path -Global -PassThru -Force
 
 # Import the module2.
-Write-Host "##[command]Import-Module -Name $($module2.Path) -Global"
-$module2 = Import-Module -Name $module2.Path -Global -PassThru -Force
+# Write-Host "##[command]Import-Module -Name $($module2.Path) -Global"
+# $module2 = Import-Module -Name $module2.Path -Global -PassThru -Force
 
 # Clear context
 Write-Host "##[command]Clear-AzContext -Scope Process"

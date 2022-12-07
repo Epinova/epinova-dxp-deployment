@@ -1,6 +1,6 @@
 # Release notes
 
-## v2.5.59
+## v2.5.60
 - Added ImportDxpDbToAzure and SyncDxpBlobsToAzure
 
 ## v2.4.0
