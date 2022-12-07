@@ -84,6 +84,7 @@ try {
     #Install-Module Az.Storage
     #Get-InstalledModule -Name Az.Storage
 
+    Import-AzStorageModule
 
     #Sync-DxpBlobsToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $environment -DxpContainer $dxpContainer -Timeout $timeout -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -CleanBeforeCopy $cleanBeforeCopy
     Copy-BlobsWithSas -SourceSasLink $SourceSasLink -DestinationSubscriptionId $SubscriptionId -DestinationResourceGroupName $ResourceGroupName -DestinationStorageAccountName $StorageAccountName -DestinationContainerName $StorageAccountContainer -CleanBeforeCopy $CleanBeforeCopy
