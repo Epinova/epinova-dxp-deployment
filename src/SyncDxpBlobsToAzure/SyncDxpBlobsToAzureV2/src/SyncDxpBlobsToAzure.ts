@@ -61,6 +61,12 @@ async function run() {
             contents.push("$VerbosePreference = 'continue'");
         }
 
+
+
+        // Execute script to get SAS token first
+        let yourScriptPath1 = path.join(path.resolve(__dirname), 'GetSasTokenFromDxp.ps1');
+        contents.push(`${yourScriptPath1} -ClientKey '${ClientKey}' -ClientSecret '${ClientSecret}' -ProjectId '${ProjectId}' -Environment '${Environment}' -DxpContainer '${DxpContainer}' -Timeout ${Timeout}`); 
+
         const makeModuleAvailableScriptPath = path.join(path.resolve(__dirname), 'TryMakingModuleAvailable.ps1');
         contents.push(`${makeModuleAvailableScriptPath} -targetVersion '${targetAzurePs}' -platform Linux`);
 
@@ -69,9 +75,9 @@ async function run() {
         contents.push(`$ErrorActionPreference = '${_vsts_input_errorActionPreference}'`); 
         contents.push(`${azFilePath} -endpoint '${endpoint}'`);
 
-        // Execute script to get SAS token first
-        let yourScriptPath1 = path.join(path.resolve(__dirname), 'GetSasTokenFromDxp.ps1');
-        contents.push(`${yourScriptPath1} -ClientKey '${ClientKey}' -ClientSecret '${ClientSecret}' -ProjectId '${ProjectId}' -Environment '${Environment}' -DxpContainer '${DxpContainer}' -Timeout ${Timeout}`); 
+        // let azStorageFilePath = path.join(path.resolve(__dirname), 'InitializeAzStorage.ps1');
+        // contents.push(`$ErrorActionPreference = '${_vsts_input_errorActionPreference}'`); 
+        // contents.push(`${azStorageFilePath} -endpoint '${endpoint}'`);
 
         // Execute script to do the copy.
         let yourScriptPath2 = path.join(path.resolve(__dirname), 'SyncDxpBlobsToAzure.ps1');
