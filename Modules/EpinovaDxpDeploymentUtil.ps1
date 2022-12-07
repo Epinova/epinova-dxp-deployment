@@ -533,6 +533,27 @@ function Install-AzureStorage {
     }
 }
 
+function Import-AzStorageModule {
+    $azModuleLoaded = Get-Module -Name "Az.Storage"
+
+    if (-not ($azureModuleLoaded -or $azModuleLoaded)) {
+        try {
+            $null = Import-Module -Name "Az.Storage" -ErrorAction Stop
+            $azModuleLoaded = $true
+        }
+        catch {
+            Write-Verbose "Tried to find 'Az.Storage', module couldn't be imported."
+        }
+    }
+
+    if ($azModuleLoaded) {
+        "Az"
+    }
+    else {
+        throw "'Az.Storage' module is required to run this cmdlet."
+    }
+}
+
 function Install-AzStorage {
     <#
     .SYNOPSIS
@@ -1681,3 +1702,51 @@ function Import-BacpacDatabase{
 
 #     Write-Host "All blobs is now synced"
 # }
+
+function Get-StorageAccountNameFromSasLink {
+    <#
+    .SYNOPSIS
+        Break out the storage account value from SAS link.
+
+    .DESCRIPTION
+        Break out the storage account value from SAS link.
+
+    .PARAMETER SasLink
+        The SAS link.
+
+    .EXAMPLE
+        Get-StorageAccountNameFromSasLink -SasLink $SasLink
+
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $SasLink
+    )
+
+    if ($sasLink.Contains("&sr=b&")) {
+        Write-Host "Blob copy"
+        $sasLink -match "https:\/\/(.*).blob.core.*\/(.*)\/(.*)\?" | Out-Null
+        $blob = $Matches[3]
+        Write-Host "Blob:                           $blob"
+        $blobCopy = $true
+    } elseif ($sasLink.Contains("&sr=c&")) {
+        Write-Host "Container copy"
+        $sasLink -match "https:\/\/(.*).blob.core.*\/(.*)\?" | Out-Null
+    } else {
+        Write-Error "Not supported sr (Storage Resource). Only support sr=b|c."
+        exit
+    }
+    $storageAccountName = $Matches[1]
+    Write-Host "StorageAccountName:       $storageAccountName"
+
+    $containerName = $Matches[2]
+    Write-Host "ContainerName:            $containerName"
+
+    $sasLink -match "(\?.*)" | Out-Null
+    $sasToken = $Matches[0]
+    Write-Host "SAS token:                      $sasToken"
+    
+    return $storageAccountName
+}
