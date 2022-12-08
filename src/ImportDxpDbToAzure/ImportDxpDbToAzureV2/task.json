@@ -12,8 +12,8 @@
     "author": "Ove Lartelius",
     "version": {
         "Major": 2,
-        "Minor": 0,
-        "Patch": 2
+        "Minor": 1,
+        "Patch": 0
     },
     "groups": [
         {
@@ -32,16 +32,16 @@
             "isExpanded": false
         }
     ],
-    "releaseNotes": "v2.0.2: Created",
+    "releaseNotes": "v2.1.0: Change to use DbExportDownloadLink",
     "minimumAgentVersion": "2.134.0",
     "inputs": [
         {
-            "name": "BacpacFilePath",
+            "name": "DbExportDownloadLink",
             "type": "string",
-            "label": "Bacpac file path",
+            "label": "SAS link / Db export download link",
             "required": true,
-            "defaultValue": "$(DbExportBacpacFilePath)",
-            "helpMarkDown": "The file path to the bacpac file that you want to restore in Azure. Example: $(DbExportBacpacFilePath). This value will be set automatically if you use task ExportDB.",
+            "defaultValue": "$(DbExportDownloadLink)",
+            "helpMarkDown": "The SAS link to the bacpac file that you want to restore in Azure. Example: $(DbExportDownloadLink). This value will be set automatically if you use task ExportDb.",
             "groupName": "Settings"
         },
         {

@@ -12,7 +12,7 @@
     "author": "Ove Lartelius",
     "version": {
         "Major": 2,
-        "Minor": 6,
+        "Minor": 7,
         "Patch": 0
     },
     "groups": [
@@ -100,25 +100,6 @@
             "defaultValue": "24",
             "helpMarkDown": "By default, the bacpac file is retained for 24 hours unless otherwise the retention hour is overridden.",
             "groupName": "Settings"
-        },
-        {
-            "name": "DownloadBacpac",
-            "type": "boolean",
-            "label": "Download bacpac",
-            "required": true,
-            "defaultValue": "false",
-            "helpMarkDown": "Download bacpac file when it has been exported. Used to export to external Azure Sql Server.",
-            "groupName": "Settings"
-        },
-        {
-            "name": "DownloadFolder",
-            "type": "string",
-            "label": "Download folder",
-            "required": false,
-            "defaultValue": "$(System.DefaultWorkingDirectory)",
-            "helpMarkDown": "By default, the bacpac file is retained for 24 hours unless otherwise the retention hour is overridden.",
-            "groupName": "Settings",
-            "visibleRule": "DownloadBacpac = true"
         },
         {
             "name": "Timeout",

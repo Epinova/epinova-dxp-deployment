@@ -29,7 +29,7 @@ async function run() {
         let _vsts_input_failOnStandardError = convertToNullIfUndefined(tl.getBoolInput('FailOnStandardError', false));
 
         // Get the build and release details
-        let BacpacFilePath = tl.getInput("BacpacFilePath");
+        let DbExportDownloadLink = tl.getInput("DbExportDownloadLink");
 
         let serviceName = tl.getInput('ConnectedServiceNameARM',/*required*/true);
         let endpointObject= await new AzureRMEndpoint(serviceName).getEndpoint();
@@ -72,7 +72,7 @@ async function run() {
         contents.push(`${azFilePath} -endpoint '${endpoint}'`);
 
         let yourScriptPath = path.join(path.resolve(__dirname), 'ImportDxpDbToAzure.ps1');
-        contents.push(`${yourScriptPath} -BacpacFilePath '${BacpacFilePath}' -SubscriptionId '${SubscriptionId}' -ResourceGroupName '${ResourceGroupName}' -StorageAccountName '${StorageAccountName}' -StorageAccountContainer '${StorageAccountContainer}'-SqlServerName '${SqlServerName}' -SqlDatabaseName '${SqlDatabaseName}' -RunDatabaseBackup ${RunDatabaseBackup} -SqlDatabaseLogin '${SqlDatabaseLogin}' -SqlDatabasePassword '${SqlDatabasePassword}' -SqlSku '${SqlSku}' -Timeout ${Timeout}`); 
+        contents.push(`${yourScriptPath} -DbExportDownloadLink '${DbExportDownloadLink}' -SubscriptionId '${SubscriptionId}' -ResourceGroupName '${ResourceGroupName}' -StorageAccountName '${StorageAccountName}' -StorageAccountContainer '${StorageAccountContainer}'-SqlServerName '${SqlServerName}' -SqlDatabaseName '${SqlDatabaseName}' -RunDatabaseBackup ${RunDatabaseBackup} -SqlDatabaseLogin '${SqlDatabaseLogin}' -SqlDatabasePassword '${SqlDatabasePassword}' -SqlSku '${SqlSku}' -Timeout ${Timeout}`); 
 
 
 

@@ -1750,3 +1750,68 @@ function Get-StorageAccountNameFromSasLink {
     
     return $storageAccountName
 }
+
+function Get-SasInfo {
+    <#
+    .SYNOPSIS
+        Break out the blob name from SAS link.
+
+    .DESCRIPTION
+        Break out the blob name from SAS link.
+
+    .PARAMETER SasLink
+        The SAS link.
+
+    .EXAMPLE
+        Get-BlobNameFromSasLink -SasLink $SasLink
+
+    #>
+    [CmdletBinding()]
+    [OutputType([SasInfo])]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $SasLink
+    )
+
+    $sasInfo = [SasInfo]::new()
+    $sasInfo.SasLink = $sasLink
+    if ($sasLink.Contains("&sr=b&")) {
+        Write-Host "Blob copy"
+        $sasLink -match "https:\/\/(.*).blob.core.*\/(.*)\/(.*)\?" | Out-Null
+        $blob = $Matches[3]
+        Write-Host "Blob:                           $blob"
+        $sasInfo.Blob = $blob
+        $sasInfo.BlobLink = $true
+    } elseif ($sasLink.Contains("&sr=c&")) {
+        Write-Host "Container copy"
+        $sasLink -match "https:\/\/(.*).blob.core.*\/(.*)\?" | Out-Null
+    } else {
+        Write-Error "Not supported sr (Storage Resource). Only support sr=b|c."
+        exit
+    }
+    $storageAccountName = $Matches[1]
+    Write-Host "StorageAccountName:       $storageAccountName"
+    $sasInfo.StorageAccountName = $storageAccountName
+
+    $containerName = $Matches[2]
+    Write-Host "ContainerName:            $containerName"
+    $sasInfo.ContainerName = $containerName
+
+    $sasLink -match "(\?.*)" | Out-Null
+    $sasToken = $Matches[0]
+    Write-Host "SAS token:                      $sasToken"
+    $sasInfo.SasToken = $sasToken
+    
+    return $sasInfo
+}
+
+class SasInfo{
+    [string]SasLink
+    [bool]BlobLink
+    [bool]ContainerLink
+    [string]StorageAccountName
+    [string]ContainerName
+    [string]SasToken
+    [string]Blob
+}

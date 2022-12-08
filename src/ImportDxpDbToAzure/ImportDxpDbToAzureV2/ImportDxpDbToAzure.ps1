@@ -1,6 +1,6 @@
 [CmdletBinding()]
 Param(
-    $BacpacFilePath,
+    $DbExportDownloadLink,
     $SubscriptionId,
     $ResourceGroupName,
     $StorageAccountName,
@@ -18,7 +18,7 @@ Param(
 
 try {
     # Get all inputs for the task
-    $bacpacFilePath = $BacpacFilePath
+    $dbExportDownloadLink = $DbExportDownloadLink
     $subscriptionId = $SubscriptionId
     $resourceGroupName = $ResourceGroupName
     $storageAccountName = $StorageAccountName
@@ -42,7 +42,7 @@ try {
     }
 
     Write-Host "Inputs:"
-    Write-Host "BacpacFilePath:             $bacpacFilePath"
+    Write-Host "DbExportDownloadLink:       $dbExportDownloadLink"
     Write-Host "SubscriptionId:             $subscriptionId"
     Write-Host "ResourceGroupName:          $resourceGroupName"
     Write-Host "StorageAccountName:         $storageAccountName"
@@ -58,27 +58,35 @@ try {
     Write-Host "RunVerbose:                 $runVerbose"
 
 
-    $bacpacFilePath = $bacpacFilePath.Trim()
-    if ($bacpacFilePath.Contains("\")){
-        $BlobName = $bacpacFilePath.Substring($bacpacFilePath.LastIndexOf("\") + 1)
-    } else {
-        $BlobName = $bacpacFilePath.Substring($bacpacFilePath.LastIndexOf("/") + 1)
-    }
+    . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
 
-    Write-Host "------------------------------------------------"
-    Write-Host "Downloaded database: $bacpacFilePath"
-    Write-Host "BlobName: $BlobName"
-    Write-Host "------------------------------------------------"
+    # $bacpacFilePath = $bacpacFilePath.Trim()
+    # if ($bacpacFilePath.Contains("\")){
+    #     $BlobName = $bacpacFilePath.Substring($bacpacFilePath.LastIndexOf("\") + 1)
+    # } else {
+    #     $BlobName = $bacpacFilePath.Substring($bacpacFilePath.LastIndexOf("/") + 1)
+    # }
+
+    # Write-Host "------------------------------------------------"
+    # Write-Host "Downloaded database: $bacpacFilePath"
+    # Write-Host "BlobName: $BlobName"
+    # Write-Host "------------------------------------------------"
 
     Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
     Get-InstalledModule -Name EpinovaAzureToolBucket
 
-    Write-Host "------------------------------------------------"
-    Write-Host "Start upload bacpac to Azure."
-    Write-Host "`$BacpacFilename = Send-Blob -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -FilePath $bacpacFilePath -BlobName $BlobName"
-    $BacpacFilename = Send-Blob -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -FilePath $bacpacFilePath -BlobName $BlobName #-Debug
-    ###########################################################################################################
-    
+    # Write-Host "------------------------------------------------"
+    # Write-Host "Start upload bacpac to Azure."
+    # Write-Host "`$BacpacFilename = Send-Blob -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -FilePath $bacpacFilePath -BlobName $BlobName"
+    # $BacpacFilename = Send-Blob -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -FilePath $bacpacFilePath -BlobName $BlobName #-Debug
+    # ###########################################################################################################
+
+
+    $sasInfo = Get-SasInfo -SasLink $dbExportDownloadLink
+
+    Copy-BlobsWithSas -SourceSasLink $sasInfo.SasLink -DestinationSubscriptionId $SubscriptionId -DestinationResourceGroupName $ResourceGroupName -DestinationStorageAccountName $StorageAccountName -DestinationContainerName $StorageAccountContainer -CleanBeforeCopy $CleanBeforeCopy
+
+    $BacpacFilename = $sasInfo.Blob
 
     Write-Host "BacpacFilename: $BacpacFilename"
    
@@ -87,8 +95,8 @@ try {
         exit
     }
 
-    Write-Host "Import-BacpacDatabase -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -BacpacFilename $BlobName -SqlServerName $sqlServerName -SqlDatabaseName $sqlDatabaseName -SqlDatabaseLogin $sqlDatabaseLogin -SqlDatabasePassword $sqlDatabasePassword -RunDatabaseBackup $runDatabaseBackup -SqlSku $sqlSku"
-    Import-BacpacDatabase -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -BacpacFilename $BlobName -SqlServerName $sqlServerName -SqlDatabaseName $sqlDatabaseName -SqlDatabaseLogin $sqlDatabaseLogin -SqlDatabasePassword $sqlDatabasePassword -RunDatabaseBackup $runDatabaseBackup -SqlSku $sqlSku
+    Write-Host "Import-BacpacDatabase -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -BacpacFilename $BacpacFilename -SqlServerName $sqlServerName -SqlDatabaseName $sqlDatabaseName -SqlDatabaseLogin $sqlDatabaseLogin -SqlDatabasePassword $sqlDatabasePassword -RunDatabaseBackup $runDatabaseBackup -SqlSku $sqlSku"
+    Import-BacpacDatabase -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -BacpacFilename $BacpacFilename -SqlServerName $sqlServerName -SqlDatabaseName $sqlDatabaseName -SqlDatabaseLogin $sqlDatabaseLogin -SqlDatabasePassword $sqlDatabasePassword -RunDatabaseBackup $runDatabaseBackup -SqlSku $sqlSku
     
     ####################################################################################
 

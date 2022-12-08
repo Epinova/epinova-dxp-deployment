@@ -303,109 +303,6 @@ function Initialize-EpinovaAzureToolBucket{
     Install-Module EpinovaAzureToolBucket -Scope CurrentUser -MinimumVersion 0.11.4 -Force -AllowClobber
 }
 
-function Get-StorageAccountName{
-    <#
-    .SYNOPSIS
-        Get StorageAccountName from a SAS link.
-
-    .DESCRIPTION
-        Get StorageAccountName from a SAS link.
-        The SasLink you will get by using Get-DxpStorageContainerSasLink
-
-    .PARAMETER SasLink
-        The SasLink that contain the information about StorageAccountName.
-
-    .EXAMPLE
-        Get-StorageAccountName -SasLink $sasLink
-    #>
-    [OutputType([string])]
-	param
-	(
-		[Parameter(Mandatory = $true)]
-		[object]$SasLink
-	)
-	
-    $fullSasLink = $SasLink.sasLink
-    $fullSasLink -match "https:\/\/(.*).blob.core" | Out-Null
-    $storageAccountName = $Matches[1]
-
-    Write-Host "StorageAccountName : $storageAccountName"
-
-    return $storageAccountName
-}
-
-function Get-SasTokenBlobName{
-    <#
-    .SYNOPSIS
-        Get blob name from a SAS link.
-
-    .DESCRIPTION
-        Get blob name from a SAS link.
-
-    .PARAMETER SasLink
-        The SasLink that contain the information about blob.
-
-    .EXAMPLE
-        Get-SasTokenBlobName -SasLink $sasLink
-    #>
-    [OutputType([string])]
-	param
-	(
-		[Parameter(Mandatory = $true)]
-		[string]$SasLink
-	)
-	
-    # $fullSasLink = $SasLink.sasLink
-    # $fullSasLink -match "https:\/\/(.*).blob.core" | Out-Null
-    # $storageAccountName = $Matches[1]
-
-    if ($SasLink.Contains("&sr=b&")) {
-        $SasLink -match "https:\/\/(.*).blob.core.*\/(.*)\/(.*)\?" | Out-Null
-        $blobName = $Matches[3]
-        Write-Host "Blob:                           $blobName"
-    } else {
-        Write-Error "SasLink is not a blob link. Most be 'sr=b'."
-    }
-
-    return $blobName
-}
-
-function Get-SasToken{
-    <#
-    .SYNOPSIS
-        Get the SasToken from a SAS link.
-
-    .DESCRIPTION
-        Get the SasToken from a SAS link.
-        The SasLink you will get by using Get-DxpStorageContainerSasLink
-
-    .PARAMETER SasLink
-        The SasLink that contain the information about the Sas token.
-
-    .EXAMPLE
-        Get-SasToken -SasLink $sasLink
-    #>
-    [OutputType([string])]
-	param
-	(
-		[Parameter(Mandatory = $true)]
-		[object]$SasLink
-	)
-	
-    $fullSasLink = $SasLink.sasLink
-    $fullSasLink -match "(\?.*)" | Out-Null
-    $sasToken = $Matches[0]
-
-    if ($null -eq $sasToken -or $sasToken.Length -eq 0) {
-        Write-Warning "Did not found container $container in the list. Look in the log and see if your blob container have another name then mysitemedia. If so, specify that name as param -container. Example: Ignore container: projectname-assets. Then set -container 'projectname-assets'"
-        exit
-    }
-
-    Write-Host "SAS token          : $sasToken"
-
-    return $sasToken
-}
-
 function Join-Parts {
     <#
     .SYNOPSIS
@@ -1134,13 +1031,14 @@ function Invoke-DxpBlobsDownload{
     $sasLink = Get-DxpStorageContainerSasLink -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -Containers $containers -Container $Container -RetentionHours $RetentionHours
     # $sasLink
 
-    $storageAccountName = Get-StorageAccountName -SasLink $sasLink
-    $sasToken = Get-SasToken -SasLink $sasLink
+    $sasInfo = Get-SasInfo -SasLink $sasLink
+    #$storageAccountName = Get-StorageAccountName -SasLink $sasLink
+    #$sasToken = Get-SasToken -SasLink $sasLink
 
     Add-TlsSecurityProtocolSupport
     Import-AzureStorageModule
 
-    $ArrayList = Invoke-DownloadStorageAccountFiles -StorageAccountName $StorageAccountName -SasToken $SasToken -DownloadFolder $DownloadFolder -Container $Container -MaxFilesToDownload $MaxFilesToDownload -OverwriteExistingFiles $OverwriteExistingFiles
+    $ArrayList = Invoke-DownloadStorageAccountFiles -StorageAccountName $sasInfo.StorageAccountName -SasToken $sasInfo.SasToken -DownloadFolder $DownloadFolder -Container $Container -MaxFilesToDownload $MaxFilesToDownload -OverwriteExistingFiles $OverwriteExistingFiles
     #$files = 
     #Write-Host "¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤"
     #$files | Select-Object -Last 1 | Format-Table
@@ -1620,7 +1518,9 @@ function Sync-DxpDbToAzure{
         #Write-Host "Copy-BlobsWithSas -SourceSasLink $downloadLink -DestinationSubscriptionId $SubscriptionId -DestinationResourceGroupName $ResourceGroupName -DestinationStorageAccountName $StorageAccountName -DestinationContainerName $StorageAccountContainer -CleanBeforeCopy $CleanBeforeCopy"
         Copy-BlobsWithSas -SourceSasLink $downloadLink -DestinationSubscriptionId $SubscriptionId -DestinationResourceGroupName $ResourceGroupName -DestinationStorageAccountName $StorageAccountName -DestinationContainerName $StorageAccountContainer -CleanBeforeCopy $CleanBeforeCopy
         Write-Host "downloadLink:               $downloadLink"
-        $BlobName = Get-SasTokenBlobName -SasLink $downloadLink
+        $sasInfo = Get-SasInfo -SasLink $downloadLink
+        #$BlobName = Get-SasTokenBlobName -SasLink $downloadLink
+        $BlobName = $sasInfo.Blob
         Write-Host "BlobName:                   $BlobName"
     } else {
         Write-Error "The database export has not been successful. Did not get a downloadLink from Invoke-DxpDatabaseExport as expected."
