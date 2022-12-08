@@ -88,7 +88,9 @@ try {
 
         ImportAzureStorageModule
 
-        $storageAccountName = Get-StorageAccountNameFromSasLink -SasLink $SourceSasLink
+        $sasInfo = Get-SasInfo -SasLink $SourceSasLink
+        $storageAccountName = $sasInfo.StorageAccountName
+        #$storageAccountName = Get-StorageAccountNameFromSasLink -SasLink $SourceSasLink
 
         $ctx = New-AzStorageContext -StorageAccountName $storageAccountName -SASToken $SourceSasLink -ErrorAction Stop
 
