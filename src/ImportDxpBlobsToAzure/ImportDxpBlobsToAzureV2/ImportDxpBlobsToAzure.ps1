@@ -5,6 +5,7 @@ Param(
     # $ProjectId, 
     # $Environment,
     # $DxpContainer,
+    $DxpExportBlobsSasLink,
     $SubscriptionId,
     $ResourceGroupName,
     $StorageAccountName,
@@ -23,6 +24,7 @@ try {
     # $environment = $Environment
 
     # $dxpContainer = $DxpContainer
+    $dxpExportBlobsSasLink = $DxpExportBlobsSasLink
     $subscriptionId = $SubscriptionId
     $resourceGroupName = $ResourceGroupName
     $storageAccountName = $StorageAccountName
@@ -45,12 +47,13 @@ try {
     #$SourceSasLink = $(DxpBlobsSasLink)
     $SourceSasLink = Get-Content DxpBlobsSasLink.txt
 
-    Write-Host "Inputs - SyncDxpBlobsToAzure:"
+    Write-Host "Inputs - ImportDxpBlobsToAzure:"
     # Write-Host "ClientKey:                  $clientKey"
     # Write-Host "ClientSecret:               **** (it is a secret...)"
     # Write-Host "ProjectId:                  $projectId"
     # Write-Host "Environment:                $environment"
     # Write-Host "DxpContainer:               $dxpContainer"
+    Write-Host "DxpExportBlobsSasLink:      $dxpExportBlobsSasLink"
     Write-Host "SourceSasLink:              $SourceSasLink"
     Write-Host "SubscriptionId:             $subscriptionId"
     Write-Host "ResourceGroupName:          $resourceGroupName"
@@ -60,13 +63,14 @@ try {
     Write-Host "Timeout:                    $timeout"
     Write-Host "RunVerbose:                 $runVerbose"
 
-    #. "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
+    . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
 
     #Mount-PsModulesPath
 
     # Initialize-EpiCload
 
     # Write-DxpHostVersion
+    #$sasInfo = Get-SasInfo -SasLink $dxpExportBlobsSasLink
 
     # Test-DxpProjectId -ProjectId $projectId
 
@@ -86,7 +90,7 @@ try {
 
 
     #Sync-DxpBlobsToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $environment -DxpContainer $dxpContainer -Timeout $timeout -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -CleanBeforeCopy $cleanBeforeCopy
-    Copy-BlobsWithSas -SourceSasLink $SourceSasLink -DestinationSubscriptionId $SubscriptionId -DestinationResourceGroupName $ResourceGroupName -DestinationStorageAccountName $StorageAccountName -DestinationContainerName $StorageAccountContainer -CleanBeforeCopy $CleanBeforeCopy
+    Copy-BlobsWithSas -SourceSasLink $dxpExportBlobsSasLink -DestinationSubscriptionId $SubscriptionId -DestinationResourceGroupName $ResourceGroupName -DestinationStorageAccountName $StorageAccountName -DestinationContainerName $StorageAccountContainer -CleanBeforeCopy $CleanBeforeCopy
 
 
     ####################################################################################

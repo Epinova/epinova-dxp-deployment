@@ -58,8 +58,6 @@ try {
     Write-Host "RunVerbose:                 $runVerbose"
 
 
-    . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
-
     # $bacpacFilePath = $bacpacFilePath.Trim()
     # if ($bacpacFilePath.Contains("\")){
     #     $BlobName = $bacpacFilePath.Substring($bacpacFilePath.LastIndexOf("\") + 1)
@@ -81,10 +79,10 @@ try {
     # $BacpacFilename = Send-Blob -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -FilePath $bacpacFilePath -BlobName $BlobName #-Debug
     # ###########################################################################################################
 
+    Copy-BlobsWithSas -SourceSasLink $dbExportDownloadLink -DestinationSubscriptionId $SubscriptionId -DestinationResourceGroupName $ResourceGroupName -DestinationStorageAccountName $StorageAccountName -DestinationContainerName $StorageAccountContainer -CleanBeforeCopy $CleanBeforeCopy
 
+    . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
     $sasInfo = Get-SasInfo -SasLink $dbExportDownloadLink
-
-    Copy-BlobsWithSas -SourceSasLink $sasInfo.SasLink -DestinationSubscriptionId $SubscriptionId -DestinationResourceGroupName $ResourceGroupName -DestinationStorageAccountName $StorageAccountName -DestinationContainerName $StorageAccountContainer -CleanBeforeCopy $CleanBeforeCopy
 
     $BacpacFilename = $sasInfo.Blob
 

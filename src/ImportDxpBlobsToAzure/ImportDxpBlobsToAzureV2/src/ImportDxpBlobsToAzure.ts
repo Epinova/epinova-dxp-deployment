@@ -28,11 +28,7 @@ async function run() {
 
         let _vsts_input_failOnStandardError = convertToNullIfUndefined(tl.getBoolInput('FailOnStandardError', false));
         
-        let ClientKey = tl.getInput("ClientKey");
-        let ClientSecret = tl.getInput("ClientSecret");
-        let ProjectId = tl.getInput("ProjectId");
-        let Environment = tl.getInput("Environment");
-        let DxpContainer = tl.getInput("DxpContainer");
+        let DxpExportBlobsSasLink = tl.getInput("DxpExportBlobsSasLink");
 
         let serviceName = tl.getInput('ConnectedServiceNameARM',/*required*/true);
         let endpointObject= await new AzureRMEndpoint(serviceName).getEndpoint();
@@ -64,8 +60,8 @@ async function run() {
 
 
         // Execute script to get SAS token first
-        let yourScriptPath1 = path.join(path.resolve(__dirname), 'GetSasTokenFromDxp.ps1');
-        contents.push(`${yourScriptPath1} -ClientKey '${ClientKey}' -ClientSecret '${ClientSecret}' -ProjectId '${ProjectId}' -Environment '${Environment}' -DxpContainer '${DxpContainer}' -Timeout ${Timeout}`); 
+        // let yourScriptPath1 = path.join(path.resolve(__dirname), 'GetSasTokenFromDxp.ps1');
+        // contents.push(`${yourScriptPath1} -ClientKey '${ClientKey}' -ClientSecret '${ClientSecret}' -ProjectId '${ProjectId}' -Environment '${Environment}' -DxpContainer '${DxpContainer}' -Timeout ${Timeout}`); 
 
         const makeModuleAvailableScriptPath = path.join(path.resolve(__dirname), 'TryMakingModuleAvailable.ps1');
         contents.push(`${makeModuleAvailableScriptPath} -targetVersion '${targetAzurePs}' -platform Linux`);
@@ -80,8 +76,8 @@ async function run() {
         // contents.push(`${azStorageFilePath} -endpoint '${endpoint}'`);
 
         // Execute script to do the copy.
-        let yourScriptPath2 = path.join(path.resolve(__dirname), 'SyncDxpBlobsToAzure.ps1');
-        contents.push(`${yourScriptPath2} -SubscriptionId '${SubscriptionId}' -ResourceGroupName '${ResourceGroupName}' -StorageAccountName '${StorageAccountName}' -StorageAccountContainer '${StorageAccountContainer}' -CleanBeforeCopy ${CleanBeforeCopy} -Timeout ${Timeout}`); 
+        let yourScriptPath2 = path.join(path.resolve(__dirname), 'ImportDxpBlobsToAzure.ps1');
+        contents.push(`${yourScriptPath2} -DxpExportBlobsSasLink '${DxpExportBlobsSasLink}' -SubscriptionId '${SubscriptionId}' -ResourceGroupName '${ResourceGroupName}' -StorageAccountName '${StorageAccountName}' -StorageAccountContainer '${StorageAccountContainer}' -CleanBeforeCopy ${CleanBeforeCopy} -Timeout ${Timeout}`); 
 
 
 

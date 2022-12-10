@@ -76,8 +76,8 @@ try {
     
 
     if ($null -ne $SourceSasLink){
-        Write-Host "Setvariable DxpBlobsSasLink: $SourceSasLink"
-        Write-Host "##vso[task.setvariable variable=DxpBlobsSasLink;]$SourceSasLink"
+        Write-Host "Setvariable DxpExportBlobsSasLink: $SourceSasLink"
+        Write-Host "##vso[task.setvariable variable=DxpExportBlobsSasLink;]$SourceSasLink"
     }
 
 
