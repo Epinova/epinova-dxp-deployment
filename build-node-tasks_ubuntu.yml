@@ -37,6 +37,11 @@ steps:
 - template: build-node-task_ubuntu.yml
   parameters:
     extensionRoot: '$(System.DefaultWorkingDirectory)/src'
+    taskName: 'ExportBlobs/ExportBlobsV2'
+
+- template: build-node-task_ubuntu.yml
+  parameters:
+    extensionRoot: '$(System.DefaultWorkingDirectory)/src'
     taskName: 'ResetDeploy/ResetDeployV2'
 
 - template: build-node-task_ubuntu.yml
@@ -47,9 +52,9 @@ steps:
 - template: build-node-task_ubuntu.yml
   parameters:
     extensionRoot: '$(System.DefaultWorkingDirectory)/src'
-    taskName: 'SyncDxpBlobsToAzure/SyncDxpBlobsToAzureV2'
+    taskName: 'ImportDxpDbToAzure/ImportDxpDbToAzureV2'
 
 - template: build-node-task_ubuntu.yml
   parameters:
     extensionRoot: '$(System.DefaultWorkingDirectory)/src'
-    taskName: 'ImportDxpDbToAzure/ImportDxpDbToAzureV2'
+    taskName: 'ImportDxpBlobsToAzure/ImportDxpBlobsToAzureV2'

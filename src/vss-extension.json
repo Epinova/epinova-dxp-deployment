@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "epinova-dxp-deploy-extension",
     "publisher": "epinova-sweden",
-    "version": "2.5.65",
+    "version": "2.5.66",
     "name": "Epinova DXP deployment",
     "description": "Tasks to deploy NuGet package to Optimizely (formerly known as Episerver) DXP with DXP API (Former: DXC). Using EpiCloud module.",
     "public": true,
@@ -137,6 +137,16 @@
             }
         },
         {
+            "id": "dxp-exportblobs-buildtask",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "ExportBlobs"
+            }
+        },
+        {
             "id": "dxp-awaitstatus-buildtask",
             "type": "ms.vss-distributed-task.task",
             "targets": [
@@ -177,13 +187,13 @@
             }
         },
         {
-            "id": "dxp-syncdxpblobstoazure-buildtask",
+            "id": "dxp-importdxpblobstoazure-buildtask",
             "type": "ms.vss-distributed-task.task",
             "targets": [
                 "ms.vss-distributed-task.tasks"
             ],
             "properties": {
-                "name": "SyncDxpBlobsToAzure"
+                "name": "ImportDxpBlobsToAzure"
             }
         }
     ],
@@ -228,6 +238,9 @@
             "path": "ExportDb/ExportDbV2"
         },
         {
+            "path": "ExportBlobs/ExportBlobsV2"
+        },
+        {
             "path": "AwaitStatus/AwaitStatusV1"
         },
         {
@@ -249,7 +262,7 @@
             "path": "ImportDxpDbToAzure/ImportDxpDbToAzureV2"
         },
         {
-            "path": "SyncDxpBlobsToAzure/SyncDxpBlobsToAzureV2"
+            "path": "ImportDxpBlobsToAzure/ImportDxpBlobsToAzureV2"
         },
         {
             "path": "node_modules/vss-web-extension-sdk/lib",
