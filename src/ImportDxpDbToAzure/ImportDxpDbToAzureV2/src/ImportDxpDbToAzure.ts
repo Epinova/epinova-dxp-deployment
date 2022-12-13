@@ -30,7 +30,8 @@ async function run() {
 
         // Get the build and release details
         let DbExportDownloadLink = tl.getInput("DbExportDownloadLink");
-
+        console.log("DbExportDownloadLink");
+        console.log(DbExportDownloadLink);
         let serviceName = tl.getInput('ConnectedServiceNameARM',/*required*/true);
         let endpointObject= await new AzureRMEndpoint(serviceName).getEndpoint();
         let input_workingDirectory = "";
@@ -72,6 +73,7 @@ async function run() {
         contents.push(`${azFilePath} -endpoint '${endpoint}'`);
 
         let yourScriptPath = path.join(path.resolve(__dirname), 'ImportDxpDbToAzure.ps1');
+        console.log(`${yourScriptPath} -DbExportDownloadLink '${DbExportDownloadLink}' -SubscriptionId '${SubscriptionId}' -ResourceGroupName '${ResourceGroupName}' -StorageAccountName '${StorageAccountName}' -StorageAccountContainer '${StorageAccountContainer}'-SqlServerName '${SqlServerName}' -SqlDatabaseName '${SqlDatabaseName}' -RunDatabaseBackup ${RunDatabaseBackup} -SqlDatabaseLogin '${SqlDatabaseLogin}' -SqlDatabasePassword '${SqlDatabasePassword}' -SqlSku '${SqlSku}' -Timeout ${Timeout}`);
         contents.push(`${yourScriptPath} -DbExportDownloadLink '${DbExportDownloadLink}' -SubscriptionId '${SubscriptionId}' -ResourceGroupName '${ResourceGroupName}' -StorageAccountName '${StorageAccountName}' -StorageAccountContainer '${StorageAccountContainer}'-SqlServerName '${SqlServerName}' -SqlDatabaseName '${SqlDatabaseName}' -RunDatabaseBackup ${RunDatabaseBackup} -SqlDatabaseLogin '${SqlDatabaseLogin}' -SqlDatabasePassword '${SqlDatabasePassword}' -SqlSku '${SqlSku}' -Timeout ${Timeout}`); 
 
 
