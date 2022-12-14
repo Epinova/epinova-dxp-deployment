@@ -45,7 +45,7 @@ try {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
     #$SourceSasLink = $(DxpBlobsSasLink)
-    $SourceSasLink = Get-Content DxpBlobsSasLink.txt
+    #$SourceSasLink = Get-Content DxpBlobsSasLink.txt
 
     Write-Host "Inputs - ImportDxpBlobsToAzure:"
     # Write-Host "ClientKey:                  $clientKey"
@@ -76,8 +76,8 @@ try {
 
     #Set-ExecutionPolicy -Scope CurrentUser Unrestricted
     #Install-Module -Name "EpinovaDxpToolBucket" -MinimumVersion 0.5.0 -Verbose
-    Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
-    Get-InstalledModule -Name EpinovaAzureToolBucket
+    # Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
+    # Get-InstalledModule -Name EpinovaAzureToolBucket
 
     #Install-AzStorage
 
@@ -90,8 +90,30 @@ try {
 
 
     #Sync-DxpBlobsToAzure -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $environment -DxpContainer $dxpContainer -Timeout $timeout -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -StorageAccountContainer $storageAccountContainer -CleanBeforeCopy $cleanBeforeCopy
-    Copy-BlobsWithSas -SourceSasLink $dxpExportBlobsSasLink -DestinationSubscriptionId $SubscriptionId -DestinationResourceGroupName $ResourceGroupName -DestinationStorageAccountName $StorageAccountName -DestinationContainerName $StorageAccountContainer -CleanBeforeCopy $CleanBeforeCopy
+    # Copy-BlobsWithSas -SourceSasLink $dxpExportBlobsSasLink -DestinationSubscriptionId $SubscriptionId -DestinationResourceGroupName $ResourceGroupName -DestinationStorageAccountName $StorageAccountName -DestinationContainerName $StorageAccountContainer -CleanBeforeCopy $CleanBeforeCopy
 
+    $sasInfo = Get-SasInfo -SasLink $dxpExportBlobsSasLink
+
+    $sourceContext = New-AzStorageContext -StorageAccountName $sourceStorageAccountName -SASToken $sasInfo.SasToken -ErrorAction Stop
+    if ($null -eq $sourceContext) {
+        Write-Error "Could not create a context against source storage account $sourceStorageAccountName"
+        exit
+    }
+
+    $destinationStorageAccount = Get-AzStorageAccount -ResourceGroupName $DestinationResourceGroupName -Name $DestinationStorageAccountName
+    if ($null -eq $destinationStorageAccount) {
+        Write-Error "Could not create a context against destination storage account $DestinationStorageAccountName"
+        exit
+    }
+    $destinationContext = $destinationStorageAccount.Context 
+
+    if ($true -eq $CleanBeforeCopy){
+        Write-Host "Start remove all blobs in $DestinationContainerName."    
+        (Get-AzStorageBlob -Container $DestinationContainerName -Context $destinationContext | Sort-Object -Property LastModified -Descending) | Remove-AzStorageBlob
+        Write-Host "All blobs in $DestinationContainerName should be removed."    
+    }
+
+    Get-AzStorageBlob -Container $sourceContainerName -Context $sourceContext | Start-AzStorageBlobCopy -DestContainer $DestinationContainerName  -Context $destinationContext -Force
 
     ####################################################################################
 
