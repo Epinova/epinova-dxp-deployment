@@ -10,19 +10,20 @@ Remove-Module -Name "EpinovaAzureToolBucket" -Verbose -Force
 #Import-Module -Name E:\dev\EpinovaAzureToolBucket-psmodule\Modules\EpinovaAzureToolBucket -Verbose
 Import-Module -Name C:\dev\EpinovaAzureToolBucket-psmodule\Modules\EpinovaAzureToolBucket -Verbose
 
-$dbExportDownloadLink = ""
-$SubscriptionId = ""
-$ResourceGroupName = ""
-$StorageAccountName = ""
-$StorageAccountContainer = "db-backups"
-$sqlServerName = ""
-$sqlDatabaseName = "ImporttestFromDevOps"
-$sqlDatabaseLogin = ""
-$sqlDatabasePassword = ""
-$sqlSku = "Basic"
-$runDatabaseBackup = $false
-$timeout = 1800
 
+# $dbExportDownloadLink = ""
+# $SubscriptionId = ""
+# $ResourceGroupName = ""
+# $StorageAccountName = ""
+# $StorageAccountContainer = "db-backups"
+# $sqlServerName = ""
+# $sqlDatabaseName = "ImporttestFromDevOps"
+# $sqlDatabaseLogin = ""
+# $sqlDatabasePassword = ""
+# $sqlSku = "Basic"
+# $runDatabaseBackup = $false
+# $timeout = 1800
+# $destinationConnectionString = ""
 
 Set-ExecutionPolicy -Scope CurrentUser Unrestricted
 
@@ -38,85 +39,89 @@ Write-Host "SqlDatabaseLogin:           $sqlDatabaseLogin"
 Write-Host "SqlDatabasePassword:        **** (it is a secret...)"
 Write-Host "SqlSku:                     $sqlSku"
 Write-Host "RunDatabaseBackup:          $runDatabaseBackup"
-
 Write-Host "Timeout:                    $timeout"
+Write-Host "-----------------------------------------------------------"
 
 
 
 
 #Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
 #Get-InstalledModule -Name EpinovaAzureToolBucket
-$sourceContainerName = "bacpacs"
-$blob = "epicms_Integration_20221213192244.bacpac"
+# $sourceContainerName = "bacpacs"
+ $blob = "epicms_Integration_20221214123122.bacpac"
+# $sasToken = "?sv=2018-03-28&sr=b&sig=xxxVMFhQPGxl7ch7VHHwikryYysqStVfRUYqW4tg14EIJQ%3D&st=2022-12-14T12%3A34%3A25Z&se=2022-12-15T12%3A34%3A25Z&sp=r"
 
-$sourceContext = New-AzStorageContext -StorageAccountName "ehos01mstrn567v" -SASToken "?sv=2018-03-28&sr=b&sig=c1NqrGbQwInEYoWIGQEcgkBDJLk2RhwFIlyhcoSBAdY%3D&st=2022-12-13T19%3A25%3A48Z&se=2022-12-14T19%3A25%3A48Z&sp=r" -ErrorAction Stop
-    if ($null -eq $sourceContext) {
-        Write-Error "Could not create a context against source storage account ehos01mstrn567v"
-        exit
+
+$databaseExist = $false
+try {
+    $databaseResult = Get-AzSqlDatabase -ResourceGroupName $ResourceGroupName -ServerName $SqlServerName -DatabaseName $SqlDatabaseName -ErrorAction SilentlyContinue
+    if ($null -ne $databaseResult) {
+        $databaseExist = $true
+        Write-Host "Destination database $SqlDatabaseName exist."
+    } else {
+        Write-Host "Destination database $SqlDatabaseName does not exist."
     }
-#Write-Host $sourceContext.ConnectionString
-$sourceBlob = Get-AzStorageBlob -Container $sourceContainerName -Context $sourceContext -Blob $blob
-if ($null -ne $sourceBlob){
-    Write-Host "Found source blob $($sourceBlob.Name)"
-} else {
-    Write-Host "Found no source blob"
-    exit
-}
-#Get-AzStorageBlob -Container $sourceContainerName -Context $sourceContext -Blob $blob
-
-#$destinationStorageAccount = Get-AzStorageAccount -ResourceGroupName $ResourceGroupName -Name $StorageAccountName
-$destinationContext = New-AzStorageContext -ConnectionString "DefaultEndpointsProtocol=https;AccountName=bwoffshoreintra;AccountKey=N91hwoEL74xDlMrLcVdq/gs0AG3tr7+hZtH3BWfVYXk6dFokjfHXKNUb47vgAM7nWeeIQZWADNKyobgiA1MuQg=="
-# if ($null -eq $destinationStorageAccount) {
-#     Write-Error "Could not create a context against destination storage account $StorageAccountName"
-#     exit
-# }
-# $destinationContext = $destinationStorageAccount.Context 
-
-
-$existingBlob = Get-AzStorageBlob -Container $StorageAccountContainer -Context $destinationContext -Blob $blob -ErrorAction Ignore
-if ($null -ne $existingBlob){
-    Write-Host "Delete blob $($existingBlob.Name)"
-    (Get-AzStorageBlob -Container $StorageAccountContainer -Context $destinationContext -Blob $blob) | Remove-AzStorageBlob
-} else {
-    Write-Host "Found no existing blob $blob"
+} catch {
+    Write-Host "Destination database $SqlDatabaseName does not exist."
+    $error.clear()
 }
 
 
-Get-AzStorageBlob -Container $sourceContainerName -Context $sourceContext -Blob $blob | Start-AzStorageBlobCopy -DestContainer $StorageAccountContainer -Context $destinationContext -Force
-Write-Host "Sleep for 10 sec to see that the blob is created."
-Start-Sleep -s 10
-$blobInfo = Get-AzStorageBlob -Container $StorageAccountContainer -Context $destinationContext -Blob $blob
-if ($null -ne $blobInfo) {
-     Write-Host "Blob size: $($blobInfo.Length)"
-#     [Console]::Write("Copying.")
-#     while ($blobInfo.Length -eq 0) {
-#         Start-Sleep -s 10
-#         $blobInfo = Get-AzStorageBlob -Container $StorageAccountContainer -Context $destinationContext -Blob $blob
-#         [Console]::Write(".")
-#     }
-#     [Console]::WriteLine("")
+Set-Item Env:\SuppressAzurePowerShellBreakingChangeWarnings "true"
+ 
+if ($true -eq $databaseExist -and $true -eq $RunDatabaseBackup) {
+    Backup-Database -SubscriptionId $SubscriptionId `
+        -ResourceGroupName $ResourceGroupName `
+        -SqlServerName $SqlServerName `
+        -SqlDatabaseName $SqlDatabaseName `
+        -SqlDatabaseLogin $SqlDatabaseLogin `
+        -SqlDatabasePassword $SqlDatabasePassword `
+        -StorageAccountName $storageAccountName `
+        -StorageAccountContainer $StorageAccountContainer
+
+    Unpublish-Database -ResourceGroupName $ResourceGroupName `
+        -SqlServerName $SqlServerName `
+        -SqlDatabaseName $SqlDatabaseName
 }
 
+$importRequest = New-AzSqlDatabaseImport -ResourceGroupName $ResourceGroupName `
+     -ServerName $sqlServerName `
+     -DatabaseName $sqlDatabaseName `
+     -DatabaseMaxSizeBytes 10GB `
+     -StorageKeyType "SharedAccessKey" `
+     -StorageKey "?sv=2018-03-28&sr=b&sig=VMFhQPGxl7ch7VHHwikryYysqStVfRUYqW4tg14EIJQ%3D&st=2022-12-14T12%3A34%3A25Z&se=2022-12-15T12%3A34%3A25Z&sp=r" `
+     -StorageUri "https://ehos01mstrn567v.blob.core.windows.net/bacpacs/epicms_Integration_20221214123122.bacpac" `
+     -Edition "Standard" `
+     -ServiceObjectiveName "S3" `
+     -AdministratorLogin "$SqlDatabaseLogin" `
+     -AdministratorLoginPassword $(ConvertTo-SecureString -String $sqlDatabasePassword -AsPlainText -Force)
 
+    # Check import status and wait for the import to complete
+    $importStatus = Get-AzSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
+    [Console]::Write("Importing ${$blob}: ")
+    $lastStatusMessage = ""
+    while ($importStatus.Status -eq "InProgress")
+    {
+        Start-Sleep -s 10
+        $importStatus = Get-AzSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
+        if ($lastStatusMessage -ne $importStatus.StatusMessage) {
+            $lastStatusMessage = $importStatus.StatusMessage
+            $progress = $lastStatusMessage.Replace("Running, Progress = ", "")
+            [Console]::Write($progress)
+        }
+        [Console]::Write(".")
+    }
+    [Console]::WriteLine("")
+    $importStatus
+    Write-Host "Database '$SqlDatabaseName' is imported."
 
+    # Check the SKU on destination database after copy. 
+    $databaseResult = Get-AzSqlDatabase -ResourceGroupName $ResourceGroupName -ServerName $sqlServerName -DatabaseName $sqlDatabaseName
+    $databaseResult
+ 
+    # Scale down to S0 after import is complete
+    Set-AzSqlDatabase -ResourceGroupName $ResourceGroupName -DatabaseName $sqlDatabaseName -ServerName $sqlServerName -RequestedServiceObjectiveName $sqlSku #-Edition "Standard"
 
-
-#Copy-BlobsWithSas -SourceSasLink $dbExportDownloadLink -DestinationSubscriptionId $SubscriptionId -DestinationResourceGroupName $ResourceGroupName -DestinationStorageAccountName $StorageAccountName -DestinationContainerName $StorageAccountContainer -CleanBeforeCopy $false
-
-# . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
-# $sasInfo = Get-SasInfo -SasLink $dbExportDownloadLink
-
-# $BacpacFilename = $sasInfo.Blob
-
-# Write-Host "BacpacFilename: $BacpacFilename"
-
-# if ($null -eq $BacpacFilename -or $BacpacFilename.Length -eq 0){
-#     Write-Host "We do not have any database uploaded. Will exit."
-#     exit
-# }
-
-# Write-Host "Import-BacpacDatabase -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageAccountContainer $StorageAccountContainer -BacpacFilename $BacpacFilename -SqlServerName $sqlServerName -SqlDatabaseName $sqlDatabaseName -SqlDatabaseLogin $sqlDatabaseLogin -SqlDatabasePassword $sqlDatabasePassword -RunDatabaseBackup $runDatabaseBackup -SqlSku $sqlSku"
-# Import-BacpacDatabase -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageAccountContainer $StorageAccountContainer -BacpacFilename $BacpacFilename -SqlServerName $sqlServerName -SqlDatabaseName $sqlDatabaseName -SqlDatabaseLogin $sqlDatabaseLogin -SqlDatabasePassword $sqlDatabasePassword -RunDatabaseBackup $runDatabaseBackup -SqlSku $sqlSku
 
 # ####################################################################################
 
