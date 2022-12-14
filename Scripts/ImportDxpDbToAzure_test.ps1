@@ -11,9 +11,11 @@ Remove-Module -Name "EpinovaAzureToolBucket" -Verbose -Force
 Import-Module -Name C:\dev\EpinovaAzureToolBucket-psmodule\Modules\EpinovaAzureToolBucket -Verbose
 
 
+
+
 # $dbExportDownloadLink = ""
 # $SubscriptionId = ""
-# $ResourceGroupName = ""
+# $resourceGroupName = ""
 # $StorageAccountName = ""
 # $StorageAccountContainer = "db-backups"
 # $sqlServerName = ""
@@ -29,10 +31,10 @@ Set-ExecutionPolicy -Scope CurrentUser Unrestricted
 
 Write-Host "Inputs:"
 Write-Host "DbExportDownloadLink:       $dbExportDownloadLink"
-Write-Host "SubscriptionId:             $SubscriptionId"
-Write-Host "ResourceGroupName:          $ResourceGroupName"
-Write-Host "StorageAccountName:         $StorageAccountName"
-Write-Host "StorageAccountContainer:    $StorageAccountContainer"
+Write-Host "SubscriptionId:             $subscriptionId"
+Write-Host "ResourceGroupName:          $resourceGroupName"
+Write-Host "StorageAccountName:         $storageAccountName"
+Write-Host "StorageAccountContainer:    $storageAccountContainer"
 Write-Host "SqlServerName:              $sqlServerName"
 Write-Host "SqlDatabaseName:            $sqlDatabaseName"
 Write-Host "SqlDatabaseLogin:           $sqlDatabaseLogin"
@@ -42,63 +44,70 @@ Write-Host "RunDatabaseBackup:          $runDatabaseBackup"
 Write-Host "Timeout:                    $timeout"
 Write-Host "-----------------------------------------------------------"
 
+#. "E:\dev\epinova-dxp-deployment\Modules\EpinovaDxpDeploymentUtil.ps1"
+. "C:\dev\epinova-dxp-deployment\Modules\EpinovaDxpDeploymentUtil.ps1"
 
-
+$sasInfo = Get-SasInfo -SasLink $dbExportDownloadLink
 
 #Install-Module EpinovaAzureToolBucket -Scope CurrentUser -Force
 #Get-InstalledModule -Name EpinovaAzureToolBucket
-# $sourceContainerName = "bacpacs"
- $blob = "epicms_Integration_20221214123122.bacpac"
-# $sasToken = "?sv=2018-03-28&sr=b&sig=xxxVMFhQPGxl7ch7VHHwikryYysqStVfRUYqW4tg14EIJQ%3D&st=2022-12-14T12%3A34%3A25Z&se=2022-12-15T12%3A34%3A25Z&sp=r"
 
+Connect-AzAccount -SubscriptionId $subscriptionId
+$context = Get-AzContext -ListAvailable | Where-Object { $_.Name.Contains($subscriptionId) }
+$context
+Select-AzContext -Name $context.Name | Out-Null
+# Set-AzContext $context
 
 $databaseExist = $false
 try {
-    $databaseResult = Get-AzSqlDatabase -ResourceGroupName $ResourceGroupName -ServerName $SqlServerName -DatabaseName $SqlDatabaseName -ErrorAction SilentlyContinue
+    $databaseResult = Get-AzSqlDatabase -ResourceGroupName $resourceGroupName -ServerName $sqlServerName -DatabaseName $sqlDatabaseName -ErrorAction SilentlyContinue
     if ($null -ne $databaseResult) {
         $databaseExist = $true
-        Write-Host "Destination database $SqlDatabaseName exist."
+        Write-Host "Destination database $sqlDatabaseName exist."
     } else {
-        Write-Host "Destination database $SqlDatabaseName does not exist."
+        Write-Host "Destination database $sqlDatabaseName does not exist."
     }
 } catch {
-    Write-Host "Destination database $SqlDatabaseName does not exist."
+    Write-Host "Destination database $sqlDatabaseName does not exist."
     $error.clear()
 }
 
 
 Set-Item Env:\SuppressAzurePowerShellBreakingChangeWarnings "true"
  
-if ($true -eq $databaseExist -and $true -eq $RunDatabaseBackup) {
-    Backup-Database -SubscriptionId $SubscriptionId `
-        -ResourceGroupName $ResourceGroupName `
-        -SqlServerName $SqlServerName `
-        -SqlDatabaseName $SqlDatabaseName `
-        -SqlDatabaseLogin $SqlDatabaseLogin `
-        -SqlDatabasePassword $SqlDatabasePassword `
-        -StorageAccountName $storageAccountName `
-        -StorageAccountContainer $StorageAccountContainer
+if ($true -eq $databaseExist) {
+    if ($true -eq $runDatabaseBackup) {
+        Backup-Database -SubscriptionId $subscriptionId `
+            -ResourceGroupName $resourceGroupName `
+            -SqlServerName $sqlServerName `
+            -SqlDatabaseName $sqlDatabaseName `
+            -SqlDatabaseLogin $sqlDatabaseLogin `
+            -SqlDatabasePassword $sqlDatabasePassword `
+            -StorageAccountName $storageAccountName `
+            -StorageAccountContainer $storageAccountContainer
+    }
 
-    Unpublish-Database -ResourceGroupName $ResourceGroupName `
-        -SqlServerName $SqlServerName `
-        -SqlDatabaseName $SqlDatabaseName
+    Remove-AzSqlDatabase -ResourceGroupName $resourceGroupName -ServerName $sqlServerName -DatabaseName $sqlDatabaseName
+    Write-Host "Removed existing database $sqlDatabaseName."
 }
 
-$importRequest = New-AzSqlDatabaseImport -ResourceGroupName $ResourceGroupName `
+
+$importRequest = New-AzSqlDatabaseImport -ResourceGroupName $resourceGroupName `
      -ServerName $sqlServerName `
      -DatabaseName $sqlDatabaseName `
      -DatabaseMaxSizeBytes 10GB `
      -StorageKeyType "SharedAccessKey" `
-     -StorageKey "?sv=2018-03-28&sr=b&sig=VMFhQPGxl7ch7VHHwikryYysqStVfRUYqW4tg14EIJQ%3D&st=2022-12-14T12%3A34%3A25Z&se=2022-12-15T12%3A34%3A25Z&sp=r" `
-     -StorageUri "https://ehos01mstrn567v.blob.core.windows.net/bacpacs/epicms_Integration_20221214123122.bacpac" `
+     -StorageKey $sasInfo.SasToken `
+     -StorageUri $sasInfo.PathLink `
      -Edition "Standard" `
      -ServiceObjectiveName "S3" `
-     -AdministratorLogin "$SqlDatabaseLogin" `
+     -AdministratorLogin "$sqlDatabaseLogin" `
      -AdministratorLoginPassword $(ConvertTo-SecureString -String $sqlDatabasePassword -AsPlainText -Force)
 
+if ($null -ne $importRequest){
     # Check import status and wait for the import to complete
     $importStatus = Get-AzSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
-    [Console]::Write("Importing ${$blob}: ")
+    [Console]::Write("Importing $($sasInfo.Blob): ")
     $lastStatusMessage = ""
     while ($importStatus.Status -eq "InProgress")
     {
@@ -113,16 +122,18 @@ $importRequest = New-AzSqlDatabaseImport -ResourceGroupName $ResourceGroupName `
     }
     [Console]::WriteLine("")
     $importStatus
-    Write-Host "Database '$SqlDatabaseName' is imported."
+    Write-Host "Database '$sqlDatabaseName' is imported."
 
     # Check the SKU on destination database after copy. 
-    $databaseResult = Get-AzSqlDatabase -ResourceGroupName $ResourceGroupName -ServerName $sqlServerName -DatabaseName $sqlDatabaseName
+    $databaseResult = Get-AzSqlDatabase -ResourceGroupName $resourceGroupName -ServerName $sqlServerName -DatabaseName $sqlDatabaseName
     $databaseResult
  
     # Scale down to S0 after import is complete
-    Set-AzSqlDatabase -ResourceGroupName $ResourceGroupName -DatabaseName $sqlDatabaseName -ServerName $sqlServerName -RequestedServiceObjectiveName $sqlSku #-Edition "Standard"
+    Set-AzSqlDatabase -ResourceGroupName $resourceGroupName -DatabaseName $sqlDatabaseName -ServerName $sqlServerName -RequestedServiceObjectiveName $sqlSku #-Edition "Standard"
+
+}
 
 
-# ####################################################################################
+####################################################################################
 
-# Write-Host "---THE END---"
+Write-Host "---THE END---"

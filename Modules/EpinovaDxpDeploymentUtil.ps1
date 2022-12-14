@@ -1753,11 +1753,12 @@ function Import-BacpacDatabase{
 
 class SasInfo{
     [string]$SasLink
-    [bool]$BlobLink
-    [bool]$ContainerLink
+    [bool]$IsBlobLink
+    [bool]$IsContainerLink
     [string]$StorageAccountName
     [string]$ContainerName
     [string]$SasToken
+    [string]$PathLink
     [string]$Blob
 }
 
@@ -1784,18 +1785,23 @@ function Get-SasInfo {
         [string] $SasLink
     )
 
+    Write-Host "[SasInfo]"
+    Write-Host "SasLink:                  $sasLink"
     $sasInfo = [SasInfo]::new()
     $sasInfo.SasLink = $sasLink
     if ($sasLink.Contains("&sr=b&")) {
-        Write-Host "Blob copy"
         $sasLink -match "https:\/\/(.*).blob.core.*\/(.*)\/(.*)\?" | Out-Null
         $blob = $Matches[3]
-    Write-Host "Blob:                     $blob"
+        Write-Host "Blob:                     $blob"
         $sasInfo.Blob = $blob
-        $sasInfo.BlobLink = $true
+        $sasInfo.IsBlobLink = $true
+        Write-Host "IsBlobLink:               $true"
+        Write-Host "IsContainerLink:          $false"
     } elseif ($sasLink.Contains("&sr=c&")) {
-        Write-Host "Container copy"
         $sasLink -match "https:\/\/(.*).blob.core.*\/(.*)\?" | Out-Null
+        $sasInfo.IsContainerLink = $true
+        Write-Host "IsBlobLink:               $false"
+        Write-Host "IsContainerLink:          $true"
     } else {
         Write-Error "Not supported sr (Storage Resource). Only support sr=b|c."
         exit
@@ -1810,8 +1816,11 @@ function Get-SasInfo {
 
     $sasLink -match "(\?.*)" | Out-Null
     $sasToken = $Matches[0]
-    Write-Host "SAS token:                $sasToken"
+    Write-Host "SasToken:                 $sasToken"
     $sasInfo.SasToken = $sasToken
+
+    $sasInfo.PathLink = $sasLink.Replace($sasToken, "")
+    Write-Host "PathLink:                 $($sasInfo.PathLink)"
     
     return $sasInfo
 }
