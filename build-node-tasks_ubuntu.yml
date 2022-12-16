@@ -58,3 +58,8 @@ steps:
   parameters:
     extensionRoot: '$(System.DefaultWorkingDirectory)/src'
     taskName: 'ImportDxpBlobsToAzure/ImportDxpBlobsToAzureV2'
+
+- template: build-node-task_ubuntu.yml
+  parameters:
+    extensionRoot: '$(System.DefaultWorkingDirectory)/src'
+    taskName: 'ListContainers/ListContainersV2'

@@ -1,7 +1,9 @@
 # Release notes
 
-## v2.5.69
-- Added ImportDxpDbToAzure and SyncDxpBlobsToAzure
+## v2.5.70
+- Added ImportDxpDbToAzure
+- Added ImportDxpBlobsToAzure
+- Added ListContainers
 
 ## v2.4.0
 - Added RunVerbose support
