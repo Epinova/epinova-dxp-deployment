@@ -94,9 +94,9 @@ try {
 
     $sasInfo = Get-SasInfo -SasLink $dxpExportBlobsSasLink
 
-    $sourceContext = New-AzStorageContext -StorageAccountName $sourceStorageAccountName -SASToken $sasInfo.SasToken -ErrorAction Stop
+    $sourceContext = New-AzStorageContext -StorageAccountName $sasInfo.StorageAccountName -SASToken $sasInfo.SasToken -ErrorAction Stop
     if ($null -eq $sourceContext) {
-        Write-Error "Could not create a context against source storage account $sourceStorageAccountName"
+        Write-Error "Could not create a context against source storage account $($sasInfo.StorageAccountName)."
         exit
     }
 
