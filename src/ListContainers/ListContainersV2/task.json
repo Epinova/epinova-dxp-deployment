@@ -1,8 +1,8 @@
 {
     "id": "d43315ea-1b40-4e7a-bcd6-9252759b4d0e",
     "name": "DxpListContainers",
-    "friendlyName": "List containers (Optimizely DXP)",
-    "description": "List the containers in the specified environment. (Optimizely DXP, former Episerver DXC)",
+    "friendlyName": "DO NOT USE - List containers (Optimizely DXP)",
+    "description": "DO NOT USE - List the containers in the specified environment. (Optimizely DXP, former Episerver DXC)",
     "helpUrl": "https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/ListContainers.md",
     "helpMarkDown": "[Extension page](https://marketplace.visualstudio.com/items?itemName=epinova-sweden.epinova-dxp-deploy-extension)[Learn more about this task](https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/ListContainers.md)",
     "category": "Deploy",
@@ -13,7 +13,7 @@
     "version": {
         "Major": 2,
         "Minor": 0,
-        "Patch": 0
+        "Patch": 1
     },
     "groups": [
         {

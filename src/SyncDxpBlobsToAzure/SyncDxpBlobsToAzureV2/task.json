@@ -1,8 +1,8 @@
 {
     "id": "aa2f4809-6237-463d-bd2d-9c2ba17ddcc8",
     "name": "DxpSyncBlobsToAzure",
-    "friendlyName": "Sync DXP blobs to Azure (Optimizely DXP)",
-    "description": "Sync DXP blobs to a Azure storage account container. (Optimizely DXP, former Episerver DXC)",
+    "friendlyName": "DO NOT USE - Sync DXP blobs to Azure (Optimizely DXP)",
+    "description": "DO NOT USE - Sync DXP blobs to a Azure storage account container. (Optimizely DXP, former Episerver DXC)",
     "helpUrl": "https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/SyncDxpBlobsToAzure.md",
     "helpMarkDown": "[Extension page](https://marketplace.visualstudio.com/items?itemName=epinova-sweden.epinova-dxp-deploy-extension)[Learn more about this task](https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/SyncDxpBlobsToAzure.md)",
     "category": "Deploy",
@@ -13,7 +13,7 @@
     "version": {
         "Major": 2,
         "Minor": 1,
-        "Patch": 14
+        "Patch": 15
     },
     "groups": [
         {

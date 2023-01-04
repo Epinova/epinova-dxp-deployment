@@ -4,7 +4,7 @@ Remove-Module -Name "EpinovaDxpToolBucket" -Verbose
 #Remove-Module -Name "Az.Storage" -Verbose
 Import-Module -Name E:\dev\epinova-dxp-deployment\Modules\EpinovaDxpToolBucket -Verbose
 
-. E:\dev\ps-scripts\dxp-deployment\DxpProjects.ps1
+. E:\dev\temp\PowerShellSettingFiles\DxpProjects.ps1
 
 # [string] $clientKey = "xxx"
 # [string] $clientSecret = "xxx"
@@ -34,8 +34,8 @@ if ((Test-Path -Path $downloadFolder) -ne $true)
 
 #Invoke-DxpBlobsDownload -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment "Integration" -DownloadFolder "E:\dev\temp\_blobDownloads" -MaxFilesToDownload 10 -Container "Blobs" -OverwriteExistingFiles 1 -RetentionHours 2
 #Invoke-DxpBlobsDownload -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment "Integration" -DownloadFolder "E:\dev\temp\_blobDownloads" -MaxFilesToDownload 10 -Container "indutrade-portal-assets" -OverwriteExistingFiles 1 -RetentionHours 2
-
-$files = Invoke-DxpBlobsDownload -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $Environment -DownloadFolder $downloadFolder -MaxFilesToDownload 2 -Container "AppLogs"
+$downloadFolder = "F:\temp\forsea\dxp-inte-new"
+$files = Invoke-DxpBlobsDownload -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -DownloadFolder $downloadFolder -MaxFilesToDownload 2 -Container "mysitemedia"
 #Invoke-DxpBlobsDownload -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $Environment -DownloadFolder "E:\dev\temp\_blobDownloads" -MaxFilesToDownload 2 -Container "azure-web-logs"
 #$files = Invoke-DxpBlobsDownload -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Environment $Environment -DownloadFolder $downloadFolder -MaxFilesToDownload 2 -Container "azure-web-logs"
 Write-Host "€€€€€€€€€€€€€€€€€€€€€€€€€€€€"

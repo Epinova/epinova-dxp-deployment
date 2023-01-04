@@ -1,8 +1,8 @@
 {
     "id": "c9946ccb-0445-4dea-b8fa-75f209652823",
     "name": "DxpImportBlobsToAzure",
-    "friendlyName": "Import DXP blobs to Azure (Optimizely DXP)",
-    "description": "Import DXP blobs to a Azure storage account container. (Optimizely DXP, former Episerver DXC)",
+    "friendlyName": "DO NOT USE - Import DXP blobs to Azure (Optimizely DXP)",
+    "description": "DO NOT USE - Import DXP blobs to a Azure storage account container. (Optimizely DXP, former Episerver DXC)",
     "helpUrl": "https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/ImportDxpBlobsToAzure.md",
     "helpMarkDown": "[Extension page](https://marketplace.visualstudio.com/items?itemName=epinova-sweden.epinova-dxp-deploy-extension)[Learn more about this task](https://github.com/Epinova/epinova-dxp-deployment/blob/master/documentation/ImportDxpBlobsToAzure.md)",
     "category": "Deploy",
@@ -13,7 +13,7 @@
     "version": {
         "Major": 2,
         "Minor": 0,
-        "Patch": 5
+        "Patch": 6
     },
     "groups": [
         {
