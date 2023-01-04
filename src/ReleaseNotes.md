@@ -1,6 +1,6 @@
 # Release notes
 
-## v2.5.71
+## v2.5.73
 - Added ImportDxpDbToAzure
 - Added ImportDxpBlobsToAzure
 - Added ListContainers
