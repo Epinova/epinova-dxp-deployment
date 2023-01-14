@@ -1,6 +1,9 @@
 # Release notes
 
-## v2.4.1
+## v2.5.75
+- Added Pipelines NuGet
+
+## v2.4.0
 - Added RunVerbose support
 
 ## v2.3.2
