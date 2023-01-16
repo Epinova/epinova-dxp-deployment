@@ -18,6 +18,9 @@ Copy databases and blobs from source environment to target environment. Source: 
 ### [ContentCopy-ProdPrep.yml](content/.azuredevops/EpinovaOptimizelyDxpPipelines/ContentCopy-ProdPrep.yml)
 Copy databases and blobs from source environment to target environment. Source: Production, Target: Preproduction
 
+### [Export-CmsInteDb.yml](content/.azuredevops/EpinovaOptimizelyDxpPipelines/Export-CmsInteDb.yml)
+Create a backup of the CMS Integration database and create a download(SAS) link to be able to download the bacpac file.
+
 ### [Reset-IntePrepProd.yml](content/.azuredevops/EpinovaOptimizelyDxpPipelines/Reset-IntePrepProd.yml)
 Used when there is a environment that has for some reason stoped during deployment. If you need to reset you can run this pipeline.  
 It will start to look at the Integration environment and ask if the environmnet is in a state that can be reset. If so it will be reseted. If not it will go to 'Preproduction' and repeat. And in the end the same for the 'Production' environment. 
