@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
-    <PackageDescription>Epinova DXP extension - Pipelines NuGet $(GitLog). Package full of Optimizely DXP YML Pipelines</PackageDescription>
+    <PackageDescription>Epinova Optmizely DXP extension pipelines NuGet $(GitLog). Package full of Optimizely DXP YML Pipelines</PackageDescription>
     <Authors>$(GitContributors) @ Epinova</Authors>
-    <PackageTags>Epinova, DXP</PackageTags>
+    <PackageTags>Epinova, Optimizely, DXP</PackageTags>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
       <IncludeBuildOutput>false</IncludeBuildOutput>
       <IsPackable>true</IsPackable>
@@ -15,10 +15,8 @@
     
   <ItemGroup>
 	  <None Include="readme.md" Pack="true" PackagePath="\" />
-	  <None Include="build\Epinova.OptimizelyDxp.Pipelines.props" Pack="true" PackagePath="build\" />
-    <Content Include="readme.txt" Pack="true" PackagePath="content"></Content>
-    <Content Include="Reset-Inte.yml" Pack="true" PackagePath="content"></Content>
-    <Content Include="Reset-IntePrepProd.yml" Pack="true" PackagePath="content"></Content>
+    <None Include="build\**" Pack="true" PackagePath="build" />
+    <None Include="content\**" Pack="true" PackagePath="content" />
   </ItemGroup>
   
 </Project>

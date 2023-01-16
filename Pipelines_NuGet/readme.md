@@ -1,5 +1,5 @@
 # Epinova.OptimizelyDxp.Pipelines
-NuGet with YML pipelines that can be used in projects to setup pipelines for deployment to DXP fast and easy. 
+NuGet with YML pipelines that can be used in projects to setup pipelines for deployment to Optmizely DXP fast and easy. 
 
 ## Usage/Installation
 Add Epinova NuGet feed to your project/solution and you will be able to install 'Epinova.OptimizelyDxp.Pipelines' NuGet package from the feed.  
