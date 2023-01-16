@@ -15,8 +15,8 @@ stages:
     
     - checkout: none  # Don't sync sources
 
-    - task: DxpResetDeploy@1
-      displayName: 'Reset Integration'
+    - task: DxpResetDeploy@2
+      displayName: 'Reset DXP Integration environment'
       inputs:
         ClientKey: '$(ClientKey)'
         ClientSecret: '$(ClientSecret)'
@@ -33,8 +33,8 @@ stages:
 
     - checkout: none  # Don't sync sources
 
-    - task: DxpResetDeploy@1
-      displayName: 'Reset Preproduction'
+    - task: DxpResetDeploy@2
+      displayName: 'Reset DXP Preproduction environment'
       inputs:
         ClientKey: '$(ClientKey)'
         ClientSecret: '$(ClientSecret)'
@@ -51,8 +51,8 @@ stages:
 
     - checkout: none  # Don't sync sources
 
-    - task: DxpResetDeploy@1
-      displayName: 'Reset Production'
+    - task: DxpResetDeploy@2
+      displayName: 'Reset DXP Production environment'
       inputs:
         ClientKey: '$(ClientKey)'
         ClientSecret: '$(ClientSecret)'

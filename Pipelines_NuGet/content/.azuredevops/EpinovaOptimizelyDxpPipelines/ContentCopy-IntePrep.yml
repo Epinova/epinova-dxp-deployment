@@ -1,0 +1,23 @@
+trigger: none
+
+variables:
+- group: DXP-variables
+
+pool:
+  name: Azure Pipelines
+  vmImage: 'ubuntu-latest'
+
+steps:
+
+- checkout: none  # Don't sync sources
+
+- task: DxpContentCopy@2
+  displayName: 'Content copy Integration=>Preproduction'
+  inputs:
+    ClientKey: '$(ClientKey)'
+    ClientSecret: '$(ClientSecret)'
+    ProjectId: '$(DXP.ProjectId)'
+    Environment: 'IntePrep'
+    IncludeBlob: true
+    IncludeDb: true
+    Timeout: 10800
