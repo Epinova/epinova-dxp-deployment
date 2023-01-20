@@ -17,7 +17,7 @@ steps:
     ClientKey: '$(ClientKey)'
     ClientSecret: '$(ClientSecret)'
     ProjectId: '$(DXP.ProjectId)'
-    Environment: 'ProdPrep'
+    Environment: 'PrepInte'
     IncludeBlob: true
     IncludeDb: true
     Timeout: 10800
