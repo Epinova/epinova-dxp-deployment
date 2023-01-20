@@ -12,7 +12,7 @@ steps:
 - checkout: none  # Don't sync sources
 
 - task: DxpContentCopy@2
-  displayName: 'Content copy Preproduction=>Integration'
+  displayName: 'Content copy Production=>Preproduction'
   inputs:
     ClientKey: '$(ClientKey)'
     ClientSecret: '$(ClientSecret)'
