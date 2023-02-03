@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net6.0</TargetFrameworks>
+    <PackageDescription>Epinova Optmizely DXP extension pipelines NuGet $(GitLog). Package full of Optimizely DXP YML Pipelines</PackageDescription>
+    <Authors>$(GitContributors) @ Epinova</Authors>
+    <PackageTags>Epinova, Optimizely, DXP</PackageTags>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+      <IncludeBuildOutput>false</IncludeBuildOutput>
+      <IsPackable>true</IsPackable>
+      <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+      <Company>Epinova</Company>
+      <NoDefaultExcludes>true</NoDefaultExcludes>
+  </PropertyGroup>
+    
+  <ItemGroup>
+	  <None Include="readme.md" Pack="true" PackagePath="\" />
+    <None Include="build\**" Pack="true" PackagePath="build" />
+    <None Include="content\**" Pack="true" PackagePath="content" />
+  </ItemGroup>
+  
+</Project>

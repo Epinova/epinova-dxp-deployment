@@ -20,4 +20,9 @@ src/**/dist
 src/**/repo
 src/**/private
 src/**/test-output
-Pipelines_NuGet/obj/Debug/net6.0/
+
+Pipelines_NuGet/.vs
+Pipelines_NuGet/[Oo]bj
+Pipelines_NuGet/[Bb]in
+Pipelines_NuGet/[Dd]ebug
+Pipelines_NuGet/[Rr]elease

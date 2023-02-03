@@ -1,0 +1,90 @@
+trigger: none
+
+stages:
+  - stage: VisualTesting
+    jobs:
+    - job: VisualTesting
+      pool:
+        vmImage: 'ubuntu-latest'
+      variables:
+      - name: VisualTesting
+        value: $(Build.SourcesDirectory)/tests/IntegrationTests/VisualTests
+
+      steps:
+      - task: PowerShell@2
+        displayName: 'Calculate and save package.json hash'
+        inputs:
+          targetType: 'inline'
+          script: |
+            # generates a hash of all packages.config and saves each on a single line on 'packagesconfighash.txt'
+            Get-FileHash -Algorithm MD5 -Path (Get-ChildItem package.json -Recurse) >> packagejsonhash.txt
+            Write-Host "Hash File saved to $(VisualTesting)\packagesconfighash.txt"
+          workingDirectory: '$(VisualTesting)'
+
+      - task: CacheBeta@0 # speed up builds by caching packages folder
+        inputs:
+          key: npm|1|$(Agent.OS)|$(VisualTesting)/packagejsonhash.txt # hash map generated in previous step
+          path: $(VisualTesting)/node_modules
+          cacheHitVar: 'nuget_cache_hit' # variable that can be checked to see if it was successful
+        displayName: Cache node_modules
+        continueOnError: true
+        
+      - task: Npm@1
+        displayName: "NPM Set progress false (speedup)"
+        inputs:
+          command: custom
+          verbose: false
+          customCommand: "set progress=false"
+
+      - task: Npm@1
+        displayName: "npm ci"
+        inputs:
+          command: custom
+          workingDir: "$(VisualTesting)"
+          verbose: false
+          customCommand: "ci"
+      - task: DownloadPipelineArtifact@2
+        inputs:
+          buildType: 'specific'
+          project: '$(System.TeamProjectId)'
+          definition: '27'
+          buildVersionToDownload: 'latest'
+          artifactName: 'BackstopArtifacts'
+          targetPath: '$(Pipeline.Workspace)'
+        condition: succeededOrFailed()
+
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: '$(Pipeline.Workspace)'
+          Contents: '**/bitmaps_reference/**'
+          TargetFolder: '$(VisualTesting)/backstop_data/bitmaps_reference/'
+          CleanTargetFolder: true
+          OverWrite: true
+          flattenFolders: true
+        condition: succeededOrFailed()
+
+      - task: Npm@1
+        displayName: Run backstop
+        inputs:
+          command: 'custom'
+          workingDir: '$(VisualTesting)'
+          customCommand: 'run backstop:prep:ci'
+        condition: succeededOrFailed()
+
+      - task: PublishTestResults@2
+        displayName: 'Publish backstop the test reports'
+        inputs:
+          testResultsFiles: '**/ci_report/xunit.xml'
+          mergeTestResults: true
+          failTaskOnFailedTests: true
+          testRunTitle: 'Backstop'
+        condition: succeededOrFailed()
+        continueOnError: true
+        
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish backstop html test report'
+        inputs:
+          pathtoPublish: '$(VisualTesting)/backstop_data/'
+          artifactName: backstop
+        condition: succeededOrFailed()
+        continueOnError: true
