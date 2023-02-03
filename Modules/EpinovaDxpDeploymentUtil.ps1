@@ -872,19 +872,26 @@ function Write-ContextInfo {
 #Result Succeeded/Failed
 #If deploy nuget file size
     Write-Host "ContextInfo:"
-    Write-Host "Build.Repository.Uri:          $env:BUILD_REPOSITORY_URI"
-    #Write-Host "ClientSecret:       **** (it is a secret...)"
-    #Write-Host "ProjectId:          $projectId"
-    #Write-Host "TargetEnvironment:  $targetEnvironment"
-    #Write-Host "Timeout:            $timeout"
-    #Write-Host "RunVerbose:         $runVerbose"
+    Write-Host "Build.Repository.Uri:        $env:BUILD_REPOSITORY_URI"
+    Write-Host "Build.SourceBranchName:      $env:BUILD_SOURCEBRANCHNAME"
+    Write-Host "System.CollectionId:         $env:SYSTEM_COLLECTIONID"
+    Write-Host "System.CollectionUri:        $env:SYSTEM_COLLECTIONURI"
+    Write-Host "System.TeamProject:          $env:SYSTEM_TEAMPROJECT"
+    Write-Host "System.TeamProjectId:        $env:SYSTEM_TEAMPROJECTID"
 
-    $url = "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun"
+    Send-ContextInfo
+}
 
-$postParams = @{ 
-    "Task"="PStest"
+function Send-ContextInfo {
 
-    }
-$json = $postParams | ConvertTo-Json
-Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri $url -Body $json
+    try{
+        $url = "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun"
+        $postParams = @{ 
+            "Task"="PStest"
+        
+            }
+        $json = $postParams | ConvertTo-Json
+        Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri $url -Body $json #-TimeoutSec 2
+        }
+    catch {}
 }

@@ -13,7 +13,7 @@
     "version": {
         "Major": 2,
         "Minor": 6,
-        "Patch": 0
+        "Patch": 1
     },
     "groups": [
         {
@@ -32,7 +32,7 @@
             "isExpanded": false
         }
     ],
-    "releaseNotes": "v2.6.0: Conect info. \r\n v2.4.0: RunVerbose. v2.3.0 Additional Development Environment support",
+    "releaseNotes": "v2.6.0: Context info.\r\nv2.4.0: RunVerbose.\r\nv2.3.0 Additional Development Environment support",
     "minimumAgentVersion": "2.134.0",
     "inputs": [
         {
