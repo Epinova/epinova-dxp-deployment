@@ -879,4 +879,12 @@ function Write-ContextInfo {
     #Write-Host "Timeout:            $timeout"
     #Write-Host "RunVerbose:         $runVerbose"
 
+    $url = "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun"
+
+$postParams = @{ 
+    "Task"="PStest"
+
+    }
+$json = $postParams | ConvertTo-Json
+Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri $url -Body $json
 }

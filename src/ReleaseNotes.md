@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.6.0
+- Context info
+
 ## v2.5.75
 - Added Pipelines NuGet
 
