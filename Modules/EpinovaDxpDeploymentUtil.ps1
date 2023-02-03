@@ -858,3 +858,25 @@ function Publish-Package {
 
     return $uploadedPackage
 }
+
+function Write-ContextInfo {
+
+    #Agent.OS
+#Build.Repository.Uri
+#Build.SourceBranchName
+#System.CollectionId
+#System.CollectionUri
+#System.TeamProject
+#System.TeamProjectId
+#Execution time
+#Result Succeeded/Failed
+#If deploy nuget file size
+    Write-Host "ContextInfo:"
+    Write-Host "Build.Repository.Uri:          $env:BUILD_REPOSITORY_URI"
+    #Write-Host "ClientSecret:       **** (it is a secret...)"
+    #Write-Host "ProjectId:          $projectId"
+    #Write-Host "TargetEnvironment:  $targetEnvironment"
+    #Write-Host "Timeout:            $timeout"
+    #Write-Host "RunVerbose:         $runVerbose"
+
+}

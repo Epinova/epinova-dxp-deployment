@@ -44,6 +44,8 @@ try {
 
     Mount-PsModulesPath
 
+    Write-ContextInfo
+
     Initialize-EpiCload
     
     Write-DxpHostVersion

@@ -20,3 +20,4 @@ src/**/dist
 src/**/repo
 src/**/private
 src/**/test-output
+Pipelines_NuGet/obj/Debug/net6.0/
