@@ -43,6 +43,8 @@ try {
     . $deployUtilScript
 
     Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
+
+    $psContext = Write-ContextInfo -ProjectId $projectId
     # Mount-PsModulesPath
 
     # Write-ContextInfo
@@ -86,7 +88,7 @@ try {
         Write-Output "Will and can not do anything..."
     }
 
-    Write-ResultInfo
+    Write-ResultInfo $psContext
     ####################################################################################
     Write-Host "---THE END---"
 

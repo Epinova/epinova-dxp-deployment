@@ -863,7 +863,14 @@ function Publish-Package {
 #function 
 
 function Write-ContextInfo {
+    param
+	(
+		[Parameter(Mandatory = $true)]
+		[string]$ProjectId
+	)    
 
+    #$sw = [Diagnostics.Stopwatch]::StartNew()
+    #$sw.Start()
 
     Write-Host "ContextInfo:"
     Write-Host "Agent.OS:                    $env:AGENT_OS"
@@ -875,10 +882,18 @@ function Write-ContextInfo {
     Write-Host "System.TeamProjectId:        $env:SYSTEM_TEAMPROJECTID"
     $epiCloudVersion = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
     Write-Host "EpiCloud:                    $epiCloudVersion"
+    
     Write-Host "PSCommandPath:               $PSCommandPath"
-    Write-Host "PSVersionTable:              $PSVersionTable"
-    $scriptFile = [System.IO.Path]::GetFileNameWithoutExtension($PSCommandPath)
-    Write-Host "scriptFile:                  $scriptFile"
+    #/home/vsts/work/_tasks/DxpExpectStatus-TEST_110c8b88-efc8-5733-a456-4b79bd0273d1/2.6.4/ps_modules/EpinovaDxpDeploymentUtil.ps1
+
+    #Write-Host "PSVersionTable:              $PSVersionTable"
+    Write-Host "PSVersion:              $($PSVersionTable.PSVersion)"
+    Write-Host "PSEdition:              $($PSVersionTable.PSEdition)"
+
+    Write-Host "DxpProjectId:              $ProjectId"
+
+    #$scriptFile = [System.IO.Path]::GetFileNameWithoutExtension($PSCommandPath)
+    # no Write-Host "scriptFile:                  $scriptFile"
 
     $testVariable = "Test set variable in another function eariler in script."
 #Execution time
@@ -886,6 +901,8 @@ function Write-ContextInfo {
 #If deploy nuget file size
 
     Send-ContextInfo
+
+    return $testVariable
 }
 
 function Send-ContextInfo {
@@ -897,12 +914,22 @@ function Send-ContextInfo {
         
             }
         $json = $postParams | ConvertTo-Json
-        Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri $url -Body $json #-TimeoutSec 2
+        $postResult = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri $url -Body $json -TimeoutSec 2
+        Write-Host "ContextId:              $postResult"
         }
     catch {}
 }
 
 function Write-ResultInfo {
+    param
+	(
+		[Parameter(Mandatory = $true)]
+		[string]$testVariable
+	) 
+
+    #$sw.Stop()
+    #Write-Host "Stopped iteration after $($sw.Elapsed.TotalSeconds) seconds."
+
     Write-Host $testVariable
 }
 
@@ -937,8 +964,6 @@ function Initialize-EpinovaDxpScript {
 	)    
     
     Mount-PsModulesPath
-
-    Write-ContextInfo
 
     Initialize-EpiCload
     
