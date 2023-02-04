@@ -42,17 +42,18 @@ try {
     $deployUtilScript = Join-Path -Path $deployUtilScript -ChildPath "EpinovaDxpDeploymentUtil.ps1"
     . $deployUtilScript
 
-    Mount-PsModulesPath
+    Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
+    # Mount-PsModulesPath
 
-    Write-ContextInfo
+    # Write-ContextInfo
 
-    Initialize-EpiCload
+    # Initialize-EpiCload
     
-    Write-DxpHostVersion
+    # Write-DxpHostVersion
 
-    Test-DxpProjectId -ProjectId $projectId
+    # Test-DxpProjectId -ProjectId $projectId
 
-    Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
+    # Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
     $lastDeploy = Get-DxpLatestEnvironmentDeployment -ProjectId $projectId -TargetEnvironment $targetEnvironment
 
@@ -84,6 +85,8 @@ try {
         Write-Output "No history received from the specified target environment $targetEnvironment"
         Write-Output "Will and can not do anything..."
     }
+
+    Write-ResultInfo
     ####################################################################################
     Write-Host "---THE END---"
 

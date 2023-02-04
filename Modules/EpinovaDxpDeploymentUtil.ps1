@@ -551,6 +551,7 @@ function CheckWishes{
         PrintNewYearWish
     }
 }
+
 function PrintChristmasWish{
 
     Write-Host "                                                 |"
@@ -859,25 +860,30 @@ function Publish-Package {
     return $uploadedPackage
 }
 
+#function 
+
 function Write-ContextInfo {
 
-    #Agent.OS
-#Build.Repository.Uri
-#Build.SourceBranchName
-#System.CollectionId
-#System.CollectionUri
-#System.TeamProject
-#System.TeamProjectId
-#Execution time
-#Result Succeeded/Failed
-#If deploy nuget file size
+
     Write-Host "ContextInfo:"
+    Write-Host "Agent.OS:                    $env:AGENT_OS"
     Write-Host "Build.Repository.Uri:        $env:BUILD_REPOSITORY_URI"
     Write-Host "Build.SourceBranchName:      $env:BUILD_SOURCEBRANCHNAME"
     Write-Host "System.CollectionId:         $env:SYSTEM_COLLECTIONID"
     Write-Host "System.CollectionUri:        $env:SYSTEM_COLLECTIONURI"
     Write-Host "System.TeamProject:          $env:SYSTEM_TEAMPROJECT"
     Write-Host "System.TeamProjectId:        $env:SYSTEM_TEAMPROJECTID"
+    $epiCloudVersion = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
+    Write-Host "EpiCloud:                    $epiCloudVersion"
+    Write-Host "PSCommandPath:               $PSCommandPath"
+    Write-Host "PSVersionTable:              $PSVersionTable"
+    $scriptFile ([System.IO.Path]::GetFileNameWithoutExtension($PSCommandPath))
+    Write-Host "scriptFile:                  $scriptFile"
+
+    $testVariable = "Test set variable in another function eariler in script."
+#Execution time
+#Result Succeeded/Failed
+#If deploy nuget file size
 
     Send-ContextInfo
 }
@@ -894,4 +900,51 @@ function Send-ContextInfo {
         Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri $url -Body $json #-TimeoutSec 2
         }
     catch {}
+}
+
+function Write-ResultInfo {
+    Write-Host $testVariable
+}
+
+function Initialize-EpinovaDxpScript {
+<#
+    .SYNOPSIS
+        Print info and check some values before connection to the EpiCloud.
+
+    .DESCRIPTION
+        Print info and check some values before connection to the EpiCloud.
+
+    .PARAMETER ProjectId
+        The Optimizely DXP project id. (Guid)
+        
+    .PARAMETER ClientKey
+        The Optimizely DXP project ClientKey.
+
+    .PARAMETER ClientSecret
+        The Optimizely DXP project ClientSecret.
+
+    .EXAMPLE
+        Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
+    #>	
+    param
+	(
+		[Parameter(Mandatory = $true)]
+		[string]$ProjectId,
+		[Parameter(Mandatory = $true)]
+		[string]$ClientKey,
+		[Parameter(Mandatory = $true)]
+		[string]$ClientSecret
+	)    
+    
+    Mount-PsModulesPath
+
+    Write-ContextInfo
+
+    Initialize-EpiCload
+    
+    Write-DxpHostVersion
+
+    Test-DxpProjectId -ProjectId $projectId
+
+    Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 }
