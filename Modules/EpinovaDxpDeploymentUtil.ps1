@@ -877,7 +877,7 @@ function Write-ContextInfo {
     Write-Host "EpiCloud:                    $epiCloudVersion"
     Write-Host "PSCommandPath:               $PSCommandPath"
     Write-Host "PSVersionTable:              $PSVersionTable"
-    $scriptFile ([System.IO.Path]::GetFileNameWithoutExtension($PSCommandPath))
+    $scriptFile = [System.IO.Path]::GetFileNameWithoutExtension($PSCommandPath)
     Write-Host "scriptFile:                  $scriptFile"
 
     $testVariable = "Test set variable in another function eariler in script."
