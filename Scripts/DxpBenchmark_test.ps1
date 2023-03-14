@@ -1,28 +1,16 @@
-﻿
-# $url = "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun"
-
-# $postParams = @{ 
-#     "Task"="PStest"
-
-#     }
-# $json = $postParams | ConvertTo-Json
-
-
-# #Agent.OS
-# #Build.Repository.Uri
-# #Build.SourceBranchName
-# #System.CollectionId
-# #System.CollectionUri
-# #System.TeamProject
-# #System.TeamProjectId
-# #Execution time
-# #Result Succeeded/Failed
-# #If deploy nuget file size
+﻿function Send-ContextInfo {
+    # #Agent.OS
+    # #Build.Repository.Uri
+    # #Build.SourceBranchName
+    # #System.CollectionId
+    # #System.CollectionUri
+    # #System.TeamProject
+    # #System.TeamProjectId
+    # #Execution time
+    # #Result Succeeded/Failed
+    # #If deploy nuget file size
 
 
-# Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri $url -Body $json #-OutFile output.csv
-
-function Send-ContextInfo {
     #$url = "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun"
     $url = "https://localhost:7002/PipelineRun"
 
@@ -46,8 +34,14 @@ function Send-ContextInfo {
         "FileSize"="100"
         }
     $json = $postParams | ConvertTo-Json
-    Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri $url -Body $json
-    
+    $result = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri $url -Body $json
+    Write-Host $result
+    $sessionId = $result.sessionId
+    $message = $result.message
+    #$sessionId = ($result | ConvertTo-Json).sessionId
+    #$message = ($result | ConvertTo-Json).message
+    Write-Host $sessionId
+    Write-Host $message
 }
 
 Send-ContextInfo

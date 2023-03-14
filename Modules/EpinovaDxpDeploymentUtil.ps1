@@ -266,6 +266,8 @@ function Connect-DxpEpiCloud{
         [String] $ProjectId
     )
     Connect-EpiCloud -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId
+    Write-Host "##vso[task.setvariable variable=dxpprojectid;]$ProjectId"
+    Set-Variable -Name "dxpprojectid" -Value $ProjectId -Scope global
 }
 
 function Get-DxpEnvironmentDeployments{
@@ -865,12 +867,48 @@ function Publish-Package {
 function Write-ContextInfo {
     param
 	(
-		[Parameter(Mandatory = $true)]
-		[string]$ProjectId
+        [Parameter(Mandatory = $false)]
+		[string]$ProjectId, 
+        [Parameter(Mandatory = $false)]
+		[string]$SessionId, 
+        [Parameter(Mandatory = $false)]
+		[string]$Environment, 
+        [Parameter(Mandatory = $false)]
+		[int]$Elapsed = 0, 
+        [Parameter(Mandatory = $false)]
+		[string]$Result, 
+        [Parameter(Mandatory = $false)]
+		[int]$FileSize = 0
 	)    
 
     #$sw = [Diagnostics.Stopwatch]::StartNew()
     #$sw.Start()
+    if ($ProjectId){
+        Write-Host "##vso[task.setvariable variable=dxpprojectid;]$ProjectId"
+        Set-Variable -Name "dxpprojectid" -Value $Environment -Scope global
+    } elseif (Get-Variable -Name "dxpprojectid") {
+        $dxpprojectid = (Get-Variable -Name "dxpprojectid").value
+    } elseif ($(dxpprojectid)) {
+        $dxpprojectid = $(dxpprojectid)
+    }
+
+    if ($SessionId){
+        Write-Host "##vso[task.setvariable variable=dxpsessionid;]$SessionId"
+        Set-Variable -Name "dxpsessionid" -Value $Environment -Scope global
+    } elseif (Get-Variable -Name "dxpsessionid") {
+        $dxpsessionid = (Get-Variable -Name "dxpsessionid").value
+    } elseif ($(dxpprojectid)) {
+        $dxpsessionid = $(dxpsessionid)
+    }
+
+    if ($Environment){
+        Write-Host "##vso[task.setvariable variable=dxpenvironment;]$Environment"
+        Set-Variable -Name "dxpenvironment" -Value $Environment -Scope global
+    } elseif (Get-Variable -Name "dxpenvironment") {
+        $Environment = (Get-Variable -Name "dxpenvironment").value
+    } elseif ($(dxpenvironment)) {
+        $Environment = $(dxpenvironment)
+    }
 
     Write-Host "ContextInfo:"
     Write-Host "Agent.OS:                    $env:AGENT_OS"
@@ -884,15 +922,22 @@ function Write-ContextInfo {
     Write-Host "EpiCloud:                    $epiCloudVersion"
     
     Write-Host "PSCommandPath:               $PSCommandPath"
+    $PSCommandPath -match "^.*_tasks[\/|\\](.*)_.*[\/|\\](.*)[\/|\\]ps_modules[\/|\\]" | Out-Null
+    $taskName = $Matches[0]
+    $taskVersion = $Matches[1]
     #linux: /home/vsts/work/_tasks/DxpExpectStatus-TEST_110c8b88-efc8-5733-a456-4b79bd0273d1/2.6.5/ps_modules/EpinovaDxpDeploymentUtil.ps1
     #windo: D:\a\_tasks\DxpExpectStatus-TEST_110c8b88-efc8-5733-a456-4b79bd0273d1\2.6.5\ps_modules\EpinovaDxpDeploymentUtil.ps1
     #macos: /Users/runner/work/_tasks/DxpExpectStatus-TEST_110c8b88-efc8-5733-a456-4b79bd0273d1/2.6.5/ps_modules/EpinovaDxpDeploymentUtil.ps1
+    Write-Host "TaskName:               $taskName"
+    Write-Host "TaskVersion:            $taskVersion"
 
     #Write-Host "PSVersionTable:              $PSVersionTable"
     Write-Host "PSVersion:              $($PSVersionTable.PSVersion)"
     Write-Host "PSEdition:              $($PSVersionTable.PSEdition)"
 
-    Write-Host "DxpProjectId:              $ProjectId"
+    Write-Host "DxpProjectId:           $dxpprojectid"
+    Write-Host "DxpSessionId:           $dxpsessionid"
+    Write-Host "Environment:            $Environment"
 
     #$scriptFile = [System.IO.Path]::GetFileNameWithoutExtension($PSCommandPath)
     # no Write-Host "scriptFile:                  $scriptFile"
@@ -902,22 +947,63 @@ function Write-ContextInfo {
 #Result Succeeded/Failed
 #If deploy nuget file size
 
-    Send-ContextInfo
+    Send-ContextInfo -SessionId $dxpsessionid -ProjectId $dxpprojectid -Environment $Environment -Elapsed $Elapsed -Result $Result -FileSize $FileSize
+    #Send-ContextInfo -Environment $Environment -Elapsed $Elapsed -Result $Result -FileSize $FileSize
 
     return $testVariable
 }
 
 function Send-ContextInfo {
-
+    param
+	(
+		[Parameter(Mandatory = $true)]
+		[string]$SessionId,
+		[Parameter(Mandatory = $true)]
+		[string]$ProjectId,
+        [Parameter(Mandatory = $false)]
+		[string]$Environment, 
+        [Parameter(Mandatory = $false)]
+		[int]$Elapsed = 0, 
+        [Parameter(Mandatory = $false)]
+		[string]$Result, 
+        [Parameter(Mandatory = $false)]
+		[int]$FileSize = 0
+	)
     try{
         $url = "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun"
+        $epiCloudVersion = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
+        Write-Host "PSCommandPath:               $PSCommandPath"
+        $PSCommandPath -match "^.*_tasks[\/|\\](.*)_.*[\/|\\](.*)[\/|\\]ps_modules[\/|\\]" | Out-Null
+        $taskName = $Matches[0]
+        $taskVersion = $Matches[1]
+    
         $postParams = @{ 
-            "Task"="PStest"
-        
+            "SessionId"=$SessionId
+            "Task"=$taskName
+            "TaskVersion"=$taskVersion
+            "Environment"=$Environment
+            "DxpProjectId"=$ProjectId
+            "OrganisationId"=$env:SYSTEM_COLLECTIONID #System.CollectionId
+            "OrganisationName"=$env:SYSTEM_COLLECTIONURI #System.CollectionUri
+            "ProjectId"=$env:SYSTEM_TEAMPROJECTID #System.TeamProjectId
+            "ProjectName"=$env:SYSTEM_TEAMPROJECT #System.TeamProject
+            "Branch"=$env:BUILD_SOURCEBRANCHNAME #Build.SourceBranchName
+            "AgentOS"=$env:AGENT_OS #Agent.OS
+            "EpiCloudVersion"=$epiCloudVersion #Make sure that Initialize-EpiCload set variable that we can read.
+            "PowerShellVersion"=$PSVersionTable.PSVersion #$PSVersionTable
+            "PowerShellEdition"=$PSVersionTable.PSEdition #$PSVersionTable
+            "Elapsed"=$Elapsed
+            "Result"=$Result
+            "FileSize"=$FileSize
             }
         $json = $postParams | ConvertTo-Json
         $postResult = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri $url -Body $json -TimeoutSec 2
-        Write-Host "ContextId:              $postResult"
+        Write-Host $postResult
+        $sessionId = $result.sessionId
+        Write-Host "##vso[task.setvariable variable=dxpsessionid;]$sessionId"
+        Set-Variable -Name "dxpsessionid" -Value $sessionId -Scope global
+        #$message = $result.message
+        Write-Host $result.message
         }
     catch {}
 }
