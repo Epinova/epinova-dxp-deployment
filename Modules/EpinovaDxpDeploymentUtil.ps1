@@ -954,9 +954,9 @@ function Write-ContextInfo {
 function Send-ContextInfo {
     param
 	(
-		[Parameter(Mandatory = $true)]
+		[Parameter(Mandatory = $false)]
 		[string]$SessionId,
-		[Parameter(Mandatory = $true)]
+		[Parameter(Mandatory = $false)]
 		[string]$ProjectId,
         [Parameter(Mandatory = $false)]
 		[string]$Environment, 
