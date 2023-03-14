@@ -992,8 +992,8 @@ function Send-ContextInfo {
             "ProjectName"=$env:SYSTEM_TEAMPROJECT #System.TeamProject
             "Branch"=$env:BUILD_SOURCEBRANCHNAME #Build.SourceBranchName
             "AgentOS"=$env:AGENT_OS #Agent.OS
-            "EpiCloudVersion"=$epiCloudVersion #Make sure that Initialize-EpiCload set variable that we can read.
-            "PowerShellVersion"=$PSVersionTable.PSVersion #$PSVersionTable
+            "EpiCloudVersion"="v$($epiCloudVersion.Version.Major).$($epiCloudVersion.Version.Minor).$($epiCloudVersion.Version.Build)" #Make sure that Initialize-EpiCload set variable that we can read.
+            "PowerShellVersion"="v$($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor).$($PSVersionTable.PSVersion.Patch)" #$PSVersionTable
             "PowerShellEdition"=$PSVersionTable.PSEdition #$PSVersionTable
             "Elapsed"=$Elapsed
             "Result"=$Result
