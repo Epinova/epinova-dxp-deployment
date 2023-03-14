@@ -42,9 +42,13 @@ try {
     $deployUtilScript = Join-Path -Path $deployUtilScript -ChildPath "EpinovaDxpDeploymentUtil.ps1"
     . $deployUtilScript
 
+    $sw = [Diagnostics.Stopwatch]::StartNew()
+    $sw.Start()
+
+
     Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
-    $psContext = Write-ContextInfo -Environment $targetEnvironment
+    $psContext = Write-ContextInfo -ProjectId $projectId -Environment $targetEnvironment
     # Mount-PsModulesPath
 
     # Write-ContextInfo
@@ -88,7 +92,10 @@ try {
         Write-Output "Will and can not do anything..."
     }
 
-    Write-ResultInfo $psContext
+    $sw.Stop()
+
+    Write-ContextInfo -ProjectId $projectId -Environment $targetEnvironment -Elapsed $($sw.Elapsed.TotalSeconds) -Result "Some status" -FileSize 0
+    #Write-ResultInfo $psContext
     ####################################################################################
     Write-Host "---THE END---"
 

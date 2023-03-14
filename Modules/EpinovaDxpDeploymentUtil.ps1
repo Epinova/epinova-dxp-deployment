@@ -266,8 +266,6 @@ function Connect-DxpEpiCloud{
         [String] $ProjectId
     )
     Connect-EpiCloud -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId
-    Write-Host "##vso[task.setvariable variable=dxpprojectid;]$ProjectId"
-    Set-Variable -Name "dxpprojectid" -Value $ProjectId -Scope global
 }
 
 function Get-DxpEnvironmentDeployments{
@@ -883,32 +881,32 @@ function Write-ContextInfo {
 
     #$sw = [Diagnostics.Stopwatch]::StartNew()
     #$sw.Start()
-    if ($ProjectId){
-        Write-Host "##vso[task.setvariable variable=dxpprojectid;]$ProjectId"
-        Set-Variable -Name "dxpprojectid" -Value $Environment -Scope global
-    } elseif (Test-Path variable:global:dxpprojectid) {
-        $dxpprojectid = (Get-Variable -Name "dxpprojectid").value
-    } elseif ($(dxpprojectid)) {
-        $dxpprojectid = $(dxpprojectid)
-    }
+    # if ($ProjectId){
+    #     Write-Host "##vso[task.setvariable variable=dxpprojectid;]$ProjectId"
+    #     Set-Variable -Name "dxpprojectid" -Value $Environment -Scope global
+    # } elseif (Test-Path variable:global:dxpprojectid) {
+    #     $dxpprojectid = (Get-Variable -Name "dxpprojectid").value
+    # } elseif ($(dxpprojectid)) {
+    #     $dxpprojectid = $(dxpprojectid)
+    # }
 
-    if ($SessionId){
-        Write-Host "##vso[task.setvariable variable=dxpsessionid;]$SessionId"
-        Set-Variable -Name "dxpsessionid" -Value $Environment -Scope global
-    } elseif (Test-Path variable:global:dxpsessionid) {
-        $dxpsessionid = (Get-Variable -Name "dxpsessionid").value
-    } elseif ($(dxpprojectid)) {
-        $dxpsessionid = $(dxpsessionid)
-    }
+    # if ($SessionId){
+    #     Write-Host "##vso[task.setvariable variable=dxpsessionid;]$SessionId"
+    #     Set-Variable -Name "dxpsessionid" -Value $Environment -Scope global
+    # } elseif (Test-Path variable:global:dxpsessionid) {
+    #     $dxpsessionid = (Get-Variable -Name "dxpsessionid").value
+    # } elseif ($(dxpprojectid)) {
+    #     $dxpsessionid = $(dxpsessionid)
+    # }
 
-    if ($Environment){
-        Write-Host "##vso[task.setvariable variable=dxpenvironment;]$Environment"
-        Set-Variable -Name "dxpenvironment" -Value $Environment -Scope global
-    } elseif (Test-Path variable:global:dxpenvironment) {
-        $Environment = (Get-Variable -Name "dxpenvironment").value
-    } elseif ($(dxpenvironment)) {
-        $Environment = $(dxpenvironment)
-    }
+    # if ($Environment){
+    #     Write-Host "##vso[task.setvariable variable=dxpenvironment;]$Environment"
+    #     Set-Variable -Name "dxpenvironment" -Value $Environment -Scope global
+    # } elseif (Test-Path variable:global:dxpenvironment) {
+    #     $Environment = (Get-Variable -Name "dxpenvironment").value
+    # } elseif ($(dxpenvironment)) {
+    #     $Environment = $(dxpenvironment)
+    # }
 
     Write-Host "ContextInfo:"
     Write-Host "Agent.OS:                    $env:AGENT_OS"
@@ -935,8 +933,8 @@ function Write-ContextInfo {
     Write-Host "PSVersion:              $($PSVersionTable.PSVersion)"
     Write-Host "PSEdition:              $($PSVersionTable.PSEdition)"
 
-    Write-Host "DxpProjectId:           $dxpprojectid"
-    Write-Host "DxpSessionId:           $dxpsessionid"
+    Write-Host "DxpProjectId:           $ProjectId"
+    Write-Host "DxpSessionId:           $Sessionid"
     Write-Host "Environment:            $Environment"
 
     #$scriptFile = [System.IO.Path]::GetFileNameWithoutExtension($PSCommandPath)
@@ -947,7 +945,7 @@ function Write-ContextInfo {
 #Result Succeeded/Failed
 #If deploy nuget file size
 
-    Send-ContextInfo -SessionId $dxpsessionid -ProjectId $dxpprojectid -Environment $Environment -Elapsed $Elapsed -Result $Result -FileSize $FileSize
+    Send-ContextInfo -SessionId $Sessionid -ProjectId $Projectid -Environment $Environment -Elapsed $Elapsed -Result $Result -FileSize $FileSize
     #Send-ContextInfo -Environment $Environment -Elapsed $Elapsed -Result $Result -FileSize $FileSize
 
     return $testVariable
