@@ -1004,13 +1004,15 @@ function Send-ContextInfo {
         Write-Host "Start post"
         $postResult = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri $url -Body $json -TimeoutSec 2
         Write-Host $postResult
-        $sessionId = $result.sessionId
+        $sessionId = $postResult.sessionId
         Write-Host "##vso[task.setvariable variable=dxpsessionid;]$sessionId"
-        Set-Variable -Name "dxpsessionid" -Value $sessionId -Scope global
+        #Set-Variable -Name "dxpsessionid" -Value $sessionId -Scope global
         #$message = $result.message
-        Write-Host $result.message
+        Write-Host $postResult.message
         }
-    catch {}
+    catch {
+        Write-Host "Could not send Exception caught : $($_.Exception.ToString())"
+    }
 }
 
 function Write-ResultInfo {
