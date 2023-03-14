@@ -886,7 +886,7 @@ function Write-ContextInfo {
     if ($ProjectId){
         Write-Host "##vso[task.setvariable variable=dxpprojectid;]$ProjectId"
         Set-Variable -Name "dxpprojectid" -Value $Environment -Scope global
-    } elseif (Get-Variable -Name "dxpprojectid") {
+    } elseif (Test-Path variable:global:dxpprojectid) {
         $dxpprojectid = (Get-Variable -Name "dxpprojectid").value
     } elseif ($(dxpprojectid)) {
         $dxpprojectid = $(dxpprojectid)
@@ -895,7 +895,7 @@ function Write-ContextInfo {
     if ($SessionId){
         Write-Host "##vso[task.setvariable variable=dxpsessionid;]$SessionId"
         Set-Variable -Name "dxpsessionid" -Value $Environment -Scope global
-    } elseif (Get-Variable -Name "dxpsessionid") {
+    } elseif (Test-Path variable:global:dxpsessionid) {
         $dxpsessionid = (Get-Variable -Name "dxpsessionid").value
     } elseif ($(dxpprojectid)) {
         $dxpsessionid = $(dxpsessionid)
@@ -904,7 +904,7 @@ function Write-ContextInfo {
     if ($Environment){
         Write-Host "##vso[task.setvariable variable=dxpenvironment;]$Environment"
         Set-Variable -Name "dxpenvironment" -Value $Environment -Scope global
-    } elseif (Get-Variable -Name "dxpenvironment") {
+    } elseif (Test-Path variable:global:dxpenvironment) {
         $Environment = (Get-Variable -Name "dxpenvironment").value
     } elseif ($(dxpenvironment)) {
         $Environment = $(dxpenvironment)
