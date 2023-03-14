@@ -93,8 +93,8 @@ try {
     }
 
     $sw.Stop()
-
-    Write-ContextInfo -ProjectId $projectId -Environment $targetEnvironment -Elapsed $($sw.Elapsed.TotalSeconds) -Result "Some status" -FileSize 0
+    $elapsed = $sw.Elapsed.TotalSeconds
+    Write-ContextInfo -ProjectId $projectId -Environment $targetEnvironment -Elapsed $elapsed -Result "Some status" -FileSize 0
     #Write-ResultInfo $psContext
     ####################################################################################
     Write-Host "---THE END---"

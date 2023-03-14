@@ -908,34 +908,34 @@ function Write-ContextInfo {
     #     $Environment = $(dxpenvironment)
     # }
 
-    Write-Host "ContextInfo:"
-    Write-Host "Agent.OS:                    $env:AGENT_OS"
-    Write-Host "Build.Repository.Uri:        $env:BUILD_REPOSITORY_URI"
-    Write-Host "Build.SourceBranchName:      $env:BUILD_SOURCEBRANCHNAME"
-    Write-Host "System.CollectionId:         $env:SYSTEM_COLLECTIONID"
-    Write-Host "System.CollectionUri:        $env:SYSTEM_COLLECTIONURI"
-    Write-Host "System.TeamProject:          $env:SYSTEM_TEAMPROJECT"
-    Write-Host "System.TeamProjectId:        $env:SYSTEM_TEAMPROJECTID"
-    $epiCloudVersion = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
-    Write-Host "EpiCloud:                    $epiCloudVersion"
+    # Write-Host "ContextInfo:"
+    # Write-Host "Agent.OS:                    $env:AGENT_OS"
+    # Write-Host "Build.Repository.Uri:        $env:BUILD_REPOSITORY_URI"
+    # Write-Host "Build.SourceBranchName:      $env:BUILD_SOURCEBRANCHNAME"
+    # Write-Host "System.CollectionId:         $env:SYSTEM_COLLECTIONID"
+    # Write-Host "System.CollectionUri:        $env:SYSTEM_COLLECTIONURI"
+    # Write-Host "System.TeamProject:          $env:SYSTEM_TEAMPROJECT"
+    # Write-Host "System.TeamProjectId:        $env:SYSTEM_TEAMPROJECTID"
+    # $epiCloudVersion = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
+    # Write-Host "EpiCloud:                    $epiCloudVersion"
     
-    Write-Host "PSCommandPath:               $PSCommandPath"
-    $PSCommandPath -match "^.*_tasks[\/|\\](.*)_.*[\/|\\](.*)[\/|\\]ps_modules[\/|\\]" | Out-Null
-    $taskName = $Matches[0]
-    $taskVersion = $Matches[1]
-    #linux: /home/vsts/work/_tasks/DxpExpectStatus-TEST_110c8b88-efc8-5733-a456-4b79bd0273d1/2.6.5/ps_modules/EpinovaDxpDeploymentUtil.ps1
-    #windo: D:\a\_tasks\DxpExpectStatus-TEST_110c8b88-efc8-5733-a456-4b79bd0273d1\2.6.5\ps_modules\EpinovaDxpDeploymentUtil.ps1
-    #macos: /Users/runner/work/_tasks/DxpExpectStatus-TEST_110c8b88-efc8-5733-a456-4b79bd0273d1/2.6.5/ps_modules/EpinovaDxpDeploymentUtil.ps1
-    Write-Host "TaskName:               $taskName"
-    Write-Host "TaskVersion:            $taskVersion"
+    # Write-Host "PSCommandPath:               $PSCommandPath"
+    # $PSCommandPath -match "^.*_tasks[\/|\\](.*)_.*[\/|\\](.*)[\/|\\]ps_modules[\/|\\]" | Out-Null
+    # $taskName = $Matches[1]
+    # $taskVersion = $Matches[2]
+    # #linux: /home/vsts/work/_tasks/DxpExpectStatus-TEST_110c8b88-efc8-5733-a456-4b79bd0273d1/2.6.5/ps_modules/EpinovaDxpDeploymentUtil.ps1
+    # #windo: D:\a\_tasks\DxpExpectStatus-TEST_110c8b88-efc8-5733-a456-4b79bd0273d1\2.6.5\ps_modules\EpinovaDxpDeploymentUtil.ps1
+    # #macos: /Users/runner/work/_tasks/DxpExpectStatus-TEST_110c8b88-efc8-5733-a456-4b79bd0273d1/2.6.5/ps_modules/EpinovaDxpDeploymentUtil.ps1
+    # Write-Host "TaskName:               $taskName"
+    # Write-Host "TaskVersion:            $taskVersion"
 
-    #Write-Host "PSVersionTable:              $PSVersionTable"
-    Write-Host "PSVersion:              $($PSVersionTable.PSVersion)"
-    Write-Host "PSEdition:              $($PSVersionTable.PSEdition)"
+    # #Write-Host "PSVersionTable:              $PSVersionTable"
+    # Write-Host "PSVersion:              $($PSVersionTable.PSVersion)"
+    # Write-Host "PSEdition:              $($PSVersionTable.PSEdition)"
 
-    Write-Host "DxpProjectId:           $ProjectId"
-    Write-Host "DxpSessionId:           $Sessionid"
-    Write-Host "Environment:            $Environment"
+    # Write-Host "DxpProjectId:           $ProjectId"
+    # Write-Host "DxpSessionId:           $Sessionid"
+    # Write-Host "Environment:            $Environment"
 
     #$scriptFile = [System.IO.Path]::GetFileNameWithoutExtension($PSCommandPath)
     # no Write-Host "scriptFile:                  $scriptFile"
@@ -945,7 +945,9 @@ function Write-ContextInfo {
 #Result Succeeded/Failed
 #If deploy nuget file size
 
+    Write-Host "Before send"
     Send-ContextInfo -SessionId $Sessionid -ProjectId $Projectid -Environment $Environment -Elapsed $Elapsed -Result $Result -FileSize $FileSize
+    Write-Host "After send"
     #Send-ContextInfo -Environment $Environment -Elapsed $Elapsed -Result $Result -FileSize $FileSize
 
     return $testVariable
@@ -972,9 +974,12 @@ function Send-ContextInfo {
         $epiCloudVersion = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
         Write-Host "PSCommandPath:               $PSCommandPath"
         $PSCommandPath -match "^.*_tasks[\/|\\](.*)_.*[\/|\\](.*)[\/|\\]ps_modules[\/|\\]" | Out-Null
-        $taskName = $Matches[0]
-        $taskVersion = $Matches[1]
-    
+        $taskName = $Matches[1]
+        $taskVersion = $Matches[2]
+
+        $env:SYSTEM_COLLECTIONURI -match "^.*\/(.*)\/" | Out-Null
+        $orgName = $Matches[1]
+
         $postParams = @{ 
             "SessionId"=$SessionId
             "Task"=$taskName
@@ -982,7 +987,7 @@ function Send-ContextInfo {
             "Environment"=$Environment
             "DxpProjectId"=$ProjectId
             "OrganisationId"=$env:SYSTEM_COLLECTIONID #System.CollectionId
-            "OrganisationName"=$env:SYSTEM_COLLECTIONURI #System.CollectionUri
+            "OrganisationName"=$orgName #System.CollectionUri
             "ProjectId"=$env:SYSTEM_TEAMPROJECTID #System.TeamProjectId
             "ProjectName"=$env:SYSTEM_TEAMPROJECT #System.TeamProject
             "Branch"=$env:BUILD_SOURCEBRANCHNAME #Build.SourceBranchName
@@ -995,6 +1000,8 @@ function Send-ContextInfo {
             "FileSize"=$FileSize
             }
         $json = $postParams | ConvertTo-Json
+        Write-Host $json
+        Write-Host "Start post"
         $postResult = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri $url -Body $json -TimeoutSec 2
         Write-Host $postResult
         $sessionId = $result.sessionId
