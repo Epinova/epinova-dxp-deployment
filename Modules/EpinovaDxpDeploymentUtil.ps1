@@ -867,8 +867,8 @@ function Write-ContextInfo {
 		# [string]$ProjectId, 
         [Parameter(Mandatory = $false)]
 		[string]$SessionId, 
-        [Parameter(Mandatory = $false)]
-		[string]$Environment, 
+        # [Parameter(Mandatory = $false)]
+		# [string]$Environment, 
         [Parameter(Mandatory = $false)]
 		[string]$TargetEnvironment, 
         [Parameter(Mandatory = $false)]

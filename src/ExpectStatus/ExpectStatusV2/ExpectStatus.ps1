@@ -47,7 +47,7 @@ try {
 
     Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
-    $psContext = Write-ContextInfo -ProjectId $projectId -Environment $targetEnvironment
+    $psContext = Write-ContextInfo -Environment $targetEnvironment
     # Mount-PsModulesPath
 
     # Write-ContextInfo
