@@ -45,7 +45,6 @@ try {
     $sw = [Diagnostics.Stopwatch]::StartNew()
     $sw.Start()
 
-
     Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
     $psContext = Write-ContextInfo -ProjectId $projectId -Environment $targetEnvironment
@@ -79,11 +78,16 @@ try {
 
         if ($true -eq $inExpectedStatus) {
             Write-Host "Status is as expected."
+            $psContext.Result = "Succeeded"
         }
         else {
             Write-Warning "$targetEnvironment is not in expected status $expectedStatus. (Current:$($lastDeploy.status))."
             Write-Host "##vso[task.logissue type=error]$targetEnvironment is not in expected status $expectedStatus. (Current:$($lastDeploy.status))."
             Write-Error "$targetEnvironment is not in expected status $expectedStatus. (Current:$($lastDeploy.status))." -ErrorAction Stop
+            $psContext.Result = "Not expected status"
+            $sw.Stop()
+            $psContext.Elapsed = $sw.Elapsed.TotalSeconds
+            Write-Host Send-BenchmarkInfo -psContext $psContext
             exit 1
         }
     }
@@ -93,8 +97,10 @@ try {
     }
 
     $sw.Stop()
-    $elapsed = $sw.Elapsed.TotalSeconds
-    Write-ContextInfo -ProjectId $projectId -Environment $targetEnvironment -Elapsed $elapsed -Result "Some status" -FileSize 0
+    #Write-ContextInfo -ProjectId $projectId -Environment $targetEnvironment -Elapsed $elapsed -Result "Succeeded" -FileSize 0
+    $psContext.Result = "Succeeded"
+    $psContext.Elapsed = $sw.Elapsed.TotalSeconds
+    Write-Host Send-BenchmarkInfo -psContext $psContext
     #Write-ResultInfo $psContext
     ####################################################################################
     Write-Host "---THE END---"
