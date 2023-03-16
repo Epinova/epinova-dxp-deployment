@@ -867,8 +867,8 @@ function Write-ContextInfo {
 		# [string]$ProjectId, 
         [Parameter(Mandatory = $false)]
 		[string]$SessionId, 
-        # [Parameter(Mandatory = $false)]
-		# [string]$Environment, 
+        [Parameter(Mandatory = $false)]
+		[string]$Environment, 
         [Parameter(Mandatory = $false)]
 		[string]$TargetEnvironment, 
         [Parameter(Mandatory = $false)]
@@ -892,56 +892,56 @@ function Write-ContextInfo {
 
         #Write-Host "Sneaky:" + $clientKey
 
-    $epiCloudModule = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
-    $epiCloudVersion = "v$($epiCloudModule.Version.Major).$($epiCloudModule.Version.Minor).$($epiCloudModule.Version.Build)"
+        $epiCloudModule = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
+        $epiCloudVersion = "v$($epiCloudModule.Version.Major).$($epiCloudModule.Version.Minor).$($epiCloudModule.Version.Build)"
 
-    $PSCommandPath -match "^.*_tasks[\/|\\](.*)_.*[\/|\\](.*)[\/|\\]ps_modules[\/|\\]" | Out-Null
-    $taskName = $Matches[1]
-    $taskVersion = $Matches[2]
+        $PSCommandPath -match "^.*_tasks[\/|\\](.*)_.*[\/|\\](.*)[\/|\\]ps_modules[\/|\\]" | Out-Null
+        $taskName = $Matches[1]
+        $taskVersion = $Matches[2]
 
-    $env:SYSTEM_COLLECTIONURI -match "^.*\/(.*)\/" | Out-Null
-    $orgName = $Matches[1]
+        $env:SYSTEM_COLLECTIONURI -match "^.*\/(.*)\/" | Out-Null
+        $orgName = $Matches[1]
 
-    $psVersion = "v$($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor).$($PSVersionTable.PSVersion.Patch)"
-    $psEdition = $PSVersionTable.PSEdition
+        $psVersion = "v$($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor).$($PSVersionTable.PSVersion.Patch)"
+        $psEdition = $PSVersionTable.PSEdition
 
-    Write-Host "ContextInfo:"
-    Write-Host "Agent.OS:                    $env:AGENT_OS"
-    Write-Host "Build.SourceBranchName:      $env:BUILD_SOURCEBRANCHNAME"
-    Write-Host "System.CollectionUri:        $env:SYSTEM_COLLECTIONURI"
-    Write-Host "System.TeamProject:          $env:SYSTEM_TEAMPROJECT"
-    Write-Host "EpiCloudVersion:             $epiCloudVersion"
-    Write-Host "PowerShellVersion:           $psVersion"
-    Write-Host "PowerShellEdition:           $psEdition"
-    Write-Host "Environment:                 $Environment"
-    Write-Host "TargetEnvironment:           $TargetEnvironment"
+        Write-Host "ContextInfo:"
+        Write-Host "Agent.OS:                    $env:AGENT_OS"
+        Write-Host "Build.SourceBranchName:      $env:BUILD_SOURCEBRANCHNAME"
+        Write-Host "System.CollectionUri:        $env:SYSTEM_COLLECTIONURI"
+        Write-Host "System.TeamProject:          $env:SYSTEM_TEAMPROJECT"
+        Write-Host "EpiCloudVersion:             $epiCloudVersion"
+        Write-Host "PowerShellVersion:           $psVersion"
+        Write-Host "PowerShellEdition:           $psEdition"
+        Write-Host "Environment:                 $Environment"
+        Write-Host "TargetEnvironment:           $TargetEnvironment"
 
-    $psContext = @{ 
-        "SessionId"=$SessionId
-        "Task"=$taskName
-        "TaskVersion"=$taskVersion
-        "Environment"=$Environment
-        "TargetEnvironment"=$TargetEnvironment
-        "DxpProjectId"=$projectId
-        "OrganisationId"=$env:SYSTEM_COLLECTIONID #System.CollectionId
-        "OrganisationName"=$orgName #System.CollectionUri
-        "ProjectId"=$env:SYSTEM_TEAMPROJECTID #System.TeamProjectId
-        "ProjectName"=$env:SYSTEM_TEAMPROJECT #System.TeamProject
-        "Branch"=$env:BUILD_SOURCEBRANCHNAME #Build.SourceBranchName
-        "AgentOS"=$env:AGENT_OS #Agent.OS
-        "EpiCloudVersion"=$epiCloudVersion
-        "PowerShellVersion"=$psVersion
-        "PowerShellEdition"=$psEdition
-        "Elapsed"=$Elapsed
-        "Result"=$Result
-        "FileSize"=$FileSize
-        }
+        $psContext = @{ 
+            "SessionId"=$SessionId
+            "Task"=$taskName
+            "TaskVersion"=$taskVersion
+            "Environment"=$Environment
+            "TargetEnvironment"=$TargetEnvironment
+            "DxpProjectId"=$projectId
+            "OrganisationId"=$env:SYSTEM_COLLECTIONID #System.CollectionId
+            "OrganisationName"=$orgName #System.CollectionUri
+            "ProjectId"=$env:SYSTEM_TEAMPROJECTID #System.TeamProjectId
+            "ProjectName"=$env:SYSTEM_TEAMPROJECT #System.TeamProject
+            "Branch"=$env:BUILD_SOURCEBRANCHNAME #Build.SourceBranchName
+            "AgentOS"=$env:AGENT_OS #Agent.OS
+            "EpiCloudVersion"=$epiCloudVersion
+            "PowerShellVersion"=$psVersion
+            "PowerShellEdition"=$psEdition
+            "Elapsed"=$Elapsed
+            "Result"=$Result
+            "FileSize"=$FileSize
+            }
 
-    #Write-Host "Before send"
-    #Send-ContextInfo -SessionId $Sessionid -ProjectId $Projectid -Environment $Environment -TargetEnvironment $TargetEnvironment -Elapsed $Elapsed -Result $Result -FileSize $FileSize
-    #$psContext = Send-ContextInfo -psContext $psContext
-    #Write-Host "After send"
-    #Send-ContextInfo -Environment $Environment -Elapsed $Elapsed -Result $Result -FileSize $FileSize
+        #Write-Host "Before send"
+        #Send-ContextInfo -SessionId $Sessionid -ProjectId $Projectid -Environment $Environment -TargetEnvironment $TargetEnvironment -Elapsed $Elapsed -Result $Result -FileSize $FileSize
+        #$psContext = Send-ContextInfo -psContext $psContext
+        #Write-Host "After send"
+        #Send-ContextInfo -Environment $Environment -Elapsed $Elapsed -Result $Result -FileSize $FileSize
 
         return $psContext
 
