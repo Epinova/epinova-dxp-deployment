@@ -11,13 +11,14 @@
     # #If deploy nuget file size
 
 
-    #$url = "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun"
-    $url = "https://localhost:7002/PipelineRun"
+    $url = "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun"
+    #$url = "https://localhost:7002/PipelineRun"
 
     $postParams = @{ 
         "SessionId"="ACAC16F0-7CEF-4CFB-AD7B-DC626E9682C4"
         "Task"="DxpExpectStatus-TEST"
         "TaskVersion"="2.6.12"
+        "TargetEnvironment"=""
         "Environment"="Integration"
         "DxpProjectId"="c0f148a9-03e0-4d5d-a585-af47003dee5f"
         "OrganisationId"="4465472b-c920-479f-975c-32466c8c89b9" #System.CollectionId
@@ -32,6 +33,7 @@
         "Elapsed"=0
         "Result"=""
         "FileSize"=0
+        "PackageName"="asdasdsda.nuget"
         }
     $json = $postParams | ConvertTo-Json
     $result = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri $url -Body $json

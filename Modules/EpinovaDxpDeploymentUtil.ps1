@@ -867,16 +867,6 @@ function Write-ContextInfo {
 		# [string]$ProjectId, 
         [Parameter(Mandatory = $false)]
 		[string]$SessionId, 
-        [Parameter(Mandatory = $false)]
-		[string]$Environment, 
-        [Parameter(Mandatory = $false)]
-		[string]$TargetEnvironment, 
-        [Parameter(Mandatory = $false)]
-		[int]$Elapsed = 0, 
-        [Parameter(Mandatory = $false)]
-		[string]$Result, 
-        [Parameter(Mandatory = $false)]
-		[int]$FileSize = 0
 	)    
 
     # if ($SessionId){
@@ -913,15 +903,15 @@ function Write-ContextInfo {
         Write-Host "EpiCloudVersion:             $epiCloudVersion"
         Write-Host "PowerShellVersion:           $psVersionValue"
         Write-Host "PowerShellEdition:           $psEditionValue"
-        Write-Host "Environment:                 $Environment"
-        Write-Host "TargetEnvironment:           $TargetEnvironment"
+        Write-Host "Environment:                 $sourceEnvironment"
+        Write-Host "TargetEnvironment:           $targetEnvironment"
 
         $psContext = @{ 
             "SessionId"=$SessionId
             "Task"=$taskName
             "TaskVersion"=$taskVersion
-            "Environment"=$Environment
-            "TargetEnvironment"=$TargetEnvironment
+            "Environment"=$sourceEnvironment
+            "TargetEnvironment"=$targetEnvironment
             "DxpProjectId"=$projectId
             "OrganisationId"=$env:SYSTEM_COLLECTIONID #System.CollectionId
             "OrganisationName"=$orgName #System.CollectionUri
@@ -935,6 +925,7 @@ function Write-ContextInfo {
             "Elapsed"=$Elapsed
             "Result"=$Result
             "FileSize"=$FileSize
+            "PackageName"=$myPackages
             }
 
         #Write-Host "Before send"
