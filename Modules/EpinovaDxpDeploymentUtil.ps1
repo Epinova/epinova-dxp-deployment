@@ -911,8 +911,8 @@ function Write-ContextInfo {
         Write-Host "System.CollectionUri:        $env:SYSTEM_COLLECTIONURI"
         Write-Host "System.TeamProject:          $env:SYSTEM_TEAMPROJECT"
         Write-Host "EpiCloudVersion:             $epiCloudVersion"
-        Write-Host "PowerShellVersion:           $psVersion"
-        Write-Host "PowerShellEdition:           $psEdition"
+        Write-Host "PowerShellVersion:           $psVersionValue"
+        Write-Host "PowerShellEdition:           $psEditionValue"
         Write-Host "Environment:                 $Environment"
         Write-Host "TargetEnvironment:           $TargetEnvironment"
 
