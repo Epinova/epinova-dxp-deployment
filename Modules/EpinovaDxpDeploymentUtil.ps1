@@ -866,7 +866,7 @@ function Write-ContextInfo {
         # [Parameter(Mandatory = $false)]
 		# [string]$ProjectId, 
         [Parameter(Mandatory = $false)]
-		[string]$SessionId, 
+		[string]$SessionId
 	)    
 
     # if ($SessionId){
@@ -999,7 +999,7 @@ function Send-BenchmarkInfo {
         $json = $psContext | ConvertTo-Json
         Write-Host $json
         #Write-Host "Start post"
-        $benchmarkResult = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri $url -Body $json -TimeoutSec 5
+        $benchmarkResult = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri $url -Body $json -TimeoutSec 15
         Write-Host $benchmarkResult
         $sessionId = $benchmarkResult.sessionId
         Write-Host "##vso[task.setvariable variable=dxpsessionid;]$sessionId"
