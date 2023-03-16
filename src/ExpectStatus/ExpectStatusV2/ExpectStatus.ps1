@@ -84,9 +84,9 @@ try {
             Write-Warning "$targetEnvironment is not in expected status $expectedStatus. (Current:$($lastDeploy.status))."
             Write-Host "##vso[task.logissue type=error]$targetEnvironment is not in expected status $expectedStatus. (Current:$($lastDeploy.status))."
             Write-Error "$targetEnvironment is not in expected status $expectedStatus. (Current:$($lastDeploy.status))." -ErrorAction Stop
-            $psContext.Result = "Not expected status"
+            $result = "Not expected status"
             $sw.Stop()
-            $psContext.Elapsed = $sw.Elapsed.TotalSeconds
+            #$psContext.Elapsed = $sw.Elapsed.TotalSeconds
             Write-Host Send-BenchmarkInfo -psContext $psContext
             exit 1
         }
@@ -98,8 +98,7 @@ try {
 
     $sw.Stop()
     #Write-ContextInfo -ProjectId $projectId -Environment $targetEnvironment -Elapsed $elapsed -Result "Succeeded" -FileSize 0
-    $psContext.Result = "Succeeded"
-    $psContext.Elapsed = $sw.Elapsed.TotalSeconds
+    $result = "Succeeded"
     Write-Host Send-BenchmarkInfo -psContext $psContext
     #Write-ResultInfo $psContext
     ####################################################################################

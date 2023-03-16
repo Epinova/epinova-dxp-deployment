@@ -863,8 +863,8 @@ function Publish-Package {
 function Write-ContextInfo {
     param
 	(
-        [Parameter(Mandatory = $false)]
-		[string]$ProjectId, 
+        # [Parameter(Mandatory = $false)]
+		# [string]$ProjectId, 
         [Parameter(Mandatory = $false)]
 		[string]$SessionId, 
         [Parameter(Mandatory = $false)]
@@ -890,11 +890,11 @@ function Write-ContextInfo {
 
     try{
 
-        Write-Host "Sneaky:" + $clientKey
+        #Write-Host "Sneaky:" + $clientKey
 
     $epiCloudModule = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
     $epiCloudVersion = "v$($epiCloudModule.Version.Major).$($epiCloudModule.Version.Minor).$($epiCloudModule.Version.Build)"
-    #Write-Host "PSCommandPath:               $PSCommandPath"
+
     $PSCommandPath -match "^.*_tasks[\/|\\](.*)_.*[\/|\\](.*)[\/|\\]ps_modules[\/|\\]" | Out-Null
     $taskName = $Matches[1]
     $taskVersion = $Matches[2]
@@ -922,7 +922,7 @@ function Write-ContextInfo {
         "TaskVersion"=$taskVersion
         "Environment"=$Environment
         "TargetEnvironment"=$TargetEnvironment
-        "DxpProjectId"=$ProjectId
+        "DxpProjectId"=$projectId
         "OrganisationId"=$env:SYSTEM_COLLECTIONID #System.CollectionId
         "OrganisationName"=$orgName #System.CollectionUri
         "ProjectId"=$env:SYSTEM_TEAMPROJECTID #System.TeamProjectId
@@ -947,7 +947,7 @@ function Write-ContextInfo {
 
     }
     catch {
-        Write-Debug "Could not create benchmark data : $($_.Exception.ToString())"
+        Write-Verbose "Could not create benchmark data : $($_.Exception.ToString())"
         Write-Host "Failed to create benchmark data."
     }
 }
@@ -960,6 +960,14 @@ function Send-BenchmarkInfo {
 	)
     try{
         $url = "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun"
+
+        if ($null -ne $result){
+            $psContext.Result = $result
+        }
+        if ($null -ne $sw){
+            $psContext.Elapsed = $sw.Elapsed.TotalSeconds
+        }
+
         # $epiCloudVersion = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
         # Write-Host "PSCommandPath:               $PSCommandPath"
         # $PSCommandPath -match "^.*_tasks[\/|\\](.*)_.*[\/|\\](.*)[\/|\\]ps_modules[\/|\\]" | Out-Null
@@ -1001,7 +1009,7 @@ function Send-BenchmarkInfo {
         return $benchmarkResult.Message;
         }
     catch {
-        Write-Debug "Could not send Exception caught : $($_.Exception.ToString())"
+        Write-Verbose "Could not send Exception caught : $($_.Exception.ToString())"
         Write-Host "Failed to send benchmark data."
     }
 }
