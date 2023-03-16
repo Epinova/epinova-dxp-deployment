@@ -962,10 +962,18 @@ function Send-BenchmarkInfo {
         $url = "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun"
 
         if ($null -ne $result){
-            $psContext.Result = $result
+            if ($psContext.Contains("Result")) {
+                $psContext.Result = $result
+            } else {
+                $psContext.Add("Result", $result)            
+            }
         }
         if ($null -ne $sw){
-            $psContext.Elapsed = $sw.Elapsed.TotalSeconds
+            if ($psContext.Contains("Elapsed")) {
+                $psContext.Elapsed = $sw.Elapsed.TotalSeconds
+            } else {
+                $psContext.Add("Elapsed", $sw.Elapsed.TotalSeconds)            
+            }
         }
 
         # $epiCloudVersion = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
@@ -1000,7 +1008,7 @@ function Send-BenchmarkInfo {
         $json = $psContext | ConvertTo-Json
         Write-Host $json
         #Write-Host "Start post"
-        $benchmarkResult = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri $url -Body $json -TimeoutSec 2
+        $benchmarkResult = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri $url -Body $json -TimeoutSec 5
         Write-Host $benchmarkResult
         $sessionId = $benchmarkResult.sessionId
         Write-Host "##vso[task.setvariable variable=dxpsessionid;]$sessionId"
