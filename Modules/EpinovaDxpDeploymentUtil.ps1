@@ -902,8 +902,8 @@ function Write-ContextInfo {
         $env:SYSTEM_COLLECTIONURI -match "^.*\/(.*)\/" | Out-Null
         $orgName = $Matches[1]
 
-        $psVersion = "v$($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor).$($PSVersionTable.PSVersion.Patch)"
-        $psEdition = $PSVersionTable.PSEdition
+        $psVersionValue = "v$($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor).$($PSVersionTable.PSVersion.Patch)"
+        $psEditionValue = $PSVersionTable.PSEdition
 
         Write-Host "ContextInfo:"
         Write-Host "Agent.OS:                    $env:AGENT_OS"
@@ -930,8 +930,8 @@ function Write-ContextInfo {
             "Branch"=$env:BUILD_SOURCEBRANCHNAME #Build.SourceBranchName
             "AgentOS"=$env:AGENT_OS #Agent.OS
             "EpiCloudVersion"=$epiCloudVersion
-            "PowerShellVersion"=$psVersion
-            "PowerShellEdition"=$psEdition
+            "PowerShellVersion"=$psVersionValue
+            "PowerShellEdition"=$psEditionValue
             "Elapsed"=$Elapsed
             "Result"=$Result
             "FileSize"=$FileSize
