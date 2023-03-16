@@ -860,8 +860,6 @@ function Publish-Package {
     return $uploadedPackage
 }
 
-#function 
-
 function Write-ContextInfo {
     param
 	(
@@ -881,17 +879,6 @@ function Write-ContextInfo {
 		[int]$FileSize = 0
 	)    
 
-    #$sw = [Diagnostics.Stopwatch]::StartNew()
-    #$sw.Start()
-    # if ($ProjectId){
-    #     Write-Host "##vso[task.setvariable variable=dxpprojectid;]$ProjectId"
-    #     Set-Variable -Name "dxpprojectid" -Value $Environment -Scope global
-    # } elseif (Test-Path variable:global:dxpprojectid) {
-    #     $dxpprojectid = (Get-Variable -Name "dxpprojectid").value
-    # } elseif ($(dxpprojectid)) {
-    #     $dxpprojectid = $(dxpprojectid)
-    # }
-
     # if ($SessionId){
     #     Write-Host "##vso[task.setvariable variable=dxpsessionid;]$SessionId"
     #     Set-Variable -Name "dxpsessionid" -Value $Environment -Scope global
@@ -901,36 +888,33 @@ function Write-ContextInfo {
     #     $dxpsessionid = $(dxpsessionid)
     # }
 
-    # if ($Environment){
-    #     Write-Host "##vso[task.setvariable variable=dxpenvironment;]$Environment"
-    #     Set-Variable -Name "dxpenvironment" -Value $Environment -Scope global
-    # } elseif (Test-Path variable:global:dxpenvironment) {
-    #     $Environment = (Get-Variable -Name "dxpenvironment").value
-    # } elseif ($(dxpenvironment)) {
-    #     $Environment = $(dxpenvironment)
-    # }
+    try{
 
-    
+        Write-Host "Sneaky:" + $clientKey
 
-    Write-Host "ContextInfo:"
-    Write-Host "Agent.OS:                    $env:AGENT_OS"
-    Write-Host "Build.SourceBranchName:      $env:BUILD_SOURCEBRANCHNAME"
-    Write-Host "System.CollectionUri:        $env:SYSTEM_COLLECTIONURI"
-    Write-Host "System.TeamProject:          $env:SYSTEM_TEAMPROJECT"
-    Write-Host "EpiCloudVersion:             v$($epiCloudVersion.Version.Major).$($epiCloudVersion.Version.Minor).$($epiCloudVersion.Version.Build)"
-    Write-Host "PowerShellVersion:           v$($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor).$($PSVersionTable.PSVersion.Patch)"
-    Write-Host "PowerShellEdition:           $($PSVersionTable.PSEdition)"
-    Write-Host "Environment:                 $Environment"
-    Write-Host "TargetEnvironment:           $TargetEnvironment"
-
-    $epiCloudVersion = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
-    Write-Host "PSCommandPath:               $PSCommandPath"
+    $epiCloudModule = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
+    $epiCloudVersion = "v$($epiCloudModule.Version.Major).$($epiCloudModule.Version.Minor).$($epiCloudModule.Version.Build)"
+    #Write-Host "PSCommandPath:               $PSCommandPath"
     $PSCommandPath -match "^.*_tasks[\/|\\](.*)_.*[\/|\\](.*)[\/|\\]ps_modules[\/|\\]" | Out-Null
     $taskName = $Matches[1]
     $taskVersion = $Matches[2]
 
     $env:SYSTEM_COLLECTIONURI -match "^.*\/(.*)\/" | Out-Null
     $orgName = $Matches[1]
+
+    $psVersion = "v$($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor).$($PSVersionTable.PSVersion.Patch)"
+    $psEdition = $PSVersionTable.PSEdition
+
+    Write-Host "ContextInfo:"
+    Write-Host "Agent.OS:                    $env:AGENT_OS"
+    Write-Host "Build.SourceBranchName:      $env:BUILD_SOURCEBRANCHNAME"
+    Write-Host "System.CollectionUri:        $env:SYSTEM_COLLECTIONURI"
+    Write-Host "System.TeamProject:          $env:SYSTEM_TEAMPROJECT"
+    Write-Host "EpiCloudVersion:             $epiCloudVersion"
+    Write-Host "PowerShellVersion:           $psVersion"
+    Write-Host "PowerShellEdition:           $psEdition"
+    Write-Host "Environment:                 $Environment"
+    Write-Host "TargetEnvironment:           $TargetEnvironment"
 
     $psContext = @{ 
         "SessionId"=$SessionId
@@ -945,21 +929,27 @@ function Write-ContextInfo {
         "ProjectName"=$env:SYSTEM_TEAMPROJECT #System.TeamProject
         "Branch"=$env:BUILD_SOURCEBRANCHNAME #Build.SourceBranchName
         "AgentOS"=$env:AGENT_OS #Agent.OS
-        "EpiCloudVersion"="v$($epiCloudVersion.Version.Major).$($epiCloudVersion.Version.Minor).$($epiCloudVersion.Version.Build)"
-        "PowerShellVersion"="v$($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor).$($PSVersionTable.PSVersion.Patch)" #$PSVersionTable
-        "PowerShellEdition"=$PSVersionTable.PSEdition #$PSVersionTable
+        "EpiCloudVersion"=$epiCloudVersion
+        "PowerShellVersion"=$psVersion
+        "PowerShellEdition"=$psEdition
         "Elapsed"=$Elapsed
         "Result"=$Result
         "FileSize"=$FileSize
         }
 
-    Write-Host "Before send"
+    #Write-Host "Before send"
     #Send-ContextInfo -SessionId $Sessionid -ProjectId $Projectid -Environment $Environment -TargetEnvironment $TargetEnvironment -Elapsed $Elapsed -Result $Result -FileSize $FileSize
     #$psContext = Send-ContextInfo -psContext $psContext
-    Write-Host "After send"
+    #Write-Host "After send"
     #Send-ContextInfo -Environment $Environment -Elapsed $Elapsed -Result $Result -FileSize $FileSize
 
-    return $psContext
+        return $psContext
+
+    }
+    catch {
+        Write-Debug "Could not create benchmark data : $($_.Exception.ToString())"
+        Write-Host "Failed to create benchmark data."
+    }
 }
 
 function Send-BenchmarkInfo {
@@ -1001,7 +991,7 @@ function Send-BenchmarkInfo {
         #     }
         $json = $psContext | ConvertTo-Json
         Write-Host $json
-        Write-Host "Start post"
+        #Write-Host "Start post"
         $benchmarkResult = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri $url -Body $json -TimeoutSec 2
         Write-Host $benchmarkResult
         $sessionId = $benchmarkResult.sessionId
@@ -1011,7 +1001,8 @@ function Send-BenchmarkInfo {
         return $benchmarkResult.Message;
         }
     catch {
-        Write-Host "Could not send Exception caught : $($_.Exception.ToString())"
+        Write-Debug "Could not send Exception caught : $($_.Exception.ToString())"
+        Write-Host "Failed to send benchmark data."
     }
 }
 
