@@ -87,7 +87,8 @@ try {
             $result = "Not expected status"
             $sw.Stop()
             #$psContext.Elapsed = $sw.Elapsed.TotalSeconds
-            Write-Host Send-BenchmarkInfo -psContext $psContext
+            $benchmarkInfo = Send-BenchmarkInfo -psContext $psContext
+            Write-Host $benchmarkInfo
             exit 1
         }
     }
@@ -99,8 +100,9 @@ try {
     $sw.Stop()
     #Write-ContextInfo -ProjectId $projectId -Environment $targetEnvironment -Elapsed $elapsed -Result "Succeeded" -FileSize 0
     $result = "Succeeded"
-    Write-Host Send-BenchmarkInfo -psContext $psContext
-    #Write-ResultInfo $psContext
+    $benchmarkInfo = Send-BenchmarkInfo -psContext $psContext
+    Write-Host $benchmarkInfo
+#Write-ResultInfo $psContext
     ####################################################################################
     Write-Host "---THE END---"
 
