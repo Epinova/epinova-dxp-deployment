@@ -881,6 +881,7 @@ function Write-ContextInfo {
     try{
 
         #Write-Host "Sneaky:" + $clientKey
+        if ($null -eq $sourceEnvironment){ $sourceEnvironment = "" }
 
         $epiCloudModule = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
         $epiCloudVersion = "v$($epiCloudModule.Version.Major).$($epiCloudModule.Version.Minor).$($epiCloudModule.Version.Build)"
@@ -892,7 +893,9 @@ function Write-ContextInfo {
         $env:SYSTEM_COLLECTIONURI -match "^.*\/(.*)\/" | Out-Null
         $orgName = $Matches[1]
 
-        $psVersionValue = "v$($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor).$($PSVersionTable.PSVersion.Patch)"
+        Write-Host $PSVersionTable.PSVersion
+        #$psVersionValue = "v$($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor).$($PSVersionTable.PSVersion.Patch)"
+        $psVersionValue = "v$($PSVersionTable.PSVersion)"
         $psEditionValue = $PSVersionTable.PSEdition
 
         Write-Host "ContextInfo:"
@@ -952,19 +955,38 @@ function Send-BenchmarkInfo {
     try{
         $url = "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun"
 
-        if ($null -ne $result){
-            if ($psContext.Contains("Result")) {
-                $psContext.Result = $result
-            } else {
-                $psContext.Add("Result", $result)            
+        if ($null -ne $psContext){
+            Write-Host $psContext
+            Write-Host "Result=>$result"
+            Write-Host "Elapsed=>$($sw.Elapsed.TotalSeconds)"
+    
+            if ($null -ne $result){
+                if ($psContext.Contains("Result")) {
+                    $psContext.Result = $result
+                } else {
+                    $psContext.Add("Result", $result)            
+                }
             }
-        }
-        if ($null -ne $sw){
-            if ($psContext.Contains("Elapsed")) {
-                $psContext.Elapsed = $sw.Elapsed.TotalSeconds
-            } else {
-                $psContext.Add("Elapsed", $sw.Elapsed.TotalSeconds)            
+            if ($null -ne $sw){
+                if ($psContext.Contains("Elapsed")) {
+                    $psContext.Elapsed = $sw.Elapsed.TotalSeconds
+                } else {
+                    $psContext.Add("Elapsed", $sw.Elapsed.TotalSeconds)            
+                }
             }
+
+            $json = $psContext | ConvertTo-Json
+            Write-Host $json
+            #Write-Host "Start post"
+            $benchmarkResult = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri $url -Body $json -TimeoutSec 15
+            Write-Host $benchmarkResult
+            $sessionId = $benchmarkResult.sessionId
+            Write-Host "##vso[task.setvariable variable=dxpsessionid;]$sessionId"
+            $psContext.SessionId = $sessionId
+            $resultMessage = $benchmarkResult.Message
+        } else {
+            Write-Verbose "Could not send without benchmark data."
+            $resultMessage = "No benchmark data..."
         }
 
         # $epiCloudVersion = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
@@ -996,16 +1018,8 @@ function Send-BenchmarkInfo {
         #     "Result"=$Result
         #     "FileSize"=$FileSize
         #     }
-        $json = $psContext | ConvertTo-Json
-        Write-Host $json
-        #Write-Host "Start post"
-        $benchmarkResult = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri $url -Body $json -TimeoutSec 15
-        Write-Host $benchmarkResult
-        $sessionId = $benchmarkResult.sessionId
-        Write-Host "##vso[task.setvariable variable=dxpsessionid;]$sessionId"
-        $psContext.SessionId = $sessionId
 
-        return $benchmarkResult.Message;
+        return $resultMessage;
         }
     catch {
         Write-Verbose "Could not send Exception caught : $($_.Exception.ToString())"
