@@ -876,6 +876,19 @@ function Initialize-Params {
     $result = ""
     $sessionId = ""
 
+    
+
+}
+
+function Write-ContextInfo {
+    param
+	(
+        # [Parameter(Mandatory = $false)]
+		# [string]$ProjectId, 
+        [Parameter(Mandatory = $false)]
+		[string]$SessionId
+	)    
+
     $epiCloudModule = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
     $epiCloudVersion = "v$($epiCloudModule.Version.Major).$($epiCloudModule.Version.Minor).$($epiCloudModule.Version.Build)"
 
@@ -890,18 +903,6 @@ function Initialize-Params {
     #$psVersionValue = "v$($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor).$($PSVersionTable.PSVersion.Patch)"
     $psVersionValue = "v$($PSVersionTable.PSVersion)"
     $psEditionValue = $PSVersionTable.PSEdition
-
-}
-
-function Write-ContextInfo {
-    param
-	(
-        # [Parameter(Mandatory = $false)]
-		# [string]$ProjectId, 
-        [Parameter(Mandatory = $false)]
-		[string]$SessionId
-	)    
-
     # if ($SessionId){
     #     Write-Host "##vso[task.setvariable variable=dxpsessionid;]$SessionId"
     #     Set-Variable -Name "dxpsessionid" -Value $Environment -Scope global
