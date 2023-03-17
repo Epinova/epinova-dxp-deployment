@@ -860,6 +860,39 @@ function Publish-Package {
     return $uploadedPackage
 }
 
+function Initialize-Params {
+    $clientKey = ""
+    $clientSecret = ""
+    $projectId = ""
+    $targetEnvironment = ""
+    $expectedStatus = ""
+    $timeout = 0
+    $runVerbose = $false
+
+    $sourceEnvironment = ""
+    $myPackages = ""
+    $fileSize = ""
+    $elapsed = 0
+    $result = ""
+    $sessionId = ""
+
+    $epiCloudModule = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
+    $epiCloudVersion = "v$($epiCloudModule.Version.Major).$($epiCloudModule.Version.Minor).$($epiCloudModule.Version.Build)"
+
+    $PSCommandPath -match "^.*_tasks[\/|\\](.*)_.*[\/|\\](.*)[\/|\\]ps_modules[\/|\\]" | Out-Null
+    $taskName = $Matches[1]
+    $taskVersion = $Matches[2]
+
+    $env:SYSTEM_COLLECTIONURI -match "^.*\/(.*)\/" | Out-Null
+    $orgName = $Matches[1]
+
+    Write-Host $PSVersionTable.PSVersion
+    #$psVersionValue = "v$($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor).$($PSVersionTable.PSVersion.Patch)"
+    $psVersionValue = "v$($PSVersionTable.PSVersion)"
+    $psEditionValue = $PSVersionTable.PSEdition
+
+}
+
 function Write-ContextInfo {
     param
 	(
@@ -879,25 +912,6 @@ function Write-ContextInfo {
     # }
 
     try{
-
-        #Write-Host "Sneaky:" + $clientKey
-        if ($null -eq $sourceEnvironment){ $sourceEnvironment = "" }
-
-        $epiCloudModule = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
-        $epiCloudVersion = "v$($epiCloudModule.Version.Major).$($epiCloudModule.Version.Minor).$($epiCloudModule.Version.Build)"
-
-        $PSCommandPath -match "^.*_tasks[\/|\\](.*)_.*[\/|\\](.*)[\/|\\]ps_modules[\/|\\]" | Out-Null
-        $taskName = $Matches[1]
-        $taskVersion = $Matches[2]
-
-        $env:SYSTEM_COLLECTIONURI -match "^.*\/(.*)\/" | Out-Null
-        $orgName = $Matches[1]
-
-        Write-Host $PSVersionTable.PSVersion
-        #$psVersionValue = "v$($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor).$($PSVersionTable.PSVersion.Patch)"
-        $psVersionValue = "v$($PSVersionTable.PSVersion)"
-        $psEditionValue = $PSVersionTable.PSEdition
-
         Write-Host "ContextInfo:"
         Write-Host "Agent.OS:                    $env:AGENT_OS"
         Write-Host "Build.SourceBranchName:      $env:BUILD_SOURCEBRANCHNAME"
@@ -910,7 +924,7 @@ function Write-ContextInfo {
         Write-Host "TargetEnvironment:           $targetEnvironment"
 
         $psContext = @{ 
-            "SessionId"=$SessionId
+            "SessionId"=$sessionId
             "Task"=$taskName
             "TaskVersion"=$taskVersion
             "Environment"=$sourceEnvironment
@@ -925,9 +939,9 @@ function Write-ContextInfo {
             "EpiCloudVersion"=$epiCloudVersion
             "PowerShellVersion"=$psVersionValue
             "PowerShellEdition"=$psEditionValue
-            "Elapsed"=$Elapsed
-            "Result"=$Result
-            "FileSize"=$FileSize
+            "Elapsed"=$elapsed
+            "Result"=$result
+            "FileSize"=$fileSize
             "PackageName"=$myPackages
             }
 

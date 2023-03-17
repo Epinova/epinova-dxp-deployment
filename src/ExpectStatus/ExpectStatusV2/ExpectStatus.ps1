@@ -10,7 +10,12 @@ Param(
 )
 
 try {
+    $deployUtilScript = Join-Path -Path $PSScriptRoot -ChildPath "ps_modules"
+    $deployUtilScript = Join-Path -Path $deployUtilScript -ChildPath "EpinovaDxpDeploymentUtil.ps1"
+    . $deployUtilScript
+
     # Get all inputs for the task
+    Initialize-Params
     $clientKey = $ClientKey
     $clientSecret = $ClientSecret
     $projectId = $ProjectId
@@ -18,6 +23,7 @@ try {
     $expectedStatus = $ExpectedStatus
     $timeout = $Timeout
     $runVerbose = [System.Convert]::ToBoolean($RunVerbose)
+
 
     ####################################################################################
 
@@ -37,17 +43,12 @@ try {
     Write-Host "Timeout:            $timeout"
     Write-Host "RunVerbose:         $runVerbose"
 
-
-    $deployUtilScript = Join-Path -Path $PSScriptRoot -ChildPath "ps_modules"
-    $deployUtilScript = Join-Path -Path $deployUtilScript -ChildPath "EpinovaDxpDeploymentUtil.ps1"
-    . $deployUtilScript
-
     $sw = [Diagnostics.Stopwatch]::StartNew()
     $sw.Start()
+    $psContext = Write-ContextInfo
 
     Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
-    $psContext = Write-ContextInfo
     # Mount-PsModulesPath
 
     # Write-ContextInfo
