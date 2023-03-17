@@ -45,10 +45,9 @@ try {
 
     $sw = [Diagnostics.Stopwatch]::StartNew()
     $sw.Start()
-    $psContext = Write-ContextInfo
 
     Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
-
+    $psContext = Write-ContextInfo
     # Mount-PsModulesPath
 
     # Write-ContextInfo
@@ -103,7 +102,7 @@ try {
     $result = "Succeeded"
     $benchmarkInfo = Send-BenchmarkInfo -psContext $psContext
     Write-Host $benchmarkInfo
-#Write-ResultInfo $psContext
+    #Write-ResultInfo $psContext
     ####################################################################################
     Write-Host "---THE END---"
 
