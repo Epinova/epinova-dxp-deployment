@@ -15,7 +15,7 @@ try {
     . $deployUtilScript
 
     # Get all inputs for the task
-    Initialize-Params
+    #Initialize-Params
     $clientKey = $ClientKey
     $clientSecret = $ClientSecret
     $projectId = $ProjectId
@@ -84,11 +84,12 @@ try {
             Write-Warning "$targetEnvironment is not in expected status $expectedStatus. (Current:$($lastDeploy.status))."
             Write-Host "##vso[task.logissue type=error]$targetEnvironment is not in expected status $expectedStatus. (Current:$($lastDeploy.status))."
             Write-Error "$targetEnvironment is not in expected status $expectedStatus. (Current:$($lastDeploy.status))." -ErrorAction Stop
-            $result = "Not expected status"
-            $sw.Stop()
+            #$result = "Not expected status"
+            #$sw.Stop()
             #$psContext.Elapsed = $sw.Elapsed.TotalSeconds
-            $benchmarkInfo = Send-BenchmarkInfo -psContext $psContext
-            Write-Host $benchmarkInfo
+            #$benchmarkInfo = Send-BenchmarkInfo -psContext $psContext
+            Send-BenchmarkInfo
+            #Write-Host $benchmarkInfo
             exit 1
         }
     }
@@ -100,8 +101,9 @@ try {
     #$sw.Stop()
     #Write-ContextInfo -ProjectId $projectId -Environment $targetEnvironment -Elapsed $elapsed -Result "Succeeded" -FileSize 0
     #$result = "Succeeded"
-    $benchmarkInfo = Send-BenchmarkInfo #-psContext $psContext
-    Write-Host $benchmarkInfo
+    #$benchmarkInfo = Send-BenchmarkInfo #-psContext $psContext
+    #Write-Host $benchmarkInfo
+    Send-BenchmarkInfo
     #Write-ResultInfo $psContext
     ####################################################################################
     Write-Host "---THE END---"

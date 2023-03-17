@@ -860,25 +860,25 @@ function Publish-Package {
     return $uploadedPackage
 }
 
-function Initialize-Params {
-    $clientKey = "N/A"
-    $clientSecret = "N/A"
-    $projectId = "N/A"
-    $targetEnvironment = "N/A"
-    $expectedStatus = "N/A"
-    $timeout = 0
-    $runVerbose = $false
+# function Initialize-Params {
+#     $clientKey = "N/A"
+#     $clientSecret = "N/A"
+#     $projectId = "N/A"
+#     $targetEnvironment = "N/A"
+#     $expectedStatus = "N/A"
+#     $timeout = 0
+#     $runVerbose = $false
 
-    $sourceEnvironment = "N/A"
-    $myPackages = "N/A"
-    $fileSize = 0
-    $elapsed = 0
-    $result = "N/A"
-    $sessionId = ""
+#     $sourceEnvironment = "N/A"
+#     $myPackages = "N/A"
+#     $fileSize = 0
+#     $elapsed = 0
+#     $result = "N/A"
+#     $sessionId = ""
 
     
 
-}
+# }
 
 function Get-EpiCloudVersion {
     $epiCloudVersion = ""
@@ -912,67 +912,67 @@ function Get-PsData {
     return $psData
 }
 
-function Write-ContextInfo {
-    param
-	(
-        # [Parameter(Mandatory = $false)]
-		# [string]$ProjectId, 
-        [Parameter(Mandatory = $false)]
-		[string]$SessionId
-	)    
+# function Write-ContextInfo {
+#     param
+# 	(
+#         # [Parameter(Mandatory = $false)]
+# 		# [string]$ProjectId, 
+#         [Parameter(Mandatory = $false)]
+# 		[string]$SessionId
+# 	)    
 
-    $epiCloudVersion = Get-EpiCloudVersion
+#     $epiCloudVersion = Get-EpiCloudVersion
 
-    $PSCommandPath -match "^.*_tasks[\/|\\](.*)_.*[\/|\\](.*)[\/|\\]ps_modules[\/|\\]" | Out-Null
-    $taskName = $Matches[1]
-    $taskVersion = $Matches[2]
+#     $PSCommandPath -match "^.*_tasks[\/|\\](.*)_.*[\/|\\](.*)[\/|\\]ps_modules[\/|\\]" | Out-Null
+#     $taskName = $Matches[1]
+#     $taskVersion = $Matches[2]
 
-    $env:SYSTEM_COLLECTIONURI -match "^.*\/(.*)\/" | Out-Null
-    $orgName = $Matches[1]
+#     $env:SYSTEM_COLLECTIONURI -match "^.*\/(.*)\/" | Out-Null
+#     $orgName = $Matches[1]
 
-    $psData = Get-PsData
+#     $psData = Get-PsData
 
-    try{
-        Write-Host "ContextInfo:"
-        Write-Host "Agent.OS:                    $env:AGENT_OS"
-        Write-Host "Build.SourceBranchName:      $env:BUILD_SOURCEBRANCHNAME"
-        Write-Host "System.CollectionUri:        $env:SYSTEM_COLLECTIONURI"
-        Write-Host "System.TeamProject:          $env:SYSTEM_TEAMPROJECT"
-        Write-Host "EpiCloudVersion:             $epiCloudVersion"
-        Write-Host "PowerShellVersion:           $($psData.Version)"
-        Write-Host "PowerShellEdition:           $($psData.Edition)"
-        Write-Host "Environment:                 $sourceEnvironment"
-        Write-Host "TargetEnvironment:           $targetEnvironment"
+#     try{
+#         Write-Host "ContextInfo:"
+#         Write-Host "Agent.OS:                    $env:AGENT_OS"
+#         Write-Host "Build.SourceBranchName:      $env:BUILD_SOURCEBRANCHNAME"
+#         Write-Host "System.CollectionUri:        $env:SYSTEM_COLLECTIONURI"
+#         Write-Host "System.TeamProject:          $env:SYSTEM_TEAMPROJECT"
+#         Write-Host "EpiCloudVersion:             $epiCloudVersion"
+#         Write-Host "PowerShellVersion:           $($psData.Version)"
+#         Write-Host "PowerShellEdition:           $($psData.Edition)"
+#         Write-Host "Environment:                 $sourceEnvironment"
+#         Write-Host "TargetEnvironment:           $targetEnvironment"
 
-        $psContext = @{ 
-            "SessionId"=$sessionId
-            "Task"=$taskName
-            "TaskVersion"=$taskVersion
-            "Environment"=$sourceEnvironment
-            "TargetEnvironment"=$targetEnvironment
-            "DxpProjectId"=$projectId
-            "OrganisationId"=$env:SYSTEM_COLLECTIONID #System.CollectionId
-            "OrganisationName"=$orgName #System.CollectionUri
-            "ProjectId"=$env:SYSTEM_TEAMPROJECTID #System.TeamProjectId
-            "ProjectName"=$env:SYSTEM_TEAMPROJECT #System.TeamProject
-            "Branch"=$env:BUILD_SOURCEBRANCHNAME #Build.SourceBranchName
-            "AgentOS"=$env:AGENT_OS #Agent.OS
-            "EpiCloudVersion"=$epiCloudVersion
-            "PowerShellVersion"=$psData.Version
-            "PowerShellEdition"=$psData.Edition
-            "Elapsed"=$elapsed
-            "Result"=$result
-            "FileSize"=$fileSize
-            "PackageName"=$myPackages
-            }
+#         $psContext = @{ 
+#             "SessionId"=$sessionId
+#             "Task"=$taskName
+#             "TaskVersion"=$taskVersion
+#             "Environment"=$sourceEnvironment
+#             "TargetEnvironment"=$targetEnvironment
+#             "DxpProjectId"=$projectId
+#             "OrganisationId"=$env:SYSTEM_COLLECTIONID #System.CollectionId
+#             "OrganisationName"=$orgName #System.CollectionUri
+#             "ProjectId"=$env:SYSTEM_TEAMPROJECTID #System.TeamProjectId
+#             "ProjectName"=$env:SYSTEM_TEAMPROJECT #System.TeamProject
+#             "Branch"=$env:BUILD_SOURCEBRANCHNAME #Build.SourceBranchName
+#             "AgentOS"=$env:AGENT_OS #Agent.OS
+#             "EpiCloudVersion"=$epiCloudVersion
+#             "PowerShellVersion"=$psData.Version
+#             "PowerShellEdition"=$psData.Edition
+#             "Elapsed"=$elapsed
+#             "Result"=$result
+#             "FileSize"=$fileSize
+#             "PackageName"=$myPackages
+#             }
 
-        return $psContext
-    }
-    catch {
-        Write-Verbose "Could not create benchmark data : $($_.Exception.ToString())"
-        Write-Host "Failed to create benchmark data."
-    }
-}
+#         return $psContext
+#     }
+#     catch {
+#         Write-Verbose "Could not create benchmark data : $($_.Exception.ToString())"
+#         Write-Host "Failed to create benchmark data."
+#     }
+# }
 
 function Send-BenchmarkInfo {
     # param
@@ -984,8 +984,8 @@ function Send-BenchmarkInfo {
         $url = "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun"
 
         #if ($null -ne $psContext){
-            $psContext = Write-ContextInfo
-            Write-Host $psContext
+            #$psContext = Write-ContextInfo
+            #Write-Host $psContext
             #Write-Host "Result=>$result"
             #Write-Host "Elapsed=>$($sw.Elapsed.TotalSeconds)"
     
@@ -1003,6 +1003,38 @@ function Send-BenchmarkInfo {
             #         $psContext.Add("Elapsed", $sw.Elapsed.TotalSeconds)            
             #     }
             # }
+            $epiCloudVersion = Get-EpiCloudVersion
+
+            $PSCommandPath -match "^.*_tasks[\/|\\](.*)_.*[\/|\\](.*)[\/|\\]ps_modules[\/|\\]" | Out-Null
+            $taskName = $Matches[1]
+            $taskVersion = $Matches[2]
+        
+            $env:SYSTEM_COLLECTIONURI -match "^.*\/(.*)\/" | Out-Null
+            $orgName = $Matches[1]
+        
+            $psData = Get-PsData
+        
+            $psContext = @{ 
+                # "SessionId"=$sessionId
+                "Task"=$taskName
+                "TaskVersion"=$taskVersion
+                # "Environment"=$sourceEnvironment
+                # "TargetEnvironment"=$targetEnvironment
+                "DxpProjectId"=$projectId
+                "OrganisationId"=$env:SYSTEM_COLLECTIONID #System.CollectionId
+                "OrganisationName"=$orgName #System.CollectionUri
+                "ProjectId"=$env:SYSTEM_TEAMPROJECTID #System.TeamProjectId
+                "ProjectName"=$env:SYSTEM_TEAMPROJECT #System.TeamProject
+                "Branch"=$env:BUILD_SOURCEBRANCHNAME #Build.SourceBranchName
+                "AgentOS"=$env:AGENT_OS #Agent.OS
+                "EpiCloudVersion"=$epiCloudVersion
+                "PowerShellVersion"=$psData.Version
+                "PowerShellEdition"=$psData.Edition
+                # "Elapsed"=$elapsed
+                # "Result"=$result
+                # "FileSize"=$fileSize
+                # "PackageName"=$myPackages
+                }
 
             $json = $psContext | ConvertTo-Json
             Write-Host $json
@@ -1026,18 +1058,18 @@ function Send-BenchmarkInfo {
     }
 }
 
-function Write-ResultInfo {
-    param
-	(
-		[Parameter(Mandatory = $true)]
-		[string]$testVariable
-	) 
+# function Write-ResultInfo {
+#     param
+# 	(
+# 		[Parameter(Mandatory = $true)]
+# 		[string]$testVariable
+# 	) 
 
-    #$sw.Stop()
-    #Write-Host "Stopped iteration after $($sw.Elapsed.TotalSeconds) seconds."
+#     #$sw.Stop()
+#     #Write-Host "Stopped iteration after $($sw.Elapsed.TotalSeconds) seconds."
 
-    Write-Host $testVariable
-}
+#     Write-Host $testVariable
+# }
 
 function Initialize-EpinovaDxpScript {
 <#
