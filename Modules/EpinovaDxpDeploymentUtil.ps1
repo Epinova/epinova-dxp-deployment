@@ -880,6 +880,38 @@ function Initialize-Params {
 
 }
 
+function Get-EpiCloudVersion {
+    $epiCloudVersion = ""
+    try{
+        $epiCloudModule = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
+        $epiCloudVersion = "v$($epiCloudModule.Version.Major).$($epiCloudModule.Version.Minor).$($epiCloudModule.Version.Build)"
+    } catch {
+        Write-Verbose "Could not get EpiCloud version : $($_.Exception.ToString())"
+        Write-Host "Could not get EpiCloud version."
+
+    }
+    return $epiCloudVersion
+}
+
+function Get-PsData {
+    $psData = @{
+        }
+    try{
+        #$psVersionValue = "v$($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor).$($PSVersionTable.PSVersion.Patch)"
+        $psVersionValue = "v$($PSVersionTable.PSVersion)"
+        $psEditionValue = $PSVersionTable.PSEdition
+        $psData = @{
+            "Version"=$psVersionValue
+            "Edition"=$psEditionValue
+        }
+    } catch {
+        Write-Verbose "Could not get PowerShell version/edition : $($_.Exception.ToString())"
+        Write-Host "Could not get PowerShell version/edition."
+
+    }
+    return $psData
+}
+
 function Write-ContextInfo {
     param
 	(
@@ -889,8 +921,7 @@ function Write-ContextInfo {
 		[string]$SessionId
 	)    
 
-    $epiCloudModule = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
-    $epiCloudVersion = "v$($epiCloudModule.Version.Major).$($epiCloudModule.Version.Minor).$($epiCloudModule.Version.Build)"
+    $epiCloudVersion = Get-EpiCloudVersion
 
     $PSCommandPath -match "^.*_tasks[\/|\\](.*)_.*[\/|\\](.*)[\/|\\]ps_modules[\/|\\]" | Out-Null
     $taskName = $Matches[1]
@@ -899,18 +930,7 @@ function Write-ContextInfo {
     $env:SYSTEM_COLLECTIONURI -match "^.*\/(.*)\/" | Out-Null
     $orgName = $Matches[1]
 
-    Write-Host $PSVersionTable.PSVersion
-    #$psVersionValue = "v$($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor).$($PSVersionTable.PSVersion.Patch)"
-    $psVersionValue = "v$($PSVersionTable.PSVersion)"
-    $psEditionValue = $PSVersionTable.PSEdition
-    # if ($SessionId){
-    #     Write-Host "##vso[task.setvariable variable=dxpsessionid;]$SessionId"
-    #     Set-Variable -Name "dxpsessionid" -Value $Environment -Scope global
-    # } elseif (Test-Path variable:global:dxpsessionid) {
-    #     $dxpsessionid = (Get-Variable -Name "dxpsessionid").value
-    # } elseif ($(dxpprojectid)) {
-    #     $dxpsessionid = $(dxpsessionid)
-    # }
+    $psData = Get-PsData
 
     try{
         Write-Host "ContextInfo:"
@@ -919,8 +939,8 @@ function Write-ContextInfo {
         Write-Host "System.CollectionUri:        $env:SYSTEM_COLLECTIONURI"
         Write-Host "System.TeamProject:          $env:SYSTEM_TEAMPROJECT"
         Write-Host "EpiCloudVersion:             $epiCloudVersion"
-        Write-Host "PowerShellVersion:           $psVersionValue"
-        Write-Host "PowerShellEdition:           $psEditionValue"
+        Write-Host "PowerShellVersion:           $($psData.Version)"
+        Write-Host "PowerShellEdition:           $($psData.Edition)"
         Write-Host "Environment:                 $sourceEnvironment"
         Write-Host "TargetEnvironment:           $targetEnvironment"
 
@@ -938,22 +958,15 @@ function Write-ContextInfo {
             "Branch"=$env:BUILD_SOURCEBRANCHNAME #Build.SourceBranchName
             "AgentOS"=$env:AGENT_OS #Agent.OS
             "EpiCloudVersion"=$epiCloudVersion
-            "PowerShellVersion"=$psVersionValue
-            "PowerShellEdition"=$psEditionValue
+            "PowerShellVersion"=$psData.Version
+            "PowerShellEdition"=$psData.Edition
             "Elapsed"=$elapsed
             "Result"=$result
             "FileSize"=$fileSize
             "PackageName"=$myPackages
             }
 
-        #Write-Host "Before send"
-        #Send-ContextInfo -SessionId $Sessionid -ProjectId $Projectid -Environment $Environment -TargetEnvironment $TargetEnvironment -Elapsed $Elapsed -Result $Result -FileSize $FileSize
-        #$psContext = Send-ContextInfo -psContext $psContext
-        #Write-Host "After send"
-        #Send-ContextInfo -Environment $Environment -Elapsed $Elapsed -Result $Result -FileSize $FileSize
-
         return $psContext
-
     }
     catch {
         Write-Verbose "Could not create benchmark data : $($_.Exception.ToString())"
@@ -1003,36 +1016,6 @@ function Send-BenchmarkInfo {
             Write-Verbose "Could not send without benchmark data."
             $resultMessage = "No benchmark data..."
         }
-
-        # $epiCloudVersion = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
-        # Write-Host "PSCommandPath:               $PSCommandPath"
-        # $PSCommandPath -match "^.*_tasks[\/|\\](.*)_.*[\/|\\](.*)[\/|\\]ps_modules[\/|\\]" | Out-Null
-        # $taskName = $Matches[1]
-        # $taskVersion = $Matches[2]
-
-        # $env:SYSTEM_COLLECTIONURI -match "^.*\/(.*)\/" | Out-Null
-        # $orgName = $Matches[1]
-
-        # $postParams = @{ 
-        #     "SessionId"=$SessionId
-        #     "Task"=$taskName
-        #     "TaskVersion"=$taskVersion
-        #     "Environment"=$Environment
-        #     "TargetEnvironment"=$TargetEnvironment
-        #     "DxpProjectId"=$ProjectId
-        #     "OrganisationId"=$env:SYSTEM_COLLECTIONID #System.CollectionId
-        #     "OrganisationName"=$orgName #System.CollectionUri
-        #     "ProjectId"=$env:SYSTEM_TEAMPROJECTID #System.TeamProjectId
-        #     "ProjectName"=$env:SYSTEM_TEAMPROJECT #System.TeamProject
-        #     "Branch"=$env:BUILD_SOURCEBRANCHNAME #Build.SourceBranchName
-        #     "AgentOS"=$env:AGENT_OS #Agent.OS
-        #     "EpiCloudVersion"="v$($epiCloudVersion.Version.Major).$($epiCloudVersion.Version.Minor).$($epiCloudVersion.Version.Build)"
-        #     "PowerShellVersion"="v$($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor).$($PSVersionTable.PSVersion.Patch)" #$PSVersionTable
-        #     "PowerShellEdition"=$PSVersionTable.PSEdition #$PSVersionTable
-        #     "Elapsed"=$Elapsed
-        #     "Result"=$Result
-        #     "FileSize"=$FileSize
-        #     }
 
         return $resultMessage;
         }
