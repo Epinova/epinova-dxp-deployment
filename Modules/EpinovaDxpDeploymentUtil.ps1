@@ -975,18 +975,19 @@ function Write-ContextInfo {
 }
 
 function Send-BenchmarkInfo {
-    param
-	(
-		[Parameter(Mandatory = $true)]
-		[object]$psContext
-	)
+    # param
+	# (
+	# 	[Parameter(Mandatory = $true)]
+	# 	[object]$psContext
+	# )
     try{
         $url = "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun"
 
-        if ($null -ne $psContext){
+        #if ($null -ne $psContext){
+            $psContext = Write-ContextInfo
             Write-Host $psContext
-            Write-Host "Result=>$result"
-            Write-Host "Elapsed=>$($sw.Elapsed.TotalSeconds)"
+            #Write-Host "Result=>$result"
+            #Write-Host "Elapsed=>$($sw.Elapsed.TotalSeconds)"
     
             # if ($null -ne $result){
             #     if ($psContext.Contains("Result")) {
@@ -1012,10 +1013,10 @@ function Send-BenchmarkInfo {
             Write-Host "##vso[task.setvariable variable=dxpsessionid;]$sessionId"
             $psContext.SessionId = $sessionId
             $resultMessage = $benchmarkResult.Message
-        } else {
-            Write-Verbose "Could not send without benchmark data."
-            $resultMessage = "No benchmark data..."
-        }
+        #} else {
+        #    Write-Verbose "Could not send without benchmark data."
+        #    $resultMessage = "No benchmark data..."
+        #}
 
         return $resultMessage;
         }

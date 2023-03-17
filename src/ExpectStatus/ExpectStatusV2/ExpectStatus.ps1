@@ -43,11 +43,11 @@ try {
     Write-Host "Timeout:            $timeout"
     Write-Host "RunVerbose:         $runVerbose"
 
-    $sw = [Diagnostics.Stopwatch]::StartNew()
-    $sw.Start()
+    #$sw = [Diagnostics.Stopwatch]::StartNew()
+    #$sw.Start()
 
     Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
-    $psContext = Write-ContextInfo
+    #$psContext = Write-ContextInfo
     # Mount-PsModulesPath
 
     # Write-ContextInfo
@@ -97,10 +97,10 @@ try {
         Write-Output "Will and can not do anything..."
     }
 
-    $sw.Stop()
+    #$sw.Stop()
     #Write-ContextInfo -ProjectId $projectId -Environment $targetEnvironment -Elapsed $elapsed -Result "Succeeded" -FileSize 0
-    $result = "Succeeded"
-    $benchmarkInfo = Send-BenchmarkInfo -psContext $psContext
+    #$result = "Succeeded"
+    $benchmarkInfo = Send-BenchmarkInfo #-psContext $psContext
     Write-Host $benchmarkInfo
     #Write-ResultInfo $psContext
     ####################################################################################
