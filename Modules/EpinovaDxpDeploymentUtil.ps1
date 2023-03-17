@@ -861,19 +861,19 @@ function Publish-Package {
 }
 
 function Initialize-Params {
-    $clientKey = ""
-    $clientSecret = ""
-    $projectId = ""
-    $targetEnvironment = ""
-    $expectedStatus = ""
+    $clientKey = "N/A"
+    $clientSecret = "N/A"
+    $projectId = "N/A"
+    $targetEnvironment = "N/A"
+    $expectedStatus = "N/A"
     $timeout = 0
     $runVerbose = $false
 
-    $sourceEnvironment = ""
-    $myPackages = ""
-    $fileSize = ""
+    $sourceEnvironment = "N/A"
+    $myPackages = "N/A"
+    $fileSize = 0
     $elapsed = 0
-    $result = ""
+    $result = "N/A"
     $sessionId = ""
 
     
@@ -988,20 +988,20 @@ function Send-BenchmarkInfo {
             Write-Host "Result=>$result"
             Write-Host "Elapsed=>$($sw.Elapsed.TotalSeconds)"
     
-            if ($null -ne $result){
-                if ($psContext.Contains("Result")) {
-                    $psContext.Result = $result
-                } else {
-                    $psContext.Add("Result", $result)            
-                }
-            }
-            if ($null -ne $sw){
-                if ($psContext.Contains("Elapsed")) {
-                    $psContext.Elapsed = $sw.Elapsed.TotalSeconds
-                } else {
-                    $psContext.Add("Elapsed", $sw.Elapsed.TotalSeconds)            
-                }
-            }
+            # if ($null -ne $result){
+            #     if ($psContext.Contains("Result")) {
+            #         $psContext.Result = $result
+            #     } else {
+            #         $psContext.Add("Result", $result)            
+            #     }
+            # }
+            # if ($null -ne $sw){
+            #     if ($psContext.Contains("Elapsed")) {
+            #         $psContext.Elapsed = $sw.Elapsed.TotalSeconds
+            #     } else {
+            #         $psContext.Add("Elapsed", $sw.Elapsed.TotalSeconds)            
+            #     }
+            # }
 
             $json = $psContext | ConvertTo-Json
             Write-Host $json
