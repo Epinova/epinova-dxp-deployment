@@ -1014,9 +1014,9 @@ function Send-BenchmarkInfo {
             $orgName = $Matches[1]
         
             $psData = Get-PsData
-        
+
+            #"SessionId"=$sessionId
             $psContext = @{ 
-                "SessionId"=$sessionId
                 "Task"=$taskName
                 "TaskVersion"=$taskVersion
                 "Environment"=$sourceEnvironment
