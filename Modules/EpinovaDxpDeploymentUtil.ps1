@@ -869,7 +869,7 @@ function Initialize-Params {
     $timeout = 0
     $runVerbose = $false
 
-    $sourceEnvironment = "N/A"
+    #$sourceEnvironment = "N/A"
     $myPackages = "N/A"
     $fileSize = 0
     $elapsed = 0
@@ -1016,10 +1016,10 @@ function Send-BenchmarkInfo {
             $psData = Get-PsData
 
             #"SessionId"=$sessionId
+                #"Environment"=$sourceEnvironment
             $psContext = @{ 
                 "Task"=$taskName
                 "TaskVersion"=$taskVersion
-                "Environment"=$sourceEnvironment
                 "TargetEnvironment"=$targetEnvironment
                 "DxpProjectId"=$projectId
                 "OrganisationId"=$env:SYSTEM_COLLECTIONID #System.CollectionId
