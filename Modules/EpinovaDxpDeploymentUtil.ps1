@@ -1017,6 +1017,8 @@ function Send-BenchmarkInfo {
 
             #"SessionId"=$sessionId
                 #"Environment"=$sourceEnvironment
+                # "FileSize"=$fileSize
+                # "PackageName"=$myPackages
             $psContext = @{ 
                 "Task"=$taskName
                 "TaskVersion"=$taskVersion
@@ -1033,8 +1035,6 @@ function Send-BenchmarkInfo {
                 "PowerShellEdition"=$psData.Edition
                 "Elapsed"=$elapsed
                 "Result"=$result
-                "FileSize"=$fileSize
-                "PackageName"=$myPackages
                 }
 
             $json = $psContext | ConvertTo-Json
