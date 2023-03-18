@@ -894,7 +894,6 @@ function Get-PsData {
     $psData = @{
         }
     try{
-        #$psVersionValue = "v$($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor).$($PSVersionTable.PSVersion.Patch)"
         $psVersionValue = "v$($PSVersionTable.PSVersion)"
         $psEditionValue = $PSVersionTable.PSEdition
         $psData = @{
@@ -904,167 +903,69 @@ function Get-PsData {
     } catch {
         Write-Verbose "Could not get PowerShell version/edition : $($_.Exception.ToString())"
         Write-Host "Could not get PowerShell version/edition."
-
     }
     return $psData
 }
 
-# function Write-ContextInfo {
-#     param
-# 	(
-#         # [Parameter(Mandatory = $false)]
-# 		# [string]$ProjectId, 
-#         [Parameter(Mandatory = $false)]
-# 		[string]$SessionId
-# 	)    
-
-#     $epiCloudVersion = Get-EpiCloudVersion
-
-#     $PSCommandPath -match "^.*_tasks[\/|\\](.*)_.*[\/|\\](.*)[\/|\\]ps_modules[\/|\\]" | Out-Null
-#     $taskName = $Matches[1]
-#     $taskVersion = $Matches[2]
-
-#     $env:SYSTEM_COLLECTIONURI -match "^.*\/(.*)\/" | Out-Null
-#     $orgName = $Matches[1]
-
-#     $psData = Get-PsData
-
-#     try{
-#         Write-Host "ContextInfo:"
-#         Write-Host "Agent.OS:                    $env:AGENT_OS"
-#         Write-Host "Build.SourceBranchName:      $env:BUILD_SOURCEBRANCHNAME"
-#         Write-Host "System.CollectionUri:        $env:SYSTEM_COLLECTIONURI"
-#         Write-Host "System.TeamProject:          $env:SYSTEM_TEAMPROJECT"
-#         Write-Host "EpiCloudVersion:             $epiCloudVersion"
-#         Write-Host "PowerShellVersion:           $($psData.Version)"
-#         Write-Host "PowerShellEdition:           $($psData.Edition)"
-#         Write-Host "Environment:                 $sourceEnvironment"
-#         Write-Host "TargetEnvironment:           $targetEnvironment"
-
-#         $psContext = @{ 
-#             "SessionId"=$sessionId
-#             "Task"=$taskName
-#             "TaskVersion"=$taskVersion
-#             "Environment"=$sourceEnvironment
-#             "TargetEnvironment"=$targetEnvironment
-#             "DxpProjectId"=$projectId
-#             "OrganisationId"=$env:SYSTEM_COLLECTIONID #System.CollectionId
-#             "OrganisationName"=$orgName #System.CollectionUri
-#             "ProjectId"=$env:SYSTEM_TEAMPROJECTID #System.TeamProjectId
-#             "ProjectName"=$env:SYSTEM_TEAMPROJECT #System.TeamProject
-#             "Branch"=$env:BUILD_SOURCEBRANCHNAME #Build.SourceBranchName
-#             "AgentOS"=$env:AGENT_OS #Agent.OS
-#             "EpiCloudVersion"=$epiCloudVersion
-#             "PowerShellVersion"=$psData.Version
-#             "PowerShellEdition"=$psData.Edition
-#             "Elapsed"=$elapsed
-#             "Result"=$result
-#             "FileSize"=$fileSize
-#             "PackageName"=$myPackages
-#             }
-
-#         return $psContext
-#     }
-#     catch {
-#         Write-Verbose "Could not create benchmark data : $($_.Exception.ToString())"
-#         Write-Host "Failed to create benchmark data."
-#     }
-# }
-
 function Send-BenchmarkInfo {
-    # param
-	# (
-	# 	[Parameter(Mandatory = $true)]
-	# 	[object]$psContext
-	# )
+    param
+	(
+		[Parameter(Mandatory = $false)]
+		[string]$result = ""
+	)
     try{
-        $url = "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun"
+        if ($null -ne $sw){ 
+            $sw.Stop()
+            $elapsed = $sw.ElapsedMilliseconds 
+        }
 
-        #if ($null -ne $psContext){
-            #$psContext = Write-ContextInfo
-            #Write-Host $psContext
-            #Write-Host "Result=>$result"
-            #Write-Host "Elapsed=>$($sw.Elapsed.TotalSeconds)"
+        if ($false -eq (test-path variable:sourceEnvironment)) { $sourceEnvironment = "N/A" }
+        if ($false -eq (test-path variable:fileSize)) { $fileSize = 0 }
+        if ($false -eq (test-path variable:myPackages)) { $myPackages = "N/A" }
+        $epiCloudVersion = Get-EpiCloudVersion
+
+        $PSCommandPath -match "^.*_tasks[\/|\\](.*)_.*[\/|\\](.*)[\/|\\]ps_modules[\/|\\]" | Out-Null
+        $taskName = $Matches[1]
+        $taskVersion = $Matches[2]
     
-            # if ($null -ne $result){
-            #     if ($psContext.Contains("Result")) {
-            #         $psContext.Result = $result
-            #     } else {
-            #         $psContext.Add("Result", $result)            
-            #     }
-            # }
-            if ($null -ne $sw){ $elapsed = $sw.ElapsedMilliseconds }
+        $env:SYSTEM_COLLECTIONURI -match "^.*\/(.*)\/" | Out-Null
+        $orgName = $Matches[1]
+    
+        $psData = Get-PsData
 
-            if ($false -eq (test-path variable:sourceEnvironment)) { $sourceEnvironment = "N/A" }
-            if ($false -eq (test-path variable:fileSize)) { $fileSize = 0 }
-            if ($false -eq (test-path variable:myPackages)) { $myPackages = "N/A" }
-            $epiCloudVersion = Get-EpiCloudVersion
+        $psContext = @{ 
+            "Task"=$taskName
+            "TaskVersion"=$taskVersion
+            "Environment"=$sourceEnvironment
+            "TargetEnvironment"=$targetEnvironment
+            "DxpProjectId"=$projectId
+            "OrganisationId"=$env:SYSTEM_COLLECTIONID
+            "OrganisationName"=$orgName
+            "ProjectId"=$env:SYSTEM_TEAMPROJECTID
+            "ProjectName"=$env:SYSTEM_TEAMPROJECT
+            "Branch"=$env:BUILD_SOURCEBRANCHNAME
+            "AgentOS"=$env:AGENT_OS
+            "EpiCloudVersion"=$epiCloudVersion
+            "PowerShellVersion"=$psData.Version
+            "PowerShellEdition"=$psData.Edition
+            "Elapsed"=$elapsed
+            "Result"=$result
+            "FileSize"=$fileSize
+            "PackageName"=$myPackages
+            }
 
-            $PSCommandPath -match "^.*_tasks[\/|\\](.*)_.*[\/|\\](.*)[\/|\\]ps_modules[\/|\\]" | Out-Null
-            $taskName = $Matches[1]
-            $taskVersion = $Matches[2]
-        
-            $env:SYSTEM_COLLECTIONURI -match "^.*\/(.*)\/" | Out-Null
-            $orgName = $Matches[1]
-        
-            $psData = Get-PsData
-
-            #"SessionId"=$sessionId
-            $psContext = @{ 
-                "Task"=$taskName
-                "TaskVersion"=$taskVersion
-                "Environment"=$sourceEnvironment
-                "TargetEnvironment"=$targetEnvironment
-                "DxpProjectId"=$projectId
-                "OrganisationId"=$env:SYSTEM_COLLECTIONID
-                "OrganisationName"=$orgName
-                "ProjectId"=$env:SYSTEM_TEAMPROJECTID
-                "ProjectName"=$env:SYSTEM_TEAMPROJECT
-                "Branch"=$env:BUILD_SOURCEBRANCHNAME
-                "AgentOS"=$env:AGENT_OS
-                "EpiCloudVersion"=$epiCloudVersion
-                "PowerShellVersion"=$psData.Version
-                "PowerShellEdition"=$psData.Edition
-                "Elapsed"=$elapsed
-                "Result"=$result
-                "FileSize"=$fileSize
-                "PackageName"=$myPackages
-                }
-
-            $json = $psContext | ConvertTo-Json
-            Write-Host $json
-            $benchmarkResult = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri $url -Body $json -TimeoutSec 15
-            Write-Host $benchmarkResult
-            $sessionId = $benchmarkResult.sessionId
-            Write-Host "##vso[task.setvariable variable=dxpsessionid;]$sessionId"
-            $psContext.SessionId = $sessionId
-            $resultMessage = $benchmarkResult.Message
-            Write-Host $benchmarkResult.Message
-        #} else {
-        #    Write-Verbose "Could not send without benchmark data."
-        #    $resultMessage = "No benchmark data..."
-        #}
-
-        return $resultMessage;
+        $json = $psContext | ConvertTo-Json
+        Write-Verbose $json
+        $benchmarkResult = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun" -Body $json -TimeoutSec 15
+        $sessionId = $benchmarkResult.sessionId
+        Write-Host "##vso[task.setvariable variable=dxpsessionid;]$sessionId"
+        Write-Host $benchmarkResult.Message
         }
     catch {
         Write-Verbose "Could not send Exception caught : $($_.Exception.ToString())"
         Write-Host "Failed to send benchmark data."
     }
 }
-
-# function Write-ResultInfo {
-#     param
-# 	(
-# 		[Parameter(Mandatory = $true)]
-# 		[string]$testVariable
-# 	) 
-
-#     #$sw.Stop()
-#     #Write-Host "Stopped iteration after $($sw.Elapsed.TotalSeconds) seconds."
-
-#     Write-Host $testVariable
-# }
 
 function Initialize-EpinovaDxpScript {
 <#
