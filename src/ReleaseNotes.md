@@ -1,6 +1,6 @@
 # Release notes
 
-## v2.6.38
+## v2.6.39
 - Context info
 
 ## v2.5.75
