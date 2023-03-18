@@ -994,9 +994,10 @@ function Send-BenchmarkInfo {
             #     }
             # }
             if ($null -ne $sw){ $elapsed = $sw.ElapsedMilliseconds }
-            if ($null -eq $sourceEnvironment){ $sourceEnvironment = "N/A" }
-            if ($null -eq $fileSize){ $fileSize = 0 }
-            if ($null -eq $myPackages){ $myPackages = "N/A" }
+
+            if ($false -eq (test-path variable:sourceEnvironment)) { $sourceEnvironment = "N/A" }
+            if ($false -eq (test-path variable:fileSize)) { $fileSize = 0 }
+            if ($false -eq (test-path variable:myPackages)) { $myPackages = "N/A" }
             $epiCloudVersion = Get-EpiCloudVersion
 
             $PSCommandPath -match "^.*_tasks[\/|\\](.*)_.*[\/|\\](.*)[\/|\\]ps_modules[\/|\\]" | Out-Null
