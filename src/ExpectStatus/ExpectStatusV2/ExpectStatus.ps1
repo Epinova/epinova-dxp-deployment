@@ -43,9 +43,6 @@ try {
     Write-Host "Timeout:            $timeout"
     Write-Host "RunVerbose:         $runVerbose"
 
-    $sw = [Diagnostics.Stopwatch]::StartNew()
-    $sw.Start()
-
     Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
     #$psContext = Write-ContextInfo
     # Mount-PsModulesPath
