@@ -14,27 +14,45 @@
     $url = "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun"
     #$url = "https://localhost:7002/PipelineRun"
 
-    $postParams = @{ 
-        "SessionId"="ACAC16F0-7CEF-4CFB-AD7B-DC626E9682C4"
-        "Task"="DxpExpectStatus-TEST"
-        "TaskVersion"="2.6.12"
-        "TargetEnvironment"=""
-        "Environment"="Integration"
+    # $postParams = @{ 
+    #     "SessionId"="ACAC16F0-7CEF-4CFB-AD7B-DC626E9682C4"
+    #     "Task"="DxpExpectStatus-TEST"
+    #     "TaskVersion"="2.6.12"
+    #     "TargetEnvironment"=""
+    #     "Environment"="Integration"
+    #     "DxpProjectId"="c0f148a9-03e0-4d5d-a585-af47003dee5f"
+    #     "OrganisationId"="4465472b-c920-479f-975c-32466c8c89b9" #System.CollectionId
+    #     "OrganisationName"="Epinova-Sweden" #System.CollectionUri
+    #     "ProjectId"="add96c9a-eeb4-4ce6-9cf2-2a09262bff47" #System.TeamProjectId
+    #     "ProjectName"="Elite Hotels public web" #System.TeamProject
+    #     "Branch"="merge" #Build.SourceBranchName
+    #     "AgentOS"="Linux"#Agent.OS
+    #     "EpiCloudVersion"="v1.2.0" #Make sure that Initialize-EpiCload set variable that we can read.
+    #     "PowerShellVersion"="v7.2.10" #$PSVersionTable
+    #     "PowerShellEdition"="Core" #$PSVersionTable
+    #     "Elapsed"=0
+    #     "Result"=""
+    #     "FileSize"=0
+    #     "PackageName"="asdasdsda.nuget"
+    #     }
+    $postParams = @{
+        "ProjectId"="add96c9a-eeb4-4ce6-9cf2-2a09262bff47"
+        "OrganisationId"="4465472b-c920-479f-975c-32466c8c89b9"
         "DxpProjectId"="c0f148a9-03e0-4d5d-a585-af47003dee5f"
-        "OrganisationId"="4465472b-c920-479f-975c-32466c8c89b9" #System.CollectionId
-        "OrganisationName"="Epinova-Sweden" #System.CollectionUri
-        "ProjectId"="add96c9a-eeb4-4ce6-9cf2-2a09262bff47" #System.TeamProjectId
-        "ProjectName"="Elite Hotels public web" #System.TeamProject
-        "Branch"="merge" #Build.SourceBranchName
-        "AgentOS"="Linux"#Agent.OS
-        "EpiCloudVersion"="v1.2.0" #Make sure that Initialize-EpiCload set variable that we can read.
-        "PowerShellVersion"="v7.2.10" #$PSVersionTable
-        "PowerShellEdition"="Core" #$PSVersionTable
-        "Elapsed"=0
-        "Result"=""
-        "FileSize"=0
-        "PackageName"="asdasdsda.nuget"
+        "OrganisationName"="Epinova-Sweden"
+        "Elapsed"=8061.9527
+        "AgentOS"="Linux"
+        "Task"="DxpExpectStatus-TEST"
+        "PowerShellVersion"="v7.2.10"
+        "Result"="Succeeded"
+        "ProjectName"="Elite Hotels public web"
+        "TaskVersion"="2.6.36"
+        "PowerShellEdition"="Core"
+        "TargetEnvironment"="Integration"
+        "EpiCloudVersion"="v1.2.0"
+        "Branch"="develop"
         }
+
     $json = $postParams | ConvertTo-Json
     $result = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri $url -Body $json
     Write-Host $result
