@@ -860,25 +860,25 @@ function Publish-Package {
     return $uploadedPackage
 }
 
-# function Initialize-Params {
-#     $clientKey = "N/A"
-#     $clientSecret = "N/A"
-#     $projectId = "N/A"
-#     $targetEnvironment = "N/A"
-#     $expectedStatus = "N/A"
-#     $timeout = 0
-#     $runVerbose = $false
+function Initialize-Params {
+    $clientKey = "N/A"
+    $clientSecret = "N/A"
+    $projectId = "N/A"
+    $targetEnvironment = "N/A"
+    $expectedStatus = "N/A"
+    $timeout = 0
+    $runVerbose = $false
 
-#     $sourceEnvironment = "N/A"
-#     $myPackages = "N/A"
-#     $fileSize = 0
-#     $elapsed = 0
-#     $result = "N/A"
-#     $sessionId = ""
+    $sourceEnvironment = "N/A"
+    $myPackages = "N/A"
+    $fileSize = 0
+    $elapsed = 0
+    $result = "N/A"
+    $sessionId = ""
 
     
 
-# }
+}
 
 function Get-EpiCloudVersion {
     $epiCloudVersion = ""
@@ -996,13 +996,14 @@ function Send-BenchmarkInfo {
             #         $psContext.Add("Result", $result)            
             #     }
             # }
-            # if ($null -ne $sw){
+            if ($null -ne $sw){
+                $elapsed = $sw.Elapsed.TotalSeconds
             #     if ($psContext.Contains("Elapsed")) {
             #         $psContext.Elapsed = $sw.Elapsed.TotalSeconds
             #     } else {
             #         $psContext.Add("Elapsed", $sw.Elapsed.TotalSeconds)            
             #     }
-            # }
+            }
             $epiCloudVersion = Get-EpiCloudVersion
 
             $PSCommandPath -match "^.*_tasks[\/|\\](.*)_.*[\/|\\](.*)[\/|\\]ps_modules[\/|\\]" | Out-Null
@@ -1015,11 +1016,11 @@ function Send-BenchmarkInfo {
             $psData = Get-PsData
         
             $psContext = @{ 
-                # "SessionId"=$sessionId
+                "SessionId"=$sessionId
                 "Task"=$taskName
                 "TaskVersion"=$taskVersion
-                # "Environment"=$sourceEnvironment
-                # "TargetEnvironment"=$targetEnvironment
+                "Environment"=$sourceEnvironment
+                "TargetEnvironment"=$targetEnvironment
                 "DxpProjectId"=$projectId
                 "OrganisationId"=$env:SYSTEM_COLLECTIONID #System.CollectionId
                 "OrganisationName"=$orgName #System.CollectionUri
@@ -1030,10 +1031,10 @@ function Send-BenchmarkInfo {
                 "EpiCloudVersion"=$epiCloudVersion
                 "PowerShellVersion"=$psData.Version
                 "PowerShellEdition"=$psData.Edition
-                # "Elapsed"=$elapsed
-                # "Result"=$result
-                # "FileSize"=$fileSize
-                # "PackageName"=$myPackages
+                "Elapsed"=$elapsed
+                "Result"=$result
+                "FileSize"=$fileSize
+                "PackageName"=$myPackages
                 }
 
             $json = $psContext | ConvertTo-Json
@@ -1045,6 +1046,7 @@ function Send-BenchmarkInfo {
             Write-Host "##vso[task.setvariable variable=dxpsessionid;]$sessionId"
             $psContext.SessionId = $sessionId
             $resultMessage = $benchmarkResult.Message
+            Write-Host $benchmarkResult.Message
         #} else {
         #    Write-Verbose "Could not send without benchmark data."
         #    $resultMessage = "No benchmark data..."
