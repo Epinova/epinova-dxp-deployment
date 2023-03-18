@@ -997,7 +997,7 @@ function Send-BenchmarkInfo {
             #     }
             # }
             if ($null -ne $sw){
-                $elapsed = $sw.Elapsed.TotalSeconds
+                $elapsed = $sw.Elapsed.TotalMilliseconds
             #     if ($psContext.Contains("Elapsed")) {
             #         $psContext.Elapsed = $sw.Elapsed.TotalSeconds
             #     } else {
