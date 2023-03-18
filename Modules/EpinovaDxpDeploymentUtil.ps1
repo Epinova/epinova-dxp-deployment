@@ -869,15 +869,12 @@ function Initialize-Params {
     $timeout = 0
     $runVerbose = $false
 
-    #$sourceEnvironment = "N/A"
+    $sourceEnvironment = "N/A"
     $myPackages = "N/A"
     $fileSize = 0
     $elapsed = 0
     $result = "N/A"
     $sessionId = ""
-
-    
-
 }
 
 function Get-EpiCloudVersion {
@@ -996,14 +993,10 @@ function Send-BenchmarkInfo {
             #         $psContext.Add("Result", $result)            
             #     }
             # }
-            if ($null -ne $sw){
-                $elapsed = $sw.ElapsedMilliseconds
-            #     if ($psContext.Contains("Elapsed")) {
-            #         $psContext.Elapsed = $sw.Elapsed.TotalSeconds
-            #     } else {
-            #         $psContext.Add("Elapsed", $sw.Elapsed.TotalSeconds)            
-            #     }
-            }
+            if ($null -ne $sw){ $elapsed = $sw.ElapsedMilliseconds }
+            if ($null -ne $sourceEnvironment){ $sourceEnvironment = "N/A" }
+            if ($null -ne $fileSize){ $fileSize = 0 }
+            if ($null -ne $myPackages){ $myPackages = "N/A" }
             $epiCloudVersion = Get-EpiCloudVersion
 
             $PSCommandPath -match "^.*_tasks[\/|\\](.*)_.*[\/|\\](.*)[\/|\\]ps_modules[\/|\\]" | Out-Null
@@ -1016,30 +1009,29 @@ function Send-BenchmarkInfo {
             $psData = Get-PsData
 
             #"SessionId"=$sessionId
-                #"Environment"=$sourceEnvironment
-                # "FileSize"=$fileSize
-                # "PackageName"=$myPackages
             $psContext = @{ 
                 "Task"=$taskName
                 "TaskVersion"=$taskVersion
+                "Environment"=$sourceEnvironment
                 "TargetEnvironment"=$targetEnvironment
                 "DxpProjectId"=$projectId
-                "OrganisationId"=$env:SYSTEM_COLLECTIONID #System.CollectionId
-                "OrganisationName"=$orgName #System.CollectionUri
-                "ProjectId"=$env:SYSTEM_TEAMPROJECTID #System.TeamProjectId
-                "ProjectName"=$env:SYSTEM_TEAMPROJECT #System.TeamProject
-                "Branch"=$env:BUILD_SOURCEBRANCHNAME #Build.SourceBranchName
-                "AgentOS"=$env:AGENT_OS #Agent.OS
+                "OrganisationId"=$env:SYSTEM_COLLECTIONID
+                "OrganisationName"=$orgName
+                "ProjectId"=$env:SYSTEM_TEAMPROJECTID
+                "ProjectName"=$env:SYSTEM_TEAMPROJECT
+                "Branch"=$env:BUILD_SOURCEBRANCHNAME
+                "AgentOS"=$env:AGENT_OS
                 "EpiCloudVersion"=$epiCloudVersion
                 "PowerShellVersion"=$psData.Version
                 "PowerShellEdition"=$psData.Edition
                 "Elapsed"=$elapsed
                 "Result"=$result
+                "FileSize"=$fileSize
+                "PackageName"=$myPackages
                 }
 
             $json = $psContext | ConvertTo-Json
             Write-Host $json
-            #Write-Host "Start post"
             $benchmarkResult = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri $url -Body $json -TimeoutSec 15
             Write-Host $benchmarkResult
             $sessionId = $benchmarkResult.sessionId

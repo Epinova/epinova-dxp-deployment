@@ -11,8 +11,8 @@
     # #If deploy nuget file size
 
 
-    $url = "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun"
-    #$url = "https://localhost:7002/PipelineRun"
+    #$url = "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun"
+    $url = "https://localhost:7002/PipelineRun"
 
     # $postParams = @{ 
     #     "SessionId"="ACAC16F0-7CEF-4CFB-AD7B-DC626E9682C4"
@@ -40,7 +40,7 @@
         "OrganisationId"="4465472b-c920-479f-975c-32466c8c89b9"
         "DxpProjectId"="c0f148a9-03e0-4d5d-a585-af47003dee5f"
         "OrganisationName"="Epinova-Sweden"
-        "Elapsed"=8061.9527
+        "Elapsed"=10570
         "AgentOS"="Linux"
         "Task"="DxpExpectStatus-TEST"
         "PowerShellVersion"="v7.2.10"
