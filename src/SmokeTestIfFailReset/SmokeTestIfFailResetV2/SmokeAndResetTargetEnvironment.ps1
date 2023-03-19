@@ -15,7 +15,12 @@ Param(
 )
 
 try {
+    $deployUtilScript = Join-Path -Path $PSScriptRoot -ChildPath "ps_modules"
+    $deployUtilScript = Join-Path -Path $deployUtilScript -ChildPath "EpinovaDxpDeploymentUtil.ps1"
+    . $deployUtilScript
+
     # Get all inputs for the task
+    Initialize-Params
     $clientKey = $ClientKey
     $clientSecret = $ClientSecret
     $projectId = $ProjectId
@@ -31,6 +36,9 @@ try {
 
     $global:ErrorActionPreference = $errorAction
     ####################################################################################
+
+    $sw = [Diagnostics.Stopwatch]::StartNew()
+    $sw.Start()
 
     if ($runVerbose){
         ## To Set Verbose output
@@ -55,9 +63,9 @@ try {
 
     Write-Host "ErrorActionPref:    $($global:ErrorActionPreference)"
 
-    . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
+    # . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
 
-    Mount-PsModulesPath
+    # Mount-PsModulesPath
 
     Write-Host "Start sleep for $($sleepBeforeStart) seconds before we start check URL(s)."
     Start-Sleep $sleepBeforeStart
@@ -124,9 +132,10 @@ try {
     } 
     elseif ($resetDeployment -eq $true) {
 
-        Initialize-EpiCload
+        Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
+        # Initialize-EpiCload
      
-        Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
+        # Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
         $getEpiDeploymentSplat = @{
             ProjectId = $projectId
@@ -161,12 +170,14 @@ try {
                     Write-Host "Deployment $deploymentId has been successfuly reset."
                     Write-Host "##vso[task.logissue type=error]Deployment $deploymentId has been successfuly reset. But we can not continue deploy when we have reset the deployment."
                     Write-Error "Deployment $deploymentId has been successfuly reset. But we can not continue deploy when we have reset the deployment." -ErrorAction Stop
+                    Send-BenchmarkInfo "Succeeded"
                     exit 1
                 }
                 else {
                     Write-Warning "The reset has not been successful or the script has timedout. CurrentStatus: $($status.status)"
                     Write-Host "##vso[task.logissue type=error]The reset has not been successful or the script has timedout. CurrentStatus: $($status.status)"
                     Write-Error "Deployment $deploymentId has NOT been successfuly reset or the script has timedout. CurrentStatus: $($status.status)" -ErrorAction Stop
+                    Send-BenchmarkInfo "Bad deploy/Time out"
                     exit 1
                 }
             }
@@ -174,12 +185,14 @@ try {
                 Write-Host "The deployment $deploymentId is already in reset status."
                 Write-Host "##vso[task.logissue type=error]Deployment $deploymentId is already in reset status. But we can not continue deploy when we have found errors in the smoke test."
                 Write-Error "Deployment $deploymentId is already in reset status. But we can not continue deploy when we have found errors in the smoke test." -ErrorAction Stop
+                Send-BenchmarkInfo "Succeeded"
                 exit 1
             }
             else {
                 Write-Host "Status is not in AwaitingVerification (Current:$($status.status)). You can not reset the deployment at this moment."
                 Write-Host "##vso[task.logissue type=error]Status is not in AwaitingVerification (Current:$($status.status)). You can not reset the deployment at this moment."
                 Write-Error "Status is not in AwaitingVerification (Current:$($status.status)). You can not reset the deployment at this moment." -ErrorAction Stop
+                Send-BenchmarkInfo "Unhandled status"
                 exit 1
             }
         }

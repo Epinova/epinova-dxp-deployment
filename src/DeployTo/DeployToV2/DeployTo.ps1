@@ -15,7 +15,12 @@ Param(
 )
 
 try {
+    $deployUtilScript = Join-Path -Path $PSScriptRoot -ChildPath "ps_modules"
+    $deployUtilScript = Join-Path -Path $deployUtilScript -ChildPath "EpinovaDxpDeploymentUtil.ps1"
+    . $deployUtilScript
+
     # Get all inputs for the task
+    Initialize-Params
     $clientKey = $ClientKey
     $clientSecret = $ClientSecret
     $projectId = $ProjectId
@@ -32,7 +37,10 @@ try {
 
     # 30 min timeout
     ####################################################################################
-    
+
+    $sw = [Diagnostics.Stopwatch]::StartNew()
+    $sw.Start()
+
     if ($runVerbose){
         ## To Set Verbose output
         $PSDefaultParameterValues['*:Verbose'] = $true
@@ -54,17 +62,19 @@ try {
     Write-Host "ZeroDowntimeMode:   $zeroDowntimeMode"
     Write-Host "RunVerbose:         $runVerbose"
 
-    . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
+    Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
-    Mount-PsModulesPath
+    # . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
 
-    Initialize-EpiCload
+    # Mount-PsModulesPath
 
-    Write-DxpHostVersion
+    # Initialize-EpiCload
 
-    Test-DxpProjectId -ProjectId $projectId
+    # Write-DxpHostVersion
 
-    Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
+    # Test-DxpProjectId -ProjectId $projectId
+
+    # Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
     $sourceApps = $sourceApp.Split(",")
 
@@ -112,6 +122,7 @@ try {
             Write-Warning "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
             Write-Host "##vso[task.logissue type=error]The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
             Write-Error "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)" -ErrorAction Stop
+            Send-BenchmarkInfo "Bad deploy/Time out"
             exit 1
         }
     }
@@ -119,11 +130,13 @@ try {
         Write-Warning "Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment."
         Write-Host "##vso[task.logissue type=error]Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment."
         Write-Error "Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment." -ErrorAction Stop
+        Send-BenchmarkInfo "Unhandled status"
         exit 1
     }
     Write-Host "Setvariable DeploymentId: $deploymentId"
     Write-Host "##vso[task.setvariable variable=DeploymentId;]$($deploymentId)"
 
+    Send-BenchmarkInfo "Succeeded"
     ####################################################################################
 
     Write-Host "---THE END---"

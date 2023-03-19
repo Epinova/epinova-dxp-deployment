@@ -875,10 +875,6 @@ function Initialize-Params {
     $elapsed = 0
     $result = "N/A"
     $sessionId = ""
-
-    $sw = [Diagnostics.Stopwatch]::StartNew()
-    $sw.Start()
-
 }
 
 function Get-EpiCloudVersion {

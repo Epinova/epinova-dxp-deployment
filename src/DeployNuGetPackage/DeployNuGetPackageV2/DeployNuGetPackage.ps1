@@ -15,7 +15,12 @@ Param(
 )
 
 try {
+    $deployUtilScript = Join-Path -Path $PSScriptRoot -ChildPath "ps_modules"
+    $deployUtilScript = Join-Path -Path $deployUtilScript -ChildPath "EpinovaDxpDeploymentUtil.ps1"
+    . $deployUtilScript
+
     # Get all inputs for the task
+    Initialize-Params
     $clientKey = $ClientKey
     $clientSecret = $ClientSecret
     $projectId = $ProjectId
@@ -31,6 +36,9 @@ try {
 
     # 30 min timeout
     ####################################################################################
+
+    $sw = [Diagnostics.Stopwatch]::StartNew()
+    $sw.Start()
 
     if ($runVerbose){
         ## To Set Verbose output
@@ -53,24 +61,26 @@ try {
     Write-Host "ZeroDowntimeMode:   $zeroDowntimeMode"
     Write-Host "RunVerbose:         $runVerbose"
 
-    . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
+    Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
-    #Install-AzStorage
+    # . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
+
+    # #Install-AzStorage
      
-    Mount-PsModulesPath
+    # Mount-PsModulesPath
 
-    Initialize-EpiCload
+    # Initialize-EpiCload
 
     if (($targetEnvironment -eq "Preproduction" -or $targetEnvironment -eq "Production") -and $directDeploy){
         Write-Host "DirectDeploy does only support target environment = Integration|ADE1|ADE2|ADE3 at the moment. Will set the DirectDeploy=false."
         $directDeploy = $false
     }
 
-    Write-DxpHostVersion
+    # Write-DxpHostVersion
 
-    Test-DxpProjectId -ProjectId $projectId
+    # Test-DxpProjectId -ProjectId $projectId
 
-    Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
+    # Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
     $packageLocation = Get-EpiDeploymentPackageLocation -ProjectId $projectId
     Write-Host "PackageLocation:    $packageLocation"
@@ -146,6 +156,7 @@ try {
             Write-Warning "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
             Write-Host "##vso[task.logissue type=error]The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
             Write-Error "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)" -ErrorAction Stop
+            Send-BenchmarkInfo "Bad deploy/Time out"
             exit 1
         }
     }
@@ -153,11 +164,13 @@ try {
         Write-Warning "Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment."
         Write-Host "##vso[task.logissue type=error]Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment."
         Write-Error "Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment." -ErrorAction Stop
+        Send-BenchmarkInfo "Unhandled status"
         exit 1
     }
     Write-Host "Setvariable DeploymentId: $deploymentId"
     Write-Host "##vso[task.setvariable variable=DeploymentId;]$($deploymentId)"
 
+    Send-BenchmarkInfo "Succeeded"
     ####################################################################################
 
     Write-Host "---THE END---"

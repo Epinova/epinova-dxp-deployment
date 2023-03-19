@@ -27,6 +27,9 @@ try {
 
     ####################################################################################
 
+    $sw = [Diagnostics.Stopwatch]::StartNew()
+    $sw.Start()
+
     if ($runVerbose){
         ## To Set Verbose output
         $PSDefaultParameterValues['*:Verbose'] = $true
