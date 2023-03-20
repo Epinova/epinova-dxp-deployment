@@ -9,7 +9,12 @@ Param(
 )
 
 try {
+    $deployUtilScript = Join-Path -Path $PSScriptRoot -ChildPath "ps_modules"
+    $deployUtilScript = Join-Path -Path $deployUtilScript -ChildPath "EpinovaDxpDeploymentUtil.ps1"
+    . $deployUtilScript
+
     # Get all inputs for the task
+    Initialize-Params
     $clientKey = $ClientKey
     $clientSecret = $ClientSecret
     $projectId = $ProjectId
@@ -18,6 +23,9 @@ try {
     $runVerbose = [System.Convert]::ToBoolean($RunVerbose)
 
     ####################################################################################
+
+    $sw = [Diagnostics.Stopwatch]::StartNew()
+    $sw.Start()
 
     if ($runVerbose){
         ## To Set Verbose output
@@ -34,17 +42,7 @@ try {
     Write-Host "Timeout:            $timeout"
     Write-Host "RunVerbose:         $runVerbose"
 
-    . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
-
-    Mount-PsModulesPath
-
-    Initialize-EpiCload
-
-    Write-DxpHostVersion
-
-    Test-DxpProjectId -ProjectId $projectId
-
-    Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
+    Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
     $lastDeploy = Get-DxpLatestEnvironmentDeployment -ProjectId $projectId -TargetEnvironment $targetEnvironment
 
@@ -79,6 +77,7 @@ try {
                 Write-Host "Reset $deploymentId has been successful."
             }
             else {
+                Send-BenchmarkInfo "Bad deploy/Time out"
                 Write-Warning "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
                 Write-Host "##vso[task.logissue type=error]The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
                 Write-Error "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)" -ErrorAction Stop
@@ -89,6 +88,7 @@ try {
             Write-Output "Target environment $targetEnvironment is already in status $($lastDeploy.status). Will and can´t wait for any new status."
         }
         else {
+            Send-BenchmarkInfo "Unhandled status"
             Write-Warning "Status is in a unhandled status. (Current:$($lastDeploy.status)). Will and can´t do anything..."
             Write-Host "##vso[task.logissue type=error]Status is in a unhandled status. (Current:$($lastDeploy.status))."
             Write-Error "Status is in a unhandled status. (Current:$($lastDeploy.status))." -ErrorAction Stop
@@ -100,6 +100,7 @@ try {
         Write-Output "Will and can not do anything..."
     }
 
+    Send-BenchmarkInfo "Succeeded"
     ####################################################################################
 
     Write-Host "---THE END---"

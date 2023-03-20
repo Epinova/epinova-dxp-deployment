@@ -51,18 +51,6 @@ try {
 
     Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
-    # . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
-
-    # Mount-PsModulesPath
-
-    # Initialize-EpiCload
-
-    # Write-DxpHostVersion
-
-    # Test-DxpProjectId -ProjectId $projectId
-
-    # Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
-
     switch ($environment){
         ProdPrep{
             $sourceEnvironment = "Production"
@@ -192,18 +180,18 @@ try {
             Write-Host "Content copy $deploymentId has been successful."
         }
         else {
+            Send-BenchmarkInfo "Bad deploy/Time out"
             Write-Warning "Content copy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
             Write-Host "##vso[task.logissue type=error]Content copy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
             Write-Error "Content copy has not been successful or the script has timed out. CurrentStatus: $($status.status)" -ErrorAction Stop
-            Send-BenchmarkInfo "Bad deploy/Time out"
             exit 1
         }
     }
     else {
+        Send-BenchmarkInfo "Unhandled status"
         Write-Warning "Status is not in InProgress (Current:$($deploy.status)). You can not content copy at this moment."
         Write-Host "##vso[task.logissue type=error]Status is not in InProgress (Current:$($deploy.status)). You can not content copy at this moment."
         Write-Error "Status is not in InProgress (Current:$($deploy.status)). You can not content copy at this moment." -ErrorAction Stop
-        Send-BenchmarkInfo "Unhandled status"
         exit 1
     }
     Write-Host "Setvariable DeploymentId: $deploy.id"

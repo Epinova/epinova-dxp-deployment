@@ -44,18 +44,6 @@ try {
 
     Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
-    # . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
-
-    # Mount-PsModulesPath
-
-    # Initialize-EpiCload
-
-    # Write-DxpHostVersion
-
-    # Test-DxpProjectId -ProjectId $projectId
-
-    # Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
-
     $deploy = Get-DxpAwaitingEnvironmentDeployment -ProjectId $projectId -TargetEnvironment $targetEnvironment
     $deploy
     if (-not $deploy) {
@@ -93,10 +81,10 @@ try {
                 Write-Host "Deployment $deploymentId has been completed."
             }
             else {
+                Send-BenchmarkInfo "Bad deploy/Time out"
                 Write-Warning "The completion for deployment $deploymentId has not been successful or the script has timed out. CurrentStatus: $($status.status)"
                 Write-Host "##vso[task.logissue type=error]The completion for deployment $deploymentId has not been successful or the script has timed out. CurrentStatus: $($status.status)"
                 Write-Error "The completion for deployment $deploymentId has not been successful or the script has timed out. CurrentStatus: $($status.status)" -ErrorAction Stop
-                Send-BenchmarkInfo "Bad deploy/Time out"
                 exit 1
             }
         }
@@ -104,17 +92,17 @@ try {
             Write-Host "The deployment $deploymentId is already in Succeeded status."
         }
         else {
+            Send-BenchmarkInfo "Unhandled status"
             Write-Warning "Status is not in complete (Current:$($complete.status)). Something is strange..."
             Write-Host "##vso[task.logissue type=error]Status is not in complete (Current:$($complete.status)). Something is strange..."
             Write-Error "Status is not in complete (Current:$($complete.status)). Something is strange..." -ErrorAction Stop
-            Send-BenchmarkInfo "Unhandled status"
             exit 1
         }
 
     }
     else {
-        Write-Host "##vso[task.logissue type=error]Could not retrieve the DeploymentId variable. Can not complete the deployment."
         Send-BenchmarkInfo "No DeploymentId"
+        Write-Host "##vso[task.logissue type=error]Could not retrieve the DeploymentId variable. Can not complete the deployment."
         exit 1
     }
 

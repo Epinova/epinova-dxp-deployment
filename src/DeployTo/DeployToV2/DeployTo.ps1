@@ -64,18 +64,6 @@ try {
 
     Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
-    # . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
-
-    # Mount-PsModulesPath
-
-    # Initialize-EpiCload
-
-    # Write-DxpHostVersion
-
-    # Test-DxpProjectId -ProjectId $projectId
-
-    # Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
-
     $sourceApps = $sourceApp.Split(",")
 
     if ($null -eq $zeroDowntimeMode -or $zeroDowntimeMode -eq "" -or $zeroDowntimeMode -eq "NotSpecified") {
@@ -119,18 +107,18 @@ try {
             Write-Host "Deployment $deploymentId has been successful."
         }
         else {
+            Send-BenchmarkInfo "Bad deploy/Time out"
             Write-Warning "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
             Write-Host "##vso[task.logissue type=error]The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
             Write-Error "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)" -ErrorAction Stop
-            Send-BenchmarkInfo "Bad deploy/Time out"
             exit 1
         }
     }
     else {
+        Send-BenchmarkInfo "Unhandled status"
         Write-Warning "Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment."
         Write-Host "##vso[task.logissue type=error]Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment."
         Write-Error "Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment." -ErrorAction Stop
-        Send-BenchmarkInfo "Unhandled status"
         exit 1
     }
     Write-Host "Setvariable DeploymentId: $deploymentId"

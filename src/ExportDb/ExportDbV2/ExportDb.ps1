@@ -49,17 +49,6 @@ try {
     Write-Host "RunVerbose:         $runVerbose"
 
     Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
-    # . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
-
-    # Mount-PsModulesPath
-
-    # Initialize-EpiCload
-
-    # Write-DxpHostVersion
-
-    # Test-DxpProjectId -ProjectId $projectId
-
-    # Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
     $exportDatabaseSplat = @{
         ProjectId          = $projectId
@@ -91,18 +80,18 @@ try {
             Write-Host "Database export $exportId has been successful."
         }
         else {
+            Send-BenchmarkInfo "Bad deploy/Time out"
             Write-Warning "The database export has not been successful or the script has timed out. CurrentStatus: $($status.status)"
             Write-Host "##vso[task.logissue type=error]The database export has not been successful or the script has timed out. CurrentStatus: $($status.status)"
             Write-Error "The database export has not been successful or the script has timed out. CurrentStatus: $($status.status)" -ErrorAction Stop
-            Send-BenchmarkInfo "Bad deploy/Time out"
             exit 1
         }
     }
     else {
+        Send-BenchmarkInfo "Unhandled status"
         Write-Warning "Status is not in InProgress (Current:$($export.status)). You can not export database at this moment."
         Write-Host "##vso[task.logissue type=error]Status is not in InProgress (Current:$($export.status)). You can not export database at this moment."
         Write-Error "Status is not in InProgress (Current:$($export.status)). You can not export database at this moment." -ErrorAction Stop
-        Send-BenchmarkInfo "Unhandled status"
         exit 1
     }
     Write-Host "Setvariable ExportId: $exportId"

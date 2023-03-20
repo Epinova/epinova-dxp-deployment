@@ -44,17 +44,6 @@ try {
     Write-Host "RunVerbose:         $runVerbose"
 
     Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
-    # . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
-
-    # Mount-PsModulesPath
-
-    # Initialize-EpiCload
-
-    # Write-DxpHostVersion
-
-    # Test-DxpProjectId -ProjectId $projectId
-
-    # Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
     $deploy = Get-DxpAwaitingEnvironmentDeployment -ProjectId $projectId -TargetEnvironment $targetEnvironment
     $deploy
@@ -91,10 +80,10 @@ try {
                 Write-Host "Deployment $deploymentId has been successfuly reset."
             }
             else {
+                Send-BenchmarkInfo "Bad deploy/Time out"
                 Write-Warning "The reset has not been successful or the script has timed out. CurrentStatus: $($status.status)"
                 Write-Host "##vso[task.logissue type=error]The reset has not been successful or the script has timed out. CurrentStatus: $($status.status)"
                 Write-Error "The reset has not been successful or the script has timed out. CurrentStatus: $($status.status)" -ErrorAction Stop
-                Send-BenchmarkInfo "Bad deploy/Time out"
                 exit 1
             }
         }
@@ -102,10 +91,10 @@ try {
             Write-Host "The deployment $deploymentId is already in reset status."
         }
         else {
+            Send-BenchmarkInfo "Unhandled status"
             Write-Warning "Status is not in AwaitingVerification (Current:$($status.status)). You can not reset the deployment at this moment."
             Write-Host "##vso[task.logissue type=error]Status is not in AwaitingVerification (Current:$($status.status)). You can not reset the deployment at this moment."
             Write-Error "Status is not in AwaitingVerification (Current:$($status.status)). You can not reset the deployment at this moment." -ErrorAction Stop
-            Send-BenchmarkInfo "Unhandled status"
             exit 1
         }
     }
