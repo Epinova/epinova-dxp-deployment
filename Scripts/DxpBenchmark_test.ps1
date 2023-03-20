@@ -35,6 +35,7 @@
     #     "FileSize"=0
     #     "PackageName"="asdasdsda.nuget"
     #     }
+
     $postParams = @{
         "ProjectId"="add96c9a-eeb4-4ce6-9cf2-2a09262bff47"
         "OrganisationId"="4465472b-c920-479f-975c-32466c8c89b9"
@@ -51,6 +52,11 @@
         "TargetEnvironment"="Integration"
         "EpiCloudVersion"="v1.2.0"
         "Branch"="develop"
+        "ReleaseReason"=$null
+        "AgentVersion"=$null
+        "Pipeline"=$null
+        "ReleaseName"=$null
+        "StageName"=$null
         }
 
     $json = $postParams | ConvertTo-Json

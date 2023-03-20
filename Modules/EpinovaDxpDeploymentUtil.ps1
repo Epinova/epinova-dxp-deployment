@@ -802,7 +802,7 @@ function Test-PackageFileName {
     }
 }
 
-function Test-PackageFileSize {
+function Get-PackageFileSize {
     <#
     .SYNOPSIS
         Test package file size
@@ -820,15 +820,15 @@ function Test-PackageFileSize {
     param
 	(
 		[Parameter(Mandatory = $true)]
-		[System.IO.FileInfo]$PackageFile
+		[string]$packageFilePath
 	)
 
-    Write-Host "Package '$($PackageFile.Name)' file size => $($PackageFile.Length)."
-    $fileSize = $PackageFile.Length
-    #if ($true -eq $PackageFile.Name.Contains(" ")) {
-    #    $newName = $PackageFile.Name.Replace(" " , "")
-    #    Write-Error "Package name contains space(s). Due to none support for spaces in EpiCloud API, you need to change the package name '$($PackageFile.Name)' => '$newName'."
-    #}
+    $packageFileSize = 0
+    $packageFileInfo = Get-ChildItem -Path $packageFilePath
+    Write-Host "Package '$($packageFileInfo.Name)' file size => $($packageFileInfo.Length)."
+    $packageFileSize = $packageFileInfo.Length
+
+    return $packageFileSize;
 }
 
 function Publish-Package {
@@ -868,7 +868,7 @@ function Publish-Package {
 
     Test-PackageFileName -PackageFile $packageFileInfo
 
-    Test-PackageFileSize -PackageFile $packageFileInfo
+    #Test-PackageFileSize -PackageFile $packageFileInfo
 
     $packageFileName = $packageFileInfo.Name
     
@@ -951,8 +951,10 @@ function Send-BenchmarkInfo {
         }
 
         if ($false -eq (test-path variable:sourceEnvironment)) { $sourceEnvironment = "N/A" }
-        if ($false -eq (test-path variable:fileSize)) { $fileSize = 0 }
-        if ($false -eq (test-path variable:myPackages)) { $myPackages = "N/A" }
+        if ($false -eq (test-path variable:cmsFileSize)) { $cmsFileSize = 0 }
+        if ($false -eq (test-path variable:cmsPackage)) { $cmsPackage = "N/A" }
+        if ($false -eq (test-path variable:commerceFileSize)) { $commerceFileSize = 0 }
+        if ($false -eq (test-path variable:commercePackage)) { $commercePackage = "N/A" }
         $epiCloudVersion = Get-EpiCloudVersion
 
         $PSCommandPath -match "^.*_tasks[\/|\\](.*)_.*[\/|\\](.*)[\/|\\]ps_modules[\/|\\]" | Out-Null
@@ -976,18 +978,15 @@ function Send-BenchmarkInfo {
             "ProjectName"=$env:SYSTEM_TEAMPROJECT
             "Branch"=$env:BUILD_SOURCEBRANCHNAME
             "AgentOS"=$env:AGENT_OS
-            "AgentVersion"=$env:AGENT_Version
             "EpiCloudVersion"=$epiCloudVersion
             "PowerShellVersion"=$psData.Version
             "PowerShellEdition"=$psData.Edition
             "Elapsed"=$elapsed
             "Result"=$result
-            "FileSize"=$fileSize
-            "PackageName"=$myPackages
-            "Pipeline"=$env:Release_DefinitionName
-            "StageName"=$env:Release_EnvironmentName
-            "ReleaseReason"=$env:Release_Reason
-            "ReleaseName"=$env:Release_ReasonName
+            "CmsFileSize"=$cmsFileSize
+            "CmsPackageName"=$cmsPackage
+            "CommerceFileSize"=$commerceFileSize
+            "CommercePackageName"=$commercePackage
             }
 
         $json = $psContext | ConvertTo-Json
