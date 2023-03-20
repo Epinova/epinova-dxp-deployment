@@ -802,6 +802,35 @@ function Test-PackageFileName {
     }
 }
 
+function Test-PackageFileSize {
+    <#
+    .SYNOPSIS
+        Test package file size
+
+    .DESCRIPTION
+        Test package file size
+
+    .PARAMETER PackageFile
+        The FileInfo that should be checked.
+
+    .EXAMPLE
+        $packageFile = Get-ChildItem -Path $dropPath -Filter *.cms.*.nupkg
+        Test-PackageFileSize -PackageFile $packageFile
+    #>	
+    param
+	(
+		[Parameter(Mandatory = $true)]
+		[System.IO.FileInfo]$PackageFile
+	)
+
+    Write-Host "Package '$($PackageFile.Name)' file size => $($PackageFile.Length)."
+    $fileSize = $PackageFile.Length
+    #if ($true -eq $PackageFile.Name.Contains(" ")) {
+    #    $newName = $PackageFile.Name.Replace(" " , "")
+    #    Write-Error "Package name contains space(s). Due to none support for spaces in EpiCloud API, you need to change the package name '$($PackageFile.Name)' => '$newName'."
+    #}
+}
+
 function Publish-Package {
     <#
     .SYNOPSIS
@@ -838,6 +867,8 @@ function Publish-Package {
     Test-PackageFile -PackageType $PackageType -DropPath $DropPath -PackageFile $packageFileInfo
 
     Test-PackageFileName -PackageFile $packageFileInfo
+
+    Test-PackageFileSize -PackageFile $packageFileInfo
 
     $packageFileName = $packageFileInfo.Name
     
@@ -945,6 +976,7 @@ function Send-BenchmarkInfo {
             "ProjectName"=$env:SYSTEM_TEAMPROJECT
             "Branch"=$env:BUILD_SOURCEBRANCHNAME
             "AgentOS"=$env:AGENT_OS
+            "AgentVersion"=$env:AGENT_Version
             "EpiCloudVersion"=$epiCloudVersion
             "PowerShellVersion"=$psData.Version
             "PowerShellEdition"=$psData.Edition
@@ -952,6 +984,10 @@ function Send-BenchmarkInfo {
             "Result"=$result
             "FileSize"=$fileSize
             "PackageName"=$myPackages
+            "Pipeline"=$env:Release_DefinitionName
+            "StageName"=$env:Release_EnvironmentName
+            "ReleaseReason"=$env:Release_Reason
+            "ReleaseName"=$env:Release_ReasonName
             }
 
         $json = $psContext | ConvertTo-Json
