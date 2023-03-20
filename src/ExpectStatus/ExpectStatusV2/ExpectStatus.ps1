@@ -47,18 +47,6 @@ try {
     Write-Host "RunVerbose:         $runVerbose"
 
     Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
-    #$psContext = Write-ContextInfo
-    # Mount-PsModulesPath
-
-    # Write-ContextInfo
-
-    # Initialize-EpiCload
-    
-    # Write-DxpHostVersion
-
-    # Test-DxpProjectId -ProjectId $projectId
-
-    # Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
     $lastDeploy = Get-DxpLatestEnvironmentDeployment -ProjectId $projectId -TargetEnvironment $targetEnvironment
 
@@ -80,12 +68,10 @@ try {
             Write-Host "Status is as expected."
         }
         else {
+            Send-BenchmarkInfo "Not expected status"
             Write-Warning "$targetEnvironment is not in expected status $expectedStatus. (Current:$($lastDeploy.status))."
             Write-Host "##vso[task.logissue type=error]$targetEnvironment is not in expected status $expectedStatus. (Current:$($lastDeploy.status))."
             Write-Error "$targetEnvironment is not in expected status $expectedStatus. (Current:$($lastDeploy.status))." -ErrorAction Stop
-            #$result = "Not expected status"
-            #$sw.Stop()
-            Send-BenchmarkInfo "Not expected status"
             exit 1
         }
     }
@@ -94,13 +80,7 @@ try {
         Write-Output "Will and can not do anything..."
     }
 
-    #$sw.Stop()
-    #Write-ContextInfo -ProjectId $projectId -Environment $targetEnvironment -Elapsed $elapsed -Result "Succeeded" -FileSize 0
-    #$result = "Succeeded"
-    #$benchmarkInfo = Send-BenchmarkInfo #-psContext $psContext
-    #Write-Host $benchmarkInfo
     Send-BenchmarkInfo "Succeeded"
-    #Write-ResultInfo $psContext
     ####################################################################################
     Write-Host "---THE END---"
 
