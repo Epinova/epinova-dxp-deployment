@@ -950,6 +950,7 @@ function Send-BenchmarkInfo {
             $elapsed = $sw.ElapsedMilliseconds 
         }
 
+        if ($false -eq (test-path variable:targetEnvironment)) { $targetEnvironment = "N/A" }
         if ($false -eq (test-path variable:sourceEnvironment)) { $sourceEnvironment = "N/A" }
         if ($false -eq (test-path variable:cmsFileSize)) { $cmsFileSize = 0 }
         if ($false -eq (test-path variable:cmsPackage)) { $cmsPackage = "N/A" }

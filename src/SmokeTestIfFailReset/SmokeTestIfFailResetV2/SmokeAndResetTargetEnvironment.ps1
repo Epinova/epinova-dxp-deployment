@@ -161,7 +161,7 @@ try {
                 $status = Invoke-DxpProgress -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus "Reset" -Timeout $timeout
 
                 if ($status.status -eq "Reset") {
-                    Send-BenchmarkInfo "Succeeded"
+                    Send-BenchmarkInfo "Reset"
                     Write-Host "Deployment $deploymentId has been successfuly reset."
                     Write-Host "##vso[task.logissue type=error]Deployment $deploymentId has been successfuly reset. But we can not continue deploy when we have reset the deployment."
                     Write-Error "Deployment $deploymentId has been successfuly reset. But we can not continue deploy when we have reset the deployment." -ErrorAction Stop

@@ -61,7 +61,7 @@
 
     $json = $postParams | ConvertTo-Json
     $result = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri $url -Body $json
-    Write-Host $result
+    #Write-Host $result
     $sessionId = $result.sessionId
     $message = $result.message
     Write-Host $sessionId

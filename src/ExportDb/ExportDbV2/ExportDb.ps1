@@ -20,6 +20,7 @@ try {
     $clientSecret = $ClientSecret
     $projectId = $ProjectId
     $environment = $Environment
+    $targetEnvironment = $Environment
     $databaseName = $DatabaseName
     $retentionHours = $RetentionHours
     $timeout = $Timeout
