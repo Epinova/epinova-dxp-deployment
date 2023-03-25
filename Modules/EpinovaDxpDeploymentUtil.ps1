@@ -831,7 +831,10 @@ function Publish-Package {
 
     $uploadedPackage = ""
     $packageFileInfo = Get-ChildItem -Path $DropPath -Filter "*.$PackageType.*.nupkg"
-    
+    if ($null -eq $packageFileInfo){
+        Write-Host "No *.$PackageType.*.nupkg found. Will try to find *.$PackageType.*.zip"
+        $packageFileInfo = Get-ChildItem -Path $DropPath -Filter "*.$PackageType.*.zip"
+    }
     Write-Host "Loaded $PackageType package:    $packageFileInfo"
     
     Test-PackageFile -PackageType $PackageType -DropPath $DropPath -PackageFile $packageFileInfo

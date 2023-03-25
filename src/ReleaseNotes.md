@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.5.0
+- Added ZIP file support
+
 ## v2.4.0
 - Added RunVerbose support
 
