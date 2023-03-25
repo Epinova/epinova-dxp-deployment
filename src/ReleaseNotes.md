@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.7.2
+- Added ZIP support
+
 ## v2.6.49
 - Context info
 
