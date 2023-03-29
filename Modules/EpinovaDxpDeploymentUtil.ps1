@@ -1001,8 +1001,12 @@ function Send-BenchmarkInfo {
 
             $json = $psContext | ConvertTo-Json
             Write-Verbose $json
-            if ()
-            $benchmarkResult = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun" -Body $json -TimeoutSec 15
+            if ($taskName.EndsWith("-TEST")){
+                $benchmarkResult = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun" -Body $json -TimeoutSec 15
+            } else {
+                $benchmarkResult = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun" -Body $json -TimeoutSec 15
+            }
+            
             $sessionId = $benchmarkResult.sessionId
             Write-Host "##vso[task.setvariable variable=dxpsessionid;]$sessionId"
             Write-Host $benchmarkResult.Message
