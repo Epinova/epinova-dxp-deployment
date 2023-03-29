@@ -1004,9 +1004,12 @@ function Send-BenchmarkInfo {
 
             $json = $psContext | ConvertTo-Json
             Write-Verbose $json
-            if ($taskName.EndsWith("-TEST")){
+            if ($taskName.EndsWith("-TEST"))
+            {
                 $benchmarkResult = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun" -Body $json -TimeoutSec 15
-            } else {
+            } 
+            else 
+            {
                 $benchmarkResult = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun" -Body $json -TimeoutSec 15
             }
             
@@ -1035,7 +1038,7 @@ function Send-BenchmarkInfo {
             Write-Host "$($env:AGENT_OS) is X.XX % faster/slower then AgentZ"
             Write-Host "-------------------------------------------------------------------------"
         }
-
+    }
     catch {
         Write-Verbose "Could not send Exception caught : $($_.Exception.ToString())"
         Write-Host "Failed to send benchmark data."
