@@ -1017,7 +1017,7 @@ function Send-BenchmarkInfo {
         else 
         {
             Write-Host "Your are not sending benchmark data. You will not see your benchmark result."
-            Write-Host "$taskName $taskVersion: Execution time --------------------"
+            Write-Host "$taskName $($taskVersion): Execution time --------------------"
             Write-Host "|Title             |Elapsed          |Agent     |Procent   |"
             Write-Host "|------------------|-----------------|----------|----------|"
             Write-Host "|All time fastest  |00h:00m:XXs:XXXms|Xxx       |    X.00 %|"
