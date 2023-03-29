@@ -1013,8 +1013,6 @@ function Send-BenchmarkInfo {
             $sessionId = $benchmarkResult.sessionId
             Write-Host "##vso[task.setvariable variable=dxpsessionid;]$sessionId"
             Write-Host $benchmarkResult.Message
-            }
-
         } 
         else 
         {
