@@ -20,6 +20,7 @@ export async function run() {
         let DropPath = tl.getInput("DropPath");
         let Timeout = tl.getInput("Timeout");
         let ZeroDowntimeMode = tl.getInput("ZeroDowntimeMode");
+        let RunBenchmark = tl.getBoolInput("RunBenchmark", false);
         let RunVerbose = tl.getBoolInput("RunVerbose", false);
 
         // we need to get the verbose flag passed in as script flag
@@ -48,6 +49,10 @@ export async function run() {
         "-DropPath", DropPath,
         "-Timeout", Timeout
         ];
+        if (RunBenchmark) {
+            args.push("-RunBenchmark");
+            args.push("true");
+        }
         if (RunVerbose) {
             args.push("-RunVerbose");
             args.push("true");
@@ -72,6 +77,10 @@ export async function run() {
         "-DropPath", DropPath,
         "-Timeout", Timeout
         ];
+        if (RunBenchmark) {
+            argsShow.push("-RunBenchmark");
+            argsShow.push("true");
+        }
         if (RunVerbose) {
             argsShow.push("-RunVerbose");
             argsShow.push("true");

@@ -11,6 +11,7 @@ Param(
     $SleepBeforeRetry,
     $Timeout,
     $ErrorActionPreference,
+    $RunBenchmark,
     $RunVerbose
 )
 
@@ -32,6 +33,7 @@ try {
     $sleepBeforeRetry = $SleepBeforeRetry
     $timeout = $Timeout
     $errorAction = $ErrorActionPreference
+    $runBenchmark = [System.Convert]::ToBoolean($RunBenchmark)
     $runVerbose = [System.Convert]::ToBoolean($RunVerbose)
 
     $global:ErrorActionPreference = $errorAction
@@ -59,6 +61,7 @@ try {
     Write-Host "SleepBeforeRetry:   $sleepBeforeRetry"
     Write-Host "Timeout:            $timeout"
     Write-Host "ErrorActionPref:    $errorAction"
+    Write-Host "RunBenchmark:       $runBenchmark"
     Write-Host "RunVerbose:         $runVerbose"
 
     Write-Host "ErrorActionPref:    $($global:ErrorActionPreference)"

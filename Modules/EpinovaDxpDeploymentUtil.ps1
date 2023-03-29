@@ -947,59 +947,87 @@ function Send-BenchmarkInfo {
 		[Parameter(Mandatory = $false)]
 		[string]$result = ""
 	)
+
+    
+
     try{
-        if ($null -ne $sw){ 
-            $sw.Stop()
-            $elapsed = $sw.ElapsedMilliseconds 
-        }
-
-        if ($false -eq (test-path variable:targetEnvironment)) { $targetEnvironment = "N/A" }
-        if ($false -eq (test-path variable:sourceEnvironment)) { $sourceEnvironment = "N/A" }
-        if ($false -eq (test-path variable:cmsFileSize)) { $cmsFileSize = 0 }
-        if ($false -eq (test-path variable:cmsPackage)) { $cmsPackage = "N/A" }
-        if ($false -eq (test-path variable:commerceFileSize)) { $commerceFileSize = 0 }
-        if ($false -eq (test-path variable:commercePackage)) { $commercePackage = "N/A" }
-        $epiCloudVersion = Get-EpiCloudVersion
-
-        $PSCommandPath -match "^.*_tasks[\/|\\](.*)_.*[\/|\\](.*)[\/|\\]ps_modules[\/|\\]" | Out-Null
-        $taskName = $Matches[1]
-        $taskVersion = $Matches[2]
-    
-        $env:SYSTEM_COLLECTIONURI -match "^.*\/(.*)\/" | Out-Null
-        $orgName = $Matches[1]
-    
-        $psData = Get-PsData
-
-        $psContext = @{ 
-            "Task"=$taskName
-            "TaskVersion"=$taskVersion
-            "Environment"=$sourceEnvironment
-            "TargetEnvironment"=$targetEnvironment
-            "DxpProjectId"=$projectId
-            "OrganisationId"=$env:SYSTEM_COLLECTIONID
-            "OrganisationName"=$orgName
-            "ProjectId"=$env:SYSTEM_TEAMPROJECTID
-            "ProjectName"=$env:SYSTEM_TEAMPROJECT
-            "Branch"=$env:BUILD_SOURCEBRANCHNAME
-            "AgentOS"=$env:AGENT_OS
-            "EpiCloudVersion"=$epiCloudVersion
-            "PowerShellVersion"=$psData.Version
-            "PowerShellEdition"=$psData.Edition
-            "Elapsed"=$elapsed
-            "Result"=$result
-            "CmsFileSize"=$cmsFileSize
-            "CmsPackageName"=$cmsPackage
-            "CommerceFileSize"=$commerceFileSize
-            "CommercePackageName"=$commercePackage
+        if ($runBenchmark){
+            
+            if ($null -ne $sw){ 
+                $sw.Stop()
+                $elapsed = $sw.ElapsedMilliseconds 
             }
 
-        $json = $psContext | ConvertTo-Json
-        Write-Verbose $json
-        $benchmarkResult = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun" -Body $json -TimeoutSec 15
-        $sessionId = $benchmarkResult.sessionId
-        Write-Host "##vso[task.setvariable variable=dxpsessionid;]$sessionId"
-        Write-Host $benchmarkResult.Message
+            if ($false -eq (test-path variable:targetEnvironment)) { $targetEnvironment = "N/A" }
+            if ($false -eq (test-path variable:sourceEnvironment)) { $sourceEnvironment = "N/A" }
+            if ($false -eq (test-path variable:cmsFileSize)) { $cmsFileSize = 0 }
+            if ($false -eq (test-path variable:cmsPackage)) { $cmsPackage = "N/A" }
+            if ($false -eq (test-path variable:commerceFileSize)) { $commerceFileSize = 0 }
+            if ($false -eq (test-path variable:commercePackage)) { $commercePackage = "N/A" }
+            $epiCloudVersion = Get-EpiCloudVersion
+
+            $PSCommandPath -match "^.*_tasks[\/|\\](.*)_.*[\/|\\](.*)[\/|\\]ps_modules[\/|\\]" | Out-Null
+            $taskName = $Matches[1]
+            $taskVersion = $Matches[2]
+        
+            $env:SYSTEM_COLLECTIONURI -match "^.*\/(.*)\/" | Out-Null
+            $orgName = $Matches[1]
+        
+            $psData = Get-PsData
+
+            $psContext = @{ 
+                "Task"=$taskName
+                "TaskVersion"=$taskVersion
+                "Environment"=$sourceEnvironment
+                "TargetEnvironment"=$targetEnvironment
+                "DxpProjectId"=$projectId
+                "OrganisationId"=$env:SYSTEM_COLLECTIONID
+                "OrganisationName"=$orgName
+                "ProjectId"=$env:SYSTEM_TEAMPROJECTID
+                "ProjectName"=$env:SYSTEM_TEAMPROJECT
+                "Branch"=$env:BUILD_SOURCEBRANCHNAME
+                "AgentOS"=$env:AGENT_OS
+                "EpiCloudVersion"=$epiCloudVersion
+                "PowerShellVersion"=$psData.Version
+                "PowerShellEdition"=$psData.Edition
+                "Elapsed"=$elapsed
+                "Result"=$result
+                "CmsFileSize"=$cmsFileSize
+                "CmsPackageName"=$cmsPackage
+                "CommerceFileSize"=$commerceFileSize
+                "CommercePackageName"=$commercePackage
+                }
+
+            $json = $psContext | ConvertTo-Json
+            Write-Verbose $json
+            if ()
+            $benchmarkResult = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun" -Body $json -TimeoutSec 15
+            $sessionId = $benchmarkResult.sessionId
+            Write-Host "##vso[task.setvariable variable=dxpsessionid;]$sessionId"
+            Write-Host $benchmarkResult.Message
+            }
+
+        } else {
+            Write-Host "Your are not sending benchmark data. You will not see your benchmark result."
+            Write-Host "$taskName $taskVersion: Execution time --------------------"
+            Write-Host "|Title             |Elapsed          |Agent     |Procent   |"
+            Write-Host "|------------------|-----------------|----------|----------|"
+            Write-Host "|All time fastest  |00h:00m:XXs:XXXms|Xxx       |    X.00 %|"
+            Write-Host "|Today fastest     |00h:00m:XXs:XXXms|Xxx       |    X.00 %|"
+            Write-Host "|All time average  |00h:00m:XXs:XXXms|Xxx       |    X.00 %|"
+            Write-Host "|Today average     |00h:00m:XXs:XXXms|Xxx       |    X.00 %|"
+            Write-Host "|Current execution |00h:00m:XXs:XXXms|Xxx       |    +/-0 %|"
+            Write-Host "|Today slowest     |00h:00m:XXs:XXXms|Xxx       |    X.00 %|"
+            Write-Host "|All time slowest  |00h:00m:XXs:XXXms|Xxx       |    X.00 %|"
+            Write-Host "-------------------------------------------------------------------------"
+            Write-Host ""
+            Write-Host "Agent: ------------------------------------------------------------------"
+            Write-Host "You are using $($env:AGENT_OS). Average time is 00h:00m:XXs:XXXms"
+            Write-Host "$($env:AGENT_OS) is X.XX % faster/slower then AgentY"
+            Write-Host "$($env:AGENT_OS) is X.XX % faster/slower then AgentZ"
+            Write-Host "-------------------------------------------------------------------------"
         }
+
     catch {
         Write-Verbose "Could not send Exception caught : $($_.Exception.ToString())"
         Write-Host "Failed to send benchmark data."

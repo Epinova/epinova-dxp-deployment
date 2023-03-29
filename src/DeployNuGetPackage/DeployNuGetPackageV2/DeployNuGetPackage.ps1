@@ -11,6 +11,7 @@ Param(
     $DropPath,
     $Timeout,
     $ZeroDowntimeMode,
+    $RunBenchmark,
     $RunVerbose
 )
 
@@ -32,6 +33,7 @@ try {
     $dropPath = $DropPath
     $timeout = $Timeout
     $zeroDowntimeMode = $ZeroDowntimeMode
+    $runBenchmark = [System.Convert]::ToBoolean($RunBenchmark)
     $runVerbose = [System.Convert]::ToBoolean($RunVerbose)
 
     # 30 min timeout
@@ -59,6 +61,7 @@ try {
     Write-Host "DropPath:           $dropPath"
     Write-Host "Timeout:            $timeout"
     Write-Host "ZeroDowntimeMode:   $zeroDowntimeMode"
+    Write-Host "RunBenchmark:       $runBenchmark"
     Write-Host "RunVerbose:         $runVerbose"
 
     Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId

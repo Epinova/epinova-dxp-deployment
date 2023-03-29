@@ -11,6 +11,7 @@ Param(
     $IncludeBlob,
     $IncludeDb,
     $ZeroDowntimeMode,
+    $RunBenchmark,
     $RunVerbose
 )
 
@@ -32,8 +33,8 @@ try {
     [Boolean]$includeBlob = [System.Convert]::ToBoolean($IncludeBlob)
     [Boolean]$includeDb = [System.Convert]::ToBoolean($IncludeDb)
     $zeroDowntimeMode = $ZeroDowntimeMode
+    $runBenchmark = [System.Convert]::ToBoolean($RunBenchmark)
     $runVerbose = [System.Convert]::ToBoolean($RunVerbose)
-
 
     # 30 min timeout
     ####################################################################################
@@ -60,6 +61,7 @@ try {
     Write-Host "IncludeBlob:        $includeBlob"
     Write-Host "IncludeDb:          $includeDb"
     Write-Host "ZeroDowntimeMode:   $zeroDowntimeMode"
+    Write-Host "RunBenchmark:       $runBenchmark"
     Write-Host "RunVerbose:         $runVerbose"
 
     Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId

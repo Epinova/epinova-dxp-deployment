@@ -20,6 +20,7 @@ export async function run() {
         let IncludeBlob = tl.getBoolInput("IncludeBlob");
         let IncludeDb = tl.getBoolInput("IncludeDb");
         let ZeroDowntimeMode = tl.getInput("ZeroDowntimeMode");
+        let RunBenchmark = tl.getBoolInput("RunBenchmark", false);
         let RunVerbose = tl.getBoolInput("RunVerbose", false);
 
         // we need to get the verbose flag passed in as script flag
@@ -53,6 +54,10 @@ export async function run() {
             args.push("-ZeroDowntimeMode");
             args.push(ZeroDowntimeMode);
         }
+        if (RunBenchmark) {
+            args.push("-RunBenchmark");
+            args.push("true");
+        }
         if (RunVerbose) {
             args.push("-RunVerbose");
             args.push("true");
@@ -73,6 +78,10 @@ export async function run() {
         if (ZeroDowntimeMode) {
             argsShow.push("-ZeroDowntimeMode");
             argsShow.push(ZeroDowntimeMode);
+        }
+        if (RunBenchmark) {
+            argsShow.push("-RunBenchmark");
+            argsShow.push("true");
         }
         if (RunVerbose) {
             argsShow.push("-RunVerbose");

@@ -12,8 +12,8 @@
     "author": "Ove Lartelius",
     "version": {
         "Major": 2,
-        "Minor": 4,
-        "Patch": 5
+        "Minor": 7,
+        "Patch": 0
     },
     "groups": [
         {
@@ -27,12 +27,17 @@
             "isExpanded": false
         },
         {
+            "name": "Benchmark",
+            "displayName": "Benchmark",
+            "isExpanded": false
+        },
+        {
             "name": "ErrorHandlingOptions",
             "displayName": "Error handling options",
             "isExpanded": false
         }
     ],
-    "releaseNotes": "v2.4.0: RunVerbose. v2.3.0 Additional Development Environment support",
+    "releaseNotes": "v2.7.0: Run benchmark\r\nv2.4.0: RunVerbose.\r\nv2.3.0 Additional Development Environment support",
     "minimumAgentVersion": "2.134.0",
     "inputs": [
         {
@@ -109,6 +114,15 @@
             "defaultValue": "1800",
             "helpMarkDown": "The timeout for the script.",
             "groupName": "Timeout"
+        },
+        {
+            "name": "RunBenchmark",
+            "type": "boolean",
+            "label": "Run benchmark",
+            "required": true,
+            "defaultValue": "false",
+            "helpMarkDown": "If you want to send information about your execution, to get benchmark data back.\r\n If you are interested of more benchmark data you can contact Epinova.\r\nBy using this function you agree with sending over the following information: Task, TaskVersion, Environment, TargetEnvironment, DxpProjectId, OrganisationId, OrganisationName, ProjectId, ProjectName, Branch, AgentOS, EpiCloudVersion, PowerShellVersion, PowerShellEdition, Elapsed, Result, CmsFileSize, CmsPackageName, CommerceFileSize, CommercePackageName",
+            "groupName": "Benchmark"
         },
         {
             "name": "RunVerbose",

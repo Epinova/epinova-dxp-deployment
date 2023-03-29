@@ -1,7 +1,7 @@
 # Release notes
 
-## v2.7.2
-- Added ZIP support
+## v2.7.4
+- Added Benchmark support
 
 ## v2.6.49
 - Context info

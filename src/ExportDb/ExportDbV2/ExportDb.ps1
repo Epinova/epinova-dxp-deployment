@@ -7,6 +7,7 @@ Param(
     $DatabaseName,
     $RetentionHours,
     $Timeout,
+    $RunBenchmark,
     $RunVerbose
 )
 try {
@@ -24,6 +25,7 @@ try {
     $databaseName = $DatabaseName
     $retentionHours = $RetentionHours
     $timeout = $Timeout
+    $runBenchmark = [System.Convert]::ToBoolean($RunBenchmark)
     $runVerbose = [System.Convert]::ToBoolean($RunVerbose)
 
     # 30 min timeout
@@ -47,6 +49,7 @@ try {
     Write-Host "DatabaseName:       $databaseName"
     Write-Host "RetentionHours:     $retentionHours"
     Write-Host "Timeout:            $timeout"
+    Write-Host "RunBenchmark:       $runBenchmark"
     Write-Host "RunVerbose:         $runVerbose"
 
     Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId

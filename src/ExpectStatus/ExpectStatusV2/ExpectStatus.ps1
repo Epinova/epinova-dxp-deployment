@@ -6,6 +6,7 @@ Param(
     $TargetEnvironment,
     $ExpectedStatus,
     $Timeout,
+    $RunBenchmark,
     $RunVerbose
 )
 
@@ -23,6 +24,7 @@ try {
     $expectedStatus = $ExpectedStatus
     $timeout = $Timeout
     $runVerbose = [System.Convert]::ToBoolean($RunVerbose)
+    $runBenchmark = [System.Convert]::ToBoolean($RunBenchmark)
 
 
     ####################################################################################
@@ -44,6 +46,7 @@ try {
     Write-Host "TargetEnvironment:  $targetEnvironment"
     Write-Host "ExpectedStatus:     $expectedStatus"
     Write-Host "Timeout:            $timeout"
+    Write-Host "RunBenchmark:       $runBenchmark"
     Write-Host "RunVerbose:         $runVerbose"
 
     Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
