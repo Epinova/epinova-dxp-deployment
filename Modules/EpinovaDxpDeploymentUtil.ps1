@@ -951,6 +951,7 @@ function Send-BenchmarkInfo {
     
 
     try{
+        if ($false -eq (test-path variable:runBenchmark)) { $runBenchmark = $false }
         if ($runBenchmark){
             
             if ($null -ne $sw){ 
