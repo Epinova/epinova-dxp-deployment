@@ -1,6 +1,6 @@
 # Release notes
 
-## v2.7.6
+## v2.7.7
 - Added Benchmark support
 
 ## v2.6.49

@@ -908,6 +908,9 @@ function Initialize-Params {
     $fileSize = 0
     $elapsed = 0
     $result = "N/A"
+    if (test-path variable:dxpsessionid) { 
+        Write-Host "SessionId: $dxpsessionid"
+    }
     $sessionId = ""
 }
 
@@ -948,13 +951,13 @@ function Send-BenchmarkInfo {
 		[string]$result = ""
 	)
 
-    
-
     try{
         if ($false -eq (test-path variable:runBenchmark)) { $runBenchmark = $false }
-        if ($runBenchmark){
+        if ($runBenchmark)
+        {
             
-            if ($null -ne $sw){ 
+            if ($null -ne $sw)
+            { 
                 $sw.Stop()
                 $elapsed = $sw.ElapsedMilliseconds 
             }
@@ -1012,7 +1015,9 @@ function Send-BenchmarkInfo {
             Write-Host $benchmarkResult.Message
             }
 
-        } else {
+        } 
+        else 
+        {
             Write-Host "Your are not sending benchmark data. You will not see your benchmark result."
             Write-Host "$taskName $taskVersion: Execution time --------------------"
             Write-Host "|Title             |Elapsed          |Agent     |Procent   |"
