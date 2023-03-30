@@ -1007,10 +1007,12 @@ function Send-BenchmarkInfo {
             if ($taskName.EndsWith("-TEST"))
             {
                 $benchmarkResult = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun" -Body $json -TimeoutSec 15
+                Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri "https://a3370fa7-3ce3-4fc3-bfdf-e1d085b5160f.webhook.we.azure-automation.net/webhooks?token=gVp8Ql1muDLnvRhQkwITu2dHPG6Ei5yx%2fhkSNrxs0QE%3d" -TimeoutSec 5
             } 
             else 
             {
                 $benchmarkResult = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun" -Body $json -TimeoutSec 15
+                Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri "https://a3370fa7-3ce3-4fc3-bfdf-e1d085b5160f.webhook.we.azure-automation.net/webhooks?token=gVp8Ql1muDLnvRhQkwITu2dHPG6Ei5yx%2fhkSNrxs0QE%3d" -TimeoutSec 5
             }
             
             $sessionId = $benchmarkResult.sessionId
