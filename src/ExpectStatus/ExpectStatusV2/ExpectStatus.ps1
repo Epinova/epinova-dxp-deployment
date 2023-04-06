@@ -6,11 +6,17 @@ Param(
     $TargetEnvironment,
     $ExpectedStatus,
     $Timeout,
+    $RunBenchmark,
     $RunVerbose
 )
 
 try {
+    $deployUtilScript = Join-Path -Path $PSScriptRoot -ChildPath "ps_modules"
+    $deployUtilScript = Join-Path -Path $deployUtilScript -ChildPath "EpinovaDxpDeploymentUtil.ps1"
+    . $deployUtilScript
+
     # Get all inputs for the task
+    Initialize-Params
     $clientKey = $ClientKey
     $clientSecret = $ClientSecret
     $projectId = $ProjectId
@@ -18,8 +24,13 @@ try {
     $expectedStatus = $ExpectedStatus
     $timeout = $Timeout
     $runVerbose = [System.Convert]::ToBoolean($RunVerbose)
+    $runBenchmark = [System.Convert]::ToBoolean($RunBenchmark)
+
 
     ####################################################################################
+
+    $sw = [Diagnostics.Stopwatch]::StartNew()
+    $sw.Start()
 
     if ($runVerbose){
         ## To Set Verbose output
@@ -35,22 +46,10 @@ try {
     Write-Host "TargetEnvironment:  $targetEnvironment"
     Write-Host "ExpectedStatus:     $expectedStatus"
     Write-Host "Timeout:            $timeout"
+    Write-Host "RunBenchmark:       $runBenchmark"
     Write-Host "RunVerbose:         $runVerbose"
 
-
-    $deployUtilScript = Join-Path -Path $PSScriptRoot -ChildPath "ps_modules"
-    $deployUtilScript = Join-Path -Path $deployUtilScript -ChildPath "EpinovaDxpDeploymentUtil.ps1"
-    . $deployUtilScript
-
-    Mount-PsModulesPath
-
-    Initialize-EpiCload
-    
-    Write-DxpHostVersion
-
-    Test-DxpProjectId -ProjectId $projectId
-
-    Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
+    Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
     $lastDeploy = Get-DxpLatestEnvironmentDeployment -ProjectId $projectId -TargetEnvironment $targetEnvironment
 
@@ -72,6 +71,7 @@ try {
             Write-Host "Status is as expected."
         }
         else {
+            Send-BenchmarkInfo "Not expected status"
             Write-Warning "$targetEnvironment is not in expected status $expectedStatus. (Current:$($lastDeploy.status))."
             Write-Host "##vso[task.logissue type=error]$targetEnvironment is not in expected status $expectedStatus. (Current:$($lastDeploy.status))."
             Write-Error "$targetEnvironment is not in expected status $expectedStatus. (Current:$($lastDeploy.status))." -ErrorAction Stop
@@ -82,6 +82,8 @@ try {
         Write-Output "No history received from the specified target environment $targetEnvironment"
         Write-Output "Will and can not do anything..."
     }
+
+    Send-BenchmarkInfo "Succeeded"
     ####################################################################################
     Write-Host "---THE END---"
 

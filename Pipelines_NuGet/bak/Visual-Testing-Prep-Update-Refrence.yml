@@ -1,0 +1,65 @@
+trigger: none
+
+stages:
+  - stage: Backstop
+    jobs:
+    - job: Refresh_refrence
+      pool:
+        vmImage: 'ubuntu-latest'
+
+      variables:
+      - name: VisualTesting
+        value: $(Build.SourcesDirectory)/tests/IntegrationTests/VisualTests
+
+      steps:
+      - task: PowerShell@2
+        displayName: 'Calculate and save package.json hash'
+        inputs:
+          targetType: 'inline'
+          script: |
+            # generates a hash of all packages.config and saves each on a single line on 'packagesconfighash.txt'
+            Get-FileHash -Algorithm MD5 -Path (Get-ChildItem package.json -Recurse) >> packagejsonhash.txt
+            Write-Host "Hash File saved to $(VisualTesting)\packagesconfighash.txt"
+          workingDirectory: '$(VisualTesting)'
+
+      - task: CacheBeta@0 # speed up builds by caching packages folder
+        inputs:
+          key: npm|1|$(Agent.OS)|$(VisualTesting)/packagejsonhash.txt # hash map generated in previous step
+          path: $(VisualTesting)/node_modules
+          cacheHitVar: 'nuget_cache_hit' # variable that can be checked to see if it was successful
+        displayName: Cache nuget packages
+        continueOnError: true
+
+      - task: Npm@1
+        displayName: "NPM Set progress false (speedup)"
+        inputs:
+          command: custom
+          verbose: false
+          customCommand: "set progress=false"
+
+      - task: Npm@1
+        displayName: "npm ci"
+        inputs:
+          command: custom
+          workingDir: "$(VisualTesting)"
+          verbose: false,
+          customCommand: "ci"
+
+      - task: Npm@1
+        displayName: Npm run backstop:ci:reference
+        inputs:
+          command: 'custom'
+          workingDir: '$(VisualTesting)'
+          customCommand: 'run backstop:prep:reference'
+        condition: succeededOrFailed()
+      
+      - task: CopyFiles@2
+        displayName: 'Copy files for integration testing'
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)'
+          Contents: '**/backstop_data/bitmaps_reference/**'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)'
+          
+      - publish: $(Build.ArtifactStagingDirectory)
+        displayName: 'Publish backtop refrence artifacts'
+        artifact: BackstopArtifacts

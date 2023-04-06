@@ -1,0 +1,22 @@
+trigger: none
+
+variables:
+- group: Episerver.com DXP-variables
+
+pool:
+  name: Azure Pipelines
+  vmImage: 'windows-latest'
+
+steps:
+
+- checkout: none  # Don't sync sources
+
+- task: DxpContentCopy@1
+  inputs:
+    ClientKey: '$(ClientKey)'
+    ClientSecret: '$(ClientSecret)'
+    ProjectId: '$(DXP.ProjectId)'
+    Environment: 'PrepInte'
+    IncludeBlob: true
+    IncludeDb: true
+    Timeout: 10800

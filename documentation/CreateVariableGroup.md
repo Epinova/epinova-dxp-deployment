@@ -8,7 +8,8 @@ In the menu you can find the Library.
 ![Library in the menu](Images/CreateVariableGroup/Library.png)  
 There you can create a variable group with the name “DXP-variables”.  
 ![Create library button](Images/CreateVariableGroup/CreateVariableGroupLink.png)  
-*Note: If you use the name “DXP-variables” you don’t need to change any names in the YAML-files that we will use.*  
+*Note: If you use the name “DXP-variables” you don’t need to change any names in the YAML-files that we will use.*   
+*Note2: You can create the variable group with PowerShell script. [Example script how to create variable group](../Scripts/AzureDevOps.Create.Dxp-variables.ps1)
 ### Variable group information
 Variable group name: `DXP-variables`  
 Allow access to all pipelines: `True`  

@@ -14,6 +14,7 @@ export async function run() {
         let ProjectId = tl.getInput("ProjectId");
         let TargetEnvironment = tl.getInput("TargetEnvironment");
         let Timeout = tl.getInput("Timeout");
+        let RunBenchmark = tl.getBoolInput("RunBenchmark", false);
         let RunVerbose = tl.getBoolInput("RunVerbose", false);
 
         // we need to get the verbose flag passed in as script flag
@@ -38,6 +39,10 @@ export async function run() {
         "-TargetEnvironment", TargetEnvironment,
         "-Timeout", Timeout
         ];
+        if (RunBenchmark) {
+            args.push("-RunBenchmark");
+            args.push("true");
+        }
         if (RunVerbose) {
             args.push("-RunVerbose");
             args.push("true");
@@ -50,6 +55,10 @@ export async function run() {
         "-TargetEnvironment", TargetEnvironment,
         "-Timeout", Timeout
         ];
+        if (RunBenchmark) {
+            argsShow.push("-RunBenchmark");
+            argsShow.push("true");
+        }
         if (RunVerbose) {
             argsShow.push("-RunVerbose");
             argsShow.push("true");

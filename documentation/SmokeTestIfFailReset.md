@@ -75,15 +75,29 @@ The sleep time before the script will start to test the URL(s) again. This will 
 **Example:** `30`  
 **Default value:** `30`
 
-
 ### Group: Timeout
 #### Script timeout (in seconds)
 **[int]** - **required**  
 Specify the number of seconds when the task should timeout.  
 **Example:** `600`  
 **Default value:** `1800` (30 minutes)
-
+  
+### Group: Benchmark
+#### Run benchmark
+**[boolean]** - **required**  
+If you want to send information about your execution, to get benchmark data back.  
+If you are interested of more benchmark data you can contact Epinova.  
+By using this function you agree with sending over the following information: Task, TaskVersion, Environment, TargetEnvironment, DxpProjectId, OrganisationId, OrganisationName, ProjectId, ProjectName, Branch, AgentOS, EpiCloudVersion, PowerShellVersion, PowerShellEdition, Elapsed, Result, CmsFileSize, CmsPackageName, CommerceFileSize, CommercePackageName.  
+**Example:** `true`  
+**Default value:** `false`
+  
 ### Group: ErrorHandlingOptions
+#### Run Verbose
+**[boolean]** - **required**  
+If you want to run in Verbose mode and see all verbose messages.  
+**Example:** `true`  
+**Default value:** `false`
+  
 #### ErrorActionPreference
 **[pickList]** - **required**  
 How the task should handle errors.  
@@ -95,22 +109,6 @@ How the task should handle errors.
 - **SilentlyContinue**: Don't display an error message continue to execute subsequent commands.
 
 ## YAML ##
-Example v1:  
-```yaml
-- task: DxpSmokeTestIfFailReset@1
-    inputs:
-    ClientKey: '$(ClientKey)'
-    ClientSecret: '$(ClientSecret)'
-    ProjectId: '$(DXP.ProjectId)'
-    TargetEnvironment: 'Integration'
-    Urls: '$(Integration.SlotUrl)$(Integration.UrlSuffix)'
-    SleepBeforeStart: 20
-    ResetOnFail: true
-    NumberOfRetries: 5
-    SleepBeforeRetry: 30
-    Timeout: 1800
-```
-  
 Example v2:  
 ```yaml
 - task: DxpSmokeTestIfFailReset@2
@@ -124,7 +122,9 @@ Example v2:
     ResetOnFail: true
     NumberOfRetries: 5
     SleepBeforeRetry: 30
-    Timeout: 1800
+    Timeout: 1800  
+    RunBenchmark: true
+    RunVerbose: false
 ```
   
 [<= Back](../README.md)

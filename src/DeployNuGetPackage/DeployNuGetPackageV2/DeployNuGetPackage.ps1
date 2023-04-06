@@ -11,11 +11,17 @@ Param(
     $DropPath,
     $Timeout,
     $ZeroDowntimeMode,
+    $RunBenchmark,
     $RunVerbose
 )
 
 try {
+    $deployUtilScript = Join-Path -Path $PSScriptRoot -ChildPath "ps_modules"
+    $deployUtilScript = Join-Path -Path $deployUtilScript -ChildPath "EpinovaDxpDeploymentUtil.ps1"
+    . $deployUtilScript
+
     # Get all inputs for the task
+    Initialize-Params
     $clientKey = $ClientKey
     $clientSecret = $ClientSecret
     $projectId = $ProjectId
@@ -27,10 +33,14 @@ try {
     $dropPath = $DropPath
     $timeout = $Timeout
     $zeroDowntimeMode = $ZeroDowntimeMode
+    $runBenchmark = [System.Convert]::ToBoolean($RunBenchmark)
     $runVerbose = [System.Convert]::ToBoolean($RunVerbose)
 
     # 30 min timeout
     ####################################################################################
+
+    $sw = [Diagnostics.Stopwatch]::StartNew()
+    $sw.Start()
 
     if ($runVerbose){
         ## To Set Verbose output
@@ -51,26 +61,15 @@ try {
     Write-Host "DropPath:           $dropPath"
     Write-Host "Timeout:            $timeout"
     Write-Host "ZeroDowntimeMode:   $zeroDowntimeMode"
+    Write-Host "RunBenchmark:       $runBenchmark"
     Write-Host "RunVerbose:         $runVerbose"
 
-    . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
-
-    #Install-AzStorage
-     
-    Mount-PsModulesPath
-
-    Initialize-EpiCload
+    Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
     if (($targetEnvironment -eq "Preproduction" -or $targetEnvironment -eq "Production") -and $directDeploy){
         Write-Host "DirectDeploy does only support target environment = Integration|ADE1|ADE2|ADE3 at the moment. Will set the DirectDeploy=false."
         $directDeploy = $false
     }
-
-    Write-DxpHostVersion
-
-    Test-DxpProjectId -ProjectId $projectId
-
-    Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
     $packageLocation = Get-EpiDeploymentPackageLocation -ProjectId $projectId
     Write-Host "PackageLocation:    $packageLocation"
@@ -81,6 +80,8 @@ try {
         $uploadedCmsPackage = Publish-Package -PackageType "cms" -DropPath $dropPath -PackageLocation $packageLocation
         if ($uploadedCmsPackage){
             $myPackages = $uploadedCmsPackage
+            $cmsFileSize = Get-PackageFileSize (Join-Path $dropPath $uploadedCmsPackage)
+            $cmsPackage = $uploadedCmsPackage
         }
     }
     $uploadedCommercePackage = $null
@@ -88,6 +89,8 @@ try {
         $uploadedCommercePackage = Publish-Package -PackageType "commerce" -DropPath $dropPath -PackageLocation $packageLocation
         if ($uploadedCommercePackage){
             $myPackages = $uploadedCommercePackage
+            $commerceFileSize = Get-PackageFileSize (Join-Path $dropPath $uploadedCommercePackage)
+            $commercePackage = $uploadedCommercePackage
         }
     }
 
@@ -143,6 +146,7 @@ try {
             }
         }
         else {
+            Send-BenchmarkInfo "Bad deploy/Time out"
             Write-Warning "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
             Write-Host "##vso[task.logissue type=error]The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
             Write-Error "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)" -ErrorAction Stop
@@ -150,6 +154,7 @@ try {
         }
     }
     else {
+        Send-BenchmarkInfo "Unhandled status"
         Write-Warning "Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment."
         Write-Host "##vso[task.logissue type=error]Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment."
         Write-Error "Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment." -ErrorAction Stop
@@ -158,6 +163,7 @@ try {
     Write-Host "Setvariable DeploymentId: $deploymentId"
     Write-Host "##vso[task.setvariable variable=DeploymentId;]$($deploymentId)"
 
+    Send-BenchmarkInfo "Succeeded"
     ####################################################################################
 
     Write-Host "---THE END---"

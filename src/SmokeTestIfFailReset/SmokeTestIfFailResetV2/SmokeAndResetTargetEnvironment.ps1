@@ -11,11 +11,17 @@ Param(
     $SleepBeforeRetry,
     $Timeout,
     $ErrorActionPreference,
+    $RunBenchmark,
     $RunVerbose
 )
 
 try {
+    $deployUtilScript = Join-Path -Path $PSScriptRoot -ChildPath "ps_modules"
+    $deployUtilScript = Join-Path -Path $deployUtilScript -ChildPath "EpinovaDxpDeploymentUtil.ps1"
+    . $deployUtilScript
+
     # Get all inputs for the task
+    Initialize-Params
     $clientKey = $ClientKey
     $clientSecret = $ClientSecret
     $projectId = $ProjectId
@@ -27,10 +33,14 @@ try {
     $sleepBeforeRetry = $SleepBeforeRetry
     $timeout = $Timeout
     $errorAction = $ErrorActionPreference
+    $runBenchmark = [System.Convert]::ToBoolean($RunBenchmark)
     $runVerbose = [System.Convert]::ToBoolean($RunVerbose)
 
     $global:ErrorActionPreference = $errorAction
     ####################################################################################
+
+    $sw = [Diagnostics.Stopwatch]::StartNew()
+    $sw.Start()
 
     if ($runVerbose){
         ## To Set Verbose output
@@ -51,13 +61,10 @@ try {
     Write-Host "SleepBeforeRetry:   $sleepBeforeRetry"
     Write-Host "Timeout:            $timeout"
     Write-Host "ErrorActionPref:    $errorAction"
+    Write-Host "RunBenchmark:       $runBenchmark"
     Write-Host "RunVerbose:         $runVerbose"
 
     Write-Host "ErrorActionPref:    $($global:ErrorActionPreference)"
-
-    . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
-
-    Mount-PsModulesPath
 
     Write-Host "Start sleep for $($sleepBeforeStart) seconds before we start check URL(s)."
     Start-Sleep $sleepBeforeStart
@@ -120,13 +127,12 @@ try {
     }
 
     if ($resetOnFail -eq $false -and $resetDeployment -eq $true) {
+        Send-BenchmarkInfo "Failed"
         Write-Output "##vso[task.logissue type=warning;] Smoke test failed. But ResetOnFail is set to false. No reset will be made."
     } 
     elseif ($resetDeployment -eq $true) {
 
-        Initialize-EpiCload
-     
-        Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
+        Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
         $getEpiDeploymentSplat = @{
             ProjectId = $projectId
@@ -158,12 +164,14 @@ try {
                 $status = Invoke-DxpProgress -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus "Reset" -Timeout $timeout
 
                 if ($status.status -eq "Reset") {
+                    Send-BenchmarkInfo "Reset"
                     Write-Host "Deployment $deploymentId has been successfuly reset."
                     Write-Host "##vso[task.logissue type=error]Deployment $deploymentId has been successfuly reset. But we can not continue deploy when we have reset the deployment."
                     Write-Error "Deployment $deploymentId has been successfuly reset. But we can not continue deploy when we have reset the deployment." -ErrorAction Stop
                     exit 1
                 }
                 else {
+                    Send-BenchmarkInfo "Bad deploy/Time out"
                     Write-Warning "The reset has not been successful or the script has timedout. CurrentStatus: $($status.status)"
                     Write-Host "##vso[task.logissue type=error]The reset has not been successful or the script has timedout. CurrentStatus: $($status.status)"
                     Write-Error "Deployment $deploymentId has NOT been successfuly reset or the script has timedout. CurrentStatus: $($status.status)" -ErrorAction Stop
@@ -171,12 +179,14 @@ try {
                 }
             }
             elseif ($status.status -eq "Reset") {
+                Send-BenchmarkInfo "Succeeded"
                 Write-Host "The deployment $deploymentId is already in reset status."
                 Write-Host "##vso[task.logissue type=error]Deployment $deploymentId is already in reset status. But we can not continue deploy when we have found errors in the smoke test."
                 Write-Error "Deployment $deploymentId is already in reset status. But we can not continue deploy when we have found errors in the smoke test." -ErrorAction Stop
                 exit 1
             }
             else {
+                Send-BenchmarkInfo "Unhandled status"
                 Write-Host "Status is not in AwaitingVerification (Current:$($status.status)). You can not reset the deployment at this moment."
                 Write-Host "##vso[task.logissue type=error]Status is not in AwaitingVerification (Current:$($status.status)). You can not reset the deployment at this moment."
                 Write-Error "Status is not in AwaitingVerification (Current:$($status.status)). You can not reset the deployment at this moment." -ErrorAction Stop
@@ -185,6 +195,7 @@ try {
         }
     }
     else {
+        Send-BenchmarkInfo "Succeeded"
         Write-Host "The deployment will not be reset. Smoketest is success."
     }
 

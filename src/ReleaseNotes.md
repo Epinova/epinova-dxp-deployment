@@ -1,5 +1,14 @@
 # Release notes
 
+## v2.7.13
+- Added Benchmark support
+
+## v2.6.49
+- Context info
+
+## v2.5.75
+- Added Pipelines NuGet
+
 ## v2.5.0
 - Added ZIP file support
 

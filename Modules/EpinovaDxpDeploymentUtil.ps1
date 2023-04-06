@@ -551,6 +551,7 @@ function CheckWishes{
         PrintNewYearWish
     }
 }
+
 function PrintChristmasWish{
 
     Write-Host "                                                 |"
@@ -801,6 +802,35 @@ function Test-PackageFileName {
     }
 }
 
+function Get-PackageFileSize {
+    <#
+    .SYNOPSIS
+        Test package file size
+
+    .DESCRIPTION
+        Test package file size
+
+    .PARAMETER PackageFile
+        The FileInfo that should be checked.
+
+    .EXAMPLE
+        $packageFile = Get-ChildItem -Path $dropPath -Filter *.cms.*.nupkg
+        Test-PackageFileSize -PackageFile $packageFile
+    #>	
+    param
+	(
+		[Parameter(Mandatory = $true)]
+		[string]$packageFilePath
+	)
+
+    $packageFileSize = 0
+    $packageFileInfo = Get-ChildItem -Path $packageFilePath
+    Write-Host "Package '$($packageFileInfo.Name)' file size => $($packageFileInfo.Length)."
+    $packageFileSize = $packageFileInfo.Length
+
+    return $packageFileSize;
+}
+
 function Publish-Package {
     <#
     .SYNOPSIS
@@ -841,6 +871,8 @@ function Publish-Package {
 
     Test-PackageFileName -PackageFile $packageFileInfo
 
+    #Test-PackageFileSize -PackageFile $packageFileInfo
+
     $packageFileName = $packageFileInfo.Name
     
     Write-Host "$PackageType package '$packageFileName' start upload..."
@@ -860,4 +892,198 @@ function Publish-Package {
     }
 
     return $uploadedPackage
+}
+
+function Initialize-Params {
+    $clientKey = "N/A"
+    $clientSecret = "N/A"
+    $projectId = "N/A"
+    $targetEnvironment = "N/A"
+    $expectedStatus = "N/A"
+    $timeout = 0
+    $runVerbose = $false
+
+    $sourceEnvironment = "N/A"
+    $myPackages = "N/A"
+    $fileSize = 0
+    $elapsed = 0
+    $result = "N/A"
+    if (test-path variable:dxpsessionid) { 
+        Write-Host "SessionId: $dxpsessionid"
+    }
+    $sessionId = ""
+}
+
+function Get-EpiCloudVersion {
+    $epiCloudVersion = ""
+    try{
+        $epiCloudModule = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
+        $epiCloudVersion = "v$($epiCloudModule.Version.Major).$($epiCloudModule.Version.Minor).$($epiCloudModule.Version.Build)"
+    } catch {
+        Write-Verbose "Could not get EpiCloud version : $($_.Exception.ToString())"
+        Write-Host "Could not get EpiCloud version."
+
+    }
+    return $epiCloudVersion
+}
+
+function Get-PsData {
+    $psData = @{
+        }
+    try{
+        $psVersionValue = "v$($PSVersionTable.PSVersion)"
+        $psEditionValue = $PSVersionTable.PSEdition
+        $psData = @{
+            "Version"=$psVersionValue
+            "Edition"=$psEditionValue
+        }
+    } catch {
+        Write-Verbose "Could not get PowerShell version/edition : $($_.Exception.ToString())"
+        Write-Host "Could not get PowerShell version/edition."
+    }
+    return $psData
+}
+
+function Send-BenchmarkInfo {
+    param
+	(
+		[Parameter(Mandatory = $false)]
+		[string]$result = ""
+	)
+
+    try{
+        if ($false -eq (test-path variable:runBenchmark)) { $runBenchmark = $false }
+        if ($runBenchmark)
+        {
+            
+            if ($null -ne $sw)
+            { 
+                $sw.Stop()
+                $elapsed = $sw.ElapsedMilliseconds 
+            }
+
+            if ($false -eq (test-path variable:targetEnvironment)) { $targetEnvironment = "N/A" }
+            if ($false -eq (test-path variable:sourceEnvironment)) { $sourceEnvironment = "N/A" }
+            if ($false -eq (test-path variable:cmsFileSize)) { $cmsFileSize = 0 }
+            if ($false -eq (test-path variable:cmsPackage)) { $cmsPackage = "N/A" }
+            if ($false -eq (test-path variable:commerceFileSize)) { $commerceFileSize = 0 }
+            if ($false -eq (test-path variable:commercePackage)) { $commercePackage = "N/A" }
+            $epiCloudVersion = Get-EpiCloudVersion
+
+            $PSCommandPath -match "^.*_tasks[\/|\\](.*)_.*[\/|\\](.*)[\/|\\]ps_modules[\/|\\]" | Out-Null
+            $taskName = $Matches[1]
+            $taskVersion = $Matches[2]
+        
+            $env:SYSTEM_COLLECTIONURI -match "^.*\/(.*)\/" | Out-Null
+            $orgName = $Matches[1]
+        
+            $psData = Get-PsData
+
+            $psContext = @{ 
+                "Task"=$taskName
+                "TaskVersion"=$taskVersion
+                "Environment"=$sourceEnvironment
+                "TargetEnvironment"=$targetEnvironment
+                "DxpProjectId"=$projectId
+                "OrganisationId"=$env:SYSTEM_COLLECTIONID
+                "OrganisationName"=$orgName
+                "ProjectId"=$env:SYSTEM_TEAMPROJECTID
+                "ProjectName"=$env:SYSTEM_TEAMPROJECT
+                "Branch"=$env:BUILD_SOURCEBRANCHNAME
+                "AgentOS"=$env:AGENT_OS
+                "EpiCloudVersion"=$epiCloudVersion
+                "PowerShellVersion"=$psData.Version
+                "PowerShellEdition"=$psData.Edition
+                "Elapsed"=$elapsed
+                "Result"=$result
+                "CmsFileSize"=$cmsFileSize
+                "CmsPackageName"=$cmsPackage
+                "CommerceFileSize"=$commerceFileSize
+                "CommercePackageName"=$commercePackage
+                }
+
+            $json = $psContext | ConvertTo-Json
+            Write-Verbose $json
+            if ($taskName.EndsWith("-TEST"))
+            {
+                $benchmarkResult = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun" -Body $json -TimeoutSec 15
+                Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri "https://a3370fa7-3ce3-4fc3-bfdf-e1d085b5160f.webhook.we.azure-automation.net/webhooks?token=gVp8Ql1muDLnvRhQkwITu2dHPG6Ei5yx%2fhkSNrxs0QE%3d" -TimeoutSec 5
+            } 
+            else 
+            {
+                $benchmarkResult = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri "https://app-dxpbenchmark-3cpox1-prod.azurewebsites.net/PipelineRun" -Body $json -TimeoutSec 15
+                Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri "https://1b680dac-bf88-4fcb-872d-94e2d8c7d150.webhook.we.azure-automation.net/webhooks?token=fFJVjF2DeIqtLsqjREjGgFZ5CSe67bV%2fkIhvS%2bfRNzA%3d" -TimeoutSec 5
+            }
+            
+            $sessionId = $benchmarkResult.sessionId
+            Write-Host "##vso[task.setvariable variable=dxpsessionid;]$sessionId"
+            Write-Host $benchmarkResult.Message
+        } 
+        else 
+        {
+            Write-Host "Your are not sending benchmark data. You will not see your benchmark result."
+            Write-Host "$taskName $($taskVersion): Execution time --------------------"
+            Write-Host "|Title             |Elapsed          |Agent     |Procent   |"
+            Write-Host "|------------------|-----------------|----------|----------|"
+            Write-Host "|All time fastest  |00h:00m:XXs:XXXms|Xxx       |    X.00 %|"
+            Write-Host "|Today fastest     |00h:00m:XXs:XXXms|Xxx       |    X.00 %|"
+            Write-Host "|All time average  |00h:00m:XXs:XXXms|Xxx       |    X.00 %|"
+            Write-Host "|Today average     |00h:00m:XXs:XXXms|Xxx       |    X.00 %|"
+            Write-Host "|Current execution |00h:00m:XXs:XXXms|Xxx       |    +/-0 %|"
+            Write-Host "|Today slowest     |00h:00m:XXs:XXXms|Xxx       |    X.00 %|"
+            Write-Host "|All time slowest  |00h:00m:XXs:XXXms|Xxx       |    X.00 %|"
+            Write-Host "-------------------------------------------------------------------------"
+            Write-Host ""
+            Write-Host "Agent: ------------------------------------------------------------------"
+            Write-Host "You are using $($env:AGENT_OS). Average time is 00h:00m:XXs:XXXms"
+            Write-Host "$($env:AGENT_OS) is X.XX % faster/slower then AgentY"
+            Write-Host "$($env:AGENT_OS) is X.XX % faster/slower then AgentZ"
+            Write-Host "-------------------------------------------------------------------------"
+        }
+    }
+    catch {
+        Write-Verbose "Could not send Exception caught : $($_.Exception.ToString())"
+        Write-Host "Failed to send benchmark data."
+    }
+}
+
+function Initialize-EpinovaDxpScript {
+<#
+    .SYNOPSIS
+        Print info and check some values before connection to the EpiCloud.
+
+    .DESCRIPTION
+        Print info and check some values before connection to the EpiCloud.
+
+    .PARAMETER ProjectId
+        The Optimizely DXP project id. (Guid)
+        
+    .PARAMETER ClientKey
+        The Optimizely DXP project ClientKey.
+
+    .PARAMETER ClientSecret
+        The Optimizely DXP project ClientSecret.
+
+    .EXAMPLE
+        Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
+    #>	
+    param
+	(
+		[Parameter(Mandatory = $true)]
+		[string]$ProjectId,
+		[Parameter(Mandatory = $true)]
+		[string]$ClientKey,
+		[Parameter(Mandatory = $true)]
+		[string]$ClientSecret
+	)    
+    
+    Mount-PsModulesPath
+
+    Initialize-EpiCload
+    
+    Write-DxpHostVersion
+
+    Test-DxpProjectId -ProjectId $projectId
+
+    Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 }

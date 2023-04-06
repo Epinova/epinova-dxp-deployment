@@ -1,0 +1,21 @@
+trigger: none
+
+variables:
+- group: Episerver.com DXP-variables
+
+pool:
+  name: Azure Pipelines
+  vmImage: 'windows-latest'
+
+steps:
+- checkout: none  # Don't sync sources
+
+- task: DxpExportDb@1
+  inputs:
+    ClientKey: '$(ClientKey)'
+    ClientSecret: '$(ClientSecret)'
+    ProjectId: '$(DXP.ProjectId)'
+    Environment: 'Production'
+    DatabaseName: 'epicms' #epicms|epicommerce
+    RetentionHours: 24
+    Timeout: 3600

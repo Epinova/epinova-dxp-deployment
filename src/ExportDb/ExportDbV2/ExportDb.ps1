@@ -7,22 +7,33 @@ Param(
     $DatabaseName,
     $RetentionHours,
     $Timeout,
+    $RunBenchmark,
     $RunVerbose
 )
 try {
+    $deployUtilScript = Join-Path -Path $PSScriptRoot -ChildPath "ps_modules"
+    $deployUtilScript = Join-Path -Path $deployUtilScript -ChildPath "EpinovaDxpDeploymentUtil.ps1"
+    . $deployUtilScript
+
     # Get all inputs for the task
+    Initialize-Params
     $clientKey = $ClientKey
     $clientSecret = $ClientSecret
     $projectId = $ProjectId
     $environment = $Environment
+    $targetEnvironment = $Environment
     $databaseName = $DatabaseName
     $retentionHours = $RetentionHours
     $timeout = $Timeout
+    $runBenchmark = [System.Convert]::ToBoolean($RunBenchmark)
     $runVerbose = [System.Convert]::ToBoolean($RunVerbose)
 
     # 30 min timeout
     ####################################################################################
-    
+
+    $sw = [Diagnostics.Stopwatch]::StartNew()
+    $sw.Start()
+
     if ($runVerbose){
         ## To Set Verbose output
         $PSDefaultParameterValues['*:Verbose'] = $true
@@ -38,19 +49,10 @@ try {
     Write-Host "DatabaseName:       $databaseName"
     Write-Host "RetentionHours:     $retentionHours"
     Write-Host "Timeout:            $timeout"
+    Write-Host "RunBenchmark:       $runBenchmark"
     Write-Host "RunVerbose:         $runVerbose"
 
-    . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
-
-    Mount-PsModulesPath
-
-    Initialize-EpiCload
-
-    Write-DxpHostVersion
-
-    Test-DxpProjectId -ProjectId $projectId
-
-    Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
+    Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
     $exportDatabaseSplat = @{
         ProjectId          = $projectId
@@ -82,6 +84,7 @@ try {
             Write-Host "Database export $exportId has been successful."
         }
         else {
+            Send-BenchmarkInfo "Bad deploy/Time out"
             Write-Warning "The database export has not been successful or the script has timed out. CurrentStatus: $($status.status)"
             Write-Host "##vso[task.logissue type=error]The database export has not been successful or the script has timed out. CurrentStatus: $($status.status)"
             Write-Error "The database export has not been successful or the script has timed out. CurrentStatus: $($status.status)" -ErrorAction Stop
@@ -89,6 +92,7 @@ try {
         }
     }
     else {
+        Send-BenchmarkInfo "Unhandled status"
         Write-Warning "Status is not in InProgress (Current:$($export.status)). You can not export database at this moment."
         Write-Host "##vso[task.logissue type=error]Status is not in InProgress (Current:$($export.status)). You can not export database at this moment."
         Write-Error "Status is not in InProgress (Current:$($export.status)). You can not export database at this moment." -ErrorAction Stop
@@ -98,6 +102,8 @@ try {
     Write-Host "##vso[task.setvariable variable=ExportId;]$($exportId)"
     Write-Host "Setvariable DbExportDownloadLink: $($status.downloadLink)"
     Write-Host "##vso[task.setvariable variable=DbExportDownloadLink;]$($status.downloadLink)"
+
+    Send-BenchmarkInfo "Succeeded"
     ####################################################################################
     Write-Host "---THE END---"
 

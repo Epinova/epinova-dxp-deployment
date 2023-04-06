@@ -47,7 +47,22 @@ Specify the number of seconds when the task should timeout.
 **Example:** `600`  
 **Default value:** `1800` (30 minutes)
 
+### Group: Benchmark
+#### Run benchmark
+**[boolean]** - **required**  
+If you want to send information about your execution, to get benchmark data back.  
+If you are interested of more benchmark data you can contact Epinova.  
+By using this function you agree with sending over the following information: Task, TaskVersion, Environment, TargetEnvironment, DxpProjectId, OrganisationId, OrganisationName, ProjectId, ProjectName, Branch, AgentOS, EpiCloudVersion, PowerShellVersion, PowerShellEdition, Elapsed, Result, CmsFileSize, CmsPackageName, CommerceFileSize, CommercePackageName.  
+**Example:** `true`  
+**Default value:** `false`
+
 ### Group: ErrorHandlingOptions
+#### Run Verbose
+**[boolean]** - **required**  
+If you want to run in verbose mode and see all information.  
+**Example:** `true`  
+**Default value:** `false`  
+  
 #### ErrorActionPreference
 **[pickList]** - **required**  
 How the task should handle errors.  
@@ -59,17 +74,7 @@ How the task should handle errors.
 - **SilentlyContinue**: Don't display an error message continue to execute subsequent commands.
 
 ## YAML ##
-Example v1:  
-```yaml
-- task: DxpAwaitStatus@1
-    inputs:
-    ClientKey: '$(ClientKey)'
-    ClientSecret: '$(ClientSecret)'
-    ProjectId: '$(DXP.ProjectId)'
-    TargetEnvironment: 'Integration'
-    Timeout: 1800
-```  
-Example v2:  
+Example:  
 ```yaml
 - task: DxpAwaitStatus@2
     inputs:
@@ -78,5 +83,7 @@ Example v2:
     ProjectId: '$(DXP.ProjectId)'
     TargetEnvironment: 'Integration'
     Timeout: 1800
+    RunBenchmark: true
+    RunVerbose: false
 ```
 [<= Back](../README.md)

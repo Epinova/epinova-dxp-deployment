@@ -1,0 +1,29 @@
+variables:
+  system.debug: false
+  major: 0
+  minor: 1
+
+name: $(major).$(minor).$(rev:r) #Build.BuildNumber
+
+trigger: 
+  batch: "true"
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+resources:
+  repositories:
+  - repository: pipelines
+    type: git
+    name: Epinova - Modules/Epinova.Pipelines
+    ref: refs/heads/main
+
+steps:
+- template: nuget.3.yml@pipelines
+  parameters:
+    dotnetVersions:
+      - 6.0.x
+    workingDirectory: "$(System.DefaultWorkingDirectory)/Pipelines_NuGet"
