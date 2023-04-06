@@ -19,6 +19,7 @@ export async function run() {
         let NumberOfRetries = tl.getInput("NumberOfRetries");
         let SleepBeforeRetry = tl.getInput("SleepBeforeRetry");
         let Timeout = tl.getInput("Timeout");
+        let RunBenchmark = tl.getBoolInput("RunBenchmark", false);
         let RunVerbose = tl.getBoolInput("RunVerbose", false);
         let ErrorActionPreference = tl.getInput("ErrorActionPreference");
 
@@ -50,6 +51,10 @@ export async function run() {
         "-ErrorActionPreference", ErrorActionPreference,
         "-Timeout", Timeout
         ];
+        if (RunBenchmark) {
+            args.push("-RunBenchmark");
+            args.push("true");
+        }
         if (RunVerbose) {
             args.push("-RunVerbose");
             args.push("true");
@@ -68,6 +73,10 @@ export async function run() {
         "-ErrorActionPreference", ErrorActionPreference,
         "-Timeout", Timeout
         ];
+        if (RunBenchmark) {
+            argsShow.push("-RunBenchmark");
+            argsShow.push("true");
+        }
         if (RunVerbose) {
             argsShow.push("-RunVerbose");
             argsShow.push("true");

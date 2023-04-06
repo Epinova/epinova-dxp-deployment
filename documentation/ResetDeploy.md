@@ -44,8 +44,23 @@ Specify the target environment that you want to reset.
 Specify the number of seconds when the task should timeout.  
 **Example:** `600`  
 **Default value:** `1800` (30 minutes)
-
+  
+### Group: Benchmark
+#### Run benchmark
+**[boolean]** - **required**  
+If you want to send information about your execution, to get benchmark data back.  
+If you are interested of more benchmark data you can contact Epinova.  
+By using this function you agree with sending over the following information: Task, TaskVersion, Environment, TargetEnvironment, DxpProjectId, OrganisationId, OrganisationName, ProjectId, ProjectName, Branch, AgentOS, EpiCloudVersion, PowerShellVersion, PowerShellEdition, Elapsed, Result, CmsFileSize, CmsPackageName, CommerceFileSize, CommercePackageName.  
+**Example:** `true`  
+**Default value:** `false`
+  
 ### Group: ErrorHandlingOptions
+#### Run Verbose
+**[boolean]** - **required**  
+If you want to run in Verbose mode and see all verbose messages.  
+**Example:** `true`  
+**Default value:** `false`
+  
 #### ErrorActionPreference
 **[pickList]** - **required**  
 How the task should handle errors.  
@@ -57,19 +72,7 @@ How the task should handle errors.
 - **SilentlyContinue**: Don't display an error message continue to execute subsequent commands.
 
 ## YAML ##
-Example v1:  
-```yaml
-- task: DxpResetDeploy@1
-    displayName: 'Reset Integration'
-    inputs:
-    ClientKey: '$(ClientKey)'
-    ClientSecret: '$(ClientSecret)'
-    ProjectId: '$(DXP.ProjectId)'
-    TargetEnvironment: 'Integration'
-    Timeout: 1800
-``` 
-  
-  Example v2:  
+Example:  
 ```yaml
 - task: DxpResetDeploy@2
     displayName: 'Reset Integration'
@@ -78,7 +81,9 @@ Example v1:
     ClientSecret: '$(ClientSecret)'
     ProjectId: '$(DXP.ProjectId)'
     TargetEnvironment: 'Integration'
-    Timeout: 1800
+    Timeout: 1800  
+    RunBenchmark: true
+    RunVerbose: false
 ```
 
 [<= Back](../README.md)

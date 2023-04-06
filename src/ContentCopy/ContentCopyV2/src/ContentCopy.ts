@@ -16,6 +16,7 @@ export async function run() {
         let Timeout = tl.getInput("Timeout");
         let IncludeBlob = tl.getBoolInput("IncludeBlob");
         let IncludeDb = tl.getBoolInput("IncludeDb");
+        let RunBenchmark = tl.getBoolInput("RunBenchmark", false);
         let RunVerbose = tl.getBoolInput("RunVerbose", false);
 
         // we need to get the verbose flag passed in as script flag
@@ -42,6 +43,10 @@ export async function run() {
         "-IncludeBlob", IncludeBlob,
         "-IncludeDb", IncludeDb
         ];
+        if (RunBenchmark) {
+            args.push("-RunBenchmark");
+            args.push("true");
+        }
         if (RunVerbose) {
             args.push("-RunVerbose");
             args.push("true");
@@ -56,6 +61,10 @@ export async function run() {
         "-IncludeBlob", IncludeBlob,
         "-IncludeDb", IncludeDb
         ];
+        if (RunBenchmark) {
+            argsShow.push("-RunBenchmark");
+            argsShow.push("true");
+        }
         if (RunVerbose) {
             argsShow.push("-RunVerbose");
             argsShow.push("true");

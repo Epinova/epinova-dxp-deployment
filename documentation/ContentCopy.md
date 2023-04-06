@@ -82,8 +82,23 @@ If DBs should be copied from source environment to the target environment.
 Specify the number of seconds when the task should timeout.  
 **Example:** `600`  
 **Default value:** `1800` (30 minutes)
-
+  
+### Group: Benchmark
+#### Run benchmark
+**[boolean]** - **required**  
+If you want to send information about your execution, to get benchmark data back.  
+If you are interested of more benchmark data you can contact Epinova.  
+By using this function you agree with sending over the following information: Task, TaskVersion, Environment, TargetEnvironment, DxpProjectId, OrganisationId, OrganisationName, ProjectId, ProjectName, Branch, AgentOS, EpiCloudVersion, PowerShellVersion, PowerShellEdition, Elapsed, Result, CmsFileSize, CmsPackageName, CommerceFileSize, CommercePackageName.  
+**Example:** `true`  
+**Default value:** `false`
+  
 ### Group: ErrorHandlingOptions
+#### Run Verbose
+**[boolean]** - **required**  
+If you want to run in verbose mode and see all information.  
+**Example:** `true`  
+**Default value:** `false`  
+  
 #### ErrorActionPreference
 **[pickList]** - **required**  
 How the task should handle errors.  
@@ -97,15 +112,17 @@ How the task should handle errors.
 ## YAML ##
 Example: Start content copy of database and blobs from production environment to preproduction environment.  
 ```yaml
-- task: DxpContentCopy@1
-inputs:
+- task: DxpContentCopy@2
+    inputs:
     ClientKey: '$(ClientKey)'
     ClientSecret: '$(ClientSecret)'
     ProjectId: '$(DXP.ProjectId)'
     Environment: 'ProdPrep'
     IncludeBlob: true
     IncludeDb: true
-    Timeout: 1800
+    Timeout: 1800  
+    RunBenchmark: true
+    RunVerbose: false
 ```
 
 [<= Back](../README.md)

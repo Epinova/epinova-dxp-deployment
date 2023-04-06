@@ -5,19 +5,29 @@ Param(
     $ProjectId, 
     $TargetEnvironment,
     $Timeout,
+    $RunBenchmark,
     $RunVerbose
 )
 
 try {
+    $deployUtilScript = Join-Path -Path $PSScriptRoot -ChildPath "ps_modules"
+    $deployUtilScript = Join-Path -Path $deployUtilScript -ChildPath "EpinovaDxpDeploymentUtil.ps1"
+    . $deployUtilScript
+
     # Get all inputs for the task
+    Initialize-Params
     $clientKey = $ClientKey
     $clientSecret = $ClientSecret
     $projectId = $ProjectId
     $targetEnvironment = $TargetEnvironment
     $timeout = $Timeout
+    $runBenchmark = [System.Convert]::ToBoolean($RunBenchmark)
     $runVerbose = [System.Convert]::ToBoolean($RunVerbose)
 
     ####################################################################################
+
+    $sw = [Diagnostics.Stopwatch]::StartNew()
+    $sw.Start()
 
     if ($runVerbose){
         ## To Set Verbose output
@@ -32,24 +42,16 @@ try {
     Write-Host "ProjectId:          $projectId"
     Write-Host "TargetEnvironment:  $targetEnvironment"
     Write-Host "Timeout:            $timeout"
+    Write-Host "RunBenchmark:       $runBenchmark"
     Write-Host "RunVerbose:         $runVerbose"
 
-    . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
-
-    Mount-PsModulesPath
-
-    Initialize-EpiCload
-
-    Write-DxpHostVersion
-
-    Test-DxpProjectId -ProjectId $projectId
-
-    Connect-EpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
+    Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
     $deploy = Get-DxpAwaitingEnvironmentDeployment -ProjectId $projectId -TargetEnvironment $targetEnvironment
     $deploy
     if (-not $deploy) {
         Write-Host "##vso[task.logissue type=error]Failed to locate a deployment in $targetEnvironment to complete!"
+        Send-BenchmarkInfo "Failed to locate a deployment"
         exit 1
     }
     else {
@@ -82,6 +84,7 @@ try {
                 Write-Host "Deployment $deploymentId has been completed."
             }
             else {
+                Send-BenchmarkInfo "Bad deploy/Time out"
                 Write-Warning "The completion for deployment $deploymentId has not been successful or the script has timed out. CurrentStatus: $($status.status)"
                 Write-Host "##vso[task.logissue type=error]The completion for deployment $deploymentId has not been successful or the script has timed out. CurrentStatus: $($status.status)"
                 Write-Error "The completion for deployment $deploymentId has not been successful or the script has timed out. CurrentStatus: $($status.status)" -ErrorAction Stop
@@ -92,6 +95,7 @@ try {
             Write-Host "The deployment $deploymentId is already in Succeeded status."
         }
         else {
+            Send-BenchmarkInfo "Unhandled status"
             Write-Warning "Status is not in complete (Current:$($complete.status)). Something is strange..."
             Write-Host "##vso[task.logissue type=error]Status is not in complete (Current:$($complete.status)). Something is strange..."
             Write-Error "Status is not in complete (Current:$($complete.status)). Something is strange..." -ErrorAction Stop
@@ -100,10 +104,12 @@ try {
 
     }
     else {
+        Send-BenchmarkInfo "No DeploymentId"
         Write-Host "##vso[task.logissue type=error]Could not retrieve the DeploymentId variable. Can not complete the deployment."
         exit 1
     }
 
+    Send-BenchmarkInfo "Succeeded"
     ####################################################################################
 
     Write-Host "---THE END---"

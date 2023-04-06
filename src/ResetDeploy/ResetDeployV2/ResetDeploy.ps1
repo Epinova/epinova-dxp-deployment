@@ -5,20 +5,30 @@ Param(
     $ProjectId, 
     $TargetEnvironment,
     $Timeout,
+    $RunBenchmark,
     $RunVerbose
 )
 
 try {
+    $deployUtilScript = Join-Path -Path $PSScriptRoot -ChildPath "ps_modules"
+    $deployUtilScript = Join-Path -Path $deployUtilScript -ChildPath "EpinovaDxpDeploymentUtil.ps1"
+    . $deployUtilScript
+
     # Get all inputs for the task
+    Initialize-Params
     $clientKey = $ClientKey
     $clientSecret = $ClientSecret
     $projectId = $ProjectId
     $targetEnvironment = $TargetEnvironment
     $timeout = $Timeout
+    $runBenchmark = [System.Convert]::ToBoolean($RunBenchmark)
     $runVerbose = [System.Convert]::ToBoolean($RunVerbose)
 
     # 30 min timeout
     ####################################################################################
+
+    $sw = [Diagnostics.Stopwatch]::StartNew()
+    $sw.Start()
 
     if ($runVerbose){
         ## To Set Verbose output
@@ -33,19 +43,10 @@ try {
     Write-Host "ProjectId:          $projectId"
     Write-Host "TargetEnvironment:  $targetEnvironment"
     Write-Host "Timeout:            $timeout"
+    Write-Host "RunBenchmark:       $runBenchmark"
     Write-Host "RunVerbose:         $runVerbose"
 
-    . "$PSScriptRoot\ps_modules\EpinovaDxpDeploymentUtil.ps1"
-
-    Mount-PsModulesPath
-
-    Initialize-EpiCload
-
-    Write-DxpHostVersion
-
-    Test-DxpProjectId -ProjectId $projectId
-
-    Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
+    Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
     $deploy = Get-DxpAwaitingEnvironmentDeployment -ProjectId $projectId -TargetEnvironment $targetEnvironment
     $deploy
@@ -82,6 +83,7 @@ try {
                 Write-Host "Deployment $deploymentId has been successfuly reset."
             }
             else {
+                Send-BenchmarkInfo "Bad deploy/Time out"
                 Write-Warning "The reset has not been successful or the script has timed out. CurrentStatus: $($status.status)"
                 Write-Host "##vso[task.logissue type=error]The reset has not been successful or the script has timed out. CurrentStatus: $($status.status)"
                 Write-Error "The reset has not been successful or the script has timed out. CurrentStatus: $($status.status)" -ErrorAction Stop
@@ -92,6 +94,7 @@ try {
             Write-Host "The deployment $deploymentId is already in reset status."
         }
         else {
+            Send-BenchmarkInfo "Unhandled status"
             Write-Warning "Status is not in AwaitingVerification (Current:$($status.status)). You can not reset the deployment at this moment."
             Write-Host "##vso[task.logissue type=error]Status is not in AwaitingVerification (Current:$($status.status)). You can not reset the deployment at this moment."
             Write-Error "Status is not in AwaitingVerification (Current:$($status.status)). You can not reset the deployment at this moment." -ErrorAction Stop
@@ -99,6 +102,7 @@ try {
         }
     }
 
+    Send-BenchmarkInfo "Succeeded"
     ####################################################################################
 
     Write-Host "---THE END---" 
