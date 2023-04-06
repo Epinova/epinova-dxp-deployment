@@ -12,6 +12,7 @@
 
 
     #$url = "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun"
+    #$url = "https://app-dxpbenchmark-3cpox1-prod.azurewebsites.net/PipelineRun"
     $url = "https://localhost:7002/PipelineRun"
 
     # $postParams = @{ 
@@ -43,7 +44,7 @@
         "OrganisationName"="Epinova-Sweden"
         "Elapsed"=10570
         "AgentOS"="Linux"
-        "Task"="DxpExpectStatus-TEST"
+        "Task"="DxpExpectStatus"
         "PowerShellVersion"="v7.2.10"
         "Result"="Succeeded"
         "ProjectName"="Elite Hotels public web"
@@ -66,6 +67,8 @@
     $message = $result.message
     Write-Host $sessionId
     Write-Host $message
+
+    #Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri "https://1b680dac-bf88-4fcb-872d-94e2d8c7d150.webhook.we.azure-automation.net/webhooks?token=fFJVjF2DeIqtLsqjREjGgFZ5CSe67bV%2fkIhvS%2bfRNzA%3d" -TimeoutSec 5
 }
 
 Send-ContextInfo
