@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.7.15
+- Work on fix for #271
+  
 ## v2.7.13
 - Added Benchmark support
 

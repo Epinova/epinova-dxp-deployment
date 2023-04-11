@@ -824,9 +824,14 @@ function Get-PackageFileSize {
 	)
 
     $packageFileSize = 0
-    $packageFileInfo = Get-ChildItem -Path $packageFilePath
-    Write-Host "Package '$($packageFileInfo.Name)' file size => $($packageFileInfo.Length)."
-    $packageFileSize = $packageFileInfo.Length
+    try {
+    	$packageFileInfo = Get-ChildItem -Path $packageFilePath
+    	Write-Host "Package '$($packageFileInfo.Name)' file size => $($packageFileInfo.Length)."
+    	$packageFileSize = $packageFileInfo.Length
+    } catch {
+    	$errMsg = $_.Exception.ToString()
+	Write-Warning $errMsg
+    }
 
     return $packageFileSize;
 }
