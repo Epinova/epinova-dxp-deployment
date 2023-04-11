@@ -80,7 +80,7 @@ try {
         $uploadedCmsPackage = Publish-Package -PackageType "cms" -DropPath $dropPath -PackageLocation $packageLocation
         if ($uploadedCmsPackage){
             $myPackages = $uploadedCmsPackage
-            $cmsFileSize = Get-PackageFileSize $uploadedCmsPackage
+            $cmsFileSize = Get-PackageFileSize -DropPath $dropPath -PackageFileName $uploadedCmsPackage
             $cmsPackage = $uploadedCmsPackage
         }
     }
@@ -89,7 +89,7 @@ try {
         $uploadedCommercePackage = Publish-Package -PackageType "commerce" -DropPath $dropPath -PackageLocation $packageLocation
         if ($uploadedCommercePackage){
             $myPackages = $uploadedCommercePackage
-            $commerceFileSize = Get-PackageFileSize $uploadedCommercePackage
+            $commerceFileSize = Get-PackageFileSize -DropPath $dropPath -PackageFileName $uploadedCommercePackage
             $commercePackage = $uploadedCommercePackage
         }
     }

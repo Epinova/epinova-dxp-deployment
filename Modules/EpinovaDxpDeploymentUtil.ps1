@@ -820,12 +820,19 @@ function Get-PackageFileSize {
     param
 	(
 		[Parameter(Mandatory = $true)]
-		[string]$packageFilePath
+		[string]$DropPath,
+		[Parameter(Mandatory = $true)]
+		[string]$PackageFileName
 	)
 
     $packageFileSize = 0
     try {
-    	$packageFileInfo = Get-ChildItem -Path $packageFilePath
+
+        $packageFileInfo = Get-ChildItem -Path $DropPath -Filter $PackageFileName
+        if ($null -eq $packageFileInfo){
+            Write-Host "No $PackageFileName found."
+        }
+
     	Write-Host "Package '$($packageFileInfo.Name)' file size => $($packageFileInfo.Length)."
     	$packageFileSize = $packageFileInfo.Length
     } catch {
@@ -879,11 +886,15 @@ function Publish-Package {
     #Test-PackageFileSize -PackageFile $packageFileInfo
 
     $packageFileName = $packageFileInfo.Name
+    $packagePath = $packageFileInfo.FullName
     
     Write-Host "$PackageType package '$packageFileName' start upload..."
+    Write-Verbose "$PackageType package '$packagePath' start upload..."
+
     try{
         Add-EpiDeploymentPackage -SasUrl $PackageLocation -Path $packageFileInfo.FullName
         Write-Host "$PackageType package '$packageFileName' is uploaded."
+        Write-Verbose "$PackageType package '$packagePath' is uploaded."
         $uploadedPackage = $packageFileInfo.Name
     }
     catch{
