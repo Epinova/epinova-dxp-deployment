@@ -1,6 +1,6 @@
 # Release notes
 
-## v2.7.15
+## v2.7.16
 - Work on fix for #271
   
 ## v2.7.13
