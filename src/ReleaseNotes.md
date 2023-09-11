@@ -1,6 +1,6 @@
 # Release notes
 
-## v2.8.0
+## v2.8.1
 - #250 - Handle zip files. Will rename to nuget. EpiCloud does not support zip.
 
 ## v2.7.16
