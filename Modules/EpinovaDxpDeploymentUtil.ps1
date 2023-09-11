@@ -876,6 +876,12 @@ function Publish-Package {
     if ($null -eq $packageFileInfo){
         Write-Host "No *.$PackageType.*.nupkg found. Will try to find *.$PackageType.*.zip"
         $packageFileInfo = Get-ChildItem -Path $DropPath -Filter "*.$PackageType.*.zip"
+        if ($null -ne $packageFileInfo){
+            Write-Host "Found $packageFileInfo . Will rename to *.nuget. EPICloud does not support zip."
+            Get-ChildItem -Path $DropPath -Filter $packageFileInfo | Rename-Item -newname { [io.path]::ChangeExtension($_.name, "nupkg") }
+            Write-Host "Renamed to *.nuget."
+            $packageFileInfo = Get-ChildItem -Path $DropPath -Filter "*.$PackageType.*.nupkg"
+        }
     }
     Write-Host "Loaded $PackageType package:    $packageFileInfo"
     
