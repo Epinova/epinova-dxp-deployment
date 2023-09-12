@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.8.3
+- #288 - Windows agent handle zip files.
+
 ## v2.8.2
 - #250 - Handle zip files. Will rename to nuget. EpiCloud does not support zip.
 
