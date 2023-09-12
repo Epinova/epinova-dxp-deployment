@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.8.4
+- Fix npm stuff (I dont like npm...)
+
 ## v2.8.3
 - #288 - Windows agent handle zip files.
 
