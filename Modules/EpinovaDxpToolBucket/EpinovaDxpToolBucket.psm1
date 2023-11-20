@@ -9,7 +9,7 @@ Set-StrictMode -Version Latest
 
 # PRIVATE METHODS
 function Test-IsGuid {
-        <#
+    <#
     .SYNOPSIS
         Test a GUID.
 
@@ -24,46 +24,52 @@ function Test-IsGuid {
 
         Test if the value in the parameter $projectId is a valid GUID or not.
     #>
-	[OutputType([bool])]
-	param
-	(
-		[Parameter(Mandatory = $true)]
-		[string]$ObjectGuid
-	)
-	
-	# Define verification regex
-	[regex]$guidRegex = '(?im)^[{(]?[0-9A-F]{8}[-]?(?:[0-9A-F]{4}[-]?){3}[0-9A-F]{12}[)}]?$'
+    [OutputType([bool])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [string]$ObjectGuid
+    )
 
-	# Check guid against regex
-	return $ObjectGuid -match $guidRegex
+    # Define verification regex
+    [regex]$guidRegex = '(?im)^[{(]?[0-9A-F]{8}[-]?(?:[0-9A-F]{4}[-]?){3}[0-9A-F]{12}[)}]?$'
+
+    # Check guid against regex
+    return $ObjectGuid -match $guidRegex
 }
 
 function Add-TlsSecurityProtocolSupport {
     <#
     .SYNOPSIS
-    This helper function adds support for TLS protocol 1.1 and/or TLS 1.2
+    This helper function adds support for TLS 1.2
 
     .DESCRIPTION
-    This helper function adds support for TLS protocol 1.1 and/or TLS 1.2
+    This helper function adds support for TLS 1.2
 
     #>
 
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory=$false)]
-        [Bool] $EnableTls11 = $true,
-        [Parameter(Mandatory=$false)]
-        [Bool] $EnableTls12 = $true
-    )
+    # # Add support for TLS 1.2
+    # if (-not [Net.ServicePointManager]::SecurityProtocol.HasFlag([Net.SecurityProtocolType]::Tls12) -AND $EnableTls12) {
+    #     [Net.ServicePointManager]::SecurityProtocol += [Net.SecurityProtocolType]::Tls12
+    # }
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+}
 
-    # Add support for TLS 1.1 and TLS 1.2
-    if (-not [Net.ServicePointManager]::SecurityProtocol.HasFlag([Net.SecurityProtocolType]::Tls11) -AND $EnableTls11) {
-        [Net.ServicePointManager]::SecurityProtocol += [Net.SecurityProtocolType]::Tls11
-    }
+function Get-DxpDateTimeStamp{
+    <#
+    .SYNOPSIS
+        Create DateTime stamp in correct format.
 
-    if (-not [Net.ServicePointManager]::SecurityProtocol.HasFlag([Net.SecurityProtocolType]::Tls12) -AND $EnableTls12) {
-        [Net.ServicePointManager]::SecurityProtocol += [Net.SecurityProtocolType]::Tls12
-    }
+    .DESCRIPTION
+        Create DateTime stamp in yyyy-MM-ddTHH:mm:ss format.
+
+    .EXAMPLE
+        Get-DxpDateTimeStamp
+
+        You will get the DateTime now in the format ex: '2021-02-20T14:34:22'.
+    #>
+    $dateTimeNow = Get-Date -Format "yyyy-MM-ddTHH:mm:ss"
+    return $dateTimeNow
 }
 
 function Test-DownloadFolder {
@@ -123,7 +129,6 @@ function Test-EnvironmentParam{
         exit
     }
 }
-
 function Test-DatabaseName{
     <#
     .SYNOPSIS
@@ -154,7 +159,6 @@ function Test-DatabaseName{
         exit
     } 
 }
-
 function Test-ContainerName{
     <#
     .SYNOPSIS
@@ -223,7 +227,6 @@ function Test-ContainerName{
 
     return $Container
 }
-
 function Import-Az{
     <#
     .SYNOPSIS
@@ -243,24 +246,6 @@ function Import-Az{
     }
 }
 
-#  function Import-EpiCloud{
-#     <#
-#     .SYNOPSIS
-#         Import module EpiCloud.
-
-#     .DESCRIPTION
-#         Import module EpiCloud.
-
-#     .EXAMPLE
-#         Import-EpiCloud
-#     #>
-#     if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
-#         Install-Module EpiCloud -Scope CurrentUser -Force
-#     } else {
-#         Write-Host "EpiCloud is installed."
-#     }
-# }
-
 function Initialize-EpiCload{
     <#
     .SYNOPSIS
@@ -272,21 +257,55 @@ function Initialize-EpiCload{
     .EXAMPLE
         Initialize-EpiCload
     #>
-    #if (-not (Get-Module -Name EpiCloud -MinimumVersion 1.0.0 -ListAvailable)) {
+    Uninstall-Module -Name EpiCloud -AllVersions -Force
+    #if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
     #    Write-Host "Could not find EpiCloud."
-    #    #Install-Module EpiCloud  -Scope CurrentUser -MinimumVersion 0.13.15 -Force -AllowClobber
-    #    #Write-Host "Installed EpiCloud."
-    #    Import-Module -Name "EpiCloud" -MinimumVersion 1.0.0 -Verbose
-    #    #Import-Module -Name "$PSScriptRoot/EpiCloud/EpiCloud.psd1" -Verbose -ErrorAction Stop
-    #    Write-Host "Import EpiCloud."
+        #Install-Module EpiCloud  -Scope CurrentUser -MinimumVersion 0.13.15 -Force -AllowClobber
+        #Write-Host "Installed EpiCloud."
+        #Import-Module -Name "EpiCloud" -MinimumVersion 1.2.0 -Verbose
+        Install-Module -Name "EpiCloud" -MinimumVersion 1.2.0 -Force
+        #Import-Module -Name "$PSScriptRoot/EpiCloud/EpiCloud.psd1" -Verbose -ErrorAction Stop
+        Write-Host "Import EpiCloud v1.2.0"
     #}
-    ##Get-Module -Name EpiCloud -ListAvailable
+    #Get-Module -Name EpiCloud -ListAvailable
     #$version = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
     #Write-Host "EpiCloud            [$version]" 
     #if ($null -eq $version -or "" -eq $version) {
     #    Write-Error "Could not get version for the installed module EpiCloud"
     #}
-    Install-Module EpiCloud -Scope CurrentUser -MinimumVersion 1.0.0 -Force -AllowClobber
+    Write-Host Get-EpiCloudVersion
+}
+
+function Write-DxpHostVersion() {
+    <#
+    .SYNOPSIS
+        Write the PowerShell host version in the host.
+
+    .DESCRIPTION
+        Write the PowerShell host version in the host.
+
+    .EXAMPLE
+        Write-DxpHostVersion
+
+        Will print out the PowerShell host version in the host. Ex: @{Version=5.1.14393.3866}
+    #>
+    #$version = Get-Host | Select-Object Version
+    #Write-Host "PowerShell          $version" 
+    $PSVersionTable
+}
+
+
+function Get-EpiCloudVersion {
+    $epiCloudVersion = ""
+    try{
+        $epiCloudModule = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
+        $epiCloudVersion = "v$($epiCloudModule.Version.Major).$($epiCloudModule.Version.Minor).$($epiCloudModule.Version.Build)"
+    } catch {
+        Write-Verbose "Could not get EpiCloud version : $($_.Exception.ToString())"
+        Write-Host "Could not get EpiCloud version."
+
+    }
+    return $epiCloudVersion
 }
 
 function Get-StorageAccountName{
@@ -384,23 +403,6 @@ function Join-Parts {
     ($Parts | Where-Object { $_ } | ForEach-Object { ([string]$_) } | Where-Object { $_ } ) -join $Separator 
 }
 
-function Get-DxpDateTimeStamp{
-    <#
-    .SYNOPSIS
-        Create DateTime stamp in correct format.
-
-    .DESCRIPTION
-        Create DateTime stamp in yyyy-MM-ddTHH:mm:ss format.
-
-    .EXAMPLE
-        Get-DxpDateTimeStamp
-
-        You will get the DateTime now in the format ex: '2021-02-20T14:34:22'.
-    #>
-    $dateTimeNow = Get-Date -Format "yyyy-MM-ddTHH:mm:ss"
-    return $dateTimeNow
-}
-
 function Invoke-DxpDatabaseExportProgress {
     [CmdletBinding()]
     param(
@@ -467,7 +469,6 @@ function Invoke-DxpDatabaseExportProgress {
     }
     return $status
 }
-
 function Test-DxpProjectId {
     <#
     .SYNOPSIS
@@ -484,21 +485,18 @@ function Test-DxpProjectId {
 
         Test if the value in the parameter $projectId is a valid DXP project id.
     #>
-	[OutputType([bool])]
+	[OutputType([System.Void])]
 	param
 	(
 		[Parameter(Mandatory = $true)]
 		[string]$ProjectId
 	)
 	
-    if ((Test-IsGuid -ObjectGuid $ProjectId) -ne $true){
-        Write-Error "The provided ProjectId is not a guid value."
-        exit
-    } else {
-        Write-Host "ProjectId is a GUID."
+    if (!(Test-IsGuid -ObjectGuid $ProjectId)) {
+        Write-Error "The provided ProjectId $ProjectId is not a guid value."
+        exit 1
     }
 }
-
 function Import-AzureStorageModule {
     <#
     .SYNOPSIS
@@ -532,7 +530,6 @@ function Import-AzureStorageModule {
         exit
     }
 }
-
 function Write-DxpHostVersion() {
     <#
     .SYNOPSIS
@@ -549,7 +546,6 @@ function Write-DxpHostVersion() {
     $version = Get-Host | Select-Object Version
     Write-Host $version
 }
-
 function Connect-DxpEpiCloud{
     <#
     .SYNOPSIS
@@ -589,7 +585,6 @@ function Connect-DxpEpiCloud{
         [String] $ProjectId
     )
     Connect-EpiCloud -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId
-    Write-Host "Connected to DXP Project $ProjectId"
 }
 
 function Invoke-DxpProgress {
@@ -600,77 +595,6 @@ function Invoke-DxpProgress {
     .DESCRIPTION
         Write the progress of a operation in the Optimizely (formerly known as Episerver) DXP environment to the host.
 
-    .PARAMETER projectId
-        Project id for the project in Optimizely (formerly known as Episerver) DXP.
-
-    .PARAMETER deploymentId
-        Deployment id for the specific deployment in Optimizely (formerly known as Episerver) DXP that you want to show the progress for.
-
-    .PARAMETER percentComplete
-        The initialized percentComplete value that we got from the invoke of the operation.
-
-    .PARAMETER expectedStatus
-        The expectedStatus that the deployment should get when done/before timeout.
-
-    .PARAMETER timeout
-        The maximum time that the progress should run. When the script has timeout if will stop.
-
-    .EXAMPLE
-        $status = Invoke-DxpProgress -projectid $projectId -deploymentId $deploymentId -percentComplete $percentComplete -expectedStatus $expectedStatus -timeout $timeout
-
-    .EXAMPLE
-        $status = Invoke-DxpProgress -projectid '644b6926-39b1-42a1-93d6-3771cdc4a04e' -deploymentId '817b5df3-21cd-4080-adbd-6c211b71f34d' -percentComplete 0 -expectedStatus 'Success' -timeout 1800
-
-    #>
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [string] $projectId,
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [string] $deploymentId,
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [int] $percentComplete,
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [string] $expectedStatus,
-        [Parameter(Mandatory = $true)]
-        [int] $timeout
-    )
-
-    $sw = [Diagnostics.Stopwatch]::StartNew()
-    $sw.Start()
-    while ($percentComplete -le 100) {
-        $status = Get-EpiDeployment -ProjectId $projectId -Id $deploymentId
-        if ($percentComplete -ne $status.percentComplete) {
-            $percentComplete = $status.percentComplete
-            Write-Host $percentComplete "%. Status: $($status.status). ElapsedSeconds: $($sw.Elapsed.TotalSeconds)"
-        }
-        if ($percentComplete -le 100 -or $status.status -ne $expectedStatus) {
-            Start-Sleep 5
-        }
-        if ($sw.Elapsed.TotalSeconds -ge $timeout) { break }
-        if ($status.percentComplete -eq 100 -and $status.status -eq $expectedStatus) { break }
-    }
-
-    $sw.Stop()
-    Write-Host "Stopped iteration after $($sw.Elapsed.TotalSeconds) seconds."
-
-    $status = Get-EpiDeployment -ProjectId $projectId -Id $deploymentId
-    $status
-    return $status
-}
-
-function Get-DxpStorageContainerSasLink{
-    <#
-    .SYNOPSIS
-        ...
-
-    .DESCRIPTION
-        ...
-
     .PARAMETER ClientKey
         The client key used to access the project.
 
@@ -678,22 +602,25 @@ function Get-DxpStorageContainerSasLink{
         The client secret used to access the project.
 
     .PARAMETER ProjectId
-        The id of the DXP project.
+        Project id for the project in Optimizely (formerly known as Episerver) DXP.
 
-    .PARAMETER Environment
-        The environment where we should check for storage containers.
+    .PARAMETER DeploymentId
+        Deployment id for the specific deployment in Optimizely (formerly known as Episerver) DXP that you want to show the progress for.
 
-    .PARAMETER Containers
-        List of containers that we should look for the one that match the next parameter Container.
+    .PARAMETER PercentComplete
+        The initialized percentComplete value that we got from the invoke of the operation.
 
-    .PARAMETER Container
-        The name of the container that you want. If it does not exist it will try ti figure out which container you want.
+    .PARAMETER ExpectedStatus
+        The expectedStatus that the deployment should get when done/before timeout.
+
+    .PARAMETER Timeout
+        The maximum time that the progress should run. When the script has timeout if will stop.
 
     .EXAMPLE
-        Get-DxpStorageContainerSasLink -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -Containers $Containers -Container $Container -RetentionHours $RetentionHours
+        $status = Invoke-DxpProgress -ClientKey $ClientKey -ClientSecret $ClientSecret -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus $expectedStatus -Timeout $timeout
 
     .EXAMPLE
-        Get-DxpStorageContainerSasLink -ClientKey '644b6926-39b1-42a1-93d6-3771cdc4a04e' -ClientSecret '644b6926-39b1fasrehyjtye-42a1-93d6-3771cdc4asasda04e'-ProjectId '644b6926-39b1-42a1-93d6-3771cdc4a04e' -Environment 'Integration' -Containers $Containers -Container "mysitemedia" -RetentionHours 2
+        $status = Invoke-DxpProgress -ClientKey $ClientKey -ClientSecret $ClientSecret -Projectid '644b6926-39b1-42a1-93d6-3771cdc4a04e' -DeploymentId '817b5df3-21cd-4080-adbd-6c211b71f34d' -PercentComplete 0 -ExpectedStatus 'Success' -Timeout 1800
 
     #>
     [CmdletBinding()]
@@ -712,46 +639,65 @@ function Get-DxpStorageContainerSasLink{
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [string] $Environment,
-
-        [Parameter(Mandatory = $false)]
-        [object] $Containers,
+        [string] $DeploymentId,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [string] $Container,
+        [int] $PercentComplete,
 
-        [Parameter(Mandatory = $false)]
-        [int] $RetentionHours = 2
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ExpectedStatus,
 
+        [Parameter(Mandatory = $true)]
+        [int] $Timeout
     )
 
-    if ($null -eq $Containers){
-        $Containers = Get-DxpStorageContainers -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment
-    }
-
-    $linkSplat = @{
-        ClientKey = $ClientKey
-        ClientSecret = $ClientSecret
-        ProjectId = $ProjectId
-        Environment = $Environment
-        StorageContainer = $Containers.storageContainers
-        RetentionHours = $RetentionHours
-    }
-
-    $linkResult = Get-EpiStorageContainerSasLink @linkSplat
-
-    $sasLink = $null
-    foreach ($link in $linkResult){
-        if ($link.containerName -eq $Container) {
-            Write-Host "Found Sas link for container   : $Container"
-            $sasLink = $link
-        } else {
-            Write-Host "Ignore container   : $($link.containerName)"
+    $sw = [Diagnostics.Stopwatch]::StartNew()
+    $sw.Start()
+    $failedApiCalls = 0
+    while ($PercentComplete -le 100) {
+        try {
+            $status = Get-EpiDeployment -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Id $DeploymentId
+            if ($PercentComplete -ne $status.percentComplete) {
+                $PercentComplete = $status.percentComplete
+                Write-Host $PercentComplete "%. Status: $($status.status). ElapsedSeconds: $($sw.Elapsed.TotalSeconds)"
+            }
+            if ($PercentComplete -le 100 -or $status.status -ne $ExpectedStatus) {
+                Start-Sleep 5
+            }
+            if ($sw.Elapsed.TotalSeconds -ge $Timeout) { break }
+            if ($status.status -eq "Failed") { break }
+            if ($status.percentComplete -eq 100 -and $status.status -eq $ExpectedStatus) { break }
+    
+        } catch {
+            Write-Host "WARNING: Something in the progress failed. Exception caught : $($_.Exception.ToString())"
+            $failedApiCalls = $failedApiCalls + 1;
+            if ($failedApiCalls -gt 4){
+                Write-Error "There are more then 4 failed calls to DXP API. We will stop the progress."
+                break
+            }
         }
     }
 
-    return $sasLink
+    $sw.Stop()
+    Write-Host "Stopped iteration after $($sw.Elapsed.TotalSeconds) seconds."
+
+    $status = Get-EpiDeployment -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Id $DeploymentId
+    Write-Host "Deployment          $DeploymentId"
+    Write-Host "Status:             $($status.status)."
+    Write-Host "PercentComplete:    $($status.percentComplete)."
+    Write-Host "StartTime:          $($status.startTime)."
+    Write-Host "EndTime:            $($status.endTime)."
+
+    if ($null -ne $status.deploymentErrors -and $status.deploymentErrors.Length -ne 0){
+        Write-Host "Errors:         $($status.deploymentErrors)"
+    }
+    if ($null -ne $status.deploymentWarnings -and $status.deploymentWarnings.Length -ne 0){
+        Write-Host "Warnings:       $($status.deploymentWarnings)"
+    }
+
+    return $status
 }
 
 function Invoke-DownloadStorageAccountFiles{
@@ -886,6 +832,169 @@ function Invoke-DownloadStorageAccountFiles{
     return $ArrayList
 }
 
+function Get-DxpEnvironmentDeployments{
+    <#
+    .SYNOPSIS
+        Get the latest deployments for the specified environment.
+
+    .DESCRIPTION
+        Get the latest deployments for the specified environment.
+
+    .PARAMETER ClientKey
+        The client key used to access the project.
+
+    .PARAMETER ClientSecret
+        The client secret used to access the project.
+        
+    .PARAMETER ProjectId
+        Project id for the project in Optimizely (formerly known as Episerver) DXP.
+
+    .PARAMETER TargetEnvironment
+        The target environment that should match the deployment.
+
+    .EXAMPLE
+        $deployments = Get-DxpEnvironmentDeployments -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -TargetEnvironment $TargetEnvironment
+
+    .EXAMPLE
+        $deployments = Get-DxpEnvironmentDeployments -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId '644b6926-39b1-42a1-93d6-3771cdc4a04e' -TargetEnvironment 'Integration'
+
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ClientKey,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ClientSecret,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [String] $ProjectId,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $TargetEnvironment
+    )
+
+    $getEpiDeploymentSplat = @{
+        ClientKey    = $ClientKey
+        ClientSecret = $ClientSecret
+        ProjectId    = $ProjectId
+    }
+
+    $deployments = Get-EpiDeployment @getEpiDeploymentSplat | Where-Object { $_.parameters.targetEnvironment -eq $TargetEnvironment }
+
+    return $deployments
+}
+
+function Get-DxpLatestEnvironmentDeployment{
+    <#
+    .SYNOPSIS
+        Get the latest deployment for the specified environment.
+
+    .DESCRIPTION
+        Get the latest deployment for the specified environment.
+
+    .PARAMETER ClientKey
+        The Optimizely DXP project ClientKey.
+
+    .PARAMETER ClientSecret
+        The Optimizely DXP project ClientSecret.
+
+        .PARAMETER ProjectId
+        Project id for the project in Optimizely (formerly known as Episerver) DXP.
+
+    .PARAMETER TargetEnvironment
+        The target environment that should match the deployment.
+
+    .EXAMPLE
+        $deployment = Get-DxpLatestEnvironmentDeployment -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $ProjectId -TargetEnvironment $TargetEnvironment
+
+    .EXAMPLE
+        $deployment = Get-DxpLatestEnvironmentDeployment -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId '644b6926-39b1-42a1-93d6-3771cdc4a04e' -TargetEnvironment 'Integration'
+
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+		[string]$ClientKey,
+		
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+		[string]$ClientSecret,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [String] $ProjectId,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $TargetEnvironment
+    )
+
+    $deployments = Get-DxpEnvironmentDeployments -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -TargetEnvironment $TargetEnvironment
+
+    $deployment = $null
+    if ($deployments -is [array]){
+        if ($deployments.Count -gt 1){
+            $deployment = $deployments[0]
+        } else {
+            $deployment = $deployments
+        }
+    }
+     else {
+        if ($null -ne $deployments){
+            $deployment = $deployments
+        }
+    }
+
+    return $deployment
+}
+
+function Initialize-EpinovaDxpScript {
+    <#
+        .SYNOPSIS
+            Print info and check some values before connection to the EpiCloud.
+    
+        .DESCRIPTION
+            Print info and check some values before connection to the EpiCloud.
+    
+        .PARAMETER ClientKey
+            The Optimizely DXP project ClientKey.
+    
+        .PARAMETER ClientSecret
+            The Optimizely DXP project ClientSecret.
+    
+        .PARAMETER ProjectId
+            The Optimizely DXP project id. (Guid)
+    
+        .EXAMPLE
+            Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
+        #>	
+        param
+        (
+            [Parameter(Mandatory = $true)]
+            [string]$ClientKey,
+            [Parameter(Mandatory = $true)]
+            [string]$ClientSecret,
+            [Parameter(Mandatory = $true)]
+            [string]$ProjectId
+        )    
+        
+        #Mount-PsModulesPath
+    
+        Initialize-EpiCload
+        
+        Write-DxpHostVersion
+    
+        Test-DxpProjectId -ProjectId $projectId
+    
+        Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
+    }
+    
 # END PRIVATE METHODS
 
 function Get-DxpStorageContainers{
@@ -966,7 +1075,6 @@ function Get-DxpStorageContainers{
 
     return $containers
 }
-
 function Invoke-DxpBlobsDownload{
     <#
     .SYNOPSIS
@@ -1095,7 +1203,6 @@ function Invoke-DxpBlobsDownload{
     #$Files = $files
     return $ArrayList
 }
-
 function Invoke-DxpDatabaseDownload{
     <#
     .SYNOPSIS
@@ -1245,5 +1352,230 @@ function Invoke-DxpDatabaseDownload{
         exit
     }
 }
+function Get-DxpStorageContainerSasLink{
+    <#
+    .SYNOPSIS
+        ...
 
-Export-ModuleMember -Function @( 'Invoke-DxpBlobsDownload', 'Invoke-DxpDatabaseDownload', 'Get-DxpStorageContainers', 'Get-DxpStorageContainerSasLink' )
+    .DESCRIPTION
+        ...
+
+    .PARAMETER ClientKey
+        The client key used to access the project.
+
+    .PARAMETER ClientSecret
+        The client secret used to access the project.
+
+    .PARAMETER ProjectId
+        The id of the DXP project.
+
+    .PARAMETER Environment
+        The environment where we should check for storage containers.
+
+    .PARAMETER Containers
+        List of containers that we should look for the one that match the next parameter Container.
+
+    .PARAMETER Container
+        The name of the container that you want. If it does not exist it will try ti figure out which container you want.
+
+    .EXAMPLE
+        Get-DxpStorageContainerSasLink -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment -Containers $Containers -Container $Container -RetentionHours $RetentionHours
+
+    .EXAMPLE
+        Get-DxpStorageContainerSasLink -ClientKey '644b6926-39b1-42a1-93d6-3771cdc4a04e' -ClientSecret '644b6926-39b1fasrehyjtye-42a1-93d6-3771cdc4asasda04e'-ProjectId '644b6926-39b1-42a1-93d6-3771cdc4a04e' -Environment 'Integration' -Containers $Containers -Container "mysitemedia" -RetentionHours 2
+
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ClientKey,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ClientSecret,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ProjectId,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $Environment,
+
+        [Parameter(Mandatory = $false)]
+        [object] $Containers,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $Container,
+
+        [Parameter(Mandatory = $false)]
+        [int] $RetentionHours = 2
+
+    )
+
+    if ($null -eq $Containers){
+        $Containers = Get-DxpStorageContainers -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -Environment $Environment
+    }
+
+    $linkSplat = @{
+        ClientKey = $ClientKey
+        ClientSecret = $ClientSecret
+        ProjectId = $ProjectId
+        Environment = $Environment
+        StorageContainer = $Containers.storageContainers
+        RetentionHours = $RetentionHours
+    }
+
+    $linkResult = Get-EpiStorageContainerSasLink @linkSplat
+
+    $sasLink = $null
+    foreach ($link in $linkResult){
+        if ($link.containerName -eq $Container) {
+            Write-Host "Found Sas link for container   : $Container"
+            $sasLink = $link
+        } else {
+            Write-Host "Ignore container   : $($link.containerName)"
+        }
+    }
+
+    return $sasLink
+}
+
+function Invoke-DxpAwaitStatus{
+    <#
+    .SYNOPSIS
+        Task that await for status AwaitingVerification/Reset.
+
+    .DESCRIPTION
+        Task that await for status AwaitingVerification/Reset. Can be used when have a release setup that often timeout and need a extra task that awaits the correct status. So if target environment is in status InProgress/Resetting when it starts. The task will run and check the status until target environment is in status AwaitingVerification/Reset/Succeeded.\n\nIf status is AwaitingVerification/Reset/Succeeded when task starts, nothing will happen. If the task starts and status is anything else then AwaitingVerification/Reset/Succeeded/InProgress/Resetting the task will fail with error.
+
+    .PARAMETER ClientKey
+        The client key used to access the project.
+
+    .PARAMETER ClientSecret
+        The client secret used to access the project.
+
+    .PARAMETER ProjectId
+        The id of the DXP project.
+
+    .PARAMETER TargetEnvironment
+        The target environment where we should check and wait for the correct status.
+
+    .PARAMETER Timeout
+        Specify the number of seconds when the task should timeout.
+
+    .PARAMETER RunVerbose
+        If you want to run in verbose mode and see all information.
+
+    .EXAMPLE
+        Invoke-DxpAwaitStatus -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -TargetEnvironment $targetEnvironment -Timeout $timeout -RunVerbose $runVerbose
+
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ClientKey,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ClientSecret,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $ProjectId,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Integration','Preproduction','Production','ADE1','ADE2','ADE3')]
+        [string] $TargetEnvironment,
+
+        [Parameter(Mandatory = $false)]
+        [int] $Timeout,
+
+        [Parameter(Mandatory = $false)]
+        [bool] $RunVerbose
+
+    )
+
+    $clientKey = $ClientKey
+    $clientSecret = $ClientSecret
+    $projectId = $ProjectId
+    $targetEnvironment = $TargetEnvironment
+    $timeout = $Timeout
+    $runVerbose = [System.Convert]::ToBoolean($RunVerbose)
+
+    if ($runVerbose){
+        ## To Set Verbose output
+        $PSDefaultParameterValues['*:Verbose'] = $true
+    }
+
+    Add-TlsSecurityProtocolSupport
+
+    Write-Host "Inputs:"
+    Write-Host "ClientKey:          $clientKey"
+    Write-Host "ClientSecret:       **** (it is a secret...)"
+    Write-Host "ProjectId:          $projectId"
+    Write-Host "TargetEnvironment:  $targetEnvironment"
+    Write-Host "Timeout:            $timeout"
+    Write-Host "RunVerbose:         $runVerbose"
+
+    Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
+
+    $lastDeploy = Get-DxpLatestEnvironmentDeployment -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -TargetEnvironment $targetEnvironment
+
+    if ($null -ne $lastDeploy){
+        Write-Output $lastDeploy | ConvertTo-Json
+        Write-Output "Latest found deploy on targetEnvironment $targetEnvironment is in status $($lastDeploy.status)"
+
+        if ($lastDeploy.status -eq "InProgress" -or $lastDeploy.status -eq "Resetting") {
+            $deployDateTime = Get-DxpDateTimeStamp
+            $deploymentId = $lastDeploy.id
+            Write-Host "Deploy $deploymentId started $deployDateTime."
+
+            $percentComplete = $lastDeploy.percentComplete
+
+            $expectedStatus = ""
+            if ($lastDeploy.status -eq "InProgress"){
+                $expectedStatus = "AwaitingVerification"
+            }
+            elseif ($lastDeploy.status -eq "Resetting"){
+                $expectedStatus = "Reset"
+            }
+
+            $status = Invoke-DxpProgress -ClientKey $clientKey -ClientSecret $clientSecret -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus $expectedStatus -Timeout $timeout
+
+            $deployDateTime = Get-DxpDateTimeStamp
+            Write-Host "Deploy $deploymentId ended $deployDateTime"
+
+            if ($status.status -eq "AwaitingVerification") {
+                Write-Host "Deployment $deploymentId has been successful."
+            }
+            elseif ($status.status -eq "Reset") {
+                Write-Host "Reset $deploymentId has been successful."
+            }
+            else {
+                Write-Warning "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
+                Write-Host "##vso[task.logissue type=error]The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
+                Write-Error "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)" -ErrorAction Stop
+                exit 1
+            }
+        }
+        elseif ($lastDeploy.status -eq "AwaitingVerification" -or $lastDeploy.status -eq "Reset" -or $lastDeploy.status -eq "Succeeded") {
+            Write-Output "Target environment $targetEnvironment is already in status $($lastDeploy.status). Will and can´t wait for any new status."
+        }
+        else {
+            Write-Warning "Status is in a unhandled status. (Current:$($lastDeploy.status)). Will and can´t do anything..."
+            Write-Host "##vso[task.logissue type=error]Status is in a unhandled status. (Current:$($lastDeploy.status))."
+            Write-Error "Status is in a unhandled status. (Current:$($lastDeploy.status))." -ErrorAction Stop
+            exit 1
+        }
+    }
+    else {
+        Write-Output "No history received from the specified target environment $targetEnvironment"
+        Write-Output "Will and can not do anything..."
+    }
+}
+
+Export-ModuleMember -Function @( 'Invoke-DxpBlobsDownload', 'Invoke-DxpDatabaseDownload', 'Get-DxpStorageContainers', 'Get-DxpStorageContainerSasLink', 'Invoke-DxpAwaitStatus' )
