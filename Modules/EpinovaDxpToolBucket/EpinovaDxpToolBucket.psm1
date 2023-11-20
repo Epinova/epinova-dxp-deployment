@@ -2069,6 +2069,7 @@ function Invoke-DxpDeployNuGetPackage{
     $packagename = Split-Path $packagepath -leaf
     Write-Host $packagename
 
+    $sourceApp = "cms"
     if ($packagename.Contains(".cms.")){
         $sourceApp = "cms"
     } 
