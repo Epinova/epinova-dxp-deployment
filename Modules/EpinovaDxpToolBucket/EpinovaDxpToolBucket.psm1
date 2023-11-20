@@ -257,7 +257,7 @@ function Initialize-EpiCload{
     .EXAMPLE
         Initialize-EpiCload
     #>
-    Uninstall-Module -Name EpiCloud -AllVersions -Force
+    #Uninstall-Module -Name EpiCloud -AllVersions -Force
     #if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
     #    Write-Host "Could not find EpiCloud."
         #Install-Module EpiCloud  -Scope CurrentUser -MinimumVersion 0.13.15 -Force -AllowClobber
@@ -265,7 +265,7 @@ function Initialize-EpiCload{
         #Import-Module -Name "EpiCloud" -MinimumVersion 1.2.0 -Verbose
         Install-Module -Name "EpiCloud" -MinimumVersion 1.2.0 -Force
         #Import-Module -Name "$PSScriptRoot/EpiCloud/EpiCloud.psd1" -Verbose -ErrorAction Stop
-        Write-Host "Import EpiCloud v1.2.0"
+        Write-Host "Install EpiCloud v1.2.0"
     #}
     #Get-Module -Name EpiCloud -ListAvailable
     #$version = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
@@ -2040,7 +2040,7 @@ function Invoke-DxpDeployNuGetPackage{
         [Parameter(Mandatory = $false)]
         [bool] $UseMaintenancePage,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [ValidateSet('NotSpecified','ReadOnly','ReadWrite')]
         [string] $ZeroDowntimeMode,
 
