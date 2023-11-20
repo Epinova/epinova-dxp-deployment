@@ -994,7 +994,246 @@ function Initialize-EpinovaDxpScript {
     
         Connect-DxpEpiCloud -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
     }
+
+function Get-DxpAwaitingEnvironmentDeployment{
+    <#
+    .SYNOPSIS
+        Get the latest deployment in status 'AwaitingVerification' for the specified environment.
+
+    .DESCRIPTION
+        Get the latest deployment in status 'AwaitingVerification' for the specified environment.
+
+    .PARAMETER ClientKey
+        The Optimizely DXP project ClientKey.
+
+    .PARAMETER ClientSecret
+        The Optimizely DXP project ClientSecret.
+
+    .PARAMETER ProjectId
+        Project id for the project in Optimizely (formerly known as Episerver) DXP.
+
+    .PARAMETER TargetEnvironment
+        The target environment that should match the deployment.
+
+    .EXAMPLE
+        $deployment = Get-DxpAwaitingEnvironmentDeployment -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $ProjectId -TargetEnvironment $TargetEnvironment
+
+    .EXAMPLE
+        $deployment = Get-DxpAwaitingEnvironmentDeployment -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId '644b6926-39b1-42a1-93d6-3771cdc4a04e' -TargetEnvironment 'Integration'
+
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string]$ClientKey,
+        
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string]$ClientSecret,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [String] $ProjectId,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $TargetEnvironment
+    )
+
+    $getEpiDeploymentSplat = @{
+        ClientKey    = $ClientKey
+        ClientSecret = $ClientSecret
+        ProjectId    = $ProjectId
+    }
+
+    $deployment = Get-EpiDeployment @getEpiDeploymentSplat | Where-Object { $_.Status -eq 'AwaitingVerification' -and $_.parameters.targetEnvironment -eq $TargetEnvironment }
+
+    return $deployment
+}
     
+function Invoke-WarmupRequest {
+    <#
+    .SYNOPSIS
+        Make a request against a URL to warm it up.
+
+    .DESCRIPTION
+        Make a request against a URL to warm it up.
+
+    .PARAMETER RequestUrl
+        The URL that should be warmed-up.
+
+    .EXAMPLE
+        Invoke-WarmupRequest -RequestUrl "https://epinova.se/news-and-stuff"
+
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [String] $RequestUrl
+    )
+    $ProgressPreference = 'SilentlyContinue'
+    try {
+        Invoke-WebRequest -Uri $RequestUrl -UseBasicParsing -MaximumRedirection 1 | Out-Null #-Verbose:$false
+        
+    } catch {
+        #$_.Exception.Response
+        $statusCode = $_.Exception.Response.StatusCode.value__
+        Write-Host "Could not request $RequestUrl. Something went wrong. $statusCode"
+        Write-Host $_.Exception.Message
+    }
+    $ProgressPreference = 'Continue'
+}
+    
+function Invoke-WarmupSite{
+    <#
+    .SYNOPSIS
+        Warm a site.
+
+    .DESCRIPTION
+        Will make a request to the specified URL. Take all links it can find and make a request for each link to warm up the site.
+
+    .PARAMETER Url
+        The URL that should be warmed-up.
+
+    .EXAMPLE
+        Invoke-WarmupSite -Url "https://epinova.se"
+
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [String] $Url
+    )
+
+    if ($Url.EndsWith("/")) {
+        $Url = $Url.Substring(0, $Url.Length - 1)
+    }
+
+    $iterator = 0
+
+    while ($iterator -lt 10) {
+        try {
+            Write-Host "Invoke-WebRequest -Uri $Url"
+            $response = Invoke-WebRequest -Uri $Url -UseBasicParsing -Verbose:$false -MaximumRedirection 1 -TimeoutSec 120
+            $iterator = 999
+            if ($null -ne $response){ 
+                foreach ($link in $response.Links){
+                    if ($null -ne $link -and $null -ne $link.href) {
+                        if ($link.href.StartsWith("/") -and $false -eq $link.href.StartsWith("//")){
+                            $newUrl = $Url + $link.href
+                            Write-Host $newUrl
+                            Invoke-WarmupRequest -requestUrl $newUrl
+                        } elseif ($link.href.StartsWith($Url)) {
+                            Write-Host $link.href
+                            Invoke-WarmupRequest -requestUrl $link.href
+                        } #else { #Used for debuging
+                        #    Write-Warning "Not: $($link.href)" 
+                        #}
+                    }
+                }
+                Write-Host "Warm up site $Url - done."
+            } else {
+                Write-Warning "Could not request $Url. response = null"
+            }
+        } catch {
+            Write-Warning "Could not warmup $Url"
+            Write-Host $_.Exception.Message
+            if ($iterator -lt 9){
+                Write-Host "Will try again ($iterator)"
+            } else {
+                Write-Host "Will stop trying to warm up the web application."
+            }
+            $iterator++
+        }
+    }
+}
+    
+function Test-PackageFileName {
+    <#
+    .SYNOPSIS
+        Test package file name
+
+    .DESCRIPTION
+        Test if package file name contains any spaces. If so it will throw a exception.
+
+    .PARAMETER PackageFile
+        The FileSystemInfo that should be checked.
+
+    .EXAMPLE
+        $packageFile = Get-ChildItem -Path $dropPath -Filter *.cms.*.nupkg
+        Test-PackageFileName -PackageFile $packageFile
+    #>	
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.IO.FileSystemInfo]$PackageFile
+    )
+
+    if ($true -eq $PackageFile.Name.Contains(" ")) {
+        $newName = $PackageFile.Name.Replace(" " , "")
+        Write-Error "Package name contains space(s). Due to none support for spaces in EpiCloud API, you need to change the package name '$($PackageFile.Name)' => '$newName'."
+    }
+}
+    
+function Publish-Package {
+    <#
+    .SYNOPSIS
+        Publish package to DXP storage account
+
+    .DESCRIPTION
+        Load the specified type of package, checks for errors, if none, upload package to DXP storage.
+
+    .PARAMETER FilePath
+        The path to the file that should be uploaded.
+
+    .PARAMETER PackageLocation
+        SAS link
+
+    .EXAMPLE
+        Publish-Package -PackageType "cms" -DropPath $dropPath -PackageLocation $packageLocation
+    #>	
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [string]$FilePath,
+
+        [Parameter(Mandatory = $true)]
+        [string]$PackageLocation 
+    )
+
+    $uploadedPackage = ""
+    $packageFileInfo = Get-Item -Path $FilePath
+    Write-Host "Loaded package:    $packageFileInfo"
+
+    Test-PackageFileName -PackageFile $packageFileInfo
+
+    $packageFileName = $packageFileInfo.Name
+    $packagePath = $packageFileInfo.FullName
+    Write-Host "Package '$packageFileName' start upload..."
+    Write-Verbose "Package '$packagePath' start upload..."
+
+    try{
+        Add-EpiDeploymentPackage -SasUrl $PackageLocation -Path $packageFileInfo.FullName
+        Write-Host "Package '$packageFileName' is uploaded."
+        Write-Verbose "Package '$packagePath' is uploaded."
+        $uploadedPackage = $packageFileInfo.Name
+    }
+    catch{
+        $errMsg = $_.Exception.ToString()
+        if ($errMsg.Contains("is already linked to a deployment and cannot be overwritten")){
+            Write-Host "Package '$packageFileName' already exist in container."
+            $uploadedPackage = $packageFileName
+        } else {
+            Write-Error $errMsg
+        }
+    }
+
+    return $uploadedPackage
+}
+        
 # END PRIVATE METHODS
 
 function Get-DxpStorageContainers{
