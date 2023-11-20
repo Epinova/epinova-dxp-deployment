@@ -390,7 +390,6 @@ function Get-DxpLatestEnvironmentDeployment{
     $deployment = $null
     if ($deployments -is [array]){
         if ($deployments.Count -gt 1){
-        
             $deployment = $deployments[0]
         } else {
             $deployment = $deployments
@@ -461,244 +460,6 @@ function Get-DxpAwaitingEnvironmentDeployment{
 
     return $deployment
 }
-
-# function Invoke-DxpExportProgress {
-#     <#
-#     .SYNOPSIS
-#         Start a export of a database from DXP.
-
-#     .DESCRIPTION
-#         Start a export of a database from DXP.
-
-#     .PARAMETER ProjectId
-#         Project id for the project in Optimizely (formerly known as Episerver) DXP.
-
-#     .PARAMETER ExportId
-#         .
-
-#     .PARAMETER Environment
-#         The environment that the database should be exported from.
-
-#     .PARAMETER DatabaseName
-#         The name of the database that should be downloaded. cms or commerce.
-
-#     .PARAMETER ExpectedStatus
-#         The status that we expect when the export is done. 'Succeeded'
-
-#     .PARAMETER Timeout
-#         The timeout. How long time the script will wait for the export to be finished.
-
-#     .EXAMPLE
-#         $status = ExportProgress -Projectid $projectId -ExportId $exportId -Environment $environment -DatabaseName $databaseName -ExpectedStatus "Succeeded" -Timeout $timeout
-
-
-#     #>
-#     [CmdletBinding()]
-#     param(
-#         [Parameter(Mandatory = $true)]
-#         [ValidateNotNullOrEmpty()]
-#         [string] $ProjectId,
-
-#         [Parameter(Mandatory = $true)]
-#         [ValidateNotNullOrEmpty()]
-#         [string] $ExportId,
-
-#         [Parameter(Mandatory = $true)]
-#         [ValidateNotNullOrEmpty()]
-#         [string] $Environment,
-
-#         [Parameter(Mandatory = $true)]
-#         [ValidateNotNullOrEmpty()]
-#         [string] $DatabaseName,
-
-#         [Parameter(Mandatory = $true)]
-#         [ValidateNotNullOrEmpty()]
-#         [string] $ExpectedStatus,
-
-#         [Parameter(Mandatory = $true)]
-#         [int] $Timeout
-#     )
-#     $sw = [Diagnostics.Stopwatch]::StartNew()
-#     $sw.Start()
-#     $currentStatus = ""
-#     $iterator = 0
-#     while ($currentStatus -ne $ExpectedStatus) {
-#         $status = Get-EpiDatabaseExport -ProjectId $ProjectId -Id $ExportId -Environment $Environment -DatabaseName $DatabaseName
-#         $currentStatus = $status.status
-#         if ($iterator % 6 -eq 0) {
-#             Write-Host "Status: $($currentStatus). ElapsedSeconds: $($sw.Elapsed.TotalSeconds)"
-#         }
-#         if ($currentStatus -ne $ExpectedStatus) {
-#             Start-Sleep 10
-#         }
-#         if ($sw.Elapsed.TotalSeconds -ge $Timeout) { break }
-#         if ($currentStatus -eq $ExpectedStatus) { break }
-#         $iterator++
-#     }
-
-#     $sw.Stop()
-#     Write-Host "Stopped iteration after $($sw.Elapsed.TotalSeconds) seconds."
-
-#     $status = Get-EpiDatabaseExport -ProjectId $ProjectId -Id $ExportId -Environment $Environment -DatabaseName $DatabaseName
-#     Write-Host $status
-#     return $status
-# }
-
-# function Install-AzureStorage {
-#     <#
-#     .SYNOPSIS
-#         Install correct version of Azure.Storage.
-
-#     .DESCRIPTION
-#         Install correct version of Azure.Storage.
-
-#     .EXAMPLE
-#         Install-AzureStorage
-#     #>
-#     Write-Host "SuppressAzureRmModulesRetiringWarning"
-#     Set-Item -Path Env:\SuppressAzureRmModulesRetiringWarning -Value $true
-
-#     if ($null -eq (Get-Module -Name "Azure.Storage")) {
-#         Write-Host "Installing Azure.Storage Powershell Module -MinimumVersion 4.4.0"
-#         Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -MinimumVersion 4.4.0 -Force -AllowClobber
-#     }
-# }
-
-# function Install-AzStorage {
-#     <#
-#     .SYNOPSIS
-#         Install correct version of Az.Storage.
-
-#     .DESCRIPTION
-#         Install correct version of Az.Storage.
-
-#     .EXAMPLE
-#         Install-AzStorage
-#     #>
-#     if ($null -eq (Get-Module -Name "Az.Storage")) {
-#         #Import-Module -Name "Az.Storage" -Verbose
-#         Install-Module -Name Az.Storage -Scope CurrentUser -Repository PSGallery -MinimumVersion 3.7.0 -Force -AllowClobber
-#     }
-# }
-
-# function Mount-PsModulesPath {
-#     <#
-#     .SYNOPSIS
-#         Add task ps_modules folder to env:PSModulePath.
-
-#     .DESCRIPTION
-#         Add task ps_modules folder to env:PSModulePath.
-
-#     .EXAMPLE
-#         Mount-ModulePath
-#     #>
-
-#     #CheckWishes
-
-#     $taskModulePath = $PSScriptRoot
-#     if (-not ($env:PSModulePath.Contains($taskModulePath))) {
-#         $env:PSModulePath = $env:PSModulePath + "$([System.IO.Path]::PathSeparator)$taskModulePath"
-#         Write-Host "Added $taskModulePath to env:PSModulePath" 
-#     }
-# }
-
-# function CheckWishes{
-#     $now = Get-Date
-#     if ((($now.Day -eq 24) -and ($now.Month -eq 12)) -or (($now.Day -eq 25) -and ($now.Month -eq 12))){        
-#         PrintChristmasWish
-#     }
-#     if ((($now.Day -eq 31) -and ($now.Month -eq 12)) -or (($now.Day -eq 1) -and ($now.Month -eq 1))){
-#         PrintNewYearWish
-#     }
-# }
-
-# function PrintChristmasWish{
-
-#     Write-Host "                                                 |"
-#     Write-Host "                                                -+-"
-#     Write-Host "                                                 A"
-#     Write-Host "                                                /=\        "
-#     Write-Host "                                              i/ O \i     "
-#     Write-Host "                                              /=====\     "
-#     Write-Host "                                              /  i  \     "
-#     Write-Host "                                            i/ O * O \i   "
-#     Write-Host "                                            /=========\   "
-#     Write-Host "                                            /  *   *  \    "
-#     Write-Host "                                          i/ O   i   O \i   "
-#     Write-Host "                                          /=============\    "
-#     Write-Host "                                          /  O   i   O  \     "
-#     Write-Host "                                        i/ *   O   O   * \i"
-#     Write-Host "                                        /=================\"
-#     Write-Host "                                               |___|"
-#     Write-Host "   _____                               _________ .__          .__          __                          "
-#     Write-Host "  /     \   __________________ ___.__. \_   ___ \|  |_________|__| _______/  |_  _____ _____    ______ "
-#     Write-Host " /  \ /  \_/ __ \_  __ \_  __ <   |  | /    \  \/|  |  \_  __ \  |/  ___/\   __\/     \\__  \  /  ___/ "
-#     Write-Host "/    Y    \  ___/|  | \/|  | \/\___  | \     \___|   Y  \  | \/  |\___ \  |  | |  Y Y  \/ __ \_\___ \  "
-#     Write-Host "\____|__  /\___  >__|   |__|   / ____|  \______  /___|  /__|  |__/____  > |__| |__|_|  (____  /____  > "
-#     Write-Host "        \/     \/              \/              \/     \/              \/             \/     \/     \/  "
-#     Write-Host "                                  _____                       "
-#     Write-Host "                                _/ ____\______  ____   _____  "
-#     Write-Host "                                \   __\\_  __ \/  _ \ /     \ "
-#     Write-Host "                                 |  |   |  | \(  <_> )  Y Y  \"
-#     Write-Host "                                 |__|   |__|   \____/|__|_|  /"
-#     Write-Host "                                                           \/ "
-#     Write-Host "                         ___________      .__                                                                                  " 
-#     Write-Host "                         \_   _____/_____ |__| ____   _______  _______                                                          "
-#     Write-Host "                          |    __)_\____ \|  |/    \ /  _ \  \/ /\__  \                                                          "
-#     Write-Host "                          |        \  |_> >  |   |  (  <_> )   /  / __ \_                                                       "
-#     Write-Host "                         /_______  /   __/|__|___|  /\____/ \_/  (____  /                                                       "
-#     Write-Host "                                 \/|__|           \/                  \/          "
-# }
-
-# function PrintNewYearWish{
-#     Write-Host "                          ..............*.....o..°"
-#     Write-Host "                          .....*.....o..°..........o..°"
-#     Write-Host "                          *.......*....o..° °.........o..°*"
-#     Write-Host "                          ....*....o..°........o..°........o..°...*"
-#     Write-Host "                          °...................*............*.....o..°"
-#     Write-Host "                          °.....*....o..°______________.*.....o..°"
-#     Write-Host "                          `$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$.....o......o."
-#     Write-Host "                          `$`$______________________`$`$..o..°*"
-#     Write-Host "                          `$`$__________`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$`$"
-#     Write-Host "                          _s`$`$________`$`$________`$`$____________`$`$"
-#     Write-Host "                          ___s`$`$______`$`$______`$`$______________`$`$"
-#     Write-Host "                          _____s`$`$______`$`$__`$`$______________`$`$s"
-#     Write-Host "                          _______s`$`$______`$`$______________`$`$s"
-#     Write-Host "                          _________s`$`$`$`$`$`$__`$`$__________`$`$s"
-#     Write-Host "                          ____________`$`$_____s`$`$______`$`$s"
-#     Write-Host "                          ____________`$`$_______s`$`$`$`$`$`$s"
-#     Write-Host "                          ____________`$`$__________`$`$"
-#     Write-Host "                          ____________`$`$__________`$`$"
-#     Write-Host "                          ____________`$`$__________`$`$"
-#     Write-Host "                          ____________`$`$__________`$`$"
-#     Write-Host "                          ____________`$`$__________`$`$"
-#     Write-Host "                          ____________`$`$__________`$`$"
-#     Write-Host "                          __________`$`$`$`$`$`$________`$`$"
-#     Write-Host "                          ______`$`$`$`$`$`$`$`$`$`$`$`$`$`$____`$`$"
-#     Write-Host "                          ______________________`$`$`$`$`$`$"
-#     Write-Host "                          __________________`$`$`$`$`$`$`$`$`$`$`$`$`$`$"
-#     Write-Host "                          -:¦:-____-:¦:-__ __-:¦:-______-:¦:-"
-#     Write-Host "  ___ ___                                                                                 "
-#     Write-Host " /   |   \_____  ______ ______ ___.__.   ____   ______  _  __  ___.__. ____ _____ _______ "
-#     Write-Host "/    ~    \__  \ \____ \\____ <   |  |  /    \_/ __ \ \/ \/ / <   |  |/ __ \\__  \\_  __ \"
-#     Write-Host "\    Y    // __ \|  |_> >  |_> >___  | |   |  \  ___/\     /   \___  \  ___/ / __ \|  | \/"
-#     Write-Host " \___|_  /(____  /   __/|   __// ____| |___|  /\___  >\/\_/    / ____|\___  >____  /__|   "
-#     Write-Host "       \/      \/|__|   |__|   \/           \/     \/          \/         \/     \/       "
-#     Write-Host "                                  _____                       "
-#     Write-Host "                                _/ ____\______  ____   _____  "
-#     Write-Host "                                \   __\\_  __ \/  _ \ /     \ "
-#     Write-Host "                                 |  |   |  | \(  <_> )  Y Y  \"
-#     Write-Host "                                 |__|   |__|   \____/|__|_|  /"
-#     Write-Host "                                                           \/ "
-#     Write-Host "                      ___________      .__                                                                                  " 
-#     Write-Host "                      \_   _____/_____ |__| ____   _______  _______                                                          "
-#     Write-Host "                       |    __)_\____ \|  |/    \ /  _ \  \/ /\__  \                                                          "
-#     Write-Host "                       |        \  |_> >  |   |  (  <_> )   /  / __ \_                                                       "
-#     Write-Host "                      /_______  /   __/|__|___|  /\____/ \_/  (____  /                                                       "
-#     Write-Host "                              \/|__|           \/                  \/          "
-
-
-# }
 
 function Invoke-WarmupRequest {
     <#
@@ -826,47 +587,6 @@ function Test-PackageFileName {
     }
 }
 
-# function Get-PackageFileSize {
-#     <#
-#     .SYNOPSIS
-#         Test package file size
-
-#     .DESCRIPTION
-#         Test package file size
-
-#     .PARAMETER PackageFile
-#         The FileInfo that should be checked.
-
-#     .EXAMPLE
-#         $packageFile = Get-ChildItem -Path $dropPath -Filter *.cms.*.nupkg
-#         Test-PackageFileSize -PackageFile $packageFile
-#     #>	
-#     param
-# 	(
-# 		[Parameter(Mandatory = $true)]
-# 		[string]$DropPath,
-# 		[Parameter(Mandatory = $true)]
-# 		[string]$PackageFileName
-# 	)
-
-#     $packageFileSize = 0
-#     try {
-
-#         $packageFileInfo = Get-ChildItem -Path $DropPath -Filter $PackageFileName
-#         if ($null -eq $packageFileInfo){
-#             Write-Host "No $PackageFileName found."
-#         }
-
-#     	Write-Host "Package '$($packageFileInfo.Name)' file size => $($packageFileInfo.Length)."
-#     	$packageFileSize = $packageFileInfo.Length
-#     } catch {
-#     	$errMsg = $_.Exception.ToString()
-# 	Write-Warning $errMsg
-#     }
-
-#     return $packageFileSize;
-# }
-
 function Publish-Package {
     <#
     .SYNOPSIS
@@ -875,11 +595,8 @@ function Publish-Package {
     .DESCRIPTION
         Load the specified type of package, checks for errors, if none, upload package to DXP storage.
 
-    .PARAMETER PackageType
-        
-    .PARAMETER DropPath
-
     .PARAMETER FilePath
+        The path to the file that should be uploaded.
 
     .PARAMETER PackageLocation
         SAS link
@@ -889,12 +606,6 @@ function Publish-Package {
     #>	
     param
 	(
-		#[Parameter(Mandatory = $true)]
-		#[string]$PackageType,
-
-		#[Parameter(Mandatory = $true)]
-		#[string]$DropPath,
-
         [Parameter(Mandatory = $true)]
 		[string]$FilePath,
 
@@ -904,35 +615,17 @@ function Publish-Package {
 
     $uploadedPackage = ""
     $packageFileInfo = Get-Item -Path $FilePath
-    #$packageFileInfo = Get-ChildItem -Path $DropPath -Filter "*.$PackageType.*.nupkg"
-    #if ($null -eq $packageFileInfo){
-    #    Write-Host "No *.$PackageType.*.nupkg found. Will try to find *.$PackageType.*.zip"
-    #    $packageFileInfo = Get-ChildItem -Path $DropPath -Filter "*.$PackageType.*.zip"
-    #    if ($null -ne $packageFileInfo){
-    #        Write-Host "Found $packageFileInfo . Will rename to *.nuget. EPICloud does not support zip."
-    #        $packageFileInfo  | Rename-Item -newname { [io.path]::ChangeExtension($_.name, "nupkg") }
-    #        Write-Host "Renamed to *.nuget."
-    #        $packageFileInfo = Get-ChildItem -Path $DropPath -Filter "*.$PackageType.*.nupkg"
-    #    }
-    #}
     Write-Host "Loaded package:    $packageFileInfo"
-    
-    #Test-PackageFile -PackageType $PackageType -DropPath $DropPath -PackageFile $packageFileInfo
 
     Test-PackageFileName -PackageFile $packageFileInfo
 
     $packageFileName = $packageFileInfo.Name
     $packagePath = $packageFileInfo.FullName
-    
-    #Write-Host "$PackageType package '$packageFileName' start upload..."
-    #Write-Verbose "$PackageType package '$packagePath' start upload..."
     Write-Host "Package '$packageFileName' start upload..."
     Write-Verbose "Package '$packagePath' start upload..."
 
     try{
         Add-EpiDeploymentPackage -SasUrl $PackageLocation -Path $packageFileInfo.FullName
-        #Write-Host "$PackageType package '$packageFileName' is uploaded."
-        #Write-Verbose "$PackageType package '$packagePath' is uploaded."
         Write-Host "Package '$packageFileName' is uploaded."
         Write-Verbose "Package '$packagePath' is uploaded."
         $uploadedPackage = $packageFileInfo.Name
@@ -940,7 +633,6 @@ function Publish-Package {
     catch{
         $errMsg = $_.Exception.ToString()
         if ($errMsg.Contains("is already linked to a deployment and cannot be overwritten")){
-            #Write-Host "$PackageType package '$packageFileName' already exist in container."
             Write-Host "Package '$packageFileName' already exist in container."
             $uploadedPackage = $packageFileName
         } else {
@@ -963,126 +655,6 @@ function Get-EpiCloudVersion {
     }
     return $epiCloudVersion
 }
-
-# function Get-PsData {
-#     $psData = @{
-#         }
-#     try{
-#         $psVersionValue = "v$($PSVersionTable.PSVersion)"
-#         $psEditionValue = $PSVersionTable.PSEdition
-#         $psData = @{
-#             "Version"=$psVersionValue
-#             "Edition"=$psEditionValue
-#         }
-#     } catch {
-#         Write-Verbose "Could not get PowerShell version/edition : $($_.Exception.ToString())"
-#         Write-Host "Could not get PowerShell version/edition."
-#     }
-#     return $psData
-# }
-
-# function Send-BenchmarkInfo {
-#     param
-# 	(
-# 		[Parameter(Mandatory = $false)]
-# 		[string]$result = ""
-# 	)
-
-#     try{
-#         if ($false -eq (test-path variable:runBenchmark)) { $runBenchmark = $false }
-#         if ($runBenchmark)
-#         {
-            
-#             if ($null -ne $sw)
-#             { 
-#                 $sw.Stop()
-#                 $elapsed = $sw.ElapsedMilliseconds 
-#             }
-
-#             if ($false -eq (test-path variable:targetEnvironment)) { $targetEnvironment = "N/A" }
-#             if ($false -eq (test-path variable:sourceEnvironment)) { $sourceEnvironment = "N/A" }
-#             if ($false -eq (test-path variable:cmsFileSize)) { $cmsFileSize = 0 }
-#             if ($false -eq (test-path variable:cmsPackage)) { $cmsPackage = "N/A" }
-#             if ($false -eq (test-path variable:commerceFileSize)) { $commerceFileSize = 0 }
-#             if ($false -eq (test-path variable:commercePackage)) { $commercePackage = "N/A" }
-#             $epiCloudVersion = Get-EpiCloudVersion
-
-#             $PSCommandPath -match "^.*_tasks[\/|\\](.*)_.*[\/|\\](.*)[\/|\\]ps_modules[\/|\\]" | Out-Null
-#             $taskName = $Matches[1]
-#             $taskVersion = $Matches[2]
-        
-#             $env:SYSTEM_COLLECTIONURI -match "^.*\/(.*)\/" | Out-Null
-#             $orgName = $Matches[1]
-        
-#             $psData = Get-PsData
-
-#             $psContext = @{ 
-#                 "Task"=$taskName
-#                 "TaskVersion"=$taskVersion
-#                 "Environment"=$sourceEnvironment
-#                 "TargetEnvironment"=$targetEnvironment
-#                 "DxpProjectId"=$projectId
-#                 "OrganisationId"=$env:SYSTEM_COLLECTIONID
-#                 "OrganisationName"=$orgName
-#                 "ProjectId"=$env:SYSTEM_TEAMPROJECTID
-#                 "ProjectName"=$env:SYSTEM_TEAMPROJECT
-#                 "Branch"=$env:BUILD_SOURCEBRANCHNAME
-#                 "AgentOS"=$env:AGENT_OS
-#                 "EpiCloudVersion"=$epiCloudVersion
-#                 "PowerShellVersion"=$psData.Version
-#                 "PowerShellEdition"=$psData.Edition
-#                 "Elapsed"=$elapsed
-#                 "Result"=$result
-#                 "CmsFileSize"=$cmsFileSize
-#                 "CmsPackageName"=$cmsPackage
-#                 "CommerceFileSize"=$commerceFileSize
-#                 "CommercePackageName"=$commercePackage
-#                 }
-
-#             $json = $psContext | ConvertTo-Json
-#             Write-Verbose $json
-#             if ($taskName.EndsWith("-TEST"))
-#             {
-#                 $benchmarkResult = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri "https://app-dxpbenchmark-3cpox1-inte.azurewebsites.net/PipelineRun" -Body $json -TimeoutSec 15
-#                 Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri "https://a3370fa7-3ce3-4fc3-bfdf-e1d085b5160f.webhook.we.azure-automation.net/webhooks?token=gVp8Ql1muDLnvRhQkwITu2dHPG6Ei5yx%2fhkSNrxs0QE%3d" -TimeoutSec 5
-#             } 
-#             else 
-#             {
-#                 $benchmarkResult = Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri "https://app-dxpbenchmark-3cpox1-prod.azurewebsites.net/PipelineRun" -Body $json -TimeoutSec 15
-#                 Invoke-RestMethod -Method 'Post' -ContentType "application/json" -Uri "https://1b680dac-bf88-4fcb-872d-94e2d8c7d150.webhook.we.azure-automation.net/webhooks?token=fFJVjF2DeIqtLsqjREjGgFZ5CSe67bV%2fkIhvS%2bfRNzA%3d" -TimeoutSec 5
-#             }
-            
-#             $sessionId = $benchmarkResult.sessionId
-#             Write-Host "##vso[task.setvariable variable=dxpsessionid;]$sessionId"
-#             Write-Host $benchmarkResult.Message
-#         } 
-#         else 
-#         {
-#             Write-Host "Your are not sending benchmark data. You will not see your benchmark result."
-#             Write-Host "$taskName $($taskVersion): Execution time --------------------"
-#             Write-Host "|Title             |Elapsed          |Agent     |Procent   |"
-#             Write-Host "|------------------|-----------------|----------|----------|"
-#             Write-Host "|All time fastest  |00h:00m:XXs:XXXms|Xxx       |    X.00 %|"
-#             Write-Host "|Today fastest     |00h:00m:XXs:XXXms|Xxx       |    X.00 %|"
-#             Write-Host "|All time average  |00h:00m:XXs:XXXms|Xxx       |    X.00 %|"
-#             Write-Host "|Today average     |00h:00m:XXs:XXXms|Xxx       |    X.00 %|"
-#             Write-Host "|Current execution |00h:00m:XXs:XXXms|Xxx       |    +/-0 %|"
-#             Write-Host "|Today slowest     |00h:00m:XXs:XXXms|Xxx       |    X.00 %|"
-#             Write-Host "|All time slowest  |00h:00m:XXs:XXXms|Xxx       |    X.00 %|"
-#             Write-Host "-------------------------------------------------------------------------"
-#             Write-Host ""
-#             Write-Host "Agent: ------------------------------------------------------------------"
-#             Write-Host "You are using $($env:AGENT_OS). Average time is 00h:00m:XXs:XXXms"
-#             Write-Host "$($env:AGENT_OS) is X.XX % faster/slower then AgentY"
-#             Write-Host "$($env:AGENT_OS) is X.XX % faster/slower then AgentZ"
-#             Write-Host "-------------------------------------------------------------------------"
-#         }
-#     }
-#     catch {
-#         Write-Verbose "Could not send Exception caught : $($_.Exception.ToString())"
-#         Write-Host "Failed to send benchmark data."
-#     }
-# }
 
 function Initialize-EpinovaDxpScript {
 <#
