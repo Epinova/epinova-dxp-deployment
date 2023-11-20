@@ -1,0 +1,146 @@
+{
+    "Id": "c982d7c3-fc14-4c66-ab42-4f3175dbd696",
+    "Name": "Optimizely DXP - Smoke test if fail reset",
+    "Description": "This task smoke test a slot and decide if we should continue the release, or reset the environment slot, because something is not working as expected. The smoke test is a simple check if one or many specified URLs returns HTTPStatus = 200 (OK).\n\nA new property with the name \"Reset on fail\" is added that describes if the task will reset when smoke test fail. This can be used when you want to use SmokeTestIfFailReset task when doing a ContentSync.",
+    "ActionType": "Octopus.Script",
+    "Version": 1,
+    "CommunityActionTemplateId": null,
+    "Packages": [
+      {
+        "PackageId": "EpiCloud",
+        "FeedId": "feeds-builtin",
+        "AcquisitionLocation": "Server",
+        "Properties": {
+          "Extract": "True",
+          "SelectionMode": "immediate"
+        },
+        "Id": "66b52300-a7c8-441f-93ef-70273b311b83",
+        "Name": "EpiCloud"
+      }
+    ],
+    "Properties": {
+      "Octopus.Action.Script.ScriptSource": "Inline",
+      "Octopus.Action.Script.Syntax": "PowerShell",
+      "Octopus.Action.Script.ScriptBody": "try {\n    # Get all inputs for the task\n    $clientKey = $ClientKey\n    $clientSecret = $ClientSecret\n    $projectId = $ProjectId\n    $targetEnvironment = $TargetEnvironment\n    $urls = $Urls\n    [Boolean]$resetOnFail = [System.Convert]::ToBoolean($ResetOnFail)\n    $sleepBeforeStart = $SleepBeforeStart\n    $retries = $NumberOfRetries\n    $sleepBeforeRetry = $SleepBeforeRetry\n    $timeout = $Timeout\n    $runBenchmark = [System.Convert]::ToBoolean($RunBenchmark)\n    $runVerbose = [System.Convert]::ToBoolean($RunVerbose)\n\n    $global:ErrorActionPreference = $errorAction\n    ####################################################################################\n\n    $sw = [Diagnostics.Stopwatch]::StartNew()\n    $sw.Start()\n\n    if ($runVerbose){\n        ## To Set Verbose output\n        $PSDefaultParameterValues['*:Verbose'] = $true\n    }\n\n    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12\n\n    Write-Host \"Inputs:\"\n    Write-Host \"ClientKey:          $clientKey\"\n    Write-Host \"ClientSecret:       **** (it is a secret...)\"\n    Write-Host \"ProjectId:          $projectId\"\n    Write-Host \"TargetEnvironment:  $targetEnvironment\"\n    Write-Host \"Urls:               $urls\"\n    Write-Host \"ResetOnFail:        $resetOnFail\"\n    Write-Host \"SleepBeforeStart:   $sleepBeforeStart\"\n    Write-Host \"NumberOfRetries:    $retries\"\n    Write-Host \"SleepBeforeRetry:   $sleepBeforeRetry\"\n    Write-Host \"Timeout:            $timeout\"\n    Write-Host \"RunVerbose:         $runVerbose\"\n\n    Write-Host \"ErrorActionPref:    $($global:ErrorActionPreference)\"\n\n    Write-Host \"Start sleep for $($sleepBeforeStart) seconds before we start check URL(s).\"\n    Start-Sleep $sleepBeforeStart\n\n    $urlsArray = \"$urls\" -split ','\n    Write-Host \"Start smoketest $urls\"\n    $numberOfErrors = 0\n    $numberOfRetries = 0\n    $retry = $true\n    while ($retries -ge $numberOfRetries -and $retry -eq $true){\n        $retry = $false\n        for ($i = 0; $i -le $urlsArray.Length - 1; $i++) {\n            $sw = [Diagnostics.StopWatch]::StartNew()\n            $sw.Start()\n            $uri = $urlsArray[$i]\n            Write-Output \"Executing request for URI $uri\"\n            try {\n                $response = Invoke-WebRequest -Uri $uri -UseBasicParsing -Verbose:$false -MaximumRedirection 0\n                $sw.Stop()\n                $statusCode = $response.StatusCode\n                $seconds = $sw.Elapsed.TotalSeconds\n                if ($statusCode -eq 200) {\n                    $statusDescription = $response.StatusDescription\n                    Write-Output \"##[ok] $uri => Status: $statusCode $statusDescription in $seconds seconds\"\n                }\n                else {\n                    Write-Output \"##[warning] $uri => Error $statusCode after $seconds seconds\"\n                    Write-Output \"##vso[task.logissue type=warning;] $uri => Error $statusCode after $seconds seconds\"\n                    $numberOfErrors = $numberOfErrors + 1\n                }\n            }\n            catch {\n                $sw.Stop()\n                $errorMessage = $_.Exception.Message\n                $seconds = $sw.Elapsed.TotalSeconds\n                Write-Output \"##vso[task.logissue type=warning;] $uri => Error after $seconds seconds: $errorMessage \"\n                $numberOfErrors = $numberOfErrors + 1\n            }\n        }\n        \n        if ($numberOfErrors -gt 0 -and $numberOfRetries -lt $retries) {\n            Write-Host \"We found ERRORS. But we will retry in $sleepBeforeRetry seconds.\"\n            $numberOfErrors = 0\n            Start-Sleep $sleepBeforeRetry\n            $retry = $true\n            $numberOfRetries++\n        }\n\n    }\n\n    if ($numberOfErrors -gt 0) {\n        Write-Host \"We found ERRORS. Smoketest fails. We will set reset flag to TRUE.\"\n        Write-Host \"##vso[task.setvariable variable=ResetDeployment;]true\"\n        $resetDeployment = $true\n    }\n    else {\n        Write-Host \"We found no errors. Smoketest success. We will set reset flag to false.\"\n        Write-Host \"##vso[task.setvariable variable=ResetDeployment;]false\"\n        $resetDeployment = $false\n    }\n\n    if ($resetOnFail -eq $false -and $resetDeployment -eq $true) {\n        Write-Output \"##vso[task.logissue type=warning;] Smoke test failed. But ResetOnFail is set to false. No reset will be made.\"\n    } \n    elseif ($resetDeployment -eq $true) {\n\n        Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId\n\n        $getEpiDeploymentSplat = @{\n                ClientKey    = $ClientKey\n                ClientSecret = $ClientSecret\n                ProjectId    = $projectId\n        }\n\n        $deploy = Get-EpiDeployment @getEpiDeploymentSplat | Where-Object { $_.Status -eq 'AwaitingVerification' -and $_.parameters.targetEnvironment -eq $targetEnvironment }\n        $deploy\n        $deploymentId = \"\"\n        if (-not $deploy) {\n            Write-Output \"Environment $targetEnvironment is not in status AwaitingVerification. We do not need to reset this environment.\"\n        }\n        else {\n            $deploymentId = $deploy.id\n        }\n\n        #Start check if we should reset this environment.\n        if ($deploymentId.length -gt 1) {\n\n\n            $status = Get-EpiDeployment -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Id $deploymentId\n            $status\n\n            if ($status.status -eq \"AwaitingVerification\") {\n\n                Write-Host \"Start Reset-EpiDeployment -ProjectId $projectId -Id $deploymentId\"\n                Reset-EpiDeployment -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -Id $deploymentId\n\n                $percentComplete = $status.percentComplete\n                $status = Invoke-DxpProgress -ClientKey $clientKey -ClientSecret $clientSecret -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus \"Reset\" -Timeout $timeout\n\n                if ($status.status -eq \"Reset\") {\n                    Write-Host \"Deployment $deploymentId has been successfuly reset.\"\n                    Write-Host \"##vso[task.logissue type=error]Deployment $deploymentId has been successfuly reset. But we can not continue deploy when we have reset the deployment.\"\n                    Write-Error \"Deployment $deploymentId has been successfuly reset. But we can not continue deploy when we have reset the deployment.\" -ErrorAction Stop\n                    exit 1\n                }\n                else {\n                    Write-Warning \"The reset has not been successful or the script has timedout. CurrentStatus: $($status.status)\"\n                    Write-Host \"##vso[task.logissue type=error]The reset has not been successful or the script has timedout. CurrentStatus: $($status.status)\"\n                    Write-Error \"Deployment $deploymentId has NOT been successfuly reset or the script has timedout. CurrentStatus: $($status.status)\" -ErrorAction Stop\n                    exit 1\n                }\n            }\n            elseif ($status.status -eq \"Reset\") {\n                Write-Host \"The deployment $deploymentId is already in reset status.\"\n                Write-Host \"##vso[task.logissue type=error]Deployment $deploymentId is already in reset status. But we can not continue deploy when we have found errors in the smoke test.\"\n                Write-Error \"Deployment $deploymentId is already in reset status. But we can not continue deploy when we have found errors in the smoke test.\" -ErrorAction Stop\n                exit 1\n            }\n            else {\n                Write-Host \"Status is not in AwaitingVerification (Current:$($status.status)). You can not reset the deployment at this moment.\"\n                Write-Host \"##vso[task.logissue type=error]Status is not in AwaitingVerification (Current:$($status.status)). You can not reset the deployment at this moment.\"\n                Write-Error \"Status is not in AwaitingVerification (Current:$($status.status)). You can not reset the deployment at this moment.\" -ErrorAction Stop\n                exit 1\n            }\n        }\n    }\n    else {\n        Write-Host \"The deployment will not be reset. Smoketest is success.\"\n    }\n\n    ####################################################################################\n\n    Write-Host \"---THE END---\"\n}\ncatch {\n    Write-Verbose \"Exception caught from task: $($_.Exception.ToString())\"\n    throw\n}\n\nif ($runVerbose){\n    ## To Set Verbose output\n    $PSDefaultParameterValues['*:Verbose'] = $false\n}"
+    },
+    "Parameters": [
+      {
+        "Id": "f99fa3c1-7fca-4371-ade8-f3ab7182c425",
+        "Name": "ClientKey",
+        "Label": "ClientKey",
+        "HelpText": "The DXP API ClientKey for the current environment. This ClientKey can be generated in the Optimizely paas portal.",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "SingleLineText"
+        }
+      },
+      {
+        "Id": "2342fc02-9745-4df0-bbb4-bae672c3d44d",
+        "Name": "ClientSecret",
+        "Label": "ClientSecret",
+        "HelpText": "The DXP API ClientSecret for the current environment.",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "Sensitive"
+        }
+      },
+      {
+        "Id": "1a500ff5-f143-481c-a1aa-f4ccabd4384d",
+        "Name": "ProjectId",
+        "Label": "ProjectId",
+        "HelpText": "The DXP project id. Can be found in the Optimizely paas portal under API tab.",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "SingleLineText"
+        }
+      },
+      {
+        "Id": "8d80fe6b-eaa3-4c4a-a8d5-8083cbfc3a0c",
+        "Name": "TargetEnvironment",
+        "Label": "TargetEnvironment",
+        "HelpText": "Specify which environment that you want to check ex Integration/Preproduction/Production.",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "Select",
+          "Octopus.SelectOptions": "Integration|Integration\nPreproduction|Preproduction\nProduction|Production\nADE1|ADE1\nADE2|ADE2\nADE3|ADE3"
+        }
+      },
+      {
+        "Id": "219e71ff-df96-40e3-9f5c-3c2d40a867f6",
+        "Name": "Urls",
+        "Label": "Urls",
+        "HelpText": "Specify the URLs that will be used in the smoke test. Use ',' as delimiter between the URLs.",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "MultiLineText"
+        }
+      },
+      {
+        "Id": "c10a538d-545e-4d28-908d-9ba3a799d76d",
+        "Name": "ResetOnFail",
+        "Label": "ResetOnFail",
+        "HelpText": "If checked it will reset the deployment if smoke test fails. If not checked, only a warning will be posted but no reset. Can be used when you want to use SmokeTestIfFailReset task when doing a ContentSync.",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "Checkbox"
+        }
+      },
+      {
+        "Id": "9480fbdb-7686-4668-a10d-d681a47d6210",
+        "Name": "SleepBeforeStart",
+        "Label": "SleepBeforeStart",
+        "HelpText": "The sleep time before the script will start to test the URL(s). Most of the time the slot need some extra time to get up and runing. Even if the status says that it is up and runing. But after alot of tests we think that 20 seconds should be enough.",
+        "DefaultValue": "20",
+        "DisplaySettings": {
+          "Octopus.ControlType": "SingleLineText"
+        }
+      },
+      {
+        "Id": "6c9ba733-a8c8-4627-ba4f-acc491cd528a",
+        "Name": "NumberOfRetries",
+        "Label": "NumberOfRetries",
+        "HelpText": "The number of retries that the script will make before return error and reset the deployment.",
+        "DefaultValue": "5",
+        "DisplaySettings": {
+          "Octopus.ControlType": "SingleLineText"
+        }
+      },
+      {
+        "Id": "9ccdf720-6a44-420c-a781-79116b2fc4d9",
+        "Name": "SleepBeforeRetry",
+        "Label": "SleepBeforeRetry",
+        "HelpText": "The sleep time before the script will start to test the URL(s) again. This will only happend if the HTTP status response from one/many of the URLs is not responding with HTTP status 200.",
+        "DefaultValue": "30",
+        "DisplaySettings": {
+          "Octopus.ControlType": "SingleLineText"
+        }
+      },
+      {
+        "Id": "37b9ab56-9e4c-4de0-9d63-597e5dec99b7",
+        "Name": "Timeout",
+        "Label": "Timeout",
+        "HelpText": "Specify the number of seconds when the task should timeout.",
+        "DefaultValue": "1800",
+        "DisplaySettings": {
+          "Octopus.ControlType": "SingleLineText"
+        }
+      },
+      {
+        "Id": "0a7c3bec-75c4-43b1-b7be-b343979e2fd5",
+        "Name": "RunVerbose",
+        "Label": "RunVerbose",
+        "HelpText": "If you want to run in verbose mode and see all information.",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "Checkbox"
+        }
+      }
+    ],
+    "$Meta": {
+      "ExportedAt": "2023-11-20T21:06:19.947Z",
+      "OctopusVersion": "2020.3.4",
+      "Type": "ActionTemplate"
+    },
+    "LastModifiedBy": "Your GitHub Username",
+    "Category": "other"
+  }

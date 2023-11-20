@@ -1,0 +1,158 @@
+{
+    "Id": "c4eb9003-d657-4b8d-b675-100de7fc0bb4",
+    "Name": "Optimizely DXP - Deploy to",
+    "Description": "Start move DXP deploy from source environment to target environment. Like clicking on the 'Deploy To' button in PAAS. (Optimizely DXP, former Episerver DXC)",
+    "ActionType": "Octopus.Script",
+    "Version": 1,
+    "CommunityActionTemplateId": null,
+    "Packages": [
+      {
+        "PackageId": "EpiCloud",
+        "FeedId": "feeds-builtin",
+        "AcquisitionLocation": "Server",
+        "Properties": {
+          "Extract": "True",
+          "SelectionMode": "immediate"
+        },
+        "Id": "f54b4e16-783f-4b64-b016-d863c9d1333d",
+        "Name": "EpiCloud"
+      }
+    ],
+    "Properties": {
+      "Octopus.Action.Script.ScriptSource": "Inline",
+      "Octopus.Action.Script.Syntax": "PowerShell",
+      "Octopus.Action.Script.ScriptBody": "try {\n    # Get all inputs for the task\n    $clientKey = $ClientKey\n    $clientSecret = $ClientSecret\n    $projectId = $ProjectId\n    $sourceEnvironment = $SourceEnvironment\n    $targetEnvironment = $TargetEnvironment\n    $sourceApp = $SourceApp\n    [Boolean]$useMaintenancePage = [System.Convert]::ToBoolean($UseMaintenancePage)\n    $timeout = $Timeout\n    [Boolean]$includeBlob = [System.Convert]::ToBoolean($IncludeBlob)\n    [Boolean]$includeDb = [System.Convert]::ToBoolean($IncludeDb)\n    $zeroDowntimeMode = $ZeroDowntimeMode\n    $runVerbose = [System.Convert]::ToBoolean($RunVerbose)\n\n    # 30 min timeout\n    ####################################################################################\n\n    $sw = [Diagnostics.Stopwatch]::StartNew()\n    $sw.Start()\n\n    if ($runVerbose){\n        ## To Set Verbose output\n        $PSDefaultParameterValues['*:Verbose'] = $true\n    }\n\n    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12\n    \n    Write-Host \"Inputs:\"\n    Write-Host \"ClientKey:          $clientKey\"\n    Write-Host \"ClientSecret:       **** (it is a secret...)\"\n    Write-Host \"ProjectId:          $projectId\"\n    Write-Host \"SourceEnvironment:  $sourceEnvironment\"\n    Write-Host \"TargetEnvironment:  $targetEnvironment\"\n    Write-Host \"SourceApp:          $sourceApp\"\n    Write-Host \"UseMaintenancePage: $useMaintenancePage\"\n    Write-Host \"Timeout:            $timeout\"\n    Write-Host \"IncludeBlob:        $includeBlob\"\n    Write-Host \"IncludeDb:          $includeDb\"\n    Write-Host \"ZeroDowntimeMode:   $zeroDowntimeMode\"\n    Write-Host \"RunVerbose:         $runVerbose\"\n\n    Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId\n\n    $sourceApps = $sourceApp.Split(\",\")\n\n    if ($null -eq $zeroDowntimeMode -or $zeroDowntimeMode -eq \"\" -or $zeroDowntimeMode -eq \"NotSpecified\") {\n        $startEpiDeploymentSplat = @{\n            ClientKey          = $ClientKey\n            ClientSecret       = $ClientSecret\n            ProjectId          = $projectId\n            SourceEnvironment  = $sourceEnvironment\n            TargetEnvironment  = $targetEnvironment\n            SourceApp          = $sourceApps\n            UseMaintenancePage = $useMaintenancePage\n            IncludeBlob = $includeBlob\n            IncludeDb = $includeDb\n        }\n    } else {\n        $startEpiDeploymentSplat = @{\n            ClientKey          = $ClientKey\n            ClientSecret       = $ClientSecret\n            ProjectId          = $projectId\n            SourceEnvironment  = $sourceEnvironment\n            TargetEnvironment  = $targetEnvironment\n            SourceApp          = $sourceApps\n            UseMaintenancePage = $useMaintenancePage\n            IncludeBlob = $includeBlob\n            IncludeDb = $includeDb\n            ZeroDowntimeMode = $zeroDowntimeMode\n        }\n    }\n\n    $deploy = Start-EpiDeployment @startEpiDeploymentSplat\n    $deploy\n\n    $deploymentId = $deploy.id\n\n    if ($deploy.status -eq \"InProgress\") {\n        $deployDateTime = Get-DxpDateTimeStamp\n        Write-Host \"Deploy $deploymentId started $deployDateTime.\"\n        $percentComplete = $deploy.percentComplete\n        $status = Invoke-DxpProgress -ClientKey $clientKey -ClientSecret $clientSecret -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus \"AwaitingVerification\" -Timeout $timeout\n\n        $deployDateTime = Get-DxpDateTimeStamp\n        Write-Host \"Deploy $deploymentId ended $deployDateTime\"\n\n        if ($status.status -eq \"AwaitingVerification\") {\n            Write-Host \"Deployment $deploymentId has been successful.\"\n        }\n        else {\n            Write-Warning \"The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)\"\n            Write-Host \"##vso[task.logissue type=error]The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)\"\n            Write-Error \"The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)\" -ErrorAction Stop\n            exit 1\n        }\n    }\n    else {\n        Write-Warning \"Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment.\"\n        Write-Host \"##vso[task.logissue type=error]Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment.\"\n        Write-Error \"Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment.\" -ErrorAction Stop\n        exit 1\n    }\n    Write-Host \"Setvariable DeploymentId: $deploymentId\"\n    Write-Host \"##vso[task.setvariable variable=DeploymentId;]$($deploymentId)\"\n\n    ####################################################################################\n    Write-Host \"---THE END---\"\n\n}\ncatch {\n    Write-Verbose \"Exception caught from task: $($_.Exception.ToString())\"\n    throw\n}\n\nif ($runVerbose){\n    ## To Set Verbose output\n    $PSDefaultParameterValues['*:Verbose'] = $false\n}"
+    },
+    "Parameters": [
+      {
+        "Id": "639956a0-0203-4e1b-a27e-c066840cf9b8",
+        "Name": "ClientKey",
+        "Label": "ClientKey",
+        "HelpText": "The DXP API ClientKey for the current environment. This ClientKey can be generated in the Optimizely paas portal.",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "SingleLineText"
+        }
+      },
+      {
+        "Id": "2ce9e707-1dfb-42cf-8b1b-ad5ac8fa9ddb",
+        "Name": "ClientSecret",
+        "Label": "ClientSecret",
+        "HelpText": "The DXP API ClientSecret for the current environment.",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "Sensitive"
+        }
+      },
+      {
+        "Id": "b49b105f-e125-4ab9-8274-26642c540e45",
+        "Name": "ProjectId",
+        "Label": "ProjectId",
+        "HelpText": "The DXP project id. Can be found in the Optimizely paas portal under API tab.",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "SingleLineText"
+        }
+      },
+      {
+        "Id": "11bcedba-8bf7-4096-99e9-f5bf9b0291f5",
+        "Name": "SourceEnvironment",
+        "Label": "SourceEnvironment",
+        "HelpText": "Specify from which environment you want to take the source code/package.",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "Select",
+          "Octopus.SelectOptions": "Integration|Integration\nPreproduction|Preproduction\nProduction|Production\nADE1|ADE1\nADE2|ADE2\nADE3|ADE3"
+        }
+      },
+      {
+        "Id": "945f9835-0935-4139-b06e-56b57055e693",
+        "Name": "TargetEnvironment",
+        "Label": "TargetEnvironment",
+        "HelpText": "Specify if you want to deploy to Integration/Preproduction/Production.",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "Select",
+          "Octopus.SelectOptions": "Integration|Integration\nPreproduction|Preproduction\nProduction|Production\nADE1|ADE1\nADE2|ADE2\nADE3|ADE3"
+        }
+      },
+      {
+        "Id": "0f4f4125-70b6-42b6-919b-c9a1a8277f92",
+        "Name": "SourceApp",
+        "Label": "SourceApp",
+        "HelpText": "Specify which type of application you want to move. (When use syncdown, this param has no effect. Will sync all databases.)",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "Select",
+          "Octopus.SelectOptions": "cms|cms\ncommerce|commerce\ncms,commerce|cms,commerce"
+        }
+      },
+      {
+        "Id": "80173b1f-5c0a-4bad-86b0-739f07dbbe6f",
+        "Name": "UseMaintenancePage",
+        "Label": "UseMaintenancePage",
+        "HelpText": "Specify if you want to use a maintenance page during the deploy.",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "Checkbox"
+        }
+      },
+      {
+        "Id": "5042869f-2fae-4a62-adef-36f6aac773ab",
+        "Name": "Timeout",
+        "Label": "Timeout",
+        "HelpText": "Specify the number of seconds when the task should timeout.",
+        "DefaultValue": "1800",
+        "DisplaySettings": {
+          "Octopus.ControlType": "SingleLineText"
+        }
+      },
+      {
+        "Id": "9d7757dc-23f0-4386-a48f-21ec993fe2cd",
+        "Name": "IncludeBlob",
+        "Label": "IncludeBlob",
+        "HelpText": "If BLOBs should be copied from source environment to the target environment.",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "Checkbox"
+        }
+      },
+      {
+        "Id": "2e0f02f0-5936-4c7d-9290-9f253cd7f8ff",
+        "Name": "IncludeDb",
+        "Label": "IncludeDb",
+        "HelpText": "If DBs should be copied from source environment to the target environment.",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "Checkbox"
+        }
+      },
+      {
+        "Id": "15b9dfec-913a-4fb8-9c87-464e8357991a",
+        "Name": "ZeroDowntimeMode",
+        "Label": "ZeroDowntimeMode",
+        "HelpText": "The type of smooth deployment you want to use. More information about zero downtime mode\nIf this parameter is set to empty, no zero downtime deployment will be made. It will be a regular deployment.",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "Checkbox"
+        }
+      },
+      {
+        "Id": "4d7efb63-51fd-4b87-9172-7bfc5a0b0623",
+        "Name": "RunVerbose",
+        "Label": "RunVerbose",
+        "HelpText": "If you want to run in Verbose mode and see all verbose messages.",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "Checkbox"
+        }
+      }
+    ],
+    "$Meta": {
+      "ExportedAt": "2023-11-20T21:03:47.588Z",
+      "OctopusVersion": "2020.3.4",
+      "Type": "ActionTemplate"
+    },
+    "LastModifiedBy": "Your GitHub Username",
+    "Category": "other"
+  }

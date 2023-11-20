@@ -1,0 +1,109 @@
+{
+    "Id": "aa2ccc7a-389e-4567-be84-7a2bfb315259",
+    "Name": "Optimizely DXP - Expect status",
+    "Description": "Task that check the status for an environment. if environment is not in the expected status the task will fail.",
+    "ActionType": "Octopus.Script",
+    "Version": 1,
+    "CommunityActionTemplateId": null,
+    "Packages": [
+      {
+        "PackageId": "EpiCloud",
+        "FeedId": "feeds-builtin",
+        "AcquisitionLocation": "Server",
+        "Properties": {
+          "Extract": "True",
+          "SelectionMode": "immediate"
+        },
+        "Id": "bc5d8328-8025-4508-b640-f8d937be759f",
+        "Name": "EpiCloud"
+      }
+    ],
+    "Properties": {
+      "Octopus.Action.Script.ScriptSource": "Inline",
+      "Octopus.Action.Script.Syntax": "PowerShell",
+      "Octopus.Action.Script.ScriptBody": "try {\n    # Get all inputs for the task\n    $clientKey = $ClientKey\n    $clientSecret = $ClientSecret\n    $projectId = $ProjectId\n    $targetEnvironment = $TargetEnvironment\n    $expectedStatus = $ExpectedStatus\n    $runVerbose = [System.Convert]::ToBoolean($RunVerbose)\n\n\n    ####################################################################################\n\n    $sw = [Diagnostics.Stopwatch]::StartNew()\n    $sw.Start()\n\n    if ($runVerbose){\n        ## To Set Verbose output\n        $PSDefaultParameterValues['*:Verbose'] = $true\n    }\n\n    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12\n\n    Write-Host \"Inputs:\"\n    Write-Host \"ClientKey:          $clientKey\"\n    Write-Host \"ClientSecret:       **** (it is a secret...)\"\n    Write-Host \"ProjectId:          $projectId\"\n    Write-Host \"TargetEnvironment:  $targetEnvironment\"\n    Write-Host \"ExpectedStatus:     $expectedStatus\"\n    Write-Host \"RunVerbose:         $runVerbose\"\n\n    Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId\n\n    $lastDeploy = Get-DxpLatestEnvironmentDeployment -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -TargetEnvironment $targetEnvironment\n\n    if ($null -ne $lastDeploy){\n        Write-Output $lastDeploy | ConvertTo-Json\n        Write-Output \"Latest found deploy on targetEnvironment $targetEnvironment is in status $($lastDeploy.status)\"\n\n        $inExpectedStatus = $false\n        if ($lastDeploy.status -eq $expectedStatus) {\n            $inExpectedStatus = $true\n        }\n        elseif ($expectedStatus -eq \"SucceededOrReset\") {\n            if ($lastDeploy.status -eq \"Succeeded\" -or $lastDeploy.status -eq \"Reset\") {\n                $inExpectedStatus = $true\n            }\n        }\n\n        if ($true -eq $inExpectedStatus) {\n            Write-Host \"Status is as expected.\"\n        }\n        else {\n            Write-Warning \"$targetEnvironment is not in expected status $expectedStatus. (Current:$($lastDeploy.status)).\"\n            Write-Host \"##vso[task.logissue type=error]$targetEnvironment is not in expected status $expectedStatus. (Current:$($lastDeploy.status)).\"\n            Write-Error \"$targetEnvironment is not in expected status $expectedStatus. (Current:$($lastDeploy.status)).\" -ErrorAction Stop\n            exit 1\n        }\n    }\n    else {\n        Write-Output \"No history received from the specified target environment $targetEnvironment\"\n        Write-Output \"Will and can not do anything...\"\n    }\n    ####################################################################################\n    Write-Host \"---THE END---\"\n\n}\ncatch {\n    Write-Verbose \"Exception caught from task: $($_.Exception.ToString())\"\n    throw\n}\n\nif ($runVerbose){\n    ## To Set Verbose output\n    $PSDefaultParameterValues['*:Verbose'] = $false\n}",
+      "Octopus.Action.PowerShell.Edition": "Core",
+      "Octopus.Action.EnabledFeatures": "Octopus.Features.SelectPowerShellEditionForWindows"
+    },
+    "Parameters": [
+      {
+        "Id": "e1f2d727-5959-45eb-99e2-eff04e3c818d",
+        "Name": "ClientKey",
+        "Label": "ClientKey",
+        "HelpText": "The DXP API ClientKey for the current environment. This ClientKey can be generated in the Optimizely paas portal.",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "SingleLineText"
+        }
+      },
+      {
+        "Id": "498ac6d2-bbf0-4e4f-baf3-e66e40c152c5",
+        "Name": "ClientSecret",
+        "Label": "ClientSecret",
+        "HelpText": "The DXP API ClientSecret for the current environment.",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "Sensitive"
+        }
+      },
+      {
+        "Id": "0bc4a34a-a044-41c3-a491-b60bc9488535",
+        "Name": "ProjectId",
+        "Label": "DXP ProjectId",
+        "HelpText": "The DXP project id. Can be found in the Optimizely paas portal under API tab.",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "SingleLineText"
+        }
+      },
+      {
+        "Id": "8380f8a2-df0e-43ab-8a5d-88eb68602bb1",
+        "Name": "TargetEnvironment",
+        "Label": "TargetEnvironment",
+        "HelpText": "Specify which environment that you want to check ex Integration/Preproduction/Production.",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "Select",
+          "Octopus.SelectOptions": "Integration|Integration\nPreproduction|Preproduction\nProduction|Production\nADE1|ADE1\nADE2|ADE2\nADE3|ADE3"
+        }
+      },
+      {
+        "Id": "45771446-d846-4778-81bc-88c210e3c666",
+        "Name": "ExpectedStatus",
+        "Label": "ExpectedStatus",
+        "HelpText": "Specify the status that you expect the environment to have.",
+        "DefaultValue": "AwaitingVerification",
+        "DisplaySettings": {
+          "Octopus.ControlType": "Select",
+          "Octopus.SelectOptions": "AwaitingVerification|AwaitingVerification\nInProgress|InProgress\nResetting|Resetting\nReset|Reset\nSucceeded|Succeeded\nSucceededOrReset|SucceededOrReset"
+        }
+      },
+      {
+        "Id": "daaadba4-a221-42da-8ec5-9333b5e3519e",
+        "Name": "RunBenchmark",
+        "Label": "RunBenchmark",
+        "HelpText": "If you want to send information about your execution, to get benchmark data back.\nIf you are interested of more benchmark data you can contact Epinova.\nBy using this function you agree with sending over the following information: Task, TaskVersion, Environment, TargetEnvironment, DxpProjectId, OrganisationId, OrganisationName, ProjectId, ProjectName, Branch, AgentOS, EpiCloudVersion, PowerShellVersion, PowerShellEdition, Elapsed, Result, CmsFileSize, CmsPackageName, CommerceFileSize, CommercePackageName.",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "Checkbox"
+        }
+      },
+      {
+        "Id": "999cb692-92d7-46ab-a94a-2f81ee07eb48",
+        "Name": "RunVerbose",
+        "Label": "RunVerbose",
+        "HelpText": "If you want to run in verbose mode and see all information.",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "Checkbox"
+        }
+      }
+    ],
+    "$Meta": {
+      "ExportedAt": "2023-11-20T21:04:31.295Z",
+      "OctopusVersion": "2020.3.4",
+      "Type": "ActionTemplate"
+    },
+    "LastModifiedBy": "Your GitHub Username",
+    "Category": "other"
+  }

@@ -1,0 +1,96 @@
+{
+    "Id": "d85f5208-ae0f-478a-bb50-5d9e2e9469e1",
+    "Name": "Optimizely DXP - Reset deploy",
+    "Description": "Reset a specifed environment if the status for the environment is in status \"AwaitingVerification\".",
+    "ActionType": "Octopus.Script",
+    "Version": 1,
+    "CommunityActionTemplateId": null,
+    "Packages": [
+      {
+        "PackageId": "EpiCloud",
+        "FeedId": "feeds-builtin",
+        "AcquisitionLocation": "Server",
+        "Properties": {
+          "Extract": "True",
+          "SelectionMode": "immediate"
+        },
+        "Id": "9b90a7e7-0b68-434e-9cdb-e67c40a4246e",
+        "Name": "EpiCloud"
+      }
+    ],
+    "Properties": {
+      "Octopus.Action.Script.ScriptSource": "Inline",
+      "Octopus.Action.Script.Syntax": "PowerShell",
+      "Octopus.Action.Script.ScriptBody": "try {\n    # Get all inputs for the task\n    $clientKey = $ClientKey\n    $clientSecret = $ClientSecret\n    $projectId = $ProjectId\n    $targetEnvironment = $TargetEnvironment\n    $timeout = $Timeout\n    $runVerbose = [System.Convert]::ToBoolean($RunVerbose)\n\n    # 30 min timeout\n    ####################################################################################\n\n    $sw = [Diagnostics.Stopwatch]::StartNew()\n    $sw.Start()\n\n    if ($runVerbose){\n        ## To Set Verbose output\n        $PSDefaultParameterValues['*:Verbose'] = $true\n    }\n\n    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12\n    \n    Write-Host \"Inputs:\"\n    Write-Host \"ClientKey:          $clientKey\"\n    Write-Host \"ClientSecret:       **** (it is a secret...)\"\n    Write-Host \"ProjectId:          $projectId\"\n    Write-Host \"TargetEnvironment:  $targetEnvironment\"\n    Write-Host \"Timeout:            $timeout\"\n    Write-Host \"RunVerbose:         $runVerbose\"\n\n    Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId\n\n    $deploy = Get-DxpAwaitingEnvironmentDeployment -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -TargetEnvironment $targetEnvironment\n    $deploy\n    $deploymentId = \"\"\n    if (-not $deploy) {\n        Write-Output \"Environment $targetEnvironment is not in status AwaitingVerification. We do not need to reset this environment.\"\n        $deploymentId = \"\"\n    }\n    else {\n        Write-Output \"Environment $targetEnvironment is in status AwaitingVerification. We will start to reset this environment ASAP.\"\n        $deploymentId = $deploy.id\n    }\n\n    #Start check if we should reset this environment.\n    if ($deploymentId.length -gt 1) {\n\n\n        $status = Get-EpiDeployment -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $projectId -Id $deploymentId\n        $status\n\n        if ($status.status -eq \"AwaitingVerification\") {\n            $deployDateTime = Get-DxpDateTimeStamp\n    \n            Write-Host \"Start Reset-EpiDeployment -ProjectId $projectId -Id $deploymentId ($deployDateTime)\"\n            Reset-EpiDeployment -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $projectId -Id $deploymentId\n\n            $percentComplete = $status.percentComplete\n            $status = Invoke-DxpProgress -ClientKey $ClientKey -ClientSecret $ClientSecret -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus \"Reset\" -Timeout $timeout\n\n            $deployDateTime = Get-DxpDateTimeStamp\n            Write-Host \"Reset $deploymentId ended $deployDateTime\"\n    \n            if ($status.status -eq \"Reset\") {\n                Write-Host \"Deployment $deploymentId has been successfuly reset.\"\n            }\n            else {\n                Write-Warning \"The reset has not been successful or the script has timed out. CurrentStatus: $($status.status)\"\n                Write-Host \"##vso[task.logissue type=error]The reset has not been successful or the script has timed out. CurrentStatus: $($status.status)\"\n                Write-Error \"The reset has not been successful or the script has timed out. CurrentStatus: $($status.status)\" -ErrorAction Stop\n                exit 1\n            }\n        }\n        elseif ($status.status -eq \"Reset\") {\n            Write-Host \"The deployment $deploymentId is already in reset status.\"\n        }\n        else {\n            Write-Warning \"Status is not in AwaitingVerification (Current:$($status.status)). You can not reset the deployment at this moment.\"\n            Write-Host \"##vso[task.logissue type=error]Status is not in AwaitingVerification (Current:$($status.status)). You can not reset the deployment at this moment.\"\n            Write-Error \"Status is not in AwaitingVerification (Current:$($status.status)). You can not reset the deployment at this moment.\" -ErrorAction Stop\n            exit 1\n        }\n    }\n    ####################################################################################\n    Write-Host \"---THE END---\" \n}\ncatch {\n    Write-Verbose \"Exception caught from task: $($_.Exception.ToString())\"\n    throw\n}\n\nif ($runVerbose){\n    ## To Set Verbose output\n    $PSDefaultParameterValues['*:Verbose'] = $false\n}"
+    },
+    "Parameters": [
+      {
+        "Id": "ebba29c5-0b4e-4faa-9d99-cfc70f44be37",
+        "Name": "ClientKey",
+        "Label": "ClientKey",
+        "HelpText": "The DXP API ClientKey for the current environment. This ClientKey can be generated in the Optimizely paas portal.",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "SingleLineText"
+        }
+      },
+      {
+        "Id": "02604d29-3741-438a-97e4-f1823ecea1c1",
+        "Name": "ClientSecret",
+        "Label": "ClientSecret",
+        "HelpText": "The DXP API ClientSecret for the current environment.",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "Sensitive"
+        }
+      },
+      {
+        "Id": "4c97fcc6-680d-4ff0-9f84-4b51a0a4af55",
+        "Name": "ProjectId",
+        "Label": "ProjectId",
+        "HelpText": "The DXP project id. Can be found in the Optimizely paas portal under API tab.",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "SingleLineText"
+        }
+      },
+      {
+        "Id": "407c5bc0-0511-44ae-a5a9-9582d088c262",
+        "Name": "TargetEnvironment",
+        "Label": "TargetEnvironment",
+        "HelpText": "Specify which environment that you want to check ex Integration/Preproduction/Production.",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "Select",
+          "Octopus.SelectOptions": "Integration|Integration\nPreproduction|Preproduction\nProduction|Production\nADE1|ADE1\nADE2|ADE2\nADE3|ADE3"
+        }
+      },
+      {
+        "Id": "8a100687-e113-4e23-9676-1de8ebaef195",
+        "Name": "Timeout",
+        "Label": "Timeout",
+        "HelpText": "Specify the number of seconds when the task should timeout.",
+        "DefaultValue": "1800",
+        "DisplaySettings": {
+          "Octopus.ControlType": "SingleLineText"
+        }
+      },
+      {
+        "Id": "6119d4bd-13f4-4511-8a33-6f0bd3609327",
+        "Name": "RunVerbose",
+        "Label": "RunVerbose",
+        "HelpText": "If you want to run in verbose mode and see all information.",
+        "DefaultValue": "",
+        "DisplaySettings": {
+          "Octopus.ControlType": "Checkbox"
+        }
+      }
+    ],
+    "$Meta": {
+      "ExportedAt": "2023-11-20T21:05:29.357Z",
+      "OctopusVersion": "2020.3.4",
+      "Type": "ActionTemplate"
+    },
+    "LastModifiedBy": "Your GitHub Username",
+    "Category": "other"
+  }
