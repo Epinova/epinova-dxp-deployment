@@ -1796,7 +1796,6 @@ function Invoke-DxpAwaitStatus{
             }
             else {
                 Write-Warning "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
-                Write-Host "##vso[task.logissue type=error]The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
                 Write-Error "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)" -ErrorAction Stop
                 exit 1
             }
@@ -1806,7 +1805,6 @@ function Invoke-DxpAwaitStatus{
         }
         else {
             Write-Warning "Status is in a unhandled status. (Current:$($lastDeploy.status)). Will and can´t do anything..."
-            Write-Host "##vso[task.logissue type=error]Status is in a unhandled status. (Current:$($lastDeploy.status))."
             Write-Error "Status is in a unhandled status. (Current:$($lastDeploy.status))." -ErrorAction Stop
             exit 1
         }
@@ -1902,13 +1900,13 @@ function Invoke-DxpCompleteDeploy{
     $deploy = Get-DxpAwaitingEnvironmentDeployment -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId -TargetEnvironment $targetEnvironment
     $deploy
     if (-not $deploy) {
-        Write-Host "##vso[task.logissue type=error]Failed to locate a deployment in $targetEnvironment to complete!"
+        Write-Error "Failed to locate a deployment in $targetEnvironment to complete!"
         exit 1
     }
     else {
         $deploymentId = $deploy.id
         Write-Host "Set variable DeploymentId: $deploymentId"
-        Write-Host "##vso[task.setvariable variable=DeploymentId;]$($deploymentId)"
+        try { Set-OctopusVariable -name "DeploymentId" -value $deploymentId } catch { Write-Host "Tried to Set-OctopusVariable for DeploymentId but failed." }
     }
 
     if ($deploymentId.length -gt 1) {
@@ -1938,7 +1936,6 @@ function Invoke-DxpCompleteDeploy{
             }
             else {
                 Write-Warning "The completion for deployment $deploymentId has not been successful or the script has timed out. CurrentStatus: $($status.status)"
-                Write-Host "##vso[task.logissue type=error]The completion for deployment $deploymentId has not been successful or the script has timed out. CurrentStatus: $($status.status)"
                 Write-Error "The completion for deployment $deploymentId has not been successful or the script has timed out. CurrentStatus: $($status.status)" -ErrorAction Stop
                 exit 1
             }
@@ -1948,14 +1945,13 @@ function Invoke-DxpCompleteDeploy{
         }
         else {
             Write-Warning "Status is not in complete (Current:$($complete.status)). Something is strange..."
-            Write-Host "##vso[task.logissue type=error]Status is not in complete (Current:$($complete.status)). Something is strange..."
             Write-Error "Status is not in complete (Current:$($complete.status)). Something is strange..." -ErrorAction Stop
             exit 1
         }
 
     }
     else {
-        Write-Host "##vso[task.logissue type=error]Could not retrieve the DeploymentId variable. Can not complete the deployment."
+        Write-Error "Could not retrieve the DeploymentId variable. Can not complete the deployment."
         exit 1
     }
 
@@ -2171,22 +2167,18 @@ function Invoke-DxpDeployNuGetPackage{
             }
         }
         else {
-            #Send-BenchmarkInfo "Bad deploy/Time out"
             Write-Warning "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
-            Write-Host "##vso[task.logissue type=error]The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
             Write-Error "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)" -ErrorAction Stop
             exit 1
         }
     }
     else {
-        #Send-BenchmarkInfo "Unhandled status"
         Write-Warning "Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment."
-        Write-Host "##vso[task.logissue type=error]Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment."
         Write-Error "Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment." -ErrorAction Stop
         exit 1
     }
     Write-Host "Setvariable DeploymentId: $deploymentId"
-    Write-Host "##vso[task.setvariable variable=DeploymentId;]$($deploymentId)"
+    try { Set-OctopusVariable -name "DeploymentId" -value $deploymentId } catch { Write-Host "Tried to Set-OctopusVariable for DeploymentId but failed." }
 }
 
 function Invoke-DxpDeployTo{
@@ -2372,19 +2364,17 @@ function Invoke-DxpDeployTo{
         }
         else {
             Write-Warning "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
-            Write-Host "##vso[task.logissue type=error]The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
             Write-Error "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)" -ErrorAction Stop
             exit 1
         }
     }
     else {
         Write-Warning "Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment."
-        Write-Host "##vso[task.logissue type=error]Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment."
         Write-Error "Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment." -ErrorAction Stop
         exit 1
     }
     Write-Host "Setvariable DeploymentId: $deploymentId"
-    Write-Host "##vso[task.setvariable variable=DeploymentId;]$($deploymentId)"
+    try { Set-OctopusVariable -name "DeploymentId" -value $deploymentId } catch { Write-Host "Tried to Set-OctopusVariable for DeploymentId but failed." }
 }
 
 function Invoke-DxpExpectStatus{
@@ -2492,7 +2482,6 @@ function Invoke-DxpExpectStatus{
         }
         else {
             Write-Warning "$targetEnvironment is not in expected status $expectedStatus. (Current:$($lastDeploy.status))."
-            Write-Host "##vso[task.logissue type=error]$targetEnvironment is not in expected status $expectedStatus. (Current:$($lastDeploy.status))."
             Write-Error "$targetEnvironment is not in expected status $expectedStatus. (Current:$($lastDeploy.status))." -ErrorAction Stop
             exit 1
         }
@@ -2622,7 +2611,6 @@ function Invoke-DxpResetDeploy{
             }
             else {
                 Write-Warning "The reset has not been successful or the script has timed out. CurrentStatus: $($status.status)"
-                Write-Host "##vso[task.logissue type=error]The reset has not been successful or the script has timed out. CurrentStatus: $($status.status)"
                 Write-Error "The reset has not been successful or the script has timed out. CurrentStatus: $($status.status)" -ErrorAction Stop
                 exit 1
             }
@@ -2632,7 +2620,6 @@ function Invoke-DxpResetDeploy{
         }
         else {
             Write-Warning "Status is not in AwaitingVerification (Current:$($status.status)). You can not reset the deployment at this moment."
-            Write-Host "##vso[task.logissue type=error]Status is not in AwaitingVerification (Current:$($status.status)). You can not reset the deployment at this moment."
             Write-Error "Status is not in AwaitingVerification (Current:$($status.status)). You can not reset the deployment at this moment." -ErrorAction Stop
             exit 1
         }
@@ -2792,8 +2779,7 @@ function Invoke-DxpSmokeTestIfFailReset{
                     Write-Output "##[ok] $uri => Status: $statusCode $statusDescription in $seconds seconds"
                 }
                 else {
-                    Write-Output "##[warning] $uri => Error $statusCode after $seconds seconds"
-                    Write-Output "##vso[task.logissue type=warning;] $uri => Error $statusCode after $seconds seconds"
+                    Write-Warning "##[warning] $uri => Error $statusCode after $seconds seconds"
                     $numberOfErrors = $numberOfErrors + 1
                 }
             }
@@ -2801,7 +2787,7 @@ function Invoke-DxpSmokeTestIfFailReset{
                 $sw.Stop()
                 $errorMessage = $_.Exception.Message
                 $seconds = $sw.Elapsed.TotalSeconds
-                Write-Output "##vso[task.logissue type=warning;] $uri => Error after $seconds seconds: $errorMessage "
+                Write-Warning "$uri => Error after $seconds seconds: $errorMessage "
                 $numberOfErrors = $numberOfErrors + 1
             }
         }
@@ -2817,17 +2803,17 @@ function Invoke-DxpSmokeTestIfFailReset{
 
     if ($numberOfErrors -gt 0) {
         Write-Host "We found ERRORS. Smoketest fails. We will set reset flag to TRUE."
-        Write-Host "##vso[task.setvariable variable=ResetDeployment;]true"
+        try { Set-OctopusVariable -name "ResetDeployment" -value $false } catch { Write-Host "Tried to Set-OctopusVariable for ResetDeployment but failed." }
         $resetDeployment = $true
     }
     else {
         Write-Host "We found no errors. Smoketest success. We will set reset flag to false."
-        Write-Host "##vso[task.setvariable variable=ResetDeployment;]false"
+        try { Set-OctopusVariable -name "ResetDeployment" -value $false } catch { Write-Host "Tried to Set-OctopusVariable for ResetDeployment but failed." }
         $resetDeployment = $false
     }
 
     if ($resetOnFail -eq $false -and $resetDeployment -eq $true) {
-        Write-Output "##vso[task.logissue type=warning;] Smoke test failed. But ResetOnFail is set to false. No reset will be made."
+        Write-Warning "Smoke test failed. But ResetOnFail is set to false. No reset will be made."
     } 
     elseif ($resetDeployment -eq $true) {
 
@@ -2866,26 +2852,22 @@ function Invoke-DxpSmokeTestIfFailReset{
 
                 if ($status.status -eq "Reset") {
                     Write-Host "Deployment $deploymentId has been successfuly reset."
-                    Write-Host "##vso[task.logissue type=error]Deployment $deploymentId has been successfuly reset. But we can not continue deploy when we have reset the deployment."
                     Write-Error "Deployment $deploymentId has been successfuly reset. But we can not continue deploy when we have reset the deployment." -ErrorAction Stop
                     exit 1
                 }
                 else {
                     Write-Warning "The reset has not been successful or the script has timedout. CurrentStatus: $($status.status)"
-                    Write-Host "##vso[task.logissue type=error]The reset has not been successful or the script has timedout. CurrentStatus: $($status.status)"
                     Write-Error "Deployment $deploymentId has NOT been successfuly reset or the script has timedout. CurrentStatus: $($status.status)" -ErrorAction Stop
                     exit 1
                 }
             }
             elseif ($status.status -eq "Reset") {
                 Write-Host "The deployment $deploymentId is already in reset status."
-                Write-Host "##vso[task.logissue type=error]Deployment $deploymentId is already in reset status. But we can not continue deploy when we have found errors in the smoke test."
                 Write-Error "Deployment $deploymentId is already in reset status. But we can not continue deploy when we have found errors in the smoke test." -ErrorAction Stop
                 exit 1
             }
             else {
                 Write-Host "Status is not in AwaitingVerification (Current:$($status.status)). You can not reset the deployment at this moment."
-                Write-Host "##vso[task.logissue type=error]Status is not in AwaitingVerification (Current:$($status.status)). You can not reset the deployment at this moment."
                 Write-Error "Status is not in AwaitingVerification (Current:$($status.status)). You can not reset the deployment at this moment." -ErrorAction Stop
                 exit 1
             }
