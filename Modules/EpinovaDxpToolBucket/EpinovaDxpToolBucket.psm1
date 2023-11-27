@@ -2723,7 +2723,6 @@ function Invoke-DxpSmokeTestIfFailReset{
     $retries = $NumberOfRetries
     $sleepBeforeRetry = $SleepBeforeRetry
     $timeout = $Timeout
-    $runBenchmark = [System.Convert]::ToBoolean($RunBenchmark)
     $runVerbose = [System.Convert]::ToBoolean($RunVerbose)
 
     $global:ErrorActionPreference = $errorAction
