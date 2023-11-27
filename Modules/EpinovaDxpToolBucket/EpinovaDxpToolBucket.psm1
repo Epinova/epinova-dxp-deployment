@@ -2724,12 +2724,7 @@ function Invoke-DxpSmokeTestIfFailReset{
     $sleepBeforeRetry = $SleepBeforeRetry
     $timeout = $Timeout
     $runVerbose = [System.Convert]::ToBoolean($RunVerbose)
-
-    $global:ErrorActionPreference = $errorAction
     ####################################################################################
-
-    $sw = [Diagnostics.Stopwatch]::StartNew()
-    $sw.Start()
 
     if ($runVerbose){
         ## To Set Verbose output
@@ -2750,8 +2745,6 @@ function Invoke-DxpSmokeTestIfFailReset{
     Write-Host "SleepBeforeRetry:   $sleepBeforeRetry"
     Write-Host "Timeout:            $timeout"
     Write-Host "RunVerbose:         $runVerbose"
-
-    Write-Host "ErrorActionPref:    $($global:ErrorActionPreference)"
 
     Write-Host "Start sleep for $($sleepBeforeStart) seconds before we start check URL(s)."
     Start-Sleep $sleepBeforeStart
