@@ -985,6 +985,8 @@ function Initialize-EpinovaDxpScript {
         )    
         
         #Mount-PsModulesPath
+
+        Write-Host "Script root: $PSScriptRoot"
     
         Initialize-EpiCload
         

@@ -1,5 +1,5 @@
 {
-  "Id": "65848b74-5763-4be2-ba26-1bdd4ba7a17f",
+  "Id": "8a127da4-0251-4e67-8f85-5a346e49ed91",
   "Name": "Optimizely DXP - Complete deploy",
   "Description": "Complete deploy in specified environment. Environment status must be in AwaitingVerification status. (Optimizely DXP, former Episerver DXC)",
   "ActionType": "Octopus.Script",
@@ -32,7 +32,7 @@
   "Properties": {
     "Octopus.Action.Script.ScriptSource": "Inline",
     "Octopus.Action.Script.Syntax": "PowerShell",
-    "Octopus.Action.Script.ScriptBody": "try {\n    $runVerbose = [System.Convert]::ToBoolean($RunVerbose)\n\n\t#Uninstall-Module -Name \"EpinovaDxpToolBucket\" -AllVersions -Force\n    Install-Module -Name \"EpinovaDxpToolBucket\" -MinimumVersion 0.6.0 -Force\n    $module = Get-Module -Name \"EpinovaDxpToolBucket\" -ListAvailable | Select-Object Version\n    $moduleVersion = \"v$($module.Version.Major).$($module.Version.Minor).$($module.Version.Build)\"\n    Write-Host \"EpinovaDxpToolBucket: $moduleVersion\"\n    \n    Invoke-DxpCompleteDeploy -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -TargetEnvironment $TargetEnvironment -Timeout $Timeout -RunVerbose $runVerbose\n    ####################################################################################\n    Write-Host \"---THE END---\"\n\n}\ncatch {\n    Write-Verbose \"Exception caught from task: $($_.Exception.ToString())\"\n    throw\n}\n\nif ($runVerbose){\n    ## To Set Verbose output\n    $PSDefaultParameterValues['*:Verbose'] = $false\n}"
+    "Octopus.Action.Script.ScriptBody": "try {\n    $runVerbose = [System.Convert]::ToBoolean($RunVerbose)\n\n\t#Uninstall-Module -Name EpiCloud -AllVersions -Force\n\t#Uninstall-Module -Name \"EpinovaDxpToolBucket\" -AllVersions -Force\n    Install-Module -Name \"EpinovaDxpToolBucket\" -MinimumVersion 0.13.0 -Force\n    $module = Get-Module -Name \"EpinovaDxpToolBucket\" -ListAvailable | Select-Object Version\n    $moduleVersion = \"v$($module.Version.Major).$($module.Version.Minor).$($module.Version.Build)\"\n    Write-Host \"EpinovaDxpToolBucket: $moduleVersion\"\n    \n    Invoke-DxpCompleteDeploy -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -TargetEnvironment $TargetEnvironment -Timeout $Timeout -RunVerbose $runVerbose\n    ####################################################################################\n    Write-Host \"---THE END---\"\n}\ncatch {\n    Write-Verbose \"Exception caught from task: $($_.Exception.ToString())\"\n    throw\n}\n\nif ($runVerbose){\n    ## To Set Verbose output\n    $PSDefaultParameterValues['*:Verbose'] = $false\n}"
   },
   "Parameters": [
     {
@@ -98,7 +98,7 @@
     }
   ],
   "$Meta": {
-    "ExportedAt": "2023-11-20T20:59:56.700Z",
+    "ExportedAt": "2023-11-23T10:03:28.978Z",
     "OctopusVersion": "2020.3.4",
     "Type": "ActionTemplate"
   },

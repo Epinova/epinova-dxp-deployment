@@ -1,5 +1,5 @@
 {
-  "Id": "2b5a84ba-9772-4536-a8bd-82ef8df8747d",
+  "Id": "8ff9f9d3-9efb-485b-9187-4a2c06759324",
   "Name": "Optimizely DXP - Await status",
   "Description": "Task that await for status AwaitingVerification/Reset. Can be used when have a release setup that often timeout and need a extra task that awaits the correct status. So if target environment is in status InProgress/Resetting when it starts. The task will run and check the status until target environment is in status AwaitingVerification/Reset/Succeeded.\n\nIf status is AwaitingVerification/Reset/Succeeded when task starts, nothing will happen. If the task starts and status is anything else then AwaitingVerification/Reset/Succeeded/InProgress/Resetting the task will fail with error.",
   "ActionType": "Octopus.Script",
@@ -9,30 +9,30 @@
     {
       "PackageId": "EpiCloud",
       "FeedId": "feeds-builtin",
-      "AcquisitionLocation": "Server",
+      "AcquisitionLocation": "NotAcquired",
       "Properties": {
         "Extract": "True",
         "SelectionMode": "immediate"
       },
-      "Id": "cb19e6b0-b0fe-47f8-8674-7f570afe266e",
+      "Id": "271045e2-c13d-45a6-84d7-dc9865ce59c8",
       "Name": "EpiCloud"
     },
     {
       "PackageId": "EpinovaDxpToolBucket",
       "FeedId": "feeds-builtin",
-      "AcquisitionLocation": "Server",
+      "AcquisitionLocation": "NotAcquired",
       "Properties": {
         "Extract": "True",
         "SelectionMode": "immediate"
       },
-      "Id": "47a80189-52d4-4737-9a07-bb51603190fa",
+      "Id": "89ed5863-a874-43d1-9d91-edeb9f1d8382",
       "Name": "EpinovaDxpToolBucket"
     }
   ],
   "Properties": {
     "Octopus.Action.Script.ScriptSource": "Inline",
     "Octopus.Action.Script.Syntax": "PowerShell",
-    "Octopus.Action.Script.ScriptBody": "$ErrorActionPreference = 'Continue'\ntry {\n\t$runVerbose = [System.Convert]::ToBoolean($RunVerbose)\n\t#Uninstall-Module -Name \"EpinovaDxpToolBucket\" -AllVersions -Force\n    Install-Module -Name \"EpinovaDxpToolBucket\" -MinimumVersion 0.6.0 -Force\n    $module = Get-Module -Name \"EpinovaDxpToolBucket\" -ListAvailable | Select-Object Version\n    $moduleVersion = \"v$($module.Version.Major).$($module.Version.Minor).$($module.Version.Build)\"\n    Write-Host $moduleVersion\n    Invoke-DxpAwaitStatus -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -TargetEnvironment $TargetEnvironment -Timeout $Timeout -RunVerbose $runVerbose\n    ####################################################################################\n    Write-Host \"---THE END---\"\n}\ncatch {\n    Write-Verbose \"Exception caught from task: $($_.Exception.ToString())\"\n    throw\n}\n\nif ($runVerbose){\n    ## To Set Verbose output\n    $PSDefaultParameterValues['*:Verbose'] = $false\n}"
+    "Octopus.Action.Script.ScriptBody": "$ErrorActionPreference = 'Continue'\ntry {\n\t$runVerbose = [System.Convert]::ToBoolean($RunVerbose)\n\n\t#Uninstall-Module -Name EpiCloud -AllVersions -Force\n\t#Uninstall-Module -Name \"EpinovaDxpToolBucket\" -AllVersions -Force\n    Install-Module -Name \"EpinovaDxpToolBucket\" -MinimumVersion 0.13.0 -Force\n    $module = Get-Module -Name \"EpinovaDxpToolBucket\" -ListAvailable | Select-Object Version\n    $moduleVersion = \"v$($module.Version.Major).$($module.Version.Minor).$($module.Version.Build)\"\n    Write-Host \"EpinovaDxpToolBucket: $moduleVersion\"\n\n    Invoke-DxpAwaitStatus -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -TargetEnvironment $TargetEnvironment -Timeout $Timeout -RunVerbose $runVerbose\n    ####################################################################################\n    Write-Host \"---THE END---\"\n}\ncatch {\n    Write-Verbose \"Exception caught from task: $($_.Exception.ToString())\"\n    throw\n}\n\nif ($runVerbose){\n    ## To Set Verbose output\n    $PSDefaultParameterValues['*:Verbose'] = $false\n}"
   },
   "Parameters": [
     {
@@ -98,7 +98,7 @@
     }
   ],
   "$Meta": {
-    "ExportedAt": "2023-11-20T20:53:33.495Z",
+    "ExportedAt": "2023-11-23T10:03:05.116Z",
     "OctopusVersion": "2020.3.4",
     "Type": "ActionTemplate"
   },
