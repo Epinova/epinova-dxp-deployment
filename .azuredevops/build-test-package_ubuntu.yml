@@ -16,6 +16,9 @@ variables:
   ExtensionVisibility: 'private'
 
 steps:
+  - checkout: self
+    persistCredentials: true
+
   # for each Node based task we must transpile it
   - task: PowerShell@2
     displayName: 'Get/Set extension version'
@@ -63,3 +66,8 @@ steps:
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
+
+  - script: |
+      git tag $(ExtensionFileVersion)
+      git push origin $(ExtensionFileVersion)
+    workingDirectory: $(Build.SourcesDirectory)
