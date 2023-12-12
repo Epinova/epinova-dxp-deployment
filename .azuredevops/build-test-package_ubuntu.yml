@@ -68,8 +68,9 @@ steps:
     displayName: 'Publish Artifact: drop'
 
   - script: |
-      git tag '$(ExtensionFileVersion)TEST'
-      git push origin '$(ExtensionFileVersion)TEST'
+      echo ¤$(ExtensionFileVersion)TEST
+      git tag $(ExtensionFileVersion)TEST
+      git push origin $(ExtensionFileVersion)TEST
     workingDirectory: $(Build.SourcesDirectory)
     displayName: 'Set git tag'
     continueOnError: true
