@@ -63,4 +63,4 @@ steps:
       git tag '$(ExtensionFileVersion)'
       git push origin '$(ExtensionFileVersion)'
     workingDirectory: $(Build.SourcesDirectory)
-    displayName: 'Set git tag - $(ExtensionFileVersion)'
+    displayName: 'Set git tag'
