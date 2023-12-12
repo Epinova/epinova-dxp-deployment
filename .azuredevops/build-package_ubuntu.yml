@@ -2,7 +2,7 @@ trigger:
   batch: true
   branches:
     include:
-    - master
+    - refs/heads/master
 
 name: $(Date:yyyyMMdd)$(Rev:.r)
 
@@ -20,6 +20,9 @@ variables:
   ExtensionVisibility: 'public'
 
 steps:
+  - checkout: self
+    persistCredentials: true
+
   # for each Node based task we must transpile it
   - task: PowerShell@2
     displayName: 'Get/Set extension version'
@@ -55,3 +58,9 @@ steps:
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
+
+  - script: |
+      git tag '$(ExtensionFileVersion)'
+      git push origin '$(ExtensionFileVersion)'
+    workingDirectory: $(Build.SourcesDirectory)
+    displayName: 'Set git tag - $(ExtensionFileVersion)'
