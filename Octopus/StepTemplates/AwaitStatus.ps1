@@ -2,11 +2,20 @@ $ErrorActionPreference = 'Continue'
 try {
 	$runVerbose = [System.Convert]::ToBoolean($RunVerbose)
 
-	#Uninstall-Module -Name "EpinovaDxpToolBucket" -AllVersions -Force
-    Install-Module -Name "EpinovaDxpToolBucket" -MinimumVersion 0.13.4 -Force
-    $module = Get-Module -Name "EpinovaDxpToolBucket" -ListAvailable | Select-Object Version
-    $moduleVersion = "v$($module.Version.Major).$($module.Version.Minor).$($module.Version.Build)"
-    Write-Host "EpinovaDxpToolBucket: $moduleVersion"
+    #-------------------------------
+    Write-Host "Server:" + $env:computername
+    
+    $myPackageId = "EPiCloud"
+    $taskModulePath = $OctopusParameters["Octopus.Action.Package[$myPackageId].ExtractedPath"]
+    Write-Host $taskModulePath
+    Import-Module -Name $taskModulePath
+    
+    $myPackageId = "EpinovaDxpToolBucket"
+    $taskModulePath = $OctopusParameters["Octopus.Action.Package[$myPackageId].ExtractedPath"]
+    Write-Host $taskModulePath
+    Import-Module -Name $taskModulePath
+
+
 
     Invoke-DxpAwaitStatus -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -TargetEnvironment $TargetEnvironment -Timeout $Timeout -RunVerbose $runVerbose
     ####################################################################################

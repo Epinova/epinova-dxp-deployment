@@ -6,11 +6,15 @@ try {
     $useMaintenancePage = [System.Convert]::ToBoolean($UseMaintenancePage)
 	$runVerbose = [System.Convert]::ToBoolean($RunVerbose)
 
-	#Uninstall-Module -Name "EpinovaDxpToolBucket" -AllVersions -Force
-    Install-Module -Name "EpinovaDxpToolBucket" -MinimumVersion 0.13.4 -Force
-    $module = Get-Module -Name "EpinovaDxpToolBucket" -ListAvailable | Select-Object Version
-    $moduleVersion = "v$($module.Version.Major).$($module.Version.Minor).$($module.Version.Build)"
-    Write-Host "EpinovaDxpToolBucket: $moduleVersion"
+    $myPackageId = "EPiCloud"
+    $taskModulePath = $OctopusParameters["Octopus.Action.Package[$myPackageId].ExtractedPath"]
+    Write-Host $taskModulePath
+    Import-Module -Name $taskModulePath
+    
+    $myPackageId = "EpinovaDxpToolBucket"
+    $taskModulePath = $OctopusParameters["Octopus.Action.Package[$myPackageId].ExtractedPath"]
+    Write-Host $taskModulePath
+    Import-Module -Name $taskModulePath
 
     Invoke-DxpDeployNuGetPackage -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -TargetEnvironment $TargetEnvironment -PackagePath $packagePath -DirectDeploy $directDeploy -WarmUpUrl $WarmUpUrl -UseMaintenancePage $useMaintenancePage -ZeroDowntimeMode $ZeroDowntimeMode -Timeout $Timeout -RunVerbose $runVerbose
    ####################################################################################
