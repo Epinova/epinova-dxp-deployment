@@ -1,0 +1,157 @@
+{
+  "Id": "637b8a18-de9c-468b-ae59-94fb025a1718",
+  "Name": "Optimizely DXP - Smoke test if fail reset",
+  "Description": "This task smoke test a slot and decide if we should continue the release, or reset the environment slot, because something is not working as expected. The smoke test is a simple check if one or many specified URLs returns HTTPStatus = 200 (OK).\n\nA new property with the name \"Reset on fail\" is added that describes if the task will reset when smoke test fail. This can be used when you want to use SmokeTestIfFailReset task when doing a ContentSync.",
+  "ActionType": "Octopus.Script",
+  "Version": 1,
+  "CommunityActionTemplateId": null,
+  "Packages": [
+    {
+      "PackageId": "EpiCloud",
+      "FeedId": "feeds-builtin",
+      "AcquisitionLocation": "Server",
+      "Properties": {
+        "Extract": "True",
+        "SelectionMode": "immediate"
+      },
+      "Id": "66b52300-a7c8-441f-93ef-70273b311b83",
+      "Name": "EpiCloud"
+    },
+    {
+      "PackageId": "EpinovaDxpToolBucket",
+      "FeedId": "feeds-builtin",
+      "AcquisitionLocation": "Server",
+      "Properties": {
+        "Extract": "True",
+        "SelectionMode": "immediate"
+      },
+      "Id": "b5248e55-12ed-4c1a-b3ed-a0438305cc0b",
+      "Name": "EpinovaDxpToolBucket"
+    }
+  ],
+  "Properties": {
+    "Octopus.Action.Script.ScriptSource": "Inline",
+    "Octopus.Action.Script.Syntax": "PowerShell",
+    "Octopus.Action.Script.ScriptBody": "try {\n    $resetOnFail = [System.Convert]::ToBoolean($ResetOnFail)\n\t$runVerbose = [System.Convert]::ToBoolean($RunVerbose)\n\n\t#Uninstall-Module -Name EpiCloud -AllVersions -Force\n\t#Uninstall-Module -Name \"EpinovaDxpToolBucket\" -AllVersions -Force\n    Install-Module -Name \"EpinovaDxpToolBucket\" -MinimumVersion 0.13.0 -Force\n    $module = Get-Module -Name \"EpinovaDxpToolBucket\" -ListAvailable | Select-Object Version\n    $moduleVersion = \"v$($module.Version.Major).$($module.Version.Minor).$($module.Version.Build)\"\n    Write-Host \"EpinovaDxpToolBucket: $moduleVersion\"\n\n    Invoke-DxpSmokeTestIfFailReset -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -TargetEnvironment $TargetEnvironment -Urls $Urls -ResetOnFail $resetOnFail -SleepBeforeStart $SleepBeforeStart -NumberOfRetries $NumberOfRetries -SleepBeforeRetry $SleepBeforeRetry -Timeout $Timeout -RunVerbose $runVerbose\n    ####################################################################################\n    Write-Host \"---THE END---\"\n}\ncatch {\n    Write-Verbose \"Exception caught from task: $($_.Exception.ToString())\"\n    throw\n}\n\nif ($runVerbose){\n    ## To Set Verbose output\n    $PSDefaultParameterValues['*:Verbose'] = $false\n}"
+  },
+  "Parameters": [
+    {
+      "Id": "f99fa3c1-7fca-4371-ade8-f3ab7182c425",
+      "Name": "ClientKey",
+      "Label": "ClientKey",
+      "HelpText": "The DXP API ClientKey for the current environment. This ClientKey can be generated in the Optimizely paas portal.",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "2342fc02-9745-4df0-bbb4-bae672c3d44d",
+      "Name": "ClientSecret",
+      "Label": "ClientSecret",
+      "HelpText": "The DXP API ClientSecret for the current environment.",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "Sensitive"
+      }
+    },
+    {
+      "Id": "1a500ff5-f143-481c-a1aa-f4ccabd4384d",
+      "Name": "ProjectId",
+      "Label": "ProjectId",
+      "HelpText": "The DXP project id. Can be found in the Optimizely paas portal under API tab.",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "8d80fe6b-eaa3-4c4a-a8d5-8083cbfc3a0c",
+      "Name": "TargetEnvironment",
+      "Label": "TargetEnvironment",
+      "HelpText": "Specify which environment that you want to check ex Integration/Preproduction/Production.",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "Select",
+        "Octopus.SelectOptions": "Integration|Integration\nPreproduction|Preproduction\nProduction|Production\nADE1|ADE1\nADE2|ADE2\nADE3|ADE3"
+      }
+    },
+    {
+      "Id": "219e71ff-df96-40e3-9f5c-3c2d40a867f6",
+      "Name": "Urls",
+      "Label": "Urls",
+      "HelpText": "Specify the URLs that will be used in the smoke test. Use ',' as delimiter between the URLs.",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "MultiLineText"
+      }
+    },
+    {
+      "Id": "c10a538d-545e-4d28-908d-9ba3a799d76d",
+      "Name": "ResetOnFail",
+      "Label": "ResetOnFail",
+      "HelpText": "If checked it will reset the deployment if smoke test fails. If not checked, only a warning will be posted but no reset. Can be used when you want to use SmokeTestIfFailReset task when doing a ContentSync.",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "Checkbox"
+      }
+    },
+    {
+      "Id": "9480fbdb-7686-4668-a10d-d681a47d6210",
+      "Name": "SleepBeforeStart",
+      "Label": "SleepBeforeStart",
+      "HelpText": "The sleep time before the script will start to test the URL(s). Most of the time the slot need some extra time to get up and runing. Even if the status says that it is up and runing. But after alot of tests we think that 20 seconds should be enough.",
+      "DefaultValue": "20",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "6c9ba733-a8c8-4627-ba4f-acc491cd528a",
+      "Name": "NumberOfRetries",
+      "Label": "NumberOfRetries",
+      "HelpText": "The number of retries that the script will make before return error and reset the deployment.",
+      "DefaultValue": "5",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "9ccdf720-6a44-420c-a781-79116b2fc4d9",
+      "Name": "SleepBeforeRetry",
+      "Label": "SleepBeforeRetry",
+      "HelpText": "The sleep time before the script will start to test the URL(s) again. This will only happend if the HTTP status response from one/many of the URLs is not responding with HTTP status 200.",
+      "DefaultValue": "30",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "37b9ab56-9e4c-4de0-9d63-597e5dec99b7",
+      "Name": "Timeout",
+      "Label": "Timeout",
+      "HelpText": "Specify the number of seconds when the task should timeout.",
+      "DefaultValue": "1800",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "0a7c3bec-75c4-43b1-b7be-b343979e2fd5",
+      "Name": "RunVerbose",
+      "Label": "RunVerbose",
+      "HelpText": "If you want to run in verbose mode and see all information.",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "Checkbox"
+      }
+    }
+  ],
+  "$Meta": {
+    "ExportedAt": "2023-11-23T10:05:24.503Z",
+    "OctopusVersion": "2020.3.4",
+    "Type": "ActionTemplate"
+  },
+  "LastModifiedBy": "Your GitHub Username",
+  "Category": "other"
+}
