@@ -64,3 +64,4 @@ steps:
       git push origin '$(ExtensionFileVersion)'
     workingDirectory: $(Build.SourcesDirectory)
     displayName: 'Set git tag'
+    continueOnError: true
