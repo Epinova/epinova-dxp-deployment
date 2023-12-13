@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.9.0
+- EpiCloud v1.3.0
+
 ## v2.8.4
 - Fix npm stuff (I dont like npm...)
 
