@@ -1,3 +1,56 @@
+function AddAzStorageBlob {
+    <#
+    .SYNOPSIS
+    This helper function uploads a blob to blob storage using azure storage DLL
+
+    .DESCRIPTION
+    This helper function uploads a blob to blob storage using azure storage DLL
+
+    .PARAMETER SasUri
+    The Sas link contains access to storage account.
+
+    .PARAMETER Path
+    The file name with full path.
+
+    .PARAMETER BlobName
+    The name of Blob in the container.
+
+    #>
+
+    [CmdletBinding()]
+    [OutputType([PSCustomObject])]
+    param(
+        [Parameter(Mandatory = $true)]
+        [Uri] $SasUri,
+
+        [Parameter(Mandatory = $true)]
+        [String] $Path,
+
+        [Parameter(Mandatory = $true)]
+        [String] $BlobName
+    )
+
+    $containerClient = New-Object "Azure.Storage.Blobs.BlobContainerClient" -ArgumentList $SasUri
+    $blobClient = $containerClient.GetBlobClient($BlobName)
+    $uploadOptions = New-Object "Azure.Storage.Blobs.Models.BlobUploadOptions"
+    $filePath = Resolve-Path -Path $Path
+
+    $storageTransferOptions = New-Object "Azure.Storage.StorageTransferOptions"
+    $storageTransferOptions.InitialTransferSize = 1024*1024*8
+    $storageTransferOptions.MaximumTransferSize = 1024*1024*8
+    $uploadOptions.TransferOptions = $storageTransferOptions
+
+    $uploadResult = $blobClient.Upload($filePath, $uploadOptions)
+    $response = $uploadResult.GetRawResponse()
+
+    $responseOk = ($response.Status -ge 200) -and ($response.Status -lt 300)
+
+    Write-Output [PSCustomObject] @{
+        Status = $response.Status
+        ReasonPhrase = $response.ReasonPhrase
+        IsSuccessful = $responseOk
+    }
+}
 function AddTlsSecurityProtocolSupport {
     <#
     .SYNOPSIS
@@ -155,45 +208,55 @@ function GetApiRequestSplattingHash {
 
     $hashToReturn
 }
-function ImportAzureStorageModule {
-    $azureModuleLoaded = Get-Module -Name "Azure.Storage"
-    $azModuleLoaded = Get-Module -Name "Az.Storage"
+<#
+    Initialization code required when importing EpiCloud module.
+#>
 
-    if (-not ($azureModuleLoaded -or $azModuleLoaded)) {
-        try {
-            $null = Import-Module -Name "Az.Storage" -ErrorAction Stop
-            $azModuleLoaded = $true
+$dllPath = $PSScriptRoot
+$dllFiles = (Get-ChildItem -Path $dllPath -Filter "*.dll").FullName
+if ($dllFiles.Count -eq 0) {
+    $dllPath = (Get-Item -Path $dllPath).Parent.FullName
+    $dllFiles = (Get-ChildItem -Path $dllPath -Filter "*.dll").FullName
+}
+
+$dllFileString = $( ($dllFiles | ForEach-Object { "@`"$_`"" } ) -join ", " )
+
+$epiCloudAssemblyResolver = "
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+
+public static class EpiCloudAssemblyResolver
+{
+    private static readonly Dictionary<string,Assembly> _localAssemblies = new Dictionary<string,Assembly>();
+
+    public static void Initialize()
+    {
+        var dllFiles = new[] { $dllFileString };
+        foreach (var dllFile in dllFiles)
+        {
+            var assembly = Assembly.LoadFrom(dllFile);
+            if (!_localAssemblies.ContainsKey(assembly.GetName().Name))
+                _localAssemblies.Add(assembly.GetName().Name, assembly);
         }
-        catch {
-            Write-Verbose "Tried to find 'Az.Storage', module couldn't be imported."
-        }
+
+        AppDomain.CurrentDomain.AssemblyResolve += OnAssemblyResolve;
     }
 
-    if (-not ($azureModuleLoaded -or $azModuleLoaded)) {
-        try {
-            $null = Import-Module -Name "Azure.Storage" -ErrorAction Stop
-            $azureModuleLoaded = $true
-        }
-        catch {
-            Write-Verbose "Tried to find 'Azure.Storage', module couldn't be imported."
-        }
-    }
-
-    if ($azModuleLoaded) {
-        "Az"
-    }
-    elseif ($azureModuleLoaded) {
-        $azureModuleLoaded = Get-Module -Name "Azure.Storage"
-        if ($azureModuleLoaded.Version.Major -lt 4 -or ($azureModuleLoaded.Version.Major -eq 4 -and $azureModuleLoaded.Version.Minor -lt 4)) {
-            # Previous versions of Azure.Storage do not support SAS links with write-only permission.
-            throw "'Azure.Storage' version 4.4.0 or greater is required."
-        }
-        "Azure"
-    }
-    else {
-        throw "'Az.Storage' or 'Azure.Storage' module is required to run this cmdlet."
+    public static Assembly OnAssemblyResolve(object s, ResolveEventArgs e)
+    {
+        var assemblyName = e.Name;
+        var assemblyCommaPosition = assemblyName.IndexOf("","", StringComparison.InvariantCulture);
+        if (assemblyCommaPosition > -1) assemblyName = assemblyName.Substring (0, assemblyCommaPosition);
+        Assembly assembly;
+        _localAssemblies.TryGetValue(assemblyName, out assembly);
+        return assembly;
     }
 }
+"
+
+Add-Type -TypeDefinition $epiCloudAssemblyResolver
+[EpiCloudAssemblyResolver]::Initialize()
 function InvokeApiRequest {
     <#
     .SYNOPSIS
@@ -388,17 +451,7 @@ function Add-EpiDeploymentPackage {
             throw "The SasUrl is not correct"
         }
 
-        $sasToken = $urlComponent[1].ToString()
-        $storageAccountName = $urlComponent[0].ToString().Replace('https://', '').Replace('.blob.core.windows.net/', '')
-
-        $azureModuleType = ImportAzureStorageModule
-
-        if ($azureModuleType -eq "Azure") {
-            $storageAccountContext = New-AzureStorageContext -StorageAccountName $storageAccountName -SASToken $sasToken -ErrorAction Stop
-        }
-        else {
-            $storageAccountContext = New-AzStorageContext -StorageAccountName $storageAccountName -SASToken $sasToken -ErrorAction Stop
-        }
+        $sasUri = [Uri] $SasUrl
     }
 
     process {
@@ -408,20 +461,20 @@ function Add-EpiDeploymentPackage {
 
         Write-Verbose "Uploading blob $BlobName to storage account ..."
 
-        $setAzureStorageBlobContentParams = @{
-            File        = $Path
-            Container   = $DefaultContainer
-            Blob        = $BlobName
-            Context     = $storageAccountContext
-            Force       = $true
-            ErrorAction = 'Stop'
+        try {
+            $response = AddAzStorageBlob -SasUri $sasUri -BlobName $BlobName -Path $Path
+        }
+        catch {
+            if ($_.Exception.InnerException.Status -eq 412 -and $_.Exception.InnerException.ErrorCode -eq 'LeaseIdMissing') {
+                throw "A package named '$BlobName' is already linked to a deployment and cannot be overwritten."
+            }
+            else {
+                throw "Failed to upload the blob. The error was: $($_.Exception.Message)"
+            }
         }
 
-        if ($azureModuleType -eq "Azure") {
-            $null = Set-AzureStorageBlobContent @setAzureStorageBlobContentParams
-        }
-        else {
-            $null = Set-AzStorageBlobContent @setAzureStorageBlobContentParams
+        if (-not $response.IsSuccessful) {
+            throw "Error uploading $BlobName`: $($response.Status) $($response.ReasonPhrase)"
         }
 
         Write-Verbose "Done!"
