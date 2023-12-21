@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.9.3
+- Use EPiCloud progressbar in DeployNuGetPackage
+
 ## v2.9.2
 - Upgrade azure-pipelines-task-lib v4.4.0
 

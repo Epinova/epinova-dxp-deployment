@@ -27,14 +27,17 @@ try {
     $projectId = $ProjectId
     $targetEnvironment = $TargetEnvironment
     $sourceApp = $SourceApp
-    [Boolean]$directDeploy = [System.Convert]::ToBoolean($DirectDeploy)
+    [switch]$directDeploy = [System.Convert]::ToBoolean($DirectDeploy)
     $warmupThisUrl = $WarmUpUrl
-    [Boolean]$useMaintenancePage = [System.Convert]::ToBoolean($UseMaintenancePage)
+    [bool]$useMaintenancePage = [System.Convert]::ToBoolean($UseMaintenancePage)
     $dropPath = $DropPath
     $timeout = $Timeout
     $zeroDowntimeMode = $ZeroDowntimeMode
     $runBenchmark = [System.Convert]::ToBoolean($RunBenchmark)
     $runVerbose = [System.Convert]::ToBoolean($RunVerbose)
+    $pollingIntervalSec = 10
+    $timeoutMinutes = [int]($timeout / 60)
+    [switch] $showProgress = $true
 
     # 30 min timeout
     ####################################################################################
@@ -59,7 +62,10 @@ try {
     Write-Host "Warm-up URL:        $warmupThisUrl"
     Write-Host "UseMaintenancePage: $useMaintenancePage"
     Write-Host "DropPath:           $dropPath"
-    Write-Host "Timeout:            $timeout"
+    Write-Host "Timeout seconds:    $timeout"
+    Write-Host "Timeout minutes:    $timeoutMinutes"
+    Write-Host "Wait/ShowProgress   $showProgress"
+    Write-Host "PollingIntervalSec: $pollingIntervalSec"
     Write-Host "ZeroDowntimeMode:   $zeroDowntimeMode"
     Write-Host "RunBenchmark:       $runBenchmark"
     Write-Host "RunVerbose:         $runVerbose"
@@ -104,6 +110,11 @@ try {
             ProjectId          = $projectId
             TargetEnvironment  = $targetEnvironment
             UseMaintenancePage = $useMaintenancePage
+            Wait               = $showProgress
+            PollingIntervalSec = $pollingIntervalSec
+            WaitTimeoutMinutes = $timeoutMinutes
+            DirectDeploy       = $directDeploy.IsPresent
+            ShowProgress       = $showProgress.IsPresent
         }
     } else {
         $startEpiDeploymentSplat = @{
@@ -111,55 +122,60 @@ try {
             ProjectId          = $projectId
             TargetEnvironment  = $targetEnvironment
             UseMaintenancePage = $useMaintenancePage
+            Wait               = $showProgress
+            PollingIntervalSec = $pollingIntervalSec
+            WaitTimeoutMinutes = $timeoutMinutes
             ZeroDowntimeMode   = $zeroDowntimeMode
+            DirectDeploy       = $directDeploy.IsPresent
+            ShowProgress       = $showProgress.IsPresent
         }
     }
 
 
-    if ($true -eq $directDeploy){
-        $expectedStatus = "Succeeded"
-        $deploy = Start-EpiDeployment @startEpiDeploymentSplat -DirectDeploy
-    } else {
-        $expectedStatus = "AwaitingVerification"
-        $deploy = Start-EpiDeployment @startEpiDeploymentSplat
-    }
+    #if ($true -eq $directDeploy){
+    #    $expectedStatus = "Succeeded"
+        $deploy = Start-EpiDeployment @startEpiDeploymentSplat -DirectDeploy -ShowProgress
+    #} else {
+    #    $expectedStatus = "AwaitingVerification"
+    #    $deploy = Start-EpiDeployment @startEpiDeploymentSplat -ShowProgress
+    #}
     $deploy
 
     $deploymentId = $deploy.id
 
-    if ($deploy.status -eq "InProgress") {
-        $deployDateTime = Get-DxpDateTimeStamp
-        Write-Host "Deploy $deploymentId started $deployDateTime."
+    #if ($deploy.status -eq "InProgress") {
+    #    $deployDateTime = Get-DxpDateTimeStamp
+    #    Write-Host "Deploy $deploymentId started $deployDateTime."
 
-        $percentComplete = $deploy.percentComplete
+    #    $percentComplete = $deploy.percentComplete
 
-        $status = Invoke-DxpProgress -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus $expectedStatus -Timeout $timeout
+    #    $status = Invoke-DxpProgress -Projectid $projectId -DeploymentId $deploymentId -PercentComplete $percentComplete -ExpectedStatus $expectedStatus -Timeout $timeout
 
         $deployDateTime = Get-DxpDateTimeStamp
         Write-Host "Deploy $deploymentId ended $deployDateTime"
 
-        if ($status.status -eq $expectedStatus) {
-            Write-Host "Deployment $deploymentId has been successful."
+    #    if ($status.status -eq $expectedStatus) {
+    #        Write-Host "Deployment $deploymentId has been successful."
 
-            if ($true -eq $directDeploy -and $null -ne $warmupThisUrl -and $warmupThisUrl.length -gt 0){ #Warmup when direct deploy.
-                Invoke-WarmupSite $warmupThisUrl
-            }
-        }
-        else {
-            Send-BenchmarkInfo "Bad deploy/Time out"
-            Write-Warning "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
-            Write-Host "##vso[task.logissue type=error]The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
-            Write-Error "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)" -ErrorAction Stop
-            exit 1
-        }
-    }
-    else {
-        Send-BenchmarkInfo "Unhandled status"
-        Write-Warning "Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment."
-        Write-Host "##vso[task.logissue type=error]Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment."
-        Write-Error "Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment." -ErrorAction Stop
-        exit 1
-    }
+    #        if ($true -eq $directDeploy -and $null -ne $warmupThisUrl -and $warmupThisUrl.length -gt 0){ #Warmup when direct deploy.
+    #            Invoke-WarmupSite $warmupThisUrl
+    #        }
+    #    }
+    #    else {
+    #        Send-BenchmarkInfo "Bad deploy/Time out"
+    #        Write-Warning "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
+    #        Write-Host "##vso[task.logissue type=error]The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)"
+    #        Write-Error "The deploy has not been successful or the script has timed out. CurrentStatus: $($status.status)" -ErrorAction Stop
+    #        exit 1
+    #    }
+    #}
+    #else {
+    #    Send-BenchmarkInfo "Unhandled status"
+    #    Write-Warning "Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment."
+    #    Write-Host "##vso[task.logissue type=error]Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment."
+    #    Write-Error "Status is not in InProgress (Current:$($deploy.status)). You can not deploy at this moment." -ErrorAction Stop
+    #    exit 1
+    #}
     Write-Host "Setvariable DeploymentId: $deploymentId"
     Write-Host "##vso[task.setvariable variable=DeploymentId;]$($deploymentId)"
 

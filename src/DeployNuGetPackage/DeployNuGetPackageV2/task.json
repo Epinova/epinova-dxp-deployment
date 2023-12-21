@@ -13,7 +13,7 @@
     "version": {
         "Major": 2,
         "Minor": 9,
-        "Patch": 2
+        "Patch": 3
     },
     "groups": [
         {
@@ -37,7 +37,7 @@
             "isExpanded": false
         }
     ],
-    "releaseNotes": "v2.9.0: EPiCloud v1.3\r\nv2.7.0: Run benchmark\r\nv2.5.0: Support ZIP artifacts\r\nv2.4.0: RunVerbose\r\n v2.3.1: Added support for direct deploy with ADE. v2.3.0: Add support for ADE environments.",
+    "releaseNotes": "v2.9.3: Use EPiCloud progressbar\r\nv2.9.0: EPiCloud v1.3\r\nv2.7.0: Run benchmark\r\nv2.5.0: Support ZIP artifacts\r\nv2.4.0: RunVerbose\r\n v2.3.1: Added support for direct deploy with ADE. v2.3.0: Add support for ADE environments.",
     "minimumAgentVersion": "2.134.0",
     "inputs": [
         {
