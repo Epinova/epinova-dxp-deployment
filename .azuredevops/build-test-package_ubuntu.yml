@@ -4,7 +4,7 @@ name: $(Date:yyyyMMdd)$(Rev:.r)
 
 pool:
   name: Azure Pipelines
-  vmImage: 'windows-latest'
+  vmImage: 'ubuntu-latest'
   demands: npm
 
 variables:
@@ -16,33 +16,36 @@ variables:
   ExtensionVisibility: 'private'
 
 steps:
+  - checkout: self
+    persistCredentials: true
+
   # for each Node based task we must transpile it
   - task: PowerShell@2
     displayName: 'Get/Set extension version'
     inputs:
       targetType: filePath
-      filePath: ./BuildScripts/GetExtensionVersion.ps1 
+      filePath: '$(System.DefaultWorkingDirectory)/BuildScripts/GetExtensionVersion.ps1' 
       arguments: -buildnumber $(buildnumber)
 
   - task: PowerShell@2
     displayName: 'Copy Scripts'
     inputs:
       targetType: filePath
-      filePath: ./BuildScripts/CopyScripts.ps1
+      filePath: '$(System.DefaultWorkingDirectory)/BuildScripts/CopyScripts.ps1'
 
-  - template: build-node-tasks.yml
+  - template: build-node-tasks_ubuntu.yml
 
   - task: PowerShell@2
     displayName: 'Rename tasks to -TEST'
     inputs:
       targetType: filePath
-      filePath: ./BuildScripts/RenameTasksToTest.ps1
+      filePath: '$(System.DefaultWorkingDirectory)/BuildScripts/RenameTasksToTest.ps1'
 
   - task: Npm@1
     displayName: 'npm install extension'
     inputs:
       command: 'install'
-      workingDir: '$(System.DefaultWorkingDirectory)\src'
+      workingDir: '$(System.DefaultWorkingDirectory)/src'
 
   - task: TfxInstaller@3
     displayName: 'Install Tfx Tool'
@@ -53,7 +56,7 @@ steps:
     displayName: 'Package Extension: src'
     inputs:
       rootFolder: src
-      outputPath: '$(Build.ArtifactStagingDirectory)\$(ExtensionFileName)$(ExtensionFileVersion).vsix'
+      outputPath: '$(Build.ArtifactStagingDirectory)/$(ExtensionFileName)$(ExtensionFileVersion).vsix'
       publisherId: '$(PublisherID)'
       extensionId: '$(ExtensionID)'
       extensionName: '$(ExtensionName)'
@@ -63,3 +66,11 @@ steps:
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
+
+  - script: |
+      echo ¤$(ExtensionFileVersion)TEST
+      git tag $(ExtensionFileVersion)TEST
+      git push origin $(ExtensionFileVersion)TEST
+    workingDirectory: $(Build.SourcesDirectory)
+    displayName: 'Set git tag'
+    continueOnError: true

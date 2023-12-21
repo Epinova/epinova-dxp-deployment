@@ -1,0 +1,170 @@
+{
+  "Id": "f0f0f3b4-8227-4391-8227-957cf0235f0a",
+  "Name": "Optimizely DXP - Deploy NuGet package",
+  "Description": "Take a NuGet package from your drop folder in Azure DevOps and upload it to your Optimizely (formerly known as Episerver) DXP project and start a deployment to the specified environment.",
+  "ActionType": "Octopus.Script",
+  "Version": 1,
+  "CommunityActionTemplateId": null,
+  "Packages": [
+    {
+      "PackageId": "EpiCloud",
+      "FeedId": "feeds-builtin",
+      "AcquisitionLocation": "Server",
+      "Properties": {
+        "Extract": "True",
+        "SelectionMode": "immediate"
+      },
+      "Id": "2f5d79b6-e238-4f56-ab40-68f50c4a90f9",
+      "Name": "EpiCloud"
+    },
+    {
+      "PackageId": null,
+      "FeedId": "feeds-builtin",
+      "AcquisitionLocation": "Server",
+      "Properties": {
+        "Extract": "False",
+        "SelectionMode": "deferred",
+        "PackageParameterName": "sourcepackage"
+      },
+      "Id": "dc0386d1-0ebf-4b11-a4e3-e04bce12dae0",
+      "Name": "sourcepackage"
+    },
+    {
+      "PackageId": "EpinovaDxpToolBucket",
+      "FeedId": "feeds-builtin",
+      "AcquisitionLocation": "Server",
+      "Properties": {
+        "Extract": "True",
+        "SelectionMode": "immediate"
+      },
+      "Id": "8d94b3ee-726f-43af-8eb2-faae05ddd8a5",
+      "Name": "EpinovaDxpToolBucket"
+    }
+  ],
+  "Properties": {
+    "Octopus.Action.Script.ScriptSource": "Inline",
+    "Octopus.Action.Script.Syntax": "PowerShell",
+    "Octopus.Action.Script.ScriptBody": "try {\n    $packagePath = $OctopusParameters[\"Octopus.Action.Package[sourcepackage].OriginalPath\"]\n    Write-Host $packagePath\n    $directDeploy = [System.Convert]::ToBoolean($DirectDeploy)\n    $useMaintenancePage = [System.Convert]::ToBoolean($UseMaintenancePage)\n\t$runVerbose = [System.Convert]::ToBoolean($RunVerbose)\n\n\t#Uninstall-Module -Name EpiCloud -AllVersions -Force\n\t#Uninstall-Module -Name \"EpinovaDxpToolBucket\" -AllVersions -Force\n    Install-Module -Name \"EpinovaDxpToolBucket\" -MinimumVersion 0.13.0 -Force\n    $module = Get-Module -Name \"EpinovaDxpToolBucket\" -ListAvailable | Select-Object Version\n    $moduleVersion = \"v$($module.Version.Major).$($module.Version.Minor).$($module.Version.Build)\"\n    Write-Host \"EpinovaDxpToolBucket: $moduleVersion\"\n\n    Invoke-DxpDeployNuGetPackage -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -TargetEnvironment $TargetEnvironment -PackagePath $packagePath -DirectDeploy $directDeploy -WarmUpUrl $WarmUpUrl -UseMaintenancePage $useMaintenancePage -ZeroDowntimeMode $ZeroDowntimeMode -Timeout $Timeout -RunVerbose $runVerbose\n    ####################################################################################\n    Write-Host \"---THE END---\"\n}\ncatch {\n    Write-Verbose \"Exception caught from task: $($_.Exception.ToString())\"\n    throw\n}\n\nif ($runVerbose){\n    ## To Set Verbose output\n    $PSDefaultParameterValues['*:Verbose'] = $false\n}"
+  },
+  "Parameters": [
+    {
+      "Id": "fd3ae8d3-6819-4fba-a323-693691aaa0c3",
+      "Name": "ClientKey",
+      "Label": "ClientKey",
+      "HelpText": "The DXP API ClientKey for the current environment. This ClientKey can be generated in the Optimizely paas portal.",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "860028f6-50ab-4e0b-bdf2-1d8f2aff2015",
+      "Name": "ClientSecret",
+      "Label": "ClientSecret",
+      "HelpText": "The DXP API ClientSecret for the current environment.",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "Sensitive"
+      }
+    },
+    {
+      "Id": "7d692de0-198e-474d-958c-16663319aaf8",
+      "Name": "ProjectId",
+      "Label": "ProjectId",
+      "HelpText": "The DXP project id. Can be found in the Optimizely paas portal under API tab.",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "84666171-0b09-4f95-87e1-ebadb04ee61d",
+      "Name": "sourcepackage",
+      "Label": "Package Name",
+      "HelpText": "Specify the package you want to deploy",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "Package"
+      }
+    },
+    {
+      "Id": "642a681d-7027-4682-876d-360b04381156",
+      "Name": "TargetEnvironment",
+      "Label": "TargetEnvironment",
+      "HelpText": "Specify which environment that you want to check ex Integration/Preproduction/Production.",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "Select",
+        "Octopus.SelectOptions": "Integration|Integration\nPreproduction|Preproduction\nProduction|Production\nADE1|ADE1\nADE2|ADE2\nADE3|ADE3"
+      }
+    },
+    {
+      "Id": "ab4540e2-0931-42b3-b135-e7bd21215d45",
+      "Name": "DirectDeploy",
+      "Label": "DirectDeploy",
+      "HelpText": "Specify if you want to do a direct deploy without using slot and warmup.",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "Checkbox"
+      }
+    },
+    {
+      "Id": "e9b62fdb-bccf-48e0-91c9-817cf641c2c6",
+      "Name": "WarmUpUrl",
+      "Label": "WarmUpUrl",
+      "HelpText": "Specify if you want to warm-up the web application after direct deploy. It will request the specified URL and all links found on the page.\nIf there is some tests running against the web application with direct deploy there is a problem that the web application is not started and warmed up.",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "40fa3235-21b6-4125-acdc-f7c7f2461a86",
+      "Name": "UseMaintenancePage",
+      "Label": "UseMaintenancePage",
+      "HelpText": "Specify if you want to use a maintenance page during the deploy.",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "Checkbox"
+      }
+    },
+    {
+      "Id": "7e285978-e86f-4bce-8bec-cc8ce37e01af",
+      "Name": "Timeout",
+      "Label": "Timeout",
+      "HelpText": "Specify the number of seconds when the task should timeout.",
+      "DefaultValue": "1800",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "4c8c9d5c-0da5-4a67-9ebc-c28c6c725914",
+      "Name": "ZeroDowntimeMode",
+      "Label": "ZeroDowntimeMode",
+      "HelpText": "The type of smooth deployment you want to use. More information about zero downtime mode\nIf this parameter is set to empty, no zero downtime deployment will be made. It will be a regular deployment.",
+      "DefaultValue": "NotSpecified",
+      "DisplaySettings": {
+        "Octopus.ControlType": "Select",
+        "Octopus.SelectOptions": "NotSpecified|NotSpecified\nReadOnly|ReadOnly\nReadWrite|ReadWrite"
+      }
+    },
+    {
+      "Id": "395516a2-67d3-468c-9f06-5edf237dbecb",
+      "Name": "RunVerbose",
+      "Label": "RunVerbose",
+      "HelpText": "If you want to run in Verbose mode and see all verbose messages.",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "Checkbox"
+      }
+    }
+  ],
+  "$Meta": {
+    "ExportedAt": "2023-11-23T10:03:48.110Z",
+    "OctopusVersion": "2020.3.4",
+    "Type": "ActionTemplate"
+  },
+  "LastModifiedBy": "Your GitHub Username",
+  "Category": "other"
+}

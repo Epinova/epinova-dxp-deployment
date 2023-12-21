@@ -1,0 +1,107 @@
+{
+  "Id": "064477fc-a422-4b30-bfa2-31465ccba918",
+  "Name": "Optimizely DXP - Reset deploy",
+  "Description": "Reset a specifed environment if the status for the environment is in status \"AwaitingVerification\".",
+  "ActionType": "Octopus.Script",
+  "Version": 1,
+  "CommunityActionTemplateId": null,
+  "Packages": [
+    {
+      "PackageId": "EpiCloud",
+      "FeedId": "feeds-builtin",
+      "AcquisitionLocation": "Server",
+      "Properties": {
+        "Extract": "True",
+        "SelectionMode": "immediate"
+      },
+      "Id": "9b90a7e7-0b68-434e-9cdb-e67c40a4246e",
+      "Name": "EpiCloud"
+    },
+    {
+      "PackageId": "EpinovaDxpToolBucket",
+      "FeedId": "feeds-builtin",
+      "AcquisitionLocation": "Server",
+      "Properties": {
+        "Extract": "True",
+        "SelectionMode": "immediate"
+      },
+      "Id": "0fdb30c7-c1e5-4031-9ad6-01c3ae7463b8",
+      "Name": "EpinovaDxpToolBucket"
+    }
+  ],
+  "Properties": {
+    "Octopus.Action.Script.ScriptSource": "Inline",
+    "Octopus.Action.Script.Syntax": "PowerShell",
+    "Octopus.Action.Script.ScriptBody": "try {\n    $runVerbose = [System.Convert]::ToBoolean($RunVerbose)\n\n\t#Uninstall-Module -Name EpiCloud -AllVersions -Force\n\t#Uninstall-Module -Name \"EpinovaDxpToolBucket\" -AllVersions -Force\n    Install-Module -Name \"EpinovaDxpToolBucket\" -MinimumVersion 0.13.0 -Force\n    $module = Get-Module -Name \"EpinovaDxpToolBucket\" -ListAvailable | Select-Object Version\n    $moduleVersion = \"v$($module.Version.Major).$($module.Version.Minor).$($module.Version.Build)\"\n    Write-Host \"EpinovaDxpToolBucket: $moduleVersion\"\n\n    Invoke-DxpResetDeploy -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectId $ProjectId -TargetEnvironment $TargetEnvironment -Timeout $Timeout -RunVerbose $runVerbose\n    ####################################################################################\n    Write-Host \"---THE END---\"\n}\ncatch {\n    Write-Verbose \"Exception caught from task: $($_.Exception.ToString())\"\n    throw\n}\n\nif ($runVerbose){\n    ## To Set Verbose output\n    $PSDefaultParameterValues['*:Verbose'] = $false\n}"
+  },
+  "Parameters": [
+    {
+      "Id": "ebba29c5-0b4e-4faa-9d99-cfc70f44be37",
+      "Name": "ClientKey",
+      "Label": "ClientKey",
+      "HelpText": "The DXP API ClientKey for the current environment. This ClientKey can be generated in the Optimizely paas portal.",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "02604d29-3741-438a-97e4-f1823ecea1c1",
+      "Name": "ClientSecret",
+      "Label": "ClientSecret",
+      "HelpText": "The DXP API ClientSecret for the current environment.",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "Sensitive"
+      }
+    },
+    {
+      "Id": "4c97fcc6-680d-4ff0-9f84-4b51a0a4af55",
+      "Name": "ProjectId",
+      "Label": "ProjectId",
+      "HelpText": "The DXP project id. Can be found in the Optimizely paas portal under API tab.",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "407c5bc0-0511-44ae-a5a9-9582d088c262",
+      "Name": "TargetEnvironment",
+      "Label": "TargetEnvironment",
+      "HelpText": "Specify which environment that you want to check ex Integration/Preproduction/Production.",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "Select",
+        "Octopus.SelectOptions": "Integration|Integration\nPreproduction|Preproduction\nProduction|Production\nADE1|ADE1\nADE2|ADE2\nADE3|ADE3"
+      }
+    },
+    {
+      "Id": "8a100687-e113-4e23-9676-1de8ebaef195",
+      "Name": "Timeout",
+      "Label": "Timeout",
+      "HelpText": "Specify the number of seconds when the task should timeout.",
+      "DefaultValue": "1800",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "6119d4bd-13f4-4511-8a33-6f0bd3609327",
+      "Name": "RunVerbose",
+      "Label": "RunVerbose",
+      "HelpText": "If you want to run in verbose mode and see all information.",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "Checkbox"
+      }
+    }
+  ],
+  "$Meta": {
+    "ExportedAt": "2023-11-23T10:05:03.527Z",
+    "OctopusVersion": "2020.3.4",
+    "Type": "ActionTemplate"
+  },
+  "LastModifiedBy": "Your GitHub Username",
+  "Category": "other"
+}
