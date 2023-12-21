@@ -9,7 +9,7 @@ Install-Module -Name "EpiCloud" -MinimumVersion 1.3.0  -Scope CurrentUser
 $version = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version
 Write-Host "EPiCloud: $version"
 
-# List all containers that are ok to order SAS URL with writeable permission.
+# List all containers that are ok to order SAS URL with writable permission.
 $containerHash = @{
             ClientKey    = $clientKey
             ClientSecret = $clientSecret
@@ -18,7 +18,7 @@ $containerHash = @{
             Writable     = $true
         }
 $containers = Get-EpiStorageContainer @containerHash
-Write-Host "Found following storage containers that are writeable:"
+Write-Host "Found following storage containers that are writable:"
 Write-Host "{"
 Write-Host $containers.storageContainers
 Write-Host "}"

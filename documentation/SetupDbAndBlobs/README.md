@@ -1,6 +1,6 @@
 # Setup new/existing website in DXP integration
 There are cases when you want to move an existing Optimizely website to DXP. It could be existing website hosted somewhere else or you already started development and now it is time to get the website up and running on your integration environment in Optimizely DXP.
-Before EPiCloud v1.3.0 you had to contact Optimizely support and send them your database and blob files to restore it in the integration environment. But now with EPiCloud v1.3.0 they have introduced a new flag. “Writeable”. It will give you the option to only list containers that are writeable. Or order a SAS URL that give you write permissions on writeable containers.
+Before EPiCloud v1.3.0 you had to contact Optimizely support and send them your database and blob files to restore it in the integration environment. But now with EPiCloud v1.3.0 they have introduced a new flag. “Writable”. It will give you the option to only list containers that are writable. Or order a SAS URL that give you write permissions on writable containers.
 You have also the possibility to upload a bacpac file in the same way you upload a nupkg with the website code. So, if I cut to the point. You can now setup a website in integration environment all by yourself without contact Optimizely support. That is very nice. Let´s have a look how I deployed an Alloy website code, database and blob(s) to an empty Optimizely DXP integration environment.
 
 
@@ -56,22 +56,22 @@ We will now do this in 2 bigger steps. First, we will upload the blobs and secon
 
 ## Blobs
 To be able to upload blobs we need to get information about the name of the container that we will upload the blobs to. In earlier versions of EPiCloud the method “Get-EpiStorageContainer” listed all the containers. That means that log containers and others were listed as well.  
-Now when you can specify a new flag with the name “Writeable”, method will be able to just list containers that you may have access to write to. Since you will never be able to write to any of the log containers for example, they will not show up in result of flag “Writeable” is true.  
-First step is to check which container in Optimizely DXP that we can upload these blobs to. Execute PowerShell script – ListWriteableContainers.ps1  
-Example: ```PS C:\temp\newwebsite>.\ListWriteableContainers.ps1```  
+Now when you can specify a new flag with the name “Writable”, method will be able to just list containers that you may have access to write to. Since you will never be able to write to any of the log containers for example, they will not show up in result of flag “Writable” is true.  
+First step is to check which container in Optimizely DXP that we can upload these blobs to. Execute PowerShell script – ListWritableContainers.ps1  
+Example: ```PS C:\temp\newwebsite>.\ListWritableContainers.ps1```  
 Result:  
 ```
-PS C:\temp\newwebsite>.\ListWriteableContainers.ps1
+PS C:\temp\newwebsite>.\ListWritableContainers.ps1
 EPiCloud: @{Version=1.3.0}
-Found following storage containers that are writeable:
+Found following storage containers that are writable:
 {
 mysitemedia
 }
 PS C:\temp\newwebsite>
 ```  
-![List writeable containers](Images/list-writeable-containers.png) 
-In the result we can see that we have one writeable container with the name “mysitemedia”. That is a very common name for the default container name that handle blobs for Optimizely CMS blobs. With this information we want to get a SAS URL to be able to upload our blob files to this “mysitemedia” container. Let us execute next script to create a SAS token that will give us access to upload blobs.  
-Before EPiCloud v1.3 you could only get read and list access to containers. So, what we can do now is using the “Writeable” flag again to ask for “write” permission to the “mysitemedia” container. That is how we will be able to upload the blobs to the container.  
+![List writable containers](Images/list-writable-containers.png) 
+In the result we can see that we have one writable container with the name “mysitemedia”. That is a very common name for the default container name that handle blobs for Optimizely CMS blobs. With this information we want to get a SAS URL to be able to upload our blob files to this “mysitemedia” container. Let us execute next script to create a SAS token that will give us access to upload blobs.  
+Before EPiCloud v1.3 you could only get read and list access to containers. So, what we can do now is using the “Writable” flag again to ask for “write” permission to the “mysitemedia” container. That is how we will be able to upload the blobs to the container.  
 Note: If you get another container name then “mysitemedia”. Then you need to change that parameter (“$storageContainer”) in the next script. Execute PowerShell script – CreateMysitemediaSasUrl.ps1  
 Example: ```PS C:\temp\newwebsite>.\CreateMysitemediaSasUrl.ps1```  
 Result example:  
