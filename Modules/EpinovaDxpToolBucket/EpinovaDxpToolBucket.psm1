@@ -1119,7 +1119,7 @@ function Invoke-WarmupSite{
     while ($iterator -lt 10) {
         try {
             Write-Host "Invoke-WebRequest -Uri $Url"
-            $response = Invoke-WebRequest -Uri $Url -UseBasicParsing -Verbose:$false -MaximumRedirection 1 -TimeoutSec 120
+            $response = Invoke-WebRequest -Uri $Url -UseBasicParsing -Verbose:$false -MaximumRedirection 2 -TimeoutSec 120
             $iterator = 999
             if ($null -ne $response){ 
                 foreach ($link in $response.Links){
@@ -2164,7 +2164,7 @@ function Invoke-DxpDeployNuGetPackage{
         if ($status.status -eq $expectedStatus) {
             Write-Host "Deployment $deploymentId has been successful."
 
-            if ($true -eq $directDeploy -and $null -ne $warmupThisUrl -and $warmupThisUrl.length -gt 0){ #Warmup when direct deploy.
+            if ($warmupThisUrl){
                 Invoke-WarmupSite $warmupThisUrl
             }
         }
