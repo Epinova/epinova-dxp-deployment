@@ -141,7 +141,7 @@ try {
         if ($status.status -eq $expectedStatus) {
             Write-Host "Deployment $deploymentId has been successful."
 
-            if ($true -eq $directDeploy -and $null -ne $warmupThisUrl -and $warmupThisUrl.length -gt 0){ #Warmup when direct deploy.
+            if ($warmupThisUrl){
                 Invoke-WarmupSite $warmupThisUrl
             }
         }
