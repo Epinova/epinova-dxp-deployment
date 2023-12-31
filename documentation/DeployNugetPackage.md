@@ -67,11 +67,12 @@ Specify if you want to do a direct deploy without using slot and warmup.
 
 #### Warm-up URL
 **[string]** 
-Specify if you want to warm-up the web application after direct deploy. It will request the specified URL and all links found on the page.  
-If there is some tests running against the web application with direct deploy there is a problem that the web application is not started and warmed up.  
-This should solve this problem.  
+Specify if you want to warm-up the web application after deploy. It will request the specified URL and all links found on the page.  
+If you tests running against the web application that starts after deploy. There could be a problem that the web application is not started and warmed up.  
+This could/should solve this problem.  
 **Example1:** `https://dikl06mstr3pe5minte.dxcloud.episerver.net/`  
-**Example2:** `$(Integration.Url)`  
+**Example2:** `https://dikl06mstr3pe5mprep-slot.dxcloud.episerver.net/`  
+**Example3:** `$(Integration.Url)`  
 **Default value:** `$(Integration.Url)`
 
 #### Use maintenance page

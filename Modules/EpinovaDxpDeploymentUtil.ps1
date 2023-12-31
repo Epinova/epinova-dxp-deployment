@@ -22,7 +22,7 @@ function Initialize-EpiCload{
         Write-Host "Could not find EpiCloud."
         #Install-Module EpiCloud  -Scope CurrentUser -MinimumVersion 0.13.15 -Force -AllowClobber
         #Write-Host "Installed EpiCloud."
-        Import-Module -Name "EpiCloud" -MinimumVersion 1.2.0 -Verbose
+        Import-Module -Name "EpiCloud" -MinimumVersion 1.3.0 -Verbose
         #Import-Module -Name "$PSScriptRoot/EpiCloud/EpiCloud.psd1" -Verbose -ErrorAction Stop
         Write-Host "Import EpiCloud."
     }
@@ -705,7 +705,7 @@ function Invoke-WarmupSite{
     while ($iterator -lt 10) {
         try {
             Write-Host "Invoke-WebRequest -Uri $Url"
-            $response = Invoke-WebRequest -Uri $Url -UseBasicParsing -Verbose:$false -MaximumRedirection 1 -TimeoutSec 120
+            $response = Invoke-WebRequest -Uri $Url -UseBasicParsing -Verbose:$false -MaximumRedirection 2 -TimeoutSec 120
             $iterator = 999
             if ($null -ne $response){ 
                 foreach ($link in $response.Links){

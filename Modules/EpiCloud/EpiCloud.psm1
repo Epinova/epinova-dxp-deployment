@@ -33,7 +33,7 @@ function AddAzStorageBlob {
     $containerClient = New-Object "Azure.Storage.Blobs.BlobContainerClient" -ArgumentList $SasUri
     $blobClient = $containerClient.GetBlobClient($BlobName)
     $uploadOptions = New-Object "Azure.Storage.Blobs.Models.BlobUploadOptions"
-    $filePath = Resolve-Path -Path $Path
+    $filePath = Resolve-Path -LiteralPath $Path
 
     $storageTransferOptions = New-Object "Azure.Storage.StorageTransferOptions"
     $storageTransferOptions.InitialTransferSize = 1024*1024*8
@@ -146,7 +146,7 @@ function GetApiObjectEncoded {
         $bytesArray = [System.Text.Encoding]::Convert($iso88591, $utf8, $utf8.GetBytes($SerializedObject))
     }
 
-    # Write the first results to the pipline
+    # Write the first results to the pipeline
     $EncodedJsonString = $utf8.GetString($bytesArray)
 
     $EncodedObject = ConvertFrom-Json -InputObject $EncodedJsonString
@@ -936,8 +936,33 @@ function Get-EpiStorageContainer {
         .PARAMETER Environment
         The environment name.
 
+        .PARAMETER Writable
+        Only list writable blob storage containers.
+
         .EXAMPLE
-        Get-EpiStorageContainer -ClientKey $myKey -ClientSecret $mySecret -ProjectId d117c12c-d02e-4b53-aabd-aa8e00a47cdv -Environment Integration
+        $containerHash = @{
+            ClientKey    = $myKey
+            ClientSecret = $mySecret
+            ProjectId    = 'd117c12c-d02e-4b53-aabd-aa8e00a47cdv'
+            Environment  = 'Integration'
+        }
+        Get-EpiStorageContainer @containerHash
+
+        Get all blob storage containers for specified ProjectId and Environment.
+
+        .EXAMPLE
+        $containerHash = @{
+            ClientKey    = $myKey
+            ClientSecret = $mySecret
+            ProjectId    = 'd117c12c-d02e-4b53-aabd-aa8e00a47cdv'
+            Environment  = 'Integration'
+            Writable     = $true
+        }
+        Get-EpiStorageContainer @containerHash
+
+        Get the writable blob storage containers for specified ProjectId and Environment.
+        Note: Not available for Preproduction and Production environments.
+
     #>
 
     [CmdletBinding(PositionalBinding = $false)]
@@ -952,13 +977,21 @@ function Get-EpiStorageContainer {
         [String] $ProjectId,
 
         [Parameter(Mandatory = $true)]
-        [String] $Environment
+        [String] $Environment,
+
+        [Parameter(Mandatory = $false)]
+        [Switch] $Writable
     )
 
     begin { }
 
     process {
-        $uriEnding = "projects/$ProjectId/environments/$Environment/storagecontainers"
+        if ($Writable) {
+            $uriEnding = "projects/$ProjectId/environments/$Environment/storagecontainers?writable=true"
+        }
+        else {
+            $uriEnding = "projects/$ProjectId/environments/$Environment/storagecontainers"
+        }
 
         $requestHash = GetApiRequestSplattingHash -UriEnding $uriEnding
 
@@ -976,10 +1009,10 @@ function Get-EpiStorageContainer {
 function Get-EpiStorageContainerSasLink {
     <#
         .SYNOPSIS
-        Retrieves SAS link for specified project id, environment, storage container and retention hours.
+        Retrieves SAS link for specified project id, environment, blob storage container and retention hours.
 
         .DESCRIPTION
-        Retrieves SAS link for specified project id, environment, storage container and retention hours.
+        Retrieves SAS link for specified project id, environment, blob storage container and retention hours.
 
         .PARAMETER ClientKey
         The client key used to access the project.
@@ -999,8 +1032,33 @@ function Get-EpiStorageContainerSasLink {
         .PARAMETER RetentionHours
         Total hours for which sas link will be retained. Default is 24 hours.
 
+        .PARAMETER Writable
+        Retrieves writable SAS link for writable blob storage containers.
+
         .EXAMPLE
-        Get-EpiStorageContainerSasLink -ClientKey $myKey -ClientSecret $mySecret -ProjectId d117c12c-d02e-4b53-aabd-aa8e00a47cdv -Environment Integration -StorageContainer @('azure-application-logs', 'azure-web-logs')
+        $containerHash = @{
+            ClientKey        = $myKey
+            ClientSecret     = $mySecret
+            ProjectId        = 'd117c12c-d02e-4b53-aabd-aa8e00a47cdv'
+            Environment      = 'Integration'
+            StorageContainer = @('azure-application-logs', 'azure-web-logs')
+        }
+        Get-EpiStorageContainerSasLink @containerHash
+
+        Retrieves SAS links to the specified blob storage containers.
+
+        .EXAMPLE
+        $containerHash = @{
+            ClientKey        = $myKey
+            ClientSecret     = $mySecret
+            ProjectId        = 'd117c12c-d02e-4b53-aabd-aa8e00a47cdv'
+            Environment      = 'Integration'
+            StorageContainer = 'mysitemedia'
+            Writable         = $true
+        }
+        Get-EpiStorageContainerSasLink @containerHash
+
+        Retrieves a writable SAS link to the blob storage container 'mysitemedia'.
     #>
 
     [CmdletBinding(PositionalBinding = $false)]
@@ -1023,7 +1081,10 @@ function Get-EpiStorageContainerSasLink {
 
         [Parameter(Mandatory = $false)]
         [ValidateRange(1, 168)]
-        [Int] $RetentionHours = 24
+        [Int] $RetentionHours = 24,
+
+        [Parameter(Mandatory = $false)]
+        [Switch] $Writable
     )
 
     begin { }
@@ -1038,9 +1099,11 @@ function Get-EpiStorageContainerSasLink {
                 ClientSecret         = $ClientSecret
                 ClientKey            = $ClientKey
                 RequestSplattingHash = $requestHash
-                RequestPayload       = @{ RetentionHours = $RetentionHours }
+                RequestPayload       = @{
+                    RetentionHours = $RetentionHours
+                    Writable       = $Writable.IsPresent
+                }
             }
-
             InvokeApiRequest @invokeApiRequestSplat
         }
     }
@@ -1397,7 +1460,9 @@ function Start-EpiDeployment {
     .PARAMETER DirectDeploy
         Specify this switch to speed up deployments to Integration/Development environment.
         A deployment will be made directly to the target web app without performing a swap.
-        Attention: Resetting the deployment (or the database of the target environment) is not supported for DirectDeploy.
+
+        Attention: Resetting the deployment (or the database of the target environment) is not supported for
+        DirectDeploy.
 
     .PARAMETER Wait
         Specify this switch to enable "polling" of the deployment until it's completed.
@@ -1412,34 +1477,102 @@ function Start-EpiDeployment {
         How often, in seconds, to poll for deployment status.
 
     .EXAMPLE
-        Start-EpiDeployment -ClientKey $myKey -ClientSecret $mySecret -ProjectId $projectId -TargetEnvironment Integration -DeploymentPackage cms.app.1.0.0.nupkg -DirectDeploy
+        $DeploymentHash = @{
+            ClientKey         = $myKey
+            ClientSecret      = $mySecret
+            ProjectId         = $projectId
+            TargetEnvironment = 'Integration'
+            DeploymentPackage = 'cms.app.1.0.0.nupkg'
+            DirectDeploy      = $true
+        }
+        Start-EpiDeployment @DeploymentHash
 
         Directly deploys a code package to the Integration environment.
 
     .EXAMPLE
-        Start-EpiDeployment -ClientKey $myKey -ClientSecret $mySecret -ProjectId d117c12c-d02e-4b53-aabd-aa8e00a47cdv -TargetEnvironment Integration -DeploymentPackage cms.app.1.0.0.nupkg
+        $DeploymentHash = @{
+            ClientKey         = $myKey
+            ClientSecret      = $mySecret
+            ProjectId         = $projectId
+            TargetEnvironment = 'Integration'
+            DeploymentPackage = 'cms.app.1.0.0.nupkg'
+        }
+        Start-EpiDeployment @DeploymentHash
 
         Deploys a code package to the Integration environment.
 
     .EXAMPLE
-        Start-EpiDeployment -ClientKey $myKey -ClientSecret $mySecret -ProjectId d117c12c-d02e-4b53-aabd-aa8e00a47cdv -TargetEnvironment Integration -DeploymentPackage cms.app.1.0.0.nupkg -Wait -PollingIntervalSec 10 -WaitTimeoutMinutes 30
+        $DeploymentHash = @{
+            ClientKey          = $myKey
+            ClientSecret       = $mySecret
+            ProjectId          = $projectId
+            TargetEnvironment  = 'Integration'
+            DeploymentPackage  = 'cms.app.1.0.0.nupkg'
+            Wait               = $true
+            PollingIntervalSec = 10
+            WaitTimeoutMinutes = 30
+        }
+        Start-EpiDeployment @DeploymentHash
 
         Deploys a code package to the Integration environment and waits for it to finish (for up to 30 minutes).
 
     .EXAMPLE
-        Start-EpiDeployment -ClientKey $myKey -ClientSecret $mySecret -ProjectId d117c12c-d02e-4b53-aabd-aa8e00a47cdv -SourceEnvironment Integration -SourceApp cms -TargetEnvironment Preproduction -IncludeBlob -IncludeDb
+        $DeploymentHash = @{
+            ClientKey         = $myKey
+            ClientSecret      = $mySecret
+            ProjectId         = $projectId
+            SourceEnvironment = 'Integration'
+            SourceApp         = 'cms'
+            TargetEnvironment = 'Preproduction'
+            IncludeBlob       = $true
+            IncludeDb         = $true
+        }
+        Start-EpiDeployment @DeploymentHash
 
-        Starts a deployment to Preproduction environment copying the code of the cms app and the contents (blobs and db(s)) from the Integration source environment.
+        Starts a deployment to Preproduction environment copying the code of the cms app and the contents
+        (blobs and db(s)) from the Integration source environment.
 
     .EXAMPLE
-        Start-EpiDeployment -ClientKey $myKey -ClientSecret $mySecret -ProjectId d117c12c-d02e-4b53-aabd-aa8e00a47cdv -SourceEnvironment Integration -TargetEnvironment Production -IncludeBlob -IncludeDb
+        $DeploymentHash = @{
+            ClientKey         = $myKey
+            ClientSecret      = $mySecret
+            ProjectId         = $projectId
+            SourceEnvironment = 'Integration'
+            TargetEnvironment = 'Production'
+            IncludeBlob       = $true
+            IncludeDb         = $true
+        }
+        Start-EpiDeployment @DeploymentHash
 
-        Starts a deployment to Production environment copying only the the contents (blobs and db(s)) from the Integration source environment.
+        Starts a deployment to Production environment copying only the the contents (blobs and db(s)) from the
+        Integration source environment.
 
     .EXAMPLE
-        Start-EpiDeployment -ClientKey $myKey -ClientSecret $mySecret -ProjectId d117c12c-d02e-4b53-aabd-aa8e00a47cdv -SourceEnvironment Integration -TargetEnvironment Production -ZeroDownTimeMode ReadOnly
+        $DeploymentHash = @{
+            ClientKey         = $myKey
+            ClientSecret      = $mySecret
+            ProjectId         = $projectId
+            SourceEnvironment = 'Integration'
+            TargetEnvironment = 'Production'
+            ZeroDownTimeMode  = 'ReadOnly'
+        }
+        Start-EpiDeployment @DeploymentHash
 
         Starts a deployment to Production environment with zero downtime readonly mode.
+
+    .EXAMPLE
+        $DeploymentHash = @{
+            ClientKey         = $myKey
+            ClientSecret      = $mySecret
+            ProjectId         = $projectId
+            TargetEnvironment = 'Integration'
+            DeploymentPackage = @('cms.app.1.0.0.nupkg','cms.sqldb.1.bacpac')
+            DirectDeploy      = $true
+        }
+        Start-EpiDeployment @DeploymentHash
+
+        Directly deploys a code package and database package to the Integration environment.
+
     #>
 
     [CmdletBinding(
@@ -1467,6 +1600,7 @@ function Start-EpiDeployment {
         [String] $TargetEnvironment,
 
         [Parameter(Mandatory = $true, ParameterSetName = 'DeploymentPackage')]
+        [ValidatePattern('^(.+\.)?(cms|commerce)\.(app\.(.+)\.nupkg|sqldb\.(.+)\.bacpac)$')]
         [String[]] $DeploymentPackage,
 
         [Parameter(Mandatory = $false)]
@@ -1492,12 +1626,12 @@ function Start-EpiDeployment {
         [Switch] $ShowProgress,
 
         [Parameter(Mandatory = $false)]
-        [ValidateRange(1, [int]::MaxValue)]
+        [ValidateRange(1, [Int]::MaxValue)]
         [Alias('WaitTimeoutSec')]
         [Int] $WaitTimeoutMinutes = 240,
 
         [Parameter(Mandatory = $false)]
-        [ValidateRange(1, [int]::MaxValue)]
+        [ValidateRange(1, [Int]::MaxValue)]
         [Int] $PollingIntervalSec = 30
     )
 
@@ -1511,7 +1645,7 @@ function Start-EpiDeployment {
     }
 
     process {
-        if ($Wait.IsPresent) {
+        if ($Wait) {
             $timeOutDateTime = (Get-Date).AddMinutes($WaitTimeoutMinutes)
         }
         else {
@@ -1519,7 +1653,7 @@ function Start-EpiDeployment {
         }
 
         $maintenanceMode = $false
-        if ($ZeroDownTimeMode -or $UseMaintenancePage.IsPresent) {
+        if ($ZeroDownTimeMode -or $UseMaintenancePage) {
             $maintenanceMode = $true
         }
 
@@ -1539,7 +1673,7 @@ function Start-EpiDeployment {
         }
 
         if ($PSCmdlet.ParameterSetName -eq 'DeploymentPackage') {
-            $startDeploymentParams.RequestPayload.Packages = $DeploymentPackage
+                $startDeploymentParams.RequestPayload.Packages = $DeploymentPackage
         }
         elseif ($PSCmdlet.ParameterSetName -eq 'SourceEnvironment') {
             $startDeploymentParams.RequestPayload.sourceEnvironment = $SourceEnvironment
@@ -1552,8 +1686,8 @@ function Start-EpiDeployment {
             $startDeploymentParams.RequestPayload.includeDB = $IncludeDb.IsPresent
 
             if (-not $startDeploymentParams.RequestPayload.sourceApps -and
-                -not $IncludeBlob.IsPresent -and
-                -not $IncludeDb.IsPresent) {
+                -not $IncludeBlob -and
+                -not $IncludeDb) {
                 throw "You need to specify at least one of the following parameters: DeploymentPackage, SourceApp, IncludeBlob or IncludeDb."
             }
         }
@@ -1561,7 +1695,7 @@ function Start-EpiDeployment {
         Write-Verbose "Starting deployment for the project: $($ProjectId) / targetEnvironment: $($TargetEnvironment)"
         $startDeploymentResponse = InvokeApiRequest @startDeploymentParams
 
-        if ($ShowProgress.IsPresent -and $Wait.IsPresent) {
+        if ($ShowProgress -and $Wait) {
             $writeProgressParams = @{
                 Activity        = "Deployment running against $TargetEnvironment..."
                 PercentComplete = 0
@@ -1573,7 +1707,7 @@ function Start-EpiDeployment {
 
         $deploymentCompletionStates = @('Failed', 'AwaitingVerification', 'Succeeded')
         do {
-            if ($Wait.IsPresent) {
+            if ($Wait) {
                 Start-Sleep -Seconds $PollingIntervalSec
             }
             $getDeploymentParams = @{
@@ -1586,14 +1720,18 @@ function Start-EpiDeployment {
             $getDeploymentResponse = Get-EpiDeployment @getDeploymentParams
             Write-Verbose "Deployment status: $($getDeploymentResponse.status). Progress: $($getDeploymentResponse.percentComplete)%"
 
-            if ($ShowProgress.IsPresent -and $Wait.IsPresent) {
+            if ($ShowProgress -and $Wait) {
                 $writeProgressParams.PercentComplete = $getDeploymentResponse.percentComplete
                 $writeProgressParams.Status = $getDeploymentResponse.status
                 Write-Progress @writeProgressParams
             }
-        } while ($Wait.IsPresent -and $deploymentCompletionStates -notcontains $getDeploymentResponse.status -and (Get-Date) -le ($timeOutDateTime))
+        } while (
+            $Wait -and
+            $deploymentCompletionStates -notcontains $getDeploymentResponse.status -and
+            (Get-Date) -le $timeOutDateTime
+        )
 
-        if ($Wait.IsPresent -and $deploymentCompletionStates -notcontains $getDeploymentResponse.status) {
+        if ($Wait -and $deploymentCompletionStates -notcontains $getDeploymentResponse.status) {
             throw "Timed out during deployment with status: $($getDeploymentResponse.status)"
         }
 

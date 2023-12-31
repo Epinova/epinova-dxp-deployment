@@ -143,9 +143,10 @@
       "Name": "ZeroDowntimeMode",
       "Label": "ZeroDowntimeMode",
       "HelpText": "The type of smooth deployment you want to use. More information about zero downtime mode\nIf this parameter is set to empty, no zero downtime deployment will be made. It will be a regular deployment.",
-      "DefaultValue": "",
+      "DefaultValue": "NotSpecified",
       "DisplaySettings": {
-        "Octopus.ControlType": "Checkbox"
+        "Octopus.ControlType": "Select",
+        "Octopus.SelectOptions": "NotSpecified|NotSpecified\nReadOnly|ReadOnly\nReadWrite|ReadWrite"
       }
     },
     {

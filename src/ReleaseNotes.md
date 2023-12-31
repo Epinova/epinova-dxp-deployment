@@ -1,5 +1,14 @@
 # Release notes
 
+## v2.9.6
+- Fixed warmup site for DeployNuGetPackage
+
+## v2.9.2
+- Upgrade azure-pipelines-task-lib v4.4.0
+
+## v2.9.0
+- EpiCloud v1.3.0
+
 ## v2.8.4
 - Fix npm stuff (I dont like npm...)
 
