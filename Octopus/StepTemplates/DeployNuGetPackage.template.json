@@ -103,7 +103,7 @@
       "Name": "DirectDeploy",
       "Label": "DirectDeploy",
       "HelpText": "Specify if you want to do a direct deploy without using slot and warmup.",
-      "DefaultValue": "",
+      "DefaultValue": "#{DirectDeploy}",
       "DisplaySettings": {
         "Octopus.ControlType": "Checkbox"
       }
