@@ -3,10 +3,13 @@ parameters:
   type: string
 - name: taskName
   type: string
+- name: useCache
+  type: boolean
 
 steps:  
 - task: PowerShell@2
   displayName: '${{parameters.taskName}}:Calculate and save package-lock.json hash'
+  condition: eq('${{ parameters.useCache }}', true)
   inputs:
     targetType: 'inline'
     script: |
@@ -19,6 +22,7 @@ steps:
     workingDirectory: '${{parameters.extensionRoot}}/${{parameters.taskName}}'
 
 - task: CacheBeta@0 # speed up builds by caching node_modules folder
+  condition: eq('${{ parameters.useCache }}', true)
   inputs:
     #key: nuget|1|$(Agent.OS)|${{parameters.extensionRoot}}/${{parameters.taskName}}/packagelockjsonhash.txt # hash map generated in previous step
     key: nuget|1|$(Agent.OS)|$(myHashValue) # hash map generated in previous step
@@ -36,7 +40,7 @@ steps:
   #  workingDirectory: '${{parameters.extensionRoot}}/${{parameters.taskName}}'
 
 - task: Npm@1
-  condition: ne(variables.npm_cache_hit, 'true')
+  condition: or(ne(variables.npm_cache_hit, 'true'), eq('${{ parameters.useCache }}', false))
   displayName: '${{parameters.taskName}}: npm install'
   inputs:
     command: 'install'

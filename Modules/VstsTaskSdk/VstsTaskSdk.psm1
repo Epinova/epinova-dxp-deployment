@@ -54,6 +54,7 @@ Export-ModuleMember -Function @(
         'Write-AddBuildTag'
         'Write-AssociateArtifact'
         'Write-LogDetail'
+        'Write-LoggingCommand'
         'Write-PrependPath'
         'Write-SetEndpoint'
         'Write-SetProgress'
@@ -82,6 +83,7 @@ Export-ModuleMember -Function @(
         'Assert-Agent'
         'Assert-Path'
         'Invoke-Tool'
+        'Invoke-Process'
         # Trace functions.
         'Trace-EnteringInvocation'
         'Trace-LeavingInvocation'

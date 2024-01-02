@@ -1,45 +1,58 @@
+parameters:
+- name: useCache
+  type: boolean
+
 steps:  
 - template: build-node-task_ubuntu.yml
   parameters:
     extensionRoot: '$(System.DefaultWorkingDirectory)/src'
     taskName: 'AwaitStatus/AwaitStatusV2'
+    useCache: ${{ parameters.useCache }}
 
 - template: build-node-task_ubuntu.yml
   parameters:
     extensionRoot: '$(System.DefaultWorkingDirectory)/src'
     taskName: 'CompleteDeploy/CompleteDeployV2'
+    useCache: ${{ parameters.useCache }}
 
 - template: build-node-task_ubuntu.yml
   parameters:
     extensionRoot: '$(System.DefaultWorkingDirectory)/src'
     taskName: 'ContentCopy/ContentCopyV2'
+    useCache: ${{ parameters.useCache }}
 
 - template: build-node-task_ubuntu.yml
   parameters:
     extensionRoot: '$(System.DefaultWorkingDirectory)/src'
     taskName: 'DeployNuGetPackage/DeployNuGetPackageV2'
+    useCache: ${{ parameters.useCache }}
 
 - template: build-node-task_ubuntu.yml
   parameters:
     extensionRoot: '$(System.DefaultWorkingDirectory)/src'
     taskName: 'DeployTo/DeployToV2'
+    useCache: ${{ parameters.useCache }}
 
 - template: build-node-task_ubuntu.yml
   parameters:
     extensionRoot: '$(System.DefaultWorkingDirectory)/src'
     taskName: 'ExpectStatus/ExpectStatusV2'
+    useCache: ${{ parameters.useCache }}
 
 - template: build-node-task_ubuntu.yml
   parameters:
     extensionRoot: '$(System.DefaultWorkingDirectory)/src'
     taskName: 'ExportDb/ExportDbV2'
+    useCache: ${{ parameters.useCache }}
 
 - template: build-node-task_ubuntu.yml
   parameters:
     extensionRoot: '$(System.DefaultWorkingDirectory)/src'
     taskName: 'ResetDeploy/ResetDeployV2'
+    useCache: ${{ parameters.useCache }}
 
 - template: build-node-task_ubuntu.yml
   parameters:
     extensionRoot: '$(System.DefaultWorkingDirectory)/src'
     taskName: 'SmokeTestIfFailReset/SmokeTestIfFailResetV2'
+    useCache: ${{ parameters.useCache }}

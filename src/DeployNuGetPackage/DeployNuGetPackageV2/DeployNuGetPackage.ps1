@@ -27,9 +27,9 @@ try {
     $projectId = $ProjectId
     $targetEnvironment = $TargetEnvironment
     $sourceApp = $SourceApp
-    [Boolean]$directDeploy = [System.Convert]::ToBoolean($DirectDeploy)
+    [bool]$directDeploy = [System.Convert]::ToBoolean($DirectDeploy)
     $warmupThisUrl = $WarmUpUrl
-    [Boolean]$useMaintenancePage = [System.Convert]::ToBoolean($UseMaintenancePage)
+    [bool]$useMaintenancePage = [System.Convert]::ToBoolean($UseMaintenancePage)
     $dropPath = $DropPath
     $timeout = $Timeout
     $zeroDowntimeMode = $ZeroDowntimeMode
@@ -141,7 +141,7 @@ try {
         if ($status.status -eq $expectedStatus) {
             Write-Host "Deployment $deploymentId has been successful."
 
-            if ($true -eq $directDeploy -and $null -ne $warmupThisUrl -and $warmupThisUrl.length -gt 0){ #Warmup when direct deploy.
+            if ($warmupThisUrl){
                 Invoke-WarmupSite $warmupThisUrl
             }
         }

@@ -11,6 +11,12 @@ pool:
   vmImage: 'ubuntu-latest'
   demands: npm
 
+parameters:
+- name: useCache
+  displayName: 'Use cache for npm?'
+  type: boolean
+  default: true
+
 variables:
   buildnumber: $(Build.BuildNumber)
   PublisherID: 'epinova-sweden'
@@ -38,6 +44,8 @@ steps:
       filePath: '$(System.DefaultWorkingDirectory)/BuildScripts/CopyScripts.ps1'
 
   - template: build-node-tasks_ubuntu.yml
+    parameters:
+      useCache: ${{ parameters.useCache }}
 
   - task: Npm@1
     displayName: 'npm install extension'
