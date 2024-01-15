@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.9.7
+- Upgrade follow-redirects from v1.15.3 to v1.15.4
+
 ## v2.9.6
 - Fixed warmup site for DeployNuGetPackage
 
