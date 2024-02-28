@@ -15,10 +15,12 @@ To install Epinova DXP deployment to Octopus deploy you need to do the following
 We will now go through each step in more details.
 
 ### Install NuGet/PowerShell modules
+![PowerShell Gallery](Images/PowershellGallery.jpg)
 Go to PowerShell Gallery and download the latest versions of 'EpiCloud' and 'EpinovaDxpToolBucket'.  
 [https://www.powershellgallery.com/packages/EpiCloud](https://www.powershellgallery.com/packages/EpiCloud)  
 [https://www.powershellgallery.com/packages/EpinovaDxpToolBucket](https://www.powershellgallery.com/packages/EpinovaDxpToolBucket)  
 In Octopus, go to Library/Packages. Upload the 2 Nuget packages so that they exist in the package feed. If you want to be more advanced, you can probably set up an external feed for the packages via Library/External Feeds. However, we have not tried that, so please consult the Octopus documentation on how to use this type of setup.  
+![Octopus deploy - packages](Images/OctopusDeployPackages.jpg)  
   
 ### Variable set
 In [Optimizely DXP PAAS portal](https://paasportal.episerver.net/), you can create API key/secret for your project. These key, secret and project ID will be used by deployment script when running deployment scripts against [Optimizely Deployment API](https://docs.developers.optimizely.com/digital-experience-platform/docs/deployment-api). 
@@ -54,6 +56,7 @@ For the each variable template, create a variable in the variable set.
 ##### ProjectId
 **Variable name:** `ProjectId`  
 **Value:** [your project ID copied from PAAS portal]  
+![Octopus deploy - variable set](Images/OctopusDeployVariableSets.jpg)  
 
 ### Step templates
 The step templates is the tasks that can be used in the deploy process in project(s).  
@@ -65,6 +68,7 @@ For each task in the list below:
 Note: `DeployNuGetPackage` task needs one extra (3:rd package). And it should be `#{sourcepackage}`. This will be specified by the project and added automatically depending on the reference to sourcepackage in the project.
 
 Repeat the steps for all tasks that you want to use.
+![Octopus deploy - step templates](Images/OctopusDeployStepTemplates.jpg)  
 
 #### Templates
 [StepTemplates/AwaitStatus.template.json](StepTemplates/AwaitStatus.template.json)  
@@ -89,6 +93,7 @@ Go to Infrastructure/Environments and click on 'Add environment'. Create 3 envir
 2. `DXP_Preproduction`  
 3. `DXP_Production`  
   
+![Octopus deploy - environments](Images/OctopusDeployEnvironments.jpg)  
   
 ### Lifecycles
 These lifecycles should match how you want to work with CI/CD in your project. This example is set up to deploy the latest committed code to the 'development" branch to DXP Integration environment and 'main'/'release'/'hotfix' branches to DXP Preproduction. If the application is working as expected you can approve the deployment so that it deploys to production.  
@@ -103,7 +108,9 @@ These lifecycles should match how you want to work with CI/CD in your project. T
     2.2 Name: `Optimizely DXP - Release`.  
     2.3 Description: `Release pipeline for deployment to Optimizely DXP environments preproduction/production.`  
     2.4 Add phase: Phase 1. Call it `Release` and select the environments `DXP_Preproduction` and `DXP_Production`.  
-    2.5 Save
+    2.5 Save  
+
+![Octopus deploy - life cycles](Images/OctopusDeployLifecycles.jpg)  
   
 ### Project
 This is a very simplified description how to set up the project. There are so many exceptions for each customer/project etc. So this is just a brief example how we set it up.  
@@ -132,13 +139,17 @@ Now when project is created we will add extra channels (lifecycle) so that we ca
 2. Name: `Reset - Preproduction/Production`  
 3, Description `This channel will help you if you find errors in the slot environment and need to cancel/reset the deployment.`.  
 4. Select `Optimizely DXP - Release` as lifecycle.  
-5. Save. 
+5. Save.  
+  
+![Octopus deploy - Project - Channels](Images/OctopusDeployProjectChannels.jpg)  
 
 #### Triggers
 You can set up triggers of your choice. In our case we will trigger the releases from TeamCity so we will not add any triggers in Octopus.  
 
 #### Variables - Variables sets 
-Go to Variables/Variables sets. Click on 'Include library variable sets' and add the `DXP deployment` variable set.
+Go to Variables/Variables sets. Click on 'Include library variable sets' and add the `DXP deployment` variable set.  
+  
+![Octopus deploy - Project - Variable sets](Images/OctopusDeployProjectLibraryVariableSets.jpg)  
 
 #### Variables - Project variables
 Go to Variables/Project. Create the following variables. Some of them has multiple values depending on scope.  
@@ -166,6 +177,8 @@ Go to Variables/Project. Create the following variables. Some of them has multip
 4.2.2 **Scope:** `DXP_Preproduction`  
 4.3.1 **Value:** `https://nasa01mstr1ssz2prod-slot.dxcloud.episerver.net/Util/Login?ReturnUrl=%2Fepiserver%2Fcms`  
 4.3.2 **Scope:** `DXP_Production`  
+  
+![Octopus deploy - Project - Variables](Images/OctopusDeployProjectVariables.jpg)  
 
 #### Process - Release steps
 Since we only have on project, but use 3 lifecycle, there will be steps in the project that is only run on a specific environment and/or channel. Let us set up the process steps first and then describe how the flow will work for the different deployments.  
@@ -210,9 +223,12 @@ Since we only have on project, but use 3 lifecycle, there will be steps in the p
     7.3 Name: `Reset deploy`  
     7.4 Execution location: `Octopus server`  
     7.6 Channels: `Reset - Preproduction/Production`  
-    7.7 Save
+    7.7 Save  
 
-All set!
+All set!  
+  
+![Octopus deploy - Project - Process](Images/OctopusDeployProjectProcess.jpg)  
+  
 #### Deployment flow - How does it work?
 **`development` branch to `DXP_Integration`**.  
 In TeamCity after the `development` branch has been built it will upload the NuGet package to the Octopus Packages feed and create/trigger the project to start a release/deployment for the deafult channel. That means that channel `Optimizely DXP - Development` will be used when run the deployment. The following tasks will be triggered:  
@@ -220,7 +236,7 @@ In TeamCity after the `development` branch has been built it will upload the NuG
 2. `Optimizely DXP - Expect status` will run and make sure that the target environment is in expected status.  
 3. `Deploy NuGet package` will deploy the latest version of your package to DXP and start a 'Direct deploy' deployment of that NuGet package to the Integration environment in DXP. When it is deployed it will also warmup the website with the URL that you provided as warmup URL for this environment.
 4. All other tasks will be ignored since it will not meet the requirments for target environment or channel.  
-
+  
 You should now be able to browse you website in the Optimizely DXP integration environment.  
   
 **`main`/`release`/`hotfix` branch to `DXP Preproduction` => `DXP Production`.**  
@@ -237,12 +253,16 @@ In TeamCity after example the `release` branch has been built it will upload the
 10. `Test the website`. The deployment will not stop at this step and project team can now test the production slot. When everything is tested you can continue deployment. If something is wrong and you need to reset/cancel the deployment. Cancel the release and start a new release with the channel `Reset - Preproduction/Production`. Select the environment that you want to reset and start the Octopus release.   
 You can also do this manualy. Go to Optimizely DXP PAAS portal and click reset deployment to production. [https://paasportal.episerver.net/](https://paasportal.episerver.net/).  
 11. `Complete deploy (switch slot)` will run and will complete the deploy for production to swap 'production slot' => production.  
-12. Site is now released to production.
+12. Site is now released to production.  
+
+![Octopus deploy - Project](Images/DeployedToPreproduction.png)  
+![Octopus deploy - Project](Images/DeployToProduction_ManualIntervention.png)    
+![Octopus deploy - Project](Images/DeployToProduction.png)    
   
 If you need to reset a deployment to a slot:  
 Cancel the release and start a new release with the channel `Reset - Preproduction/Production`. Select the environment that you want to reset and start the Octopus release.   
-You can also do this manualy. Go to Optimizely DXP PAAS portal and click reset deployment to production. [https://paasportal.episerver.net/](https://paasportal.episerver.net/).
-
+You can also do this manualy. Go to Optimizely DXP PAAS portal and click reset deployment to production. [https://paasportal.episerver.net/](https://paasportal.episerver.net/).  
+  
 ## Tasks ##
 
 ### Deploy NuGet package (Optimizely DXP) ###  
