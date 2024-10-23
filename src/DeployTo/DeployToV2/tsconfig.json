@@ -3,6 +3,7 @@
     "lib": ["ES6"],
     "module": "commonjs",
     "moduleResolution": "node",
+    "skipLibCheck": true,
     "rootDirs": [
         "src/"
     ],
@@ -18,6 +19,7 @@
     },
     "exclude": [
         "node_modules",
-        "repo"
+        "repo",
+        "ps_modules"
     ]
 }

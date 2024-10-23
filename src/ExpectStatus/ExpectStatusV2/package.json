@@ -4,16 +4,17 @@
     "scripts": {
         "build": "npm run clean && npm run transpile",
         "package": "npm prune -production && npm run copy",
-        "copy": "ncp ./dist/src ./",
-        "clean": "rimraf ./dist/src && rimraf ./dist/test && rimraf ./*.js && rimraf ./*.js.map",
-        "transpile": "tsc --project ./"
+        "copy": "ncp ./dist ./",
+        "clean": "rimraf --glob ./dist ./*.js ./*.js.map",
+        "transpile": "tsc --project ./",
+        "cleanup": "rimraf --glob ./dist ./src ./*.js.map ./package*.json ./ts*.json",
+        "all": "npm run build && npm run package && npm run cleanup"
     },
-    "main": "test.js",
     "dependencies": {
-        "azure-devops-node-api": "^11.2.0",
+        "azure-devops-node-api": "^14.0.2",
         "ncp": "^2.0.0",
-        "rimraf": "^3.0.2",
-        "azure-pipelines-task-lib": "^4.4.0"
+        "rimraf": "^4.4.1",
+        "azure-pipelines-task-lib": "^4.17.2"
     },
     "devDependencies": {
         "@types/node": "^v16.11.39",
