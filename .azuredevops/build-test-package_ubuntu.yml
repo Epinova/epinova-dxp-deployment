@@ -17,7 +17,7 @@ variables:
   buildnumber: $(Build.BuildNumber)
   PublisherID: 'epinova-sweden'
   ExtensionID: 'd7aa7a0b-20b5-4d3b-aaea-a46a1d4d53ce'
-  ExtensionName: 'Epinova DXP deployment - TEST'
+  ExtensionName: 'Epinova Optimizely DXP deployment - TEST'
   ExtensionFileName: 'epinova-dxp-deploy-extension-test-'
   ExtensionVisibility: 'private'
 
@@ -58,7 +58,7 @@ steps:
   - task: TfxInstaller@3
     displayName: 'Install Tfx Tool'
     inputs:
-      version: 'v0.8.x'
+      version: 'v0.17.x'
 
   - task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageAzureDevOpsExtension@3
     displayName: 'Package Extension: src'

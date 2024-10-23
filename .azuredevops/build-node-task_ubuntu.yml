@@ -54,12 +54,12 @@ steps:
 #     failOnIssues: true
 #     testDirectory: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
 
-- task: Npm@1
-  displayName: '${{parameters.taskName}}: npm run build'
-  inputs:
-    command: 'custom'
-    workingDir: '${{parameters.extensionRoot}}/${{parameters.taskName}}'
-    customCommand: 'run build'
+# - task: Npm@1
+#   displayName: '${{parameters.taskName}}: npm run build'
+#   inputs:
+#     command: 'custom'
+#     workingDir: '${{parameters.extensionRoot}}/${{parameters.taskName}}'
+#     customCommand: 'run build'
 
 # - task: Npm@1
 #   displayName: '${{parameters.taskName}}: npm run test'
@@ -74,21 +74,28 @@ steps:
 #     cwd: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
 #     testRunTitle: '${{parameters.taskName}}'
 
+# - task: Npm@1
+#   displayName: '${{parameters.taskName}}: npm run package'
+#   inputs:
+#     command: 'custom'
+#     workingDir: '${{parameters.extensionRoot}}/${{parameters.taskName}}'
+#     customCommand: 'run package'
+
 - task: Npm@1
-  displayName: '${{parameters.taskName}}: npm run package'
+  displayName: '${{parameters.taskName}}: npm run all'
   inputs:
     command: 'custom'
     workingDir: '${{parameters.extensionRoot}}/${{parameters.taskName}}'
-    customCommand: 'run package'
+    customCommand: 'run all'
 
-- task: PowerShell@2
-  displayName: '${{parameters.taskName}}: Delete unwanted files/folders'
-  inputs:
-    targetType: 'inline'
-    script: |
-      Remove-Item -path "${{parameters.extensionRoot}}/${{parameters.taskName}}\dist" -Force -Recurse
-      Remove-Item -path "${{parameters.extensionRoot}}/${{parameters.taskName}}\src" -Force -Recurse
-      Remove-Item -path "${{parameters.extensionRoot}}/${{parameters.taskName}}\test" -Force -Recurse
-      Remove-Item -path "${{parameters.extensionRoot}}/${{parameters.taskName}}\*.js.map" -Force -Recurse
-    workingDirectory: '${{parameters.extensionRoot}}/${{parameters.taskName}}'
+# - task: PowerShell@2
+#   displayName: '${{parameters.taskName}}: Delete unwanted files/folders'
+#   inputs:
+#     targetType: 'inline'
+#     script: |
+#       Remove-Item -path "${{parameters.extensionRoot}}/${{parameters.taskName}}\dist" -Force -Recurse
+#       Remove-Item -path "${{parameters.extensionRoot}}/${{parameters.taskName}}\src" -Force -Recurse
+#       Remove-Item -path "${{parameters.extensionRoot}}/${{parameters.taskName}}\test" -Force -Recurse
+#       Remove-Item -path "${{parameters.extensionRoot}}/${{parameters.taskName}}\*.js.map" -Force -Recurse
+#     workingDirectory: '${{parameters.extensionRoot}}/${{parameters.taskName}}'
 
