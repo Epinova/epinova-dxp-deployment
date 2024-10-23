@@ -1,5 +1,5 @@
-# Epinova DXP Deployment Templates
-Templates that can be used by organisations in Azure DevOps that user Epinova DXP Deployment extension tasks.
+# Epinova Optimizely DXP Deployment Templates
+Templates that can be used by organisations in Azure DevOps that user Epinova Optimizely DXP Deployment extension tasks.
 
 Get started with [Azure devops pipeline templates documentation](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/templates?view=azure-devops)
 
@@ -7,7 +7,7 @@ Get started with [Azure devops pipeline templates documentation](https://docs.mi
 
 - dxp.exportdb.1.yml [doc](dxp.exportdb.1.md)
 
-# How to use templates from Epinova DXP Deployment
+# How to use templates from Epinova Optimizely DXP Deployment
 ! Description how to setup a Service Connection to the github.... or if it is public  just describe that.  
 
 All projects in Azure DevOps (for Epinova-Sweden) that want to use templates from this repository needs to setup a service connection from your project.  
