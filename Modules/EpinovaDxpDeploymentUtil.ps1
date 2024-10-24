@@ -906,7 +906,7 @@ function Publish-Package {
     }
     catch{
         $errMsg = $_.Exception.ToString()
-        if ($errMsg.Contains("is already linked to a deployment and cannot be overwritten")){
+        if ($errMsg.Contains("is already linked to a deployment and cannot be overwritten") -or $errMsg.Contains("There is currently a lease on the blob and no lease ID was specified in the request")){
             Write-Host "$PackageType package '$packageFileName' already exist in container."
             $uploadedPackage = $packageFileName
         } else {

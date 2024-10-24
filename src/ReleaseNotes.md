@@ -1,6 +1,6 @@
 # Release notes
 
-## v2.10.1
+## v2.10.2
 - Upgrade to EpiCloud v1.7
 
 ## v2.9.7
