@@ -30,24 +30,98 @@ function AddAzStorageBlob {
         [String] $BlobName
     )
 
-    $containerClient = New-Object "Azure.Storage.Blobs.BlobContainerClient" -ArgumentList $SasUri
-    $blobClient = $containerClient.GetBlobClient($BlobName)
-    $uploadOptions = New-Object "Azure.Storage.Blobs.Models.BlobUploadOptions"
     $filePath = Resolve-Path -LiteralPath $Path
+    $fileStream = [System.IO.File]::OpenRead($filePath)
 
-    $storageTransferOptions = New-Object "Azure.Storage.StorageTransferOptions"
-    $storageTransferOptions.InitialTransferSize = 1024*1024*8
-    $storageTransferOptions.MaximumTransferSize = 1024*1024*8
-    $uploadOptions.TransferOptions = $storageTransferOptions
+    $fileSize = (Get-Item $filePath).Length
+    $bytesUploaded = 0
 
-    $uploadResult = $blobClient.Upload($filePath, $uploadOptions)
-    $response = $uploadResult.GetRawResponse()
+    $blockSize = 8MB
+    $maxRetries = 5
 
-    $responseOk = ($response.Status -ge 200) -and ($response.Status -lt 300)
+    $blockIds = New-Object System.Collections.Generic.List[string]
+
+    $baseUri = $SasUri.GetLeftPart([System.UriPartial]::Path)
+    $query = $SasUri.Query
+
+    $webClient = New-Object System.Net.WebClient
+
+    while ($true) {
+        $blockContent = New-Object byte[] $blockSize
+        $readCount = $fileStream.Read($blockContent, 0, $blockSize)
+
+        if ($readCount -eq 0) {
+            break
+        }
+
+        $blockIdBytes = New-Object byte[] 48
+        [BitConverter]::GetBytes($blockIds.Count).CopyTo($blockIdBytes, 0)
+        $blockId = [Convert]::ToBase64String($blockIdBytes)
+        $blockId = $blockId.TrimEnd('=')
+        $blockIds.Add($blockId)
+
+        if ($readCount -lt $blockSize) {
+            $blockContent = $blockContent[0..($readCount-1)]
+        }
+
+        $blockUrl = "$baseUri/$BlobName$query&comp=block&blockid=$blockId"
+
+        $retryCount = 0
+        while ($true) {
+            try {
+                $null = $webClient.UploadData($blockUrl, 'PUT', $blockContent)
+                $bytesUploaded += $readCount
+                $progress = [Math]::Round(($bytesUploaded / $fileSize) * 100)
+                Write-Progress -Activity "Uploading $BlobName" -Status "$progress% Complete:" -PercentComplete $progress
+                break
+            } catch {
+                if ($retryCount -ge $maxRetries) {
+                    throw
+                } else {
+                    Start-Sleep -Seconds (2 * $retryCount)
+                    $retryCount++
+                }
+            }
+        }
+    }
+
+    $fileStream.Close()
+
+    $blockListContent = [string]::Join("", ($blockIds | ForEach-Object { "<Latest>$_</Latest>" }))
+    $blockListXml = "<BlockList>$blockListContent</BlockList>"
+
+    $blockListUrl = "$baseUri/$BlobName$query&comp=blocklist"
+
+    $retryCount = 0
+    while ($true) {
+        try {
+            $request = [System.Net.HttpWebRequest]::Create($blockListUrl)
+            $request.Method = 'PUT'
+            $request.ContentType = 'application/xml'
+
+            $bytes = [System.Text.Encoding]::UTF8.GetBytes($blockListXml)
+            $request.ContentLength = $bytes.Length
+
+            $stream = $request.GetRequestStream()
+            $stream.Write($bytes, 0, $bytes.Length)
+            $stream.Close()
+
+            $response = $request.GetResponse()
+            $responseOk = ($response.StatusCode -ge 200) -and ($response.StatusCode -lt 300)
+            break
+        } catch {
+            if ($retryCount -ge $maxRetries) {
+                throw
+            } else {
+                Start-Sleep -Seconds (2 * $retryCount)
+                $retryCount++
+            }
+        }
+    }
 
     Write-Output [PSCustomObject] @{
-        Status = $response.Status
-        ReasonPhrase = $response.ReasonPhrase
+        Status = $response.StatusCode
+        ReasonPhrase = $response.StatusDescription
         IsSuccessful = $responseOk
     }
 }
@@ -208,55 +282,6 @@ function GetApiRequestSplattingHash {
 
     $hashToReturn
 }
-<#
-    Initialization code required when importing EpiCloud module.
-#>
-
-$dllPath = $PSScriptRoot
-$dllFiles = (Get-ChildItem -Path $dllPath -Filter "*.dll").FullName
-if ($dllFiles.Count -eq 0) {
-    $dllPath = (Get-Item -Path $dllPath).Parent.FullName
-    $dllFiles = (Get-ChildItem -Path $dllPath -Filter "*.dll").FullName
-}
-
-$dllFileString = $( ($dllFiles | ForEach-Object { "@`"$_`"" } ) -join ", " )
-
-$epiCloudAssemblyResolver = "
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-
-public static class EpiCloudAssemblyResolver
-{
-    private static readonly Dictionary<string,Assembly> _localAssemblies = new Dictionary<string,Assembly>();
-
-    public static void Initialize()
-    {
-        var dllFiles = new[] { $dllFileString };
-        foreach (var dllFile in dllFiles)
-        {
-            var assembly = Assembly.LoadFrom(dllFile);
-            if (!_localAssemblies.ContainsKey(assembly.GetName().Name))
-                _localAssemblies.Add(assembly.GetName().Name, assembly);
-        }
-
-        AppDomain.CurrentDomain.AssemblyResolve += OnAssemblyResolve;
-    }
-
-    public static Assembly OnAssemblyResolve(object s, ResolveEventArgs e)
-    {
-        var assemblyName = e.Name;
-        var assemblyCommaPosition = assemblyName.IndexOf("","", StringComparison.InvariantCulture);
-        if (assemblyCommaPosition > -1) assemblyName = assemblyName.Substring (0, assemblyCommaPosition);
-        Assembly assembly;
-        _localAssemblies.TryGetValue(assemblyName, out assembly);
-        return assembly;
-    }
-}
-"
-
-Add-Type -TypeDefinition $epiCloudAssemblyResolver
-[EpiCloudAssemblyResolver]::Initialize()
 function InvokeApiRequest {
     <#
     .SYNOPSIS
@@ -312,6 +337,9 @@ function InvokeApiRequest {
         }
         catch {
             $errorMessage = GetApiErrorResponse -ExceptionResponse $_.Exception.Response
+            if ($PSVersionTable.PSEdition -eq 'Core') {
+                $errorMessage = "$errorMessage. $($_.ErrorDetails.Message)"
+            }
             throw "API call failed! The error was: $($_.Exception.Message) $errorMessage"
         }
 
@@ -459,6 +487,10 @@ function Add-EpiDeploymentPackage {
             $BlobName = Split-Path $Path -leaf
         }
 
+        if ($BlobName -notmatch '^(.+\.)?(cms|commerce)\.(app\.(.+)\.nupkg|sqldb\.(.+)\.bacpac)$') {
+            throw "The deployment package is not recognized: $($BlobName)"
+        }
+
         Write-Verbose "Uploading blob $BlobName to storage account ..."
 
         try {
@@ -531,7 +563,7 @@ function Complete-EpiDeployment {
         The time interval, in seconds, to check the deployment status.
         Default to 30 seconds.
     #>
-    [CmdletBinding(PositionalBinding=$false)]
+    [CmdletBinding(PositionalBinding = $false)]
     param (
         [Parameter(Mandatory = $true)]
         [String] $ClientKey,
@@ -577,9 +609,9 @@ function Complete-EpiDeployment {
 
         if ($ShowProgress.IsPresent -and $Wait.IsPresent) {
             $writeProgressParams = @{
-                Activity = "Completing deployment with id $Id..."
+                Activity        = "Completing deployment with id $Id..."
                 PercentComplete = 0
-                Status = $deploymentDetails.status
+                Status          = $deploymentDetails.status
             }
 
             Write-Progress @writeProgressParams
@@ -589,6 +621,7 @@ function Complete-EpiDeployment {
             $timeoutDate = (Get-Date).AddMinutes($WaitTimeoutMinutes)
 
             $deploymentCompletionStates = @('Failed', 'Succeeded')
+            $warningCount = 0
             do {
                 Start-Sleep -Second $PollingIntervalSeconds
                 $getEpiDeploymentDetailsParams = @{
@@ -605,12 +638,22 @@ function Complete-EpiDeployment {
                     $writeProgressParams.Status = $deploymentDetails.status
                     Write-Progress @writeProgressParams
                 }
+
+                # Output any warnings
+                for ($i = $warningCount; $i -lt $deploymentDetails.deploymentWarnings.Count; ++$i) {
+                    Write-Warning $deploymentDetails.deploymentWarnings[$i]
+                }
+                $warningCount = $deploymentDetails.deploymentWarnings.Count
             }
             while ($deploymentDetails.status -notin $deploymentCompletionStates -and (Get-Date) -le $timeoutDate)
 
             if ($deploymentCompletionStates -notcontains $deploymentDetails.status) {
                 throw "Timed out during deployment with status: $($deploymentDetails.status)"
             }
+        }
+
+        if ($deploymentDetails.deploymentErrors) {
+            throw "Complete-EpiDeployment: Failed. Deployment Id: $($deploymentDetails.id). The error was: $($deploymentDetails.deploymentErrors -join ". ")"
         }
 
         $deploymentDetails
@@ -907,6 +950,60 @@ function Get-EpiDeploymentPackageLocation {
         $invokeApiRequestSplat = @{
             ClientSecret = $ClientSecret
             ClientKey = $ClientKey
+            RequestSplattingHash = $requestHash
+        }
+
+        # Since the response only contains one property we expand it
+        (InvokeApiRequest @invokeApiRequestSplat).location
+    }
+
+    end { }
+}
+function Get-EpiEdgeLogLocation {
+    <#
+        .SYNOPSIS
+        Retrieves the edge logs location.
+
+        .DESCRIPTION
+        Retrieves the edge logs location.
+
+        This will be a SAS-link to an Azure blob storage account.
+
+        .EXAMPLE
+        Get-EpiEdgeLogLocation -ClientKey $myKey -ClientSecret $mySecret -ProjectId d117c12c-d02e-4b53-aabd-aa8e00a47cdv
+
+        .PARAMETER ClientKey
+        The client key used to access the project.
+
+        .PARAMETER ClientSecret
+        The client secret used to access the project.
+
+        .PARAMETER ProjectId
+        The Id (should be a guid) of the project.
+    #>
+
+    [CmdletBinding(PositionalBinding = $false)]
+    param(
+        [Parameter(Mandatory = $true)]
+        [String] $ClientKey,
+
+        [Parameter(Mandatory = $true)]
+        [String] $ClientSecret,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
+        [String] $ProjectId
+    )
+
+    begin { }
+
+    process {
+
+        $uriEnding = "projects/$ProjectId/edgelogs/location"
+        $requestHash = GetApiRequestSplattingHash -UriEnding $uriEnding
+
+        $invokeApiRequestSplat = @{
+            ClientSecret         = $ClientSecret
+            ClientKey            = $ClientKey
             RequestSplattingHash = $requestHash
         }
 
@@ -1228,9 +1325,9 @@ function Reset-EpiDeployment {
 
         if ($ShowProgress.IsPresent -and $Wait.IsPresent) {
             $writeProgressParams = @{
-                Activity = "Resetting deployment with id $Id..."
+                Activity        = "Resetting deployment with id $Id..."
                 PercentComplete = 0
-                Status = $resetDeploymentDetails.status
+                Status          = $resetDeploymentDetails.status
             }
 
             Write-Progress @writeProgressParams
@@ -1246,16 +1343,24 @@ function Reset-EpiDeployment {
             }
 
             $deploymentCompletionStates = @('Failed', 'Reset', 'AwaitingResetVerification')
+            $warningCount = 0
             do {
                 Start-Sleep -Second $PollingIntervalSeconds
 
                 $resetDeploymentDetails = Get-EpiDeployment @getEpiDeploymentDetailsParams
                 Write-Verbose -Message "Deployment status: $($resetDeploymentDetails.status). Progress: $($resetDeploymentDetails.percentComplete)%"
+                if ($Wait.IsPresent) {
+                    if ($ShowProgress.IsPresent) {
+                        $writeProgressParams.PercentComplete = $resetDeploymentDetails.percentComplete
+                        $writeProgressParams.Status = $resetDeploymentDetails.status
+                        Write-Progress @writeProgressParams
+                    }
 
-                if ($ShowProgress.IsPresent) {
-                    $writeProgressParams.PercentComplete = $resetDeploymentDetails.percentComplete
-                    $writeProgressParams.Status = $resetDeploymentDetails.status
-                    Write-Progress @writeProgressParams
+                    # Output any warnings
+                    for ($i = $warningCount; $i -lt $resetDeploymentDetails.deploymentWarnings.Count; ++$i) {
+                        Write-Warning $resetDeploymentDetails.deploymentWarnings[$i]
+                    }
+                    $warningCount = $resetDeploymentDetails.deploymentWarnings.Count
                 }
             }
             while ($resetDeploymentDetails.status -notin $deploymentCompletionStates -and (Get-Date) -le $timeoutDate)
@@ -1263,6 +1368,10 @@ function Reset-EpiDeployment {
             if ($deploymentCompletionStates -notcontains $resetDeploymentDetails.status) {
                 throw "Timed out during deployment with status: $($resetDeploymentDetails.status). Deployment ID: $Id"
             }
+        }
+
+        if ($resetDeploymentDetails.deploymentErrors) {
+            throw "Reset-EpiDeployment: Failed. Deployment Id: $($resetDeploymentDetails.id). The error was: $($resetDeploymentDetails.deploymentErrors -join ". ")"
         }
 
         $resetDeploymentDetails
@@ -1600,7 +1709,6 @@ function Start-EpiDeployment {
         [String] $TargetEnvironment,
 
         [Parameter(Mandatory = $true, ParameterSetName = 'DeploymentPackage')]
-        [ValidatePattern('^(.+\.)?(cms|commerce)\.(app\.(.+)\.nupkg|sqldb\.(.+)\.bacpac)$')]
         [String[]] $DeploymentPackage,
 
         [Parameter(Mandatory = $false)]
@@ -1673,7 +1781,7 @@ function Start-EpiDeployment {
         }
 
         if ($PSCmdlet.ParameterSetName -eq 'DeploymentPackage') {
-                $startDeploymentParams.RequestPayload.Packages = $DeploymentPackage
+            $startDeploymentParams.RequestPayload.Packages = $DeploymentPackage
         }
         elseif ($PSCmdlet.ParameterSetName -eq 'SourceEnvironment') {
             $startDeploymentParams.RequestPayload.sourceEnvironment = $SourceEnvironment
@@ -1706,8 +1814,9 @@ function Start-EpiDeployment {
         }
 
         $deploymentCompletionStates = @('Failed', 'AwaitingVerification', 'Succeeded')
+        $warningCount = 0
         do {
-            if ($Wait) {
+            if ($Wait.IsPresent) {
                 Start-Sleep -Seconds $PollingIntervalSec
             }
             $getDeploymentParams = @{
@@ -1720,10 +1829,17 @@ function Start-EpiDeployment {
             $getDeploymentResponse = Get-EpiDeployment @getDeploymentParams
             Write-Verbose "Deployment status: $($getDeploymentResponse.status). Progress: $($getDeploymentResponse.percentComplete)%"
 
-            if ($ShowProgress -and $Wait) {
-                $writeProgressParams.PercentComplete = $getDeploymentResponse.percentComplete
-                $writeProgressParams.Status = $getDeploymentResponse.status
-                Write-Progress @writeProgressParams
+            if ($Wait.IsPresent) {
+                if ($ShowProgress.IsPresent) {
+                    $writeProgressParams.PercentComplete = $getDeploymentResponse.percentComplete
+                    $writeProgressParams.Status = $getDeploymentResponse.status
+                    Write-Progress @writeProgressParams
+                }
+                # Output any warnings
+                for ($i = $warningCount; $i -lt $getDeploymentResponse.deploymentWarnings.Count; ++$i) {
+                    Write-Warning $getDeploymentResponse.deploymentWarnings[$i]
+                }
+                $warningCount = $getDeploymentResponse.deploymentWarnings.Count
             }
         } while (
             $Wait -and
@@ -1733,6 +1849,9 @@ function Start-EpiDeployment {
 
         if ($Wait -and $deploymentCompletionStates -notcontains $getDeploymentResponse.status) {
             throw "Timed out during deployment with status: $($getDeploymentResponse.status)"
+        }
+        if ($getDeploymentResponse.deploymentErrors) {
+            throw "Start-EpiDeployment: Failed. Deployment Id: $($getDeploymentResponse.id). The error was: $($getDeploymentResponse.deploymentErrors -join ". ")"
         }
 
         $getDeploymentResponse

@@ -2,7 +2,7 @@
 
 
 .DESCRIPTION
-    Help functions for Epinova DXP deployment extension.
+    Help functions for Epinova Optimizely DXP deployment extension.
 #>
 
 Set-StrictMode -Version Latest
@@ -22,7 +22,7 @@ function Initialize-EpiCload{
         Write-Host "Could not find EpiCloud."
         #Install-Module EpiCloud  -Scope CurrentUser -MinimumVersion 0.13.15 -Force -AllowClobber
         #Write-Host "Installed EpiCloud."
-        Import-Module -Name "EpiCloud" -MinimumVersion 1.3.0 -Verbose
+        Import-Module -Name "EpiCloud" -MinimumVersion 1.7.0 -Verbose
         #Import-Module -Name "$PSScriptRoot/EpiCloud/EpiCloud.psd1" -Verbose -ErrorAction Stop
         Write-Host "Import EpiCloud."
     }
@@ -906,7 +906,7 @@ function Publish-Package {
     }
     catch{
         $errMsg = $_.Exception.ToString()
-        if ($errMsg.Contains("is already linked to a deployment and cannot be overwritten")){
+        if ($errMsg.Contains("is already linked to a deployment and cannot be overwritten") -or $errMsg.Contains("There is currently a lease on the blob and no lease ID was specified in the request")){
             Write-Host "$PackageType package '$packageFileName' already exist in container."
             $uploadedPackage = $packageFileName
         } else {

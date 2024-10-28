@@ -1,9 +1,9 @@
-# Octopus - Epinova DXP Deployment
-Step templates and documentation on how you can use and work with Epinova DXP deployment in Octopus to deploy to all environments in Optimizely (formerly known as Episerver) DXP (a.k.a DXC).  
+# Octopus - Epinova Optimizely DXP Deployment
+Step templates and documentation on how you can use and work with Epinova Optimizely DXP deployment in Octopus to deploy to all environments in Optimizely (formerly known as Episerver) DXP (a.k.a DXC).  
 You can implement this in many different ways. This is the way we did it in one of our projects. Note: We are working mostly with Azure DevOps so we don't have ninja skills in Octopus deploy. If you have any comments or a better solution for this setup, please contact us.
 
 ## Install 
-To install Epinova DXP deployment to Octopus deploy you need to do the following steps:  
+To install Epinova Optimizely DXP deployment to Octopus deploy you need to do the following steps:  
 * Set up your project NuGet package in the 'Packages' feed. Example: Automatic upload from TeamCity or other build server. Make sure that you follow the nameing convension from Optimizely. Tips is to only use lower case and have a name like `[Websitename].cms.app.[version].nupkg`. Example: `coolwebsite.cms.app.1.0.0.69.nupkg`  
 * Install 'EpiCloud' and 'EpinovaDxpToolBucket' PowerShell modules to the package feed.
 * Create a variable set that holds the Optimizely Deployment API credentials.

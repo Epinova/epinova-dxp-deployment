@@ -1,4 +1,4 @@
-# Epinova DXP API Azure DevOps deplyment tasks
+# Epinova Optimizely DXP API Azure DevOps deplyment tasks
 
 Tasks
 

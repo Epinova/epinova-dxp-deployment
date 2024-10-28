@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.10.2
+- Upgrade to EpiCloud v1.7
+
 ## v2.9.7
 - Upgrade follow-redirects from v1.15.3 to v1.15.4
 

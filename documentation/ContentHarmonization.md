@@ -1,19 +1,19 @@
-# Optimizely (formerly known as Episerver) DXP content harmonization with Epinova DXP deployment #
-**Harmonize content between Optimizely (formerly known as Episerver) DXP environments from Azure DevOps with Epinova DXP Deployment Extension. Without using a single line of PowerShell.**  
+# Optimizely (formerly known as Episerver) DXP content harmonization with Epinova Optimizely DXP deployment #
+**Harmonize content between Optimizely (formerly known as Episerver) DXP environments from Azure DevOps with Epinova Optimizely DXP Deployment Extension. Without using a single line of PowerShell.**  
 ![Content harmonization](Images/ContentHarmonization/Intro_DxpContentSync.jpg)
 
-## What is Epinova DXP deployment extension? ##
-Epinova DXP deployment extension contains Azure DevOps tasks that abstract the interaction with the Optimizely (formerly known as Episerver) DXP deployment API. Shortly we can say that with Epinova DXP deployment tasks enables you to use the functionality in the Optimizely (formerly known as Episerver) DXP deployment API without having to write any PowerShell.  
+## What is Epinova Optimizely DXP deployment extension? ##
+Epinova Optimizely DXP deployment extension contains Azure DevOps tasks that abstract the interaction with the Optimizely (formerly known as Episerver) DXP deployment API. Shortly we can say that with Epinova Optimizely DXP deployment tasks enables you to use the functionality in the Optimizely (formerly known as Episerver) DXP deployment API without having to write any PowerShell.  
 
 ## How to harmonize content between Optimizely (formerly known as Episerver) DXP environments in Azure DevOps? ##
 There are two ways that you can set this up. Either you like to use YAML to create a pipeline that copy your content or you like to setup a release pipeline in classic mode. Both ways are supported.  
 It as simple as just using the task “**Content copy**” to solve this.
 
 ## Prerequisites ##
-If you are already using Epinova DXP deployment extension there is a good possibility that you have already done this. But you need to have the following steps setup.  
+If you are already using Epinova Optimizely DXP deployment extension there is a good possibility that you have already done this. But you need to have the following steps setup.  
 
-### Install Epinova DXP deployment extension to you Azure DevOps organization ###
-Instructions how to install the extension and be able to use the tasks can be found in the documentation. [Install Epinova DXP Deployment extension](InstallDxpExtension.md)  
+### Install Epinova Optimizely DXP deployment extension to you Azure DevOps organization ###
+Instructions how to install the extension and be able to use the tasks can be found in the documentation. [Install Epinova Optimizely DXP Deployment extension](InstallDxpExtension.md)  
 
 ### DXP variable group ###
 Either you choose the YAML or classic road you need to make sure that you have created a “Variable group” with your project specific variables. You can follow the instructions in the documentation how to create variable group and how to gather the variable information needed. [How to setup variable group](CreateVariableGroup.md)
@@ -55,7 +55,7 @@ It does not matter if you have YAML files for deployment or not. Sometimes it is
 5.	Before we add tasks to the stages we should link the release pipeline to the variable group with our variables that we can reuse. Click the “Variables” tab and select the “Variable groups”. Click “Link variable group” and select your variable group that you created earlier.  
 ![Link variable group](Images/ContentHarmonization/3_LinkVariableGroup.jpg)  
 6.	Go back to the first stage. Now it is time to start add the tasks.
-7.	Click the plus sign/icon and search for DXP in the search field. All Epinova DXP deployment tasks will be shown and you should add the “Content copy” task.  
+7.	Click the plus sign/icon and search for DXP in the search field. All Epinova Optimizely DXP deployment tasks will be shown and you should add the “Content copy” task.  
 ![Add Content copy task](Images/ContentHarmonization/4_AddContentCopyTask.jpg)  
 8.	Now just specify the “Environment”, “Include BLOB” and “Include DB”.  
 ![Set Content copy task params](Images/ContentHarmonization/5_SetContentCopyParams.jpg)  
