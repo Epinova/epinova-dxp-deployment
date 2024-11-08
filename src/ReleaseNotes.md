@@ -1,6 +1,6 @@
 # Release notes
 
-## v2.11.0
+## v2.11.1
 - Upgrade npm packages
 
 ## v2.10.2
