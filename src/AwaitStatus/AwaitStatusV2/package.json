@@ -5,22 +5,22 @@
         "build": "npm run clean && npm run transpile",
         "package": "npm prune -production && npm run copy",
         "copy": "ncp ./dist ./",
-        "clean": "rimraf --glob ./dist ./*.js ./*.js.map",
+        "clean": "rimraf --glob './dist' './*.js' './*.js.map'",
         "transpile": "tsc --project ./",
-        "cleanup": "rimraf --glob ./dist ./src ./*.js.map ./package*.json ./ts*.json",
+        "cleanup": "rimraf --glob './dist' './src' './*.js.map' './package*.json' './ts*.json'",
         "all": "npm run build && npm run package && npm run cleanup"
     },
     "dependencies": {
-        "azure-devops-node-api": "^14.0.2",
+        "azure-devops-node-api": "^14.1.0",
         "ncp": "^2.0.0",
-        "rimraf": "^4.4.1",
-        "azure-pipelines-task-lib": "^4.17.2"
+        "rimraf": "^6.0.1",
+        "azure-pipelines-task-lib": "^4.17.3"
     },
     "devDependencies": {
-        "@types/node": "^v16.11.39",
-        "del": "^4.0.0",
-        "ts-node": "^10.2.1",
-        "typescript": "^4.4.2"
+        "@types/node": "^v22.9.0",
+        "del": "^8.0.0",
+        "ts-node": "^10.9.2",
+        "typescript": "^4.9.3"
     },
     "repository": {
         "type": "git",

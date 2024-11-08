@@ -12,7 +12,7 @@
     "author": "Epinova (Ove Lartelius)",
     "version": {
         "Major": 2,
-        "Minor": 9,
+        "Minor": 11,
         "Patch": 2
     },
     "groups": [
@@ -42,7 +42,7 @@
             "isExpanded": false
         }
     ],
-    "releaseNotes": "v2.9.0: EPiCloud v1.3\r\nv2.7.0: Run benchmark\r\nv2.4.0: RunVerbose.\r\nv2.3.0 Additional Development Environment support",
+    "releaseNotes": "v2.11.2: Use Node v20\r\nv2.9.0: EPiCloud v1.3\r\nv2.7.0: Run benchmark\r\nv2.4.0: RunVerbose.\r\nv2.3.0 Additional Development Environment support",
     "minimumAgentVersion": "2.134.0",
     "inputs": [
         {
@@ -178,7 +178,7 @@
     ],
     "instanceNameFormat": "Smoke test (if error => reset deploy)",
     "execution": {
-        "Node10": {
+        "Node20_1": {
             "target": "SmokeTestIfFailReset.js"
         }
     }
