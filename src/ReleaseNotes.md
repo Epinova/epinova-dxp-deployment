@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.11.2
+- Upgrade npm packages and use node 20_1 for task execution to get rid of Node 10 warnings.
+
 ## v2.10.2
 - Upgrade to EpiCloud v1.7
 
