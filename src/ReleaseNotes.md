@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.11.0
+- Upgrade npm packages
+
 ## v2.10.2
 - Upgrade to EpiCloud v1.7
 
