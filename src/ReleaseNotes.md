@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.11.3
+- Hotfix Deploy to task.
+
 ## v2.11.2
 - Upgrade npm packages and use node 20_1 for task execution to get rid of Node 10 warnings.
 
