@@ -200,7 +200,7 @@
     ],
     "instanceNameFormat": "Deploy $(SourceEnvironment) to $(TargetEnvironment)",
     "execution": {
-        "Node20_1s": {
+        "Node20_1": {
             "target": "DeployTo.js"
         }
     }
