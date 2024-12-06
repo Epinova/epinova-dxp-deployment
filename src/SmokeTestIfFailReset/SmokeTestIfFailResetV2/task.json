@@ -1,4 +1,5 @@
 {
+    "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
     "id": "4c405787-d44f-4a1c-b796-fad1b6acdea8",
     "name": "DxpSmokeTestIfFailReset",
     "friendlyName": "Smoke test if fail reset (Optimizely DXP)",
@@ -13,7 +14,7 @@
     "version": {
         "Major": 2,
         "Minor": 11,
-        "Patch": 3
+        "Patch": 4
     },
     "groups": [
         {
@@ -42,8 +43,8 @@
             "isExpanded": false
         }
     ],
-    "releaseNotes": "v2.11.2: Use Node v20\r\nv2.9.0: EPiCloud v1.3\r\nv2.7.0: Run benchmark\r\nv2.4.0: RunVerbose.\r\nv2.3.0 Additional Development Environment support",
-    "minimumAgentVersion": "2.134.0",
+    "releaseNotes": "v2.11.4: Updated min agent version to v3.232.1 because of Node v20.1\r\nv2.11.2: Use Node v20\r\nv2.9.0: EPiCloud v1.3\r\nv2.7.0: Run benchmark\r\nv2.4.0: RunVerbose.\r\nv2.3.0 Additional Development Environment support",
+    "minimumAgentVersion": "3.232.1",
     "inputs": [
         {
             "name": "ClientKey",
