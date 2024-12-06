@@ -1,4 +1,5 @@
 {
+    "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
     "id": "2bc993e5-c27c-4a24-aeaf-0fc403debc8d",
     "name": "DxpDeployNuGetPackage",
     "friendlyName": "Deploy nuget package (Optimizely DXP)",
@@ -13,7 +14,7 @@
     "version": {
         "Major": 2,
         "Minor": 11,
-        "Patch": 3
+        "Patch": 4
     },
     "groups": [
         {
@@ -37,8 +38,8 @@
             "isExpanded": false
         }
     ],
-    "releaseNotes": "v2.11.2: Use Node v20\r\nv2.10.0: EPiCloud v1.7\r\nv2.9.6: Fixed warmup site\r\nv2.9.0: EPiCloud v1.3\r\nv2.7.0: Run benchmark\r\nv2.5.0: Support ZIP artifacts\r\nv2.4.0: RunVerbose\r\n v2.3.1: Added support for direct deploy with ADE. v2.3.0: Add support for ADE environments.",
-    "minimumAgentVersion": "2.134.0",
+    "releaseNotes": "v2.11.4: Updated min agent version to v3.232.1 because of Node v20.1\r\nv2.11.2: Use Node v20\r\nv2.10.0: EPiCloud v1.7\r\nv2.9.6: Fixed warmup site\r\nv2.9.0: EPiCloud v1.3\r\nv2.7.0: Run benchmark\r\nv2.5.0: Support ZIP artifacts\r\nv2.4.0: RunVerbose\r\n v2.3.1: Added support for direct deploy with ADE. v2.3.0: Add support for ADE environments.",
+    "minimumAgentVersion": "3.232.1",
     "inputs": [
         {
             "name": "ClientKey",

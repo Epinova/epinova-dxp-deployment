@@ -1,10 +1,13 @@
 # Release notes
 
+## v2.11.4  
+- Updated min agent version to v3.232.1 in all tasks because of using Node v20.1.  
+
 ## v2.11.3
-- Hotfix Deploy to task.
+- Hotfix Deploy to task.  
 
 ## v2.11.2
-- Upgrade npm packages and use node 20_1 for task execution to get rid of Node 10 warnings.
+- Upgrade npm packages and use node 20_1 for task execution to get rid of Node 10 warnings.  
 
 ## v2.10.2
 - Upgrade to EpiCloud v1.7
