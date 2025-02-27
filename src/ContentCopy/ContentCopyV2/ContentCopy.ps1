@@ -83,6 +83,18 @@ try {
             $sourceEnvironment = "Production"
             $targetEnvironment = "ADE3"
         }
+        ProdAde4{
+            $sourceEnvironment = "Production"
+            $targetEnvironment = "ADE4"
+        }
+        ProdAde5{
+            $sourceEnvironment = "Production"
+            $targetEnvironment = "ADE5"
+        }
+        ProdAde6{
+            $sourceEnvironment = "Production"
+            $targetEnvironment = "ADE6"
+        }
         PrepAde1{
             $sourceEnvironment = "Preproduction"
             $targetEnvironment = "ADE1"
@@ -94,6 +106,18 @@ try {
         PrepAde3{
             $sourceEnvironment = "Preproduction"
             $targetEnvironment = "ADE3"
+        }
+        PrepAde4{
+            $sourceEnvironment = "Preproduction"
+            $targetEnvironment = "ADE4"
+        }
+        PrepAde5{
+            $sourceEnvironment = "Preproduction"
+            $targetEnvironment = "ADE5"
+        }
+        PrepAde6{
+            $sourceEnvironment = "Preproduction"
+            $targetEnvironment = "ADE6"
         }
         InteAde1{
             $sourceEnvironment = "Integration"
@@ -107,6 +131,18 @@ try {
             $sourceEnvironment = "Integration"
             $targetEnvironment = "ADE3"
         }
+        InteAde4{
+            $sourceEnvironment = "Integration"
+            $targetEnvironment = "ADE4"
+        }
+        InteAde5{
+            $sourceEnvironment = "Integration"
+            $targetEnvironment = "ADE5"
+        }
+        InteAde6{
+            $sourceEnvironment = "Integration"
+            $targetEnvironment = "ADE6"
+        }
         Ade1Prep{
             $sourceEnvironment = "ADE1"
             $targetEnvironment = "Preproduction"
@@ -117,6 +153,18 @@ try {
         }
         Ade3Prep{
             $sourceEnvironment = "ADE3"
+            $targetEnvironment = "Preproduction"
+        }
+        Ade4Prep{
+            $sourceEnvironment = "ADE4"
+            $targetEnvironment = "Preproduction"
+        }
+        Ade5Prep{
+            $sourceEnvironment = "ADE5"
+            $targetEnvironment = "Preproduction"
+        }
+        Ade6Prep{
+            $sourceEnvironment = "ADE6"
             $targetEnvironment = "Preproduction"
         }
         Ade1Inte{
@@ -131,6 +179,18 @@ try {
             $sourceEnvironment = "ADE3"
             $targetEnvironment = "Integration"
         }
+        Ade4Inte{
+            $sourceEnvironment = "ADE4"
+            $targetEnvironment = "Integration"
+        }
+        Ade5Inte{
+            $sourceEnvironment = "ADE5"
+            $targetEnvironment = "Integration"
+        }
+        Ade6Inte{
+            $sourceEnvironment = "ADE6"
+            $targetEnvironment = "Integration"
+        }
         Ade1Ade2{
             $sourceEnvironment = "ADE1"
             $targetEnvironment = "ADE2"
@@ -138,6 +198,18 @@ try {
         Ade1Ade3{
             $sourceEnvironment = "ADE1"
             $targetEnvironment = "ADE3"
+        }
+        Ade1Ade4{
+            $sourceEnvironment = "ADE1"
+            $targetEnvironment = "ADE4"
+        }
+        Ade1Ade5{
+            $sourceEnvironment = "ADE1"
+            $targetEnvironment = "ADE5"
+        }
+        Ade1Ade6{
+            $sourceEnvironment = "ADE1"
+            $targetEnvironment = "ADE6"
         }
         Ade2Ade1{
             $sourceEnvironment = "ADE2"
@@ -147,6 +219,18 @@ try {
             $sourceEnvironment = "ADE2"
             $targetEnvironment = "ADE3"
         }
+        Ade2Ade4{
+            $sourceEnvironment = "ADE2"
+            $targetEnvironment = "ADE4"
+        }
+        Ade2Ade5{
+            $sourceEnvironment = "ADE2"
+            $targetEnvironment = "ADE5"
+        }
+        Ade2Ade6{
+            $sourceEnvironment = "ADE2"
+            $targetEnvironment = "ADE6"
+        }
         Ade3Ade1{
             $sourceEnvironment = "ADE3"
             $targetEnvironment = "ADE1"
@@ -154,6 +238,78 @@ try {
         Ade3Ade2{
             $sourceEnvironment = "ADE3"
             $targetEnvironment = "ADE2"
+        }
+        Ade3Ade4{
+            $sourceEnvironment = "ADE3"
+            $targetEnvironment = "ADE4"
+        }
+        Ade3Ade5{
+            $sourceEnvironment = "ADE3"
+            $targetEnvironment = "ADE5"
+        }
+        Ade3Ade6{
+            $sourceEnvironment = "ADE3"
+            $targetEnvironment = "ADE6"
+        }
+        Ade4Ade1{
+            $sourceEnvironment = "ADE4"
+            $targetEnvironment = "ADE1"
+        }
+        Ade4Ade2{
+            $sourceEnvironment = "ADE4"
+            $targetEnvironment = "ADE2"
+        }
+        Ade4Ade3{
+            $sourceEnvironment = "ADE4"
+            $targetEnvironment = "ADE3"
+        }
+        Ade4Ade5{
+            $sourceEnvironment = "ADE4"
+            $targetEnvironment = "ADE5"
+        }
+        Ade4Ade6{
+            $sourceEnvironment = "ADE4"
+            $targetEnvironment = "ADE6"
+        }
+        Ade5Ade1{
+            $sourceEnvironment = "ADE5"
+            $targetEnvironment = "ADE1"
+        }
+        Ade5Ade2{
+            $sourceEnvironment = "ADE5"
+            $targetEnvironment = "ADE2"
+        }
+        Ade5Ade3{
+            $sourceEnvironment = "ADE5"
+            $targetEnvironment = "ADE3"
+        }
+        Ade5Ade4{
+            $sourceEnvironment = "ADE5"
+            $targetEnvironment = "ADE4"
+        }
+        Ade5Ade6{
+            $sourceEnvironment = "ADE5"
+            $targetEnvironment = "ADE6"
+        }
+        Ade6Ade1{
+            $sourceEnvironment = "ADE6"
+            $targetEnvironment = "ADE1"
+        }
+        Ade6Ade2{
+            $sourceEnvironment = "ADE6"
+            $targetEnvironment = "ADE2"
+        }
+        Ade6Ade3{
+            $sourceEnvironment = "ADE6"
+            $targetEnvironment = "ADE3"
+        }
+        Ade6Ade4{
+            $sourceEnvironment = "ADE6"
+            $targetEnvironment = "ADE4"
+        }
+        Ade6Ade5{
+            $sourceEnvironment = "ADE6"
+            $targetEnvironment = "ADE5"
         }
     }
 

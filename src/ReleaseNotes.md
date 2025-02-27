@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.11.5
+- Added more ADE environments. ADE4, ADE5, ADE6
+
 ## v2.11.4  
 - Updated min agent version to v3.232.1 in all tasks because of using Node v20.1.  
 
