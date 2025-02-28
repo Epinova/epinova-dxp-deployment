@@ -46,6 +46,9 @@ Specify from which environment you want to take the source code/package.
 - ADE1
 - ADE2
 - ADE3
+- ADE4
+- ADE5
+- ADE6
 
 #### Target environment
 **[pickList]** - **required**  
@@ -59,6 +62,9 @@ Specify if you want to deploy to Integration/Preproduction/Production.
 - ADE1
 - ADE2
 - ADE3
+- ADE4
+- ADE5
+- ADE6
 
 #### SourceApp
 **[pickList]** - **required**  

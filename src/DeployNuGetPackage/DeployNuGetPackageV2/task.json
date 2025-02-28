@@ -14,7 +14,7 @@
     "version": {
         "Major": 2,
         "Minor": 11,
-        "Patch": 5
+        "Patch": 6
     },
     "groups": [
         {
@@ -119,7 +119,7 @@
             "defaultValue": "false",
             "helpMarkDown": "If you should skip slot and other time consuming stuff and just deploy to environment.",
             "groupName": "Settings",
-            "visibleRule": "TargetEnvironment = Integration || TargetEnvironment = ADE1 || TargetEnvironment = ADE2 || TargetEnvironment = ADE3"
+            "visibleRule": "TargetEnvironment = Integration || TargetEnvironment = ADE1 || TargetEnvironment = ADE2 || TargetEnvironment = ADE3 || TargetEnvironment = ADE4 || TargetEnvironment = ADE5 || TargetEnvironment = ADE6"
         },
         {
             "name": "WarmUpUrl",

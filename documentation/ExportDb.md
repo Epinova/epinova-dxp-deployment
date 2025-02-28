@@ -39,6 +39,9 @@ Specify from which environment the database export should be done.
 - ADE1
 - ADE2
 - ADE3
+- ADE4
+- ADE5
+- ADE6
 
 #### DatabaseName
 **[pickList]** - **required**  
