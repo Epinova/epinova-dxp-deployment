@@ -37,6 +37,9 @@ Specify which environment that you want to check Integration/Preproduction/Produ
 - ADE1
 - ADE2
 - ADE3
+- ADE4
+- ADE5
+- ADE6
 
 #### Expected status
 **[pickList]** - **required**  

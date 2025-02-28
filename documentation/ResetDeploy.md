@@ -37,6 +37,9 @@ Specify the target environment that you want to reset.
 - ADE1
 - ADE2
 - ADE3
+- ADE4
+- ADE5
+- ADE6
 
 ### Group: Timeout
 #### Script timeout (in seconds)
