@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.11.6
+- Fixed ADE environments condition in DeployNuGetPackage. Updated documentation.
+
 ## v2.11.5
 - Added more ADE environments. ADE4, ADE5, ADE6
 
