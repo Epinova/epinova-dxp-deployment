@@ -42,6 +42,9 @@ Specify the target environment that you are going to do smoke test against. If t
 - ADE1
 - ADE2
 - ADE3
+- ADE4
+- ADE5
+- ADE6
 
 #### URLs
 **[multiline]** - **required**  
