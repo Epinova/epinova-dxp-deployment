@@ -67,7 +67,7 @@ try {
     Initialize-EpinovaDxpScript -ClientKey $clientKey -ClientSecret $clientSecret -ProjectId $projectId
 
     if (($targetEnvironment -eq "Preproduction" -or $targetEnvironment -eq "Production") -and $directDeploy){
-        Write-Host "DirectDeploy does only support target environment = Integration|ADE1|ADE2|ADE3 at the moment. Will set the DirectDeploy=false."
+        Write-Host "DirectDeploy does only support target environment = Integration|ADE* at the moment. Will set the DirectDeploy=false."
         $directDeploy = $false
     }
 
