@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.11.7
+- Fixed bug in DeployNuGetPackage task. Prevent warmup if value in field "WarmUpUrl" has hidden value and deploy to production. 
+
 ## v2.11.6
 - Fixed ADE environments condition in DeployNuGetPackage. Updated documentation.
 
