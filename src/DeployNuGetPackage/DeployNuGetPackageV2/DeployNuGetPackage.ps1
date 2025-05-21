@@ -141,7 +141,7 @@ try {
         if ($status.status -eq $expectedStatus) {
             Write-Host "Deployment $deploymentId has been successful."
 
-            if ($warmupThisUrl){
+            if ($warmupThisUrl -and $targetEnvironment -ne "Production"){
                 Invoke-WarmupSite $warmupThisUrl
             }
         }
