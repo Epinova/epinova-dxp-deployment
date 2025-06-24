@@ -1,4 +1,4 @@
-name: Build and validate Azure DevOps extension - TEST
+name: TEST - Validate Azure DevOps extension
 
 on:
   push:

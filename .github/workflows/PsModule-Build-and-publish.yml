@@ -1,4 +1,4 @@
-name: Publish module to PowerShellGallery - EpinovaDxpToolBucket
+name: Publish EpinovaDxpToolBucket to PowerShellGallery
 
 on:
   # push:

@@ -1,4 +1,4 @@
-name: Build and publish Azure DevOps extension
+name: Publish Azure DevOps extension
 
 on:
   workflow_dispatch: # Allow manuel trigger of the workflow
