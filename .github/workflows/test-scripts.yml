@@ -49,14 +49,14 @@ jobs:
             const { v5 } = require('uuid');
             
             // Use URL namespace
-            const URL_NAMESPACE = "https://marketplace.visualstudio.com/vsts"; // v5.URL; // Built-in constant equivalent to "6ba7b811-9dad-11d1-80b4-00c04fd430c8"
+            //const URL_NAMESPACE = "https://marketplace.visualstudio.com/vsts"; // v5.URL; // Built-in constant equivalent to "6ba7b811-9dad-11d1-80b4-00c04fd430c8"
             
             const publisherId = process.env.PUBLISHER_ID;
             const extensionId = process.env.EXTENSION_ID;
             const taskName = process.env.TASK_NAME;
         
             const manifestString = `${publisherId}.${extensionId}.${taskName}`;
-            const taskUuid = v5(manifestString, URL_NAMESPACE);
+            const taskUuid = v5(manifestString, v5.URL);
         
             console.log(`task_uuid=${taskUuid}`);
             console.log(`::set-output name=task_uuid::${taskUuid}`);
