@@ -3,8 +3,8 @@ name: Test scripts
 on:
   pull_request:
     branches:
-      - feature/**
-  workflow_dispatch # Allow manuel trigger of the workflow
+      - develop
+  workflow_dispatch: # Allow manuel trigger of the workflow
 
 jobs:
   run-tests:
