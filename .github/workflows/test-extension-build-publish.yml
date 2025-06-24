@@ -1,4 +1,4 @@
-name: Build and publish Azure DevOps extension
+name: Build and publish Azure DevOps extension - TEST
 
 on:
   workflow_dispatch: # Allow manuel trigger of the workflow
@@ -109,7 +109,7 @@ jobs:
         run: npm install -g tfx-cli@0.18.0
 
       - name: Set extension filename variable
-        run: echo "VsixFileName=epinova-dxp-deployment-extension-$EXTENSION_VERSION.vsix" >> $GITHUB_ENV
+        run: echo "VsixFileName=epinova-dxp-deploy-extension-test-$EXTENSION_VERSION.vsix" >> $GITHUB_ENV
 
       - name: Show VsixFileName
         run: echo "The value of VsixFileName is $VsixFileName"
@@ -131,6 +131,7 @@ jobs:
         env:
           PUBLISHER_ID: ${{ secrets.EPINOVA_VS_MARKETPLACE_PUBLISHER_ID }}
           PERSONAL_ACCESS_TOKEN: ${{ secrets.EPINOVA_VS_MARKETPLACE_PAT }}
+          
         run: |
           tfx extension publish \
             --publisher $PUBLISHER_ID \
@@ -140,5 +141,5 @@ jobs:
 
       - name: Create Git Tag
         run: |
-          git tag "v${VERSION}"
-          git push origin "v${VERSION}"
+          git tag "v${VERSION}TEST"
+          git push origin "v${VERSION}TEST"

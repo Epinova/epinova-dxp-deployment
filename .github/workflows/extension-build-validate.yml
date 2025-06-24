@@ -3,9 +3,10 @@ name: Build and validate Azure DevOps extension
 on:
   push:
     branches:
-      - develop
-      - feature/**
+      - master
   pull_request:
+    branches:
+      - release/*
   workflow_dispatch: # Allow manuel trigger of the workflow
 
 jobs:
@@ -114,7 +115,7 @@ jobs:
         run: npm install -g tfx-cli@0.18.0
 
       - name: Set extension filename variable
-        run: echo "VsixFileName=epinova-azure-infrastructure-deployment-extension-$EXTENSION_VERSION.vsix" >> $GITHUB_ENV
+        run: echo "VsixFileName=epinova-dxp-deployment-extension-$EXTENSION_VERSION.vsix" >> $GITHUB_ENV
 
       - name: Show VsixFileName
         run: echo "The value of VsixFileName is $VsixFileName"
