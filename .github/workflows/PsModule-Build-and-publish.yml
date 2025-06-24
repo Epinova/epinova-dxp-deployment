@@ -37,5 +37,5 @@ jobs:
 
       - name: Create Git Tag
         run: |
-          git tag "v${MODULE_VERSION}"
-          git push origin "v${MODULE_VERSION}"
+          git tag "EpinovaDxpToolBucketv${MODULE_VERSION}"
+          git push origin "EpinovaDxpToolBucketv${MODULE_VERSION}"
