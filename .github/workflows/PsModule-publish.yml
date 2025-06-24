@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  publish:
+  publish-psmodule:
     runs-on: ubuntu-latest
 
     steps:

@@ -7,7 +7,7 @@ on:
   workflow_dispatch: # Allow manuel trigger of the workflow
 
 jobs:
-  build-and-publish:
+  validate-extension:
     runs-on: ubuntu-latest
 
     steps:
