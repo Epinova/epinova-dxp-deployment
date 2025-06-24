@@ -33,233 +33,81 @@ jobs:
           echo "EXTENSION_VERSION=$EXTENSION_VERSION"
 
       - uses: ./.github/actions/populate-psmodules-folders
-      # - name: Copy scripts ps_modules folders
-      #   shell: pwsh
-      #   run: |
-      #     Write-Host "---Start---"
-      #     function CopyItems {
-      #         param (
-      #             [Parameter(Mandatory = $true)]
-      #             [string]$path,
 
-      #             [Parameter(Mandatory = $true)]
-      #             [string]$destinationPath
-      #         )
-
-      #         try {
-      #             Copy-Item -Path $path -Destination $destinationPath -Recurse -Force
-      #             Write-Host "Successfully copied '$path' to '$destinationPath'." -ForegroundColor Green
-      #         }
-      #         catch {
-      #             Write-Error "Failed to copy '$path' to '$destinationPath': $_"
-      #         }
-      #     }
-      #     $utilScript = (Get-Item -Path Modules/EpinovaDxpDeploymentUtil.ps1).FullName
-      #     $epiCloudModule = (Get-Item -Path Modules/EpiCloud).FullName
-      #     $vstsModule = (Get-Item -Path Modules/VstsTaskSdk).FullName
-
-      #     $srcRootPath = (Get-Item .\* | Where-Object {$_.FullName.EndsWith("src")})
-      #     $dir = Get-ChildItem -Path $srcRootPath -Directory
-      #     foreach ($d in $dir){
-      #         $psmodulesPath = Join-Path -Path $d.FullName -ChildPath "ps_modules"
-      #         Write-Host "psmodulesPath $psmodulesPath"
-      #         $filePath = $d.FullName
-      #         Write-Host "filePath $filePath"
-      #         if (Test-Path $psmodulesPath){
-      #             CopyItems -path $utilScript -destinationPath $filePath
-      #             CopyItems -path $epiCloudModule -destinationPath $filePath
-      #             CopyItems -path $vstsModule -destinationPath $filePath
-      #             $readmeFilePath = $psmodulesPath + "/readme.md"
-      #             if (Test-Path $readmeFilePath) {
-      #               Remove-Item -Path $readmeFilePath -Force
-      #               Write-Host "Removed item $readmeFilePath"
-      #             }
-      #             #Write-Host "Copy $utilScript to $filePath"
-      #             #Copy-Item -Path $utilScript -Destination $filePath -Recurse -Force
-      #         }
-      #         else {
-      #             # Handle if we have directories for versions.
-      #             $subdir = Get-ChildItem -Path $d.FullName -Directory
-      #             foreach ($sd in $subdir){
-      #                 $subfilePath = Join-Path -Path $sd.FullName -ChildPath "ps_modules"
-      #                 Write-Host "subfilePath $subfilePath"
-      #                 if (Test-Path $subfilePath){
-      #                     CopyItems -path $utilScript -destinationPath $subfilePath
-      #                     CopyItems -path $epiCloudModule -destinationPath $subfilePath
-      #                     CopyItems -path $vstsModule -destinationPath $subfilePath
-      #                     $readmeFilePath = $subfilePath + "/readme.md"
-      #                     if (Test-Path $readmeFilePath) {
-      #                       Remove-Item -Path $readmeFilePath -Force
-      #                       Write-Host "Removed item $readmeFilePath"
-      #                     }
-      #                     #Write-Host "Copy $utilScript to $subfilePath"
-      #                     #Copy-Item -Path $utilScript -Destination $subfilePath -Recurse -Force
-      #                 }
-      #             }        
-      #         }
-      #     }
-      #     Write-Host "---End---"
-  
-      # - name: Copy EpinovaDxpDeploymentUtil to tasks
-      #   shell: pwsh
-      #   run: |
-      #     Write-Host "---Start---"
-      #     $script = (Get-Item -Path Modules/EpinovaDxpDeploymentUtil.ps1).FullName
-      #     Write-Host $script
-      #     $srcRootPath = (Get-Item .\* | Where-Object {$_.FullName.EndsWith("src")})
-      #     $dir = Get-ChildItem -Path $srcRootPath -Directory
-      #     foreach ($d in $dir){
-      #         $psmodulesPath = Join-Path -Path $d.FullName -ChildPath "ps_modules"
-      #         $filePath = $d.FullName
-      #         if (Test-Path $psmodulesPath){
-      #             Write-Host "Copy script to $filePath"
-      #             Copy-Item -Path $script -Destination $filePath -Recurse -Force
-      #         }
-      #         else {
-      #             # Handle if we have directories for versions.
-      #             $subdir = Get-ChildItem -Path $d.FullName -Directory
-      #             foreach ($sd in $subdir){
-      #                 $subfilePath = Join-Path -Path $sd.FullName -ChildPath "ps_modules"
-      #                 if (Test-Path $subfilePath){
-      #                     Write-Host $subfilePath
-      #                     Copy-Item -Path $script -Destination $subfilePath -Recurse -Force
-      #                 }
-      #             }        
-      #         }
-      #     }
-      #     Write-Host "---End---"
-
-      # - name: Copy EpinovaDxpDeploymentUtil
-      #   shell: pwsh
-      #   run: |
-      #     $module = (Get-Item -Path Modules/EpiCloud).FullName
-      #     Write-Host $module
-      #     $srcRootPath = (Get-Item .\* | Where-Object {$_.FullName.EndsWith("src")})
-      #     $dir = Get-ChildItem -Path $srcRootPath -Directory
-      #     foreach ($d in $dir){
-      #         $filePath = Join-Path -Path $d.FullName -ChildPath "ps_modules"
-      #         if (Test-Path $filePath){
-      #             Write-Host $filePath
-      #             Copy-Item -Path $module -Destination $filePath -Recurse -Force
-      #         }
-      #         else {
-      #             # Handle if we have directories for versions.
-      #             $subdir = Get-ChildItem -Path $d.FullName -Directory
-      #             foreach ($sd in $subdir){
-      #                 $subfilePath = Join-Path -Path $sd.FullName -ChildPath "ps_modules"
-                      
-      #                 if (Test-Path $subfilePath){
-      #                     Write-Host $subfilePath
-      #                     Copy-Item -Path $module -Destination $subfilePath -Recurse -Force
-      #                 }
-      #             }
-      #         }
-      #     }
-
-      # - name: Copy XXX
-      #   shell: pwsh
-      #   run: |
-      #     $module = (Get-Item -Path Modules/VstsTaskSdk).FullName
-      #     Write-Host $module
-      #     $srcRootPath = (Get-Item .\* | Where-Object {$_.FullName.EndsWith("src")})
-      #     $dir = Get-ChildItem -Path $srcRootPath -Directory
-      #     foreach ($d in $dir){
-      #         $filePath = Join-Path -Path $d.FullName -ChildPath "ps_modules"
-              
-      #         if (Test-Path $filePath){
-      #             Write-Host $filePath
-      #             Copy-Item -Path $module -Destination $filePath -Recurse -Force
-      #         }
-      #         else {
-      #             # Handle if we have directories for versions.
-      #             $subdir = Get-ChildItem -Path $d.FullName -Directory
-      #             foreach ($sd in $subdir){
-      #                 $subfilePath = Join-Path -Path $sd.FullName -ChildPath "ps_modules"
-      #                 if (Test-Path $subfilePath){
-      #                     Write-Host $subfilePath
-      #                     Copy-Item -Path $module -Destination $subfilePath -Recurse -Force
-      #                 }
-      #             }        
-      #         }
-      #     }
-
-      # - name: Copy scripts
-      #   shell: pwsh
-      #   run: |
-      #     ./BuildScripts/CopyScripts.ps1
+      - uses: ./.github/actions/build-node-tasks
 
       # START TASKS
-      - name: npm install - AwaitStatusV2
-        run: npm install
-        working-directory: ./src/AwaitStatus/AwaitStatusV2
+      # - name: npm install - AwaitStatusV2
+      #   run: npm install
+      #   working-directory: ./src/AwaitStatus/AwaitStatusV2
 
-      - name: npm run all - AwaitStatusV2
-        run: npm run all
-        working-directory: ./src/AwaitStatus/AwaitStatusV2
+      # - name: npm run all - AwaitStatusV2
+      #   run: npm run all
+      #   working-directory: ./src/AwaitStatus/AwaitStatusV2
 
-      - name: npm install - CompleteDeployV2
-        run: npm install
-        working-directory: ./src/CompleteDeploy/CompleteDeployV2
+      # - name: npm install - CompleteDeployV2
+      #   run: npm install
+      #   working-directory: ./src/CompleteDeploy/CompleteDeployV2
 
-      - name: npm run all - CompleteDeployV2
-        run: npm run all
-        working-directory: ./src/CompleteDeploy/CompleteDeployV2
+      # - name: npm run all - CompleteDeployV2
+      #   run: npm run all
+      #   working-directory: ./src/CompleteDeploy/CompleteDeployV2
 
-      - name: npm install - ContentCopyV2
-        run: npm install
-        working-directory: ./src/ContentCopy/ContentCopyV2
+      # - name: npm install - ContentCopyV2
+      #   run: npm install
+      #   working-directory: ./src/ContentCopy/ContentCopyV2
 
-      - name: npm run all - ContentCopyV2
-        run: npm run all
-        working-directory: ./src/ContentCopy/ContentCopyV2
+      # - name: npm run all - ContentCopyV2
+      #   run: npm run all
+      #   working-directory: ./src/ContentCopy/ContentCopyV2
 
-      - name: npm install - DeployNuGetPackageV2
-        run: npm install
-        working-directory: ./src/DeployNuGetPackage/DeployNuGetPackageV2
+      # - name: npm install - DeployNuGetPackageV2
+      #   run: npm install
+      #   working-directory: ./src/DeployNuGetPackage/DeployNuGetPackageV2
 
-      - name: npm run all - DeployNuGetPackageV2
-        run: npm run all
-        working-directory: ./src/DeployNuGetPackage/DeployNuGetPackageV2
+      # - name: npm run all - DeployNuGetPackageV2
+      #   run: npm run all
+      #   working-directory: ./src/DeployNuGetPackage/DeployNuGetPackageV2
 
-      - name: npm install - DeployToV2
-        run: npm install
-        working-directory: ./src/DeployTo/DeployToV2
+      # - name: npm install - DeployToV2
+      #   run: npm install
+      #   working-directory: ./src/DeployTo/DeployToV2
 
-      - name: npm run all - DeployToV2
-        run: npm run all
-        working-directory: ./src/DeployTo/DeployToV2
+      # - name: npm run all - DeployToV2
+      #   run: npm run all
+      #   working-directory: ./src/DeployTo/DeployToV2
 
-      - name: npm install - ExpectStatusV2
-        run: npm install
-        working-directory: ./src/ExpectStatus/ExpectStatusV2
+      # - name: npm install - ExpectStatusV2
+      #   run: npm install
+      #   working-directory: ./src/ExpectStatus/ExpectStatusV2
 
-      - name: npm run all - ExpectStatusV2
-        run: npm run all
-        working-directory: ./src/ExpectStatus/ExpectStatusV2
+      # - name: npm run all - ExpectStatusV2
+      #   run: npm run all
+      #   working-directory: ./src/ExpectStatus/ExpectStatusV2
 
-      - name: npm install - ExportDbV2
-        run: npm install
-        working-directory: ./src/ExportDb/ExportDbV2
+      # - name: npm install - ExportDbV2
+      #   run: npm install
+      #   working-directory: ./src/ExportDb/ExportDbV2
 
-      - name: npm run all - ExportDbV2
-        run: npm run all
-        working-directory: ./src/ExportDb/ExportDbV2
+      # - name: npm run all - ExportDbV2
+      #   run: npm run all
+      #   working-directory: ./src/ExportDb/ExportDbV2
 
-      - name: npm install - ResetDeployV2
-        run: npm install
-        working-directory: ./src/ResetDeploy/ResetDeployV2
+      # - name: npm install - ResetDeployV2
+      #   run: npm install
+      #   working-directory: ./src/ResetDeploy/ResetDeployV2
 
-      - name: npm run all - ResetDeployV2
-        run: npm run all
-        working-directory: ./src/ResetDeploy/ResetDeployV2
+      # - name: npm run all - ResetDeployV2
+      #   run: npm run all
+      #   working-directory: ./src/ResetDeploy/ResetDeployV2
 
-      - name: npm install - SmokeTestIfFailResetV2
-        run: npm install
-        working-directory: ./src/SmokeTestIfFailReset/SmokeTestIfFailResetV2
+      # - name: npm install - SmokeTestIfFailResetV2
+      #   run: npm install
+      #   working-directory: ./src/SmokeTestIfFailReset/SmokeTestIfFailResetV2
 
-      - name: npm run all - SmokeTestIfFailResetV2
-        run: npm run all
-        working-directory: ./src/SmokeTestIfFailReset/SmokeTestIfFailResetV2
+      # - name: npm run all - SmokeTestIfFailResetV2
+      #   run: npm run all
+      #   working-directory: ./src/SmokeTestIfFailReset/SmokeTestIfFailResetV2
         # END TASKS
 
       - name: Rename tasks to TEST
