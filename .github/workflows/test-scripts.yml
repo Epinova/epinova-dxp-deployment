@@ -4,7 +4,7 @@ on:
   pull_request:
     branches:
       - feature/**
-  workflow_dispatch: # Allow manuel trigger of the workflow
+  workflow_dispatch # Allow manuel trigger of the workflow
 
 jobs:
   run-tests:
