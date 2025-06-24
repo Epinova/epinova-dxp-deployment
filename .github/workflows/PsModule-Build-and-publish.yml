@@ -1,0 +1,41 @@
+name: Publish module to PowerShellGallery - EpinovaDxpToolBucket
+
+on:
+  # push:
+  #   branches:
+  #     - main
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # - name: Install PowerShell
+      #   uses: pbatard/setup-powershell@v1
+
+      - name: Extract Version
+        id: get_version
+        shell: pwsh
+        run: |
+          $psd1Path = "Modules/EpinovaDxpToolBucket/EpinovaDxpToolBucket.psd1"
+          $moduleInfo = Test-ModuleManifest -Path $psd1Path
+          $version = $moduleInfo.Version
+          Write-Output "Module Version: $version"
+          echo "MODULE_VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Publish PowerShell Module
+        shell: pwsh
+        run: |
+          $ApiKey = "${{ secrets.POWERSHELL_GALLERY_API_KEY }}"
+          Publish-Module -Path "Modules/EpinovaAzureToolBucket" -NuGetApiKey $ApiKey
+        env:
+          POWERSHELL_GALLERY_API_KEY: ${{ secrets.POWERSHELL_GALLERY_API_KEY }}
+
+      - name: Create Git Tag
+        run: |
+          git tag "v${MODULE_VERSION}"
+          git push origin "v${MODULE_VERSION}"

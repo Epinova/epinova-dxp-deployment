@@ -1,0 +1,150 @@
+name: Build and publish Azure DevOps extension
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - release/*
+  workflow_dispatch: # Allow manuel trigger of the workflow
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Get extension version
+        shell: pwsh
+        run: |
+          $version = (Get-Content src/vss-extension.json) -join "`n" | ConvertFrom-Json | Select -ExpandProperty "version"
+          $buildNumber = $env:GITHUB_RUN_NUMBER
+          $extVersion = "v$version-$buildNumber"
+          Write-Host "Try to set VERSION to $version"
+          Add-Content -Path $env:GITHUB_ENV -Value "VERSION=$version"
+          Write-Host "Try to set EXTENSION_VERSION to $extVersion"
+          Add-Content -Path $env:GITHUB_ENV -Value "EXTENSION_VERSION=$extVersion"
+
+      - name: Copy scripts
+        shell: pwsh
+        run: |
+          ./BuildScripts/CopyScripts.ps1
+
+      # START TASKS
+      - name: npm install - AwaitStatusV2
+        run: npm install
+        working-directory: ./src/AwaitStatus/AwaitStatusV2
+
+      - name: npm run all - AwaitStatusV2
+        run: npm run all
+        working-directory: ./src/AwaitStatus/AwaitStatusV2
+
+      - name: npm install - CompleteDeployV2
+        run: npm install
+        working-directory: ./src/CompleteDeploy/CompleteDeployV2
+
+      - name: npm run all - CompleteDeployV2
+        run: npm run all
+        working-directory: ./src/CompleteDeploy/CompleteDeployV2
+
+      - name: npm install - ContentCopyV2
+        run: npm install
+        working-directory: ./src/ContentCopy/ContentCopyV2
+
+      - name: npm run all - ContentCopyV2
+        run: npm run all
+        working-directory: ./src/ContentCopy/ContentCopyV2
+
+      - name: npm install - DeployNuGetPackageV2
+        run: npm install
+        working-directory: ./src/DeployNuGetPackage/DeployNuGetPackageV2
+
+      - name: npm run all - DeployNuGetPackageV2
+        run: npm run all
+        working-directory: ./src/DeployNuGetPackage/DeployNuGetPackageV2
+
+      - name: npm install - DeployToV2
+        run: npm install
+        working-directory: ./src/DeployTo/DeployToV2
+
+      - name: npm run all - DeployToV2
+        run: npm run all
+        working-directory: ./src/DeployTo/DeployToV2
+
+      - name: npm install - ExpectStatusV2
+        run: npm install
+        working-directory: ./src/ExpectStatus/ExpectStatusV2
+
+      - name: npm run all - ExpectStatusV2
+        run: npm run all
+        working-directory: ./src/ExpectStatus/ExpectStatusV2
+
+      - name: npm install - ExportDbV2
+        run: npm install
+        working-directory: ./src/ExportDb/ExportDbV2
+
+      - name: npm run all - ExportDbV2
+        run: npm run all
+        working-directory: ./src/ExportDb/ExportDbV2
+
+      - name: npm install - ResetDeployV2
+        run: npm install
+        working-directory: ./src/ResetDeploy/ResetDeployV2
+
+      - name: npm run all - ResetDeployV2
+        run: npm run all
+        working-directory: ./src/ResetDeploy/ResetDeployV2
+
+      - name: npm install - SmokeTestIfFailResetV2
+        run: npm install
+        working-directory: ./src/SmokeTestIfFailReset/SmokeTestIfFailResetV2
+
+      - name: npm run all - SmokeTestIfFailResetV2
+        run: npm run all
+        working-directory: ./src/SmokeTestIfFailReset/SmokeTestIfFailResetV2
+        # END TASKS
+
+      - name: npm install
+        run: npm install
+        working-directory: ./src
+
+      - name: Install tfx-cli
+        run: npm install -g tfx-cli@0.18.0
+
+      - name: Set extension filename variable
+        run: echo "VsixFileName=epinova-azure-infrastructure-deployment-extension-$EXTENSION_VERSION.vsix" >> $GITHUB_ENV
+
+      - name: Show VsixFileName
+        run: echo "The value of VsixFileName is $VsixFileName"
+
+      - name: Package Extension
+        run: tfx extension create --root "src" --manifests "vss-extension.json" --outputPath $VsixFileName --json
+
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-without-markdown
+          path: |
+            $VsixFileName
+            
+      # - name: tfx extension publish help
+      #   run: tfx extension publish --help
+
+      - name: Publish Extension to Visual Studio Marketplace
+        env:
+          PUBLISHER_ID: ${{ secrets.EPINOVA_VS_MARKETPLACE_PUBLISHER_ID }}
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.EPINOVA_VS_MARKETPLACE_PAT }}
+        run: |
+          tfx extension publish \
+            --publisher $PUBLISHER_ID \
+            --service-url https://marketplace.visualstudio.com \
+            --vsix $VsixFileName \
+            --token $PERSONAL_ACCESS_TOKEN
+
+      - name: Create Git Tag
+        run: |
+          git tag "v${VERSION}"
+          git push origin "v${VERSION}"
