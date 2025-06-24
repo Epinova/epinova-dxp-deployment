@@ -1,0 +1,102 @@
+name: Test scripts
+
+on:
+  pull_request:
+    branches:
+      - develop
+  workflow_dispatch: # Allow manuel trigger of the workflow
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/get-extension-version
+
+      - name: Show VERSION/EXTENSION_VERSION
+        run: |
+          echo "VERSION=$VERSION"
+          echo "EXTENSION_VERSION=$EXTENSION_VERSION"
+
+      # - uses: ./.github/actions/populate-psmodules-folders
+
+      # - uses: ./.github/actions/build-node-tasks
+
+      # - name: Rename tasks to TEST
+      #   shell: pwsh
+      #   run: |
+      #     ./BuildScripts/RenameTasksToTest.ps1
+
+      - uses: ./.github/actions/rename-tasks
+        with:
+          TaskNameSuffix: "-TEST"
+
+      - uses: ./.github/actions/update-vss-extension-json
+        with:
+          id: "d7aa7a0b-20b5-4d3b-aaea-a46a1d4d53ce"
+          name: "Epinova Optimizely DXP deployment - TEST"
+          public: "false"
+
+      - name: Generate deterministic extension ID (UUIDv5)
+        run: |
+            npm install uuid
+            node <<'EOF'
+            const { v5 } = require('uuid');
+            const fs = require('fs');
+            
+            // Use URL namespace
+            const urlNamespace = v5('https://marketplace.visualstudio.com/vsts', v5.URL);
+
+            const publisherId = process.env.PUBLISHER_ID;
+            const extensionId = process.env.EXTENSION_ID;
+            const taskName = process.env.TASK_NAME;
+        
+            const manifestString = `${publisherId}.${extensionId}.${taskName}`;
+            const taskUuid = v5(manifestString, urlNamespace);
+        
+            console.log(`task_uuid=${taskUuid}`);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `task_uuid=${taskUuid}\n`);
+            fs.appendFileSync(process.env.GITHUB_ENV, `TASK_UUID=${taskUuid}\n`);
+            EOF
+        id: generate_extension_uuid
+        env:
+            PUBLISHER_ID: ${{ secrets.EPINOVA_VS_MARKETPLACE_PUBLISHER_ID }}
+            EXTENSION_ID: 'd7aa7a0b-20b5-4d3b-aaea-a46a1d4d53ce'
+            TASK_NAME: 'DxpCompleteDeploy-TEST'
+  
+      # - name: Update vss-extension.json
+      #   shell: pwsh
+      #   run: |
+      #     $vssJsonFile = "src/vss-extension.json"
+
+      #     $json = Get-Content $vssJsonFile -raw | ConvertFrom-Json
+
+      #     $id = "$($json.id)$taskNameSuffix"
+      #     Write-Host "Update id: $id"
+      #     $json.id = "$id"
+
+      #     $json | ConvertTo-Json -depth 32| set-content $vssJsonFile
+      #     Write-Host "Updated: $vssJsonFile"
+
+
+        
+
+      # - name: npm install
+      #   run: npm install
+      #   working-directory: ./src
+
+      # - name: Install tfx-cli
+      #   run: npm install -g tfx-cli@0.18.0
+
+      # - name: Set extension filename variable
+      #   run: echo "VsixFileName=epinova-dxp-deploy-extension-test-$EXTENSION_VERSION.vsix" >> $GITHUB_ENV
+
+      # - name: Show VsixFileName
+      #   run: echo "The value of VsixFileName is $VsixFileName"
+
+      # - name: Package Extension
+      #   run: tfx extension isvalid --root "src" --manifests "vss-extension.json" --outputPath $VsixFileName --json
+

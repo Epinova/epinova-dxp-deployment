@@ -1,5 +1,8 @@
 # Release notes
 
+## v2.12.0
+- Upgrade to EpiCloud v1.8  
+
 ## v2.11.7
 - Fixed bug in DeployNuGetPackage task. Prevent warmup if value in field "WarmUpUrl" has hidden value and deploy to production. 
 

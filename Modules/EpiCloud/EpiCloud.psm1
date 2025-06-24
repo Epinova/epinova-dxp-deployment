@@ -31,61 +31,93 @@ function AddAzStorageBlob {
     )
 
     $filePath = Resolve-Path -LiteralPath $Path
-    $fileStream = [System.IO.File]::OpenRead($filePath)
+    $fileStream = $null
+    $webClient = $null
+    try {
+        $fileStream = [System.IO.File]::OpenRead($filePath)
 
-    $fileSize = (Get-Item $filePath).Length
-    $bytesUploaded = 0
-
-    $blockSize = 8MB
-    $maxRetries = 5
-
-    $blockIds = New-Object System.Collections.Generic.List[string]
-
-    $baseUri = $SasUri.GetLeftPart([System.UriPartial]::Path)
-    $query = $SasUri.Query
-
-    $webClient = New-Object System.Net.WebClient
-
-    while ($true) {
-        $blockContent = New-Object byte[] $blockSize
-        $readCount = $fileStream.Read($blockContent, 0, $blockSize)
-
-        if ($readCount -eq 0) {
-            break
+        # Calculate full file MD5 hash for the blob
+        $fullFileStream = [System.IO.File]::OpenRead($filePath)
+        $md5Full = [System.Security.Cryptography.MD5]::Create()
+        try {
+            $fullFileHash = $md5Full.ComputeHash($fullFileStream)
         }
-
-        $blockIdBytes = New-Object byte[] 48
-        [BitConverter]::GetBytes($blockIds.Count).CopyTo($blockIdBytes, 0)
-        $blockId = [Convert]::ToBase64String($blockIdBytes)
-        $blockId = $blockId.TrimEnd('=')
-        $blockIds.Add($blockId)
-
-        if ($readCount -lt $blockSize) {
-            $blockContent = $blockContent[0..($readCount-1)]
+        finally {
+            $md5Full.Dispose()
+            $fullFileStream.Close()
         }
+        $fullFileHashBase64 = [Convert]::ToBase64String($fullFileHash)
 
-        $blockUrl = "$baseUri/$BlobName$query&comp=block&blockid=$blockId"
+        $fileSize = (Get-Item $filePath).Length
+        $bytesUploaded = 0
 
-        $retryCount = 0
+        $blockSize = 8MB
+        $maxRetries = 5
+
+        $blockIds = New-Object System.Collections.Generic.List[string]
+
+        $baseUri = $SasUri.GetLeftPart([System.UriPartial]::Path)
+        $query = $SasUri.Query
+
+        $webClient = New-Object System.Net.WebClient
+
         while ($true) {
-            try {
-                $null = $webClient.UploadData($blockUrl, 'PUT', $blockContent)
-                $bytesUploaded += $readCount
-                $progress = [Math]::Round(($bytesUploaded / $fileSize) * 100)
-                Write-Progress -Activity "Uploading $BlobName" -Status "$progress% Complete:" -PercentComplete $progress
+            $blockContent = New-Object byte[] $blockSize
+            $readCount = $fileStream.Read($blockContent, 0, $blockSize)
+
+            if ($readCount -eq 0) {
                 break
-            } catch {
-                if ($retryCount -ge $maxRetries) {
-                    throw
-                } else {
-                    Start-Sleep -Seconds (2 * $retryCount)
-                    $retryCount++
+            }
+
+            $blockIdBytes = New-Object byte[] 48
+            [BitConverter]::GetBytes($blockIds.Count).CopyTo($blockIdBytes, 0)
+            $blockId = [Convert]::ToBase64String($blockIdBytes)
+            $blockId = $blockId.TrimEnd('=')
+            $blockIds.Add($blockId)
+
+            if ($readCount -lt $blockSize) {
+                $blockContent = $blockContent[0..($readCount-1)]
+            }
+
+            # Calculate MD5 hash for the block content
+            $md5 = [System.Security.Cryptography.MD5]::Create()
+            try {
+                $contentHash = $md5.ComputeHash($blockContent)
+            }
+            finally {
+                $md5.Dispose()
+            }
+            $contentHashBase64 = [Convert]::ToBase64String($contentHash)
+            $webClient.Headers.Remove("Content-MD5")
+            $webClient.Headers.Add("Content-MD5", $contentHashBase64)
+
+            $blockUrl = "$baseUri/$BlobName$query&comp=block&blockid=$blockId"
+
+            $retryCount = 0
+            while ($true) {
+                try {
+                    $null = $webClient.UploadData($blockUrl, 'PUT', $blockContent)
+                    $bytesUploaded += $readCount
+                    $progress = [Math]::Round(($bytesUploaded / $fileSize) * 100)
+                    Write-Progress -Activity "Uploading $BlobName" -Status "$progress% Complete:" -PercentComplete $progress
+                    break
+                }
+                catch {
+                    if ($retryCount -ge $maxRetries) {
+                        throw
+                    }
+                    else {
+                        Start-Sleep -Seconds (2 * $retryCount)
+                        $retryCount++
+                    }
                 }
             }
         }
     }
-
-    $fileStream.Close()
+    finally {
+        if ($fileStream) { $fileStream.Close() }
+        if ($webClient) { $webClient.Dispose() }
+    }
 
     $blockListContent = [string]::Join("", ($blockIds | ForEach-Object { "<Latest>$_</Latest>" }))
     $blockListXml = "<BlockList>$blockListContent</BlockList>"
@@ -98,6 +130,7 @@ function AddAzStorageBlob {
             $request = [System.Net.HttpWebRequest]::Create($blockListUrl)
             $request.Method = 'PUT'
             $request.ContentType = 'application/xml'
+            $request.Headers.Add('x-ms-blob-content-md5', $fullFileHashBase64)
 
             $bytes = [System.Text.Encoding]::UTF8.GetBytes($blockListXml)
             $request.ContentLength = $bytes.Length
@@ -109,10 +142,12 @@ function AddAzStorageBlob {
             $response = $request.GetResponse()
             $responseOk = ($response.StatusCode -ge 200) -and ($response.StatusCode -lt 300)
             break
-        } catch {
+        }
+        catch {
             if ($retryCount -ge $maxRetries) {
                 throw
-            } else {
+            }
+            else {
                 Start-Sleep -Seconds (2 * $retryCount)
                 $retryCount++
             }
@@ -487,7 +522,7 @@ function Add-EpiDeploymentPackage {
             $BlobName = Split-Path $Path -leaf
         }
 
-        if ($BlobName -notmatch '^(.+\.)?(cms|commerce)\.(app\.(.+)\.nupkg|sqldb\.(.+)\.bacpac)$') {
+        if ($BlobName -notmatch '^(.+\.)?(((cms|commerce|head)\.app\.(.+)\.(nupkg|zip))|((cms|commerce)\.sqldb\.(.+)\.bacpac))$') {
             throw "The deployment package is not recognized: $($BlobName)"
         }
 
@@ -1792,12 +1827,6 @@ function Start-EpiDeployment {
 
             $startDeploymentParams.RequestPayload.includeBlob = $IncludeBlob.IsPresent
             $startDeploymentParams.RequestPayload.includeDB = $IncludeDb.IsPresent
-
-            if (-not $startDeploymentParams.RequestPayload.sourceApps -and
-                -not $IncludeBlob -and
-                -not $IncludeDb) {
-                throw "You need to specify at least one of the following parameters: DeploymentPackage, SourceApp, IncludeBlob or IncludeDb."
-            }
         }
 
         Write-Verbose "Starting deployment for the project: $($ProjectId) / targetEnvironment: $($TargetEnvironment)"

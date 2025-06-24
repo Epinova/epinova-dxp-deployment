@@ -1,0 +1,42 @@
+name: Build node tasks
+description: Build all extension tasks.
+
+runs:
+  using: "composite"
+
+  steps:
+    - uses: ./.github/actions/build-node-task
+      with:
+        TaskName: 'AwaitStatus'
+
+    - uses: ./.github/actions/build-node-task
+      with:
+        TaskName: 'CompleteDeploy'
+
+    - uses: ./.github/actions/build-node-task
+      with:
+        TaskName: 'ContentCopy'
+
+    - uses: ./.github/actions/build-node-task
+      with:
+        TaskName: 'DeployNuGetPackage'
+
+    - uses: ./.github/actions/build-node-task
+      with:
+        TaskName: 'DeployTo'
+
+    - uses: ./.github/actions/build-node-task
+      with:
+        TaskName: 'ExpectStatus'
+
+    - uses: ./.github/actions/build-node-task
+      with:
+        TaskName: 'ExportDb'
+
+    - uses: ./.github/actions/build-node-task
+      with:
+        TaskName: 'ResetDeploy'
+
+    - uses: ./.github/actions/build-node-task
+      with:
+        TaskName: 'SmokeTestIfFailReset'
