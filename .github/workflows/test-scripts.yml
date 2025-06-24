@@ -32,72 +32,73 @@ jobs:
           echo "VERSION=$VERSION"
           echo "EXTENSION_VERSION=$EXTENSION_VERSION"
 
-      - name: Copy scripts ps_modules folders
-        shell: pwsh
-        run: |
-          Write-Host "---Start---"
-          function CopyItems {
-              param (
-                  [Parameter(Mandatory = $true)]
-                  [string]$path,
+      - uses: ./.github/actions/populate-psmodules-folders
+      # - name: Copy scripts ps_modules folders
+      #   shell: pwsh
+      #   run: |
+      #     Write-Host "---Start---"
+      #     function CopyItems {
+      #         param (
+      #             [Parameter(Mandatory = $true)]
+      #             [string]$path,
 
-                  [Parameter(Mandatory = $true)]
-                  [string]$destinationPath
-              )
+      #             [Parameter(Mandatory = $true)]
+      #             [string]$destinationPath
+      #         )
 
-              try {
-                  Copy-Item -Path $path -Destination $destinationPath -Recurse -Force
-                  Write-Host "Successfully copied '$path' to '$destinationPath'." -ForegroundColor Green
-              }
-              catch {
-                  Write-Error "Failed to copy '$path' to '$destinationPath': $_"
-              }
-          }
-          $utilScript = (Get-Item -Path Modules/EpinovaDxpDeploymentUtil.ps1).FullName
-          $epiCloudModule = (Get-Item -Path Modules/EpiCloud).FullName
-          $vstsModule = (Get-Item -Path Modules/VstsTaskSdk).FullName
-          
-          $srcRootPath = (Get-Item .\* | Where-Object {$_.FullName.EndsWith("src")})
-          $dir = Get-ChildItem -Path $srcRootPath -Directory
-          foreach ($d in $dir){
-              $psmodulesPath = Join-Path -Path $d.FullName -ChildPath "ps_modules"
-              Write-Host "psmodulesPath $psmodulesPath"
-              $filePath = $d.FullName
-              Write-Host "filePath $filePath"
-              if (Test-Path $psmodulesPath){
-                  CopyItems -path $utilScript -destinationPath $filePath
-                  CopyItems -path $epiCloudModule -destinationPath $filePath
-                  CopyItems -path $vstsModule -destinationPath $filePath
-                  $readmeFilePath = $psmodulesPath + "/readme.md"
-                  if (Test-Path $readmeFilePath) {
-                    Remove-Item -Path $readmeFilePath -Force
-                    Write-Host "Removed item $readmeFilePath"
-                  }
-                  #Write-Host "Copy $utilScript to $filePath"
-                  #Copy-Item -Path $utilScript -Destination $filePath -Recurse -Force
-              }
-              else {
-                  # Handle if we have directories for versions.
-                  $subdir = Get-ChildItem -Path $d.FullName -Directory
-                  foreach ($sd in $subdir){
-                      $subfilePath = Join-Path -Path $sd.FullName -ChildPath "ps_modules"
-                      Write-Host "subfilePath $subfilePath"
-                      if (Test-Path $subfilePath){
-                          CopyItems -path $utilScript -destinationPath $subfilePath
-                          CopyItems -path $epiCloudModule -destinationPath $subfilePath
-                          CopyItems -path $vstsModule -destinationPath $subfilePath
-                          $readmeFilePath = $subfilePath + "/readme.md"
-                          if (Test-Path $readmeFilePath) {
-                            Remove-Item -Path $readmeFilePath -Force
-                            Write-Host "Removed item $readmeFilePath"
-                          }
-                          #Write-Host "Copy $utilScript to $subfilePath"
-                          #Copy-Item -Path $utilScript -Destination $subfilePath -Recurse -Force
-                      }
-                  }        
-              }
-          }
-          Write-Host "---End---"
+      #         try {
+      #             Copy-Item -Path $path -Destination $destinationPath -Recurse -Force
+      #             Write-Host "Successfully copied '$path' to '$destinationPath'." -ForegroundColor Green
+      #         }
+      #         catch {
+      #             Write-Error "Failed to copy '$path' to '$destinationPath': $_"
+      #         }
+      #     }
+      #     $utilScript = (Get-Item -Path Modules/EpinovaDxpDeploymentUtil.ps1).FullName
+      #     $epiCloudModule = (Get-Item -Path Modules/EpiCloud).FullName
+      #     $vstsModule = (Get-Item -Path Modules/VstsTaskSdk).FullName
+
+      #     $srcRootPath = (Get-Item .\* | Where-Object {$_.FullName.EndsWith("src")})
+      #     $dir = Get-ChildItem -Path $srcRootPath -Directory
+      #     foreach ($d in $dir){
+      #         $psmodulesPath = Join-Path -Path $d.FullName -ChildPath "ps_modules"
+      #         Write-Host "psmodulesPath $psmodulesPath"
+      #         $filePath = $d.FullName
+      #         Write-Host "filePath $filePath"
+      #         if (Test-Path $psmodulesPath){
+      #             CopyItems -path $utilScript -destinationPath $filePath
+      #             CopyItems -path $epiCloudModule -destinationPath $filePath
+      #             CopyItems -path $vstsModule -destinationPath $filePath
+      #             $readmeFilePath = $psmodulesPath + "/readme.md"
+      #             if (Test-Path $readmeFilePath) {
+      #               Remove-Item -Path $readmeFilePath -Force
+      #               Write-Host "Removed item $readmeFilePath"
+      #             }
+      #             #Write-Host "Copy $utilScript to $filePath"
+      #             #Copy-Item -Path $utilScript -Destination $filePath -Recurse -Force
+      #         }
+      #         else {
+      #             # Handle if we have directories for versions.
+      #             $subdir = Get-ChildItem -Path $d.FullName -Directory
+      #             foreach ($sd in $subdir){
+      #                 $subfilePath = Join-Path -Path $sd.FullName -ChildPath "ps_modules"
+      #                 Write-Host "subfilePath $subfilePath"
+      #                 if (Test-Path $subfilePath){
+      #                     CopyItems -path $utilScript -destinationPath $subfilePath
+      #                     CopyItems -path $epiCloudModule -destinationPath $subfilePath
+      #                     CopyItems -path $vstsModule -destinationPath $subfilePath
+      #                     $readmeFilePath = $subfilePath + "/readme.md"
+      #                     if (Test-Path $readmeFilePath) {
+      #                       Remove-Item -Path $readmeFilePath -Force
+      #                       Write-Host "Removed item $readmeFilePath"
+      #                     }
+      #                     #Write-Host "Copy $utilScript to $subfilePath"
+      #                     #Copy-Item -Path $utilScript -Destination $subfilePath -Recurse -Force
+      #                 }
+      #             }        
+      #         }
+      #     }
+      #     Write-Host "---End---"
   
       # - name: Copy EpinovaDxpDeploymentUtil to tasks
       #   shell: pwsh
