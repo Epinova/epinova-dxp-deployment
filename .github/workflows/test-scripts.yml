@@ -32,7 +32,7 @@ jobs:
           echo "VERSION=$VERSION"
           echo "EXTENSION_VERSION=$EXTENSION_VERSION"
 
-      - uses: ./.github/actions/populate-psmodules-folders
+      - uses: .github/actions/populate-psmodules-folders
       # - name: Copy scripts ps_modules folders
       #   shell: pwsh
       #   run: |
