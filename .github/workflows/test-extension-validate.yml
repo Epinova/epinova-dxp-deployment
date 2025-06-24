@@ -1,11 +1,9 @@
 name: TEST - Validate Azure DevOps extension
 
 on:
-  push:
-    branches:
-      - develop
-      - feature/**
   pull_request:
+    branches:
+      - feature/**
   workflow_dispatch: # Allow manuel trigger of the workflow
 
 jobs:

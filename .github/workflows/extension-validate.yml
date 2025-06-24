@@ -1,9 +1,6 @@
 name: Validate Azure DevOps extension
 
 on:
-  push:
-    branches:
-      - master
   pull_request:
     branches:
       - release/*
