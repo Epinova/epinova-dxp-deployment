@@ -1,6 +1,9 @@
 name: TEST - Publish Azure DevOps extension
 
 on:
+  push:
+    branches:
+      - develop  
   workflow_dispatch: # Allow manuel trigger of the workflow
 
 jobs:

@@ -47,9 +47,9 @@ jobs:
             npm install uuid
             node <<'EOF'
             const { v5 } = require('uuid');
+            const fs = require('fs');
             
             // Use URL namespace
-            //const URL_NAMESPACE = "https://marketplace.visualstudio.com/vsts"; // v5.URL; // Built-in constant equivalent to "6ba7b811-9dad-11d1-80b4-00c04fd430c8"
             const urlNamespace = v5('https://marketplace.visualstudio.com/vsts', v5.URL);
 
             const publisherId = process.env.PUBLISHER_ID;
@@ -60,7 +60,8 @@ jobs:
             const taskUuid = v5(manifestString, urlNamespace);
         
             console.log(`task_uuid=${taskUuid}`);
-            console.log(`::set-output name=task_uuid::${taskUuid}`);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `task_uuid=${taskUuid}\n`);
+            fs.appendFileSync(process.env.GITHUB_ENV, `TASK_UUID=${taskUuid}\n`);
             EOF
         id: generate_extension_uuid
         env:

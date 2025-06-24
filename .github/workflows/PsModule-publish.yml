@@ -1,9 +1,9 @@
 name: Publish EpinovaDxpToolBucket to PowerShellGallery
 
 on:
-  # push:
-  #   branches:
-  #     - main
+  push:
+    branches:
+      - none
   workflow_dispatch:
 
 jobs:

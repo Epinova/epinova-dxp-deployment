@@ -1,6 +1,9 @@
 name: Publish Azure DevOps extension
 
 on:
+  push:
+    branches:
+      - none
   workflow_dispatch: # Allow manuel trigger of the workflow
 
 jobs:
