@@ -1,8 +1,4 @@
-trigger:
-  batch: true
-  branches:
-    include:
-    - refs/heads/master
+trigger: none
 
 name: $(Date:yyyyMMdd)$(Rev:.r)
 
