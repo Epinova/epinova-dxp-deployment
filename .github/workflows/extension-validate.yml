@@ -3,7 +3,7 @@ name: Validate Azure DevOps extension
 on:
   pull_request:
     branches:
-      - release/*
+      - master
   workflow_dispatch: # Allow manuel trigger of the workflow
 
 jobs:
