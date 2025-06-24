@@ -263,9 +263,9 @@ function Initialize-EpiCload{
         #Install-Module EpiCloud  -Scope CurrentUser -MinimumVersion 0.13.15 -Force -AllowClobber
         #Write-Host "Installed EpiCloud."
         #Import-Module -Name "EpiCloud" -MinimumVersion 1.2.0 -Verbose
-        Install-Module -Name "EpiCloud" -MinimumVersion 1.7.0 -Force
+        Install-Module -Name "EpiCloud" -MinimumVersion 1.9.0 -Force
         #Import-Module -Name "$PSScriptRoot/EpiCloud/EpiCloud.psd1" -Verbose -ErrorAction Stop
-        Write-Host "Install EpiCloud v1.7.0"
+        Write-Host "Install EpiCloud v1.9.0"
     #}
     #Get-Module -Name EpiCloud -ListAvailable
     #$version = Get-Module -Name EpiCloud -ListAvailable | Select-Object Version

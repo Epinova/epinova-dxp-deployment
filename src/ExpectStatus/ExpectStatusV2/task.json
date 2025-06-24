@@ -13,7 +13,7 @@
     "author": "Ove Lartelius",
     "version": {
         "Major": 2,
-        "Minor": 12,
+        "Minor": 13,
         "Patch": 0
     },
     "groups": [
@@ -38,7 +38,7 @@
             "isExpanded": false
         }
     ],
-    "releaseNotes": "v2.12.0: EPiCloud v1.8\r\nv2.11.4: Updated min agent version to v3.232.1 because of Node v20.1\r\nv2.11.2: Use Node v20\r\nv2.10.0: EPiCloud v1.7\r\nv2.9.0: EPiCloud v1.3\r\nv2.7.0: Run benchmark.\r\nv2.6.0: Context info.\r\nv2.4.0: RunVerbose.\r\nv2.3.0 Additional Development Environment support",
+    "releaseNotes": "v2.13.0: EPiCloud v1.9\r\nv2.12.0: EPiCloud v1.8\r\nv2.11.4: Updated min agent version to v3.232.1 because of Node v20.1\r\nv2.11.2: Use Node v20\r\nv2.10.0: EPiCloud v1.7\r\nv2.9.0: EPiCloud v1.3\r\nv2.7.0: Run benchmark.\r\nv2.6.0: Context info.\r\nv2.4.0: RunVerbose.\r\nv2.3.0 Additional Development Environment support",
     "minimumAgentVersion": "3.232.1",
     "inputs": [
         {
