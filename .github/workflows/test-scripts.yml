@@ -32,39 +32,152 @@ jobs:
           echo "VERSION=$VERSION"
           echo "EXTENSION_VERSION=$EXTENSION_VERSION"
 
-      - name: Copy EpinovaDxpDeploymentUtil to tasks
+      - name: Copy scripts to tasks ps_modules folder
         shell: pwsh
         run: |
           Write-Host "---Start---"
-          $script = (Get-Item -Path Modules/EpinovaDxpDeploymentUtil.ps1).FullName
-          Write-Host $script
+          function CopyItems {
+              param (
+                  [Parameter(Mandatory = $true)]
+                  [string]$path,
+
+                  [Parameter(Mandatory = $true)]
+                  [string]$destinationPath
+              )
+
+              try {
+                  Copy-Item -Path $path -Destination $destinationPath -Recurse -Force
+                  Write-Host "Successfully copied '$path' to '$destinationPath'." -ForegroundColor Green
+              }
+              catch {
+                  Write-Error "Failed to copy '$path' to '$destinationPath': $_"
+              }
+          }
+          $utilScript = (Get-Item -Path Modules/EpinovaDxpDeploymentUtil.ps1).FullName
+          $epiCloudModule = (Get-Item -Path Modules/EpiCloud).FullName
+          $vstsModule = (Get-Item -Path Modules/VstsTaskSdk).FullName
+          #Write-Host $utilScript
+
           $srcRootPath = (Get-Item .\* | Where-Object {$_.FullName.EndsWith("src")})
           $dir = Get-ChildItem -Path $srcRootPath -Directory
           foreach ($d in $dir){
               $psmodulesPath = Join-Path -Path $d.FullName -ChildPath "ps_modules"
+              Write-Host "psmodulesPath $psmodulesPath"
               $filePath = $d.FullName
+              Write-Host "filePath $filePath"
               if (Test-Path $psmodulesPath){
-                  Write-Host "Copy script to $filePath"
-                  Copy-Item -Path $script -Destination $filePath -Recurse -Force
+                  CopyItems -path $utilScript -destinationPath $filePath
+                  CopyItems -path $epiCloudModule -destinationPath $filePath
+                  CopyItems -path $vstsModule -destinationPath $filePath
+
+                  #Write-Host "Copy $utilScript to $filePath"
+                  #Copy-Item -Path $utilScript -Destination $filePath -Recurse -Force
               }
               else {
                   # Handle if we have directories for versions.
                   $subdir = Get-ChildItem -Path $d.FullName -Directory
                   foreach ($sd in $subdir){
                       $subfilePath = Join-Path -Path $sd.FullName -ChildPath "ps_modules"
+                      Write-Host "subfilePath $subfilePath"
                       if (Test-Path $subfilePath){
-                          Write-Host $subfilePath
-                          Copy-Item -Path $script -Destination $subfilePath -Recurse -Force
+                          CopyItems -path $utilScript -destinationPath $subfilePath
+                          CopyItems -path $epiCloudModule -destinationPath $subfilePath
+                          CopyItems -path $vstsModule -destinationPath $subfilePath
+                          #Write-Host "Copy $utilScript to $subfilePath"
+                          #Copy-Item -Path $utilScript -Destination $subfilePath -Recurse -Force
                       }
                   }        
               }
           }
           Write-Host "---End---"
-    
-      - name: Copy scripts
-        shell: pwsh
-        run: |
-          ./BuildScripts/CopyScripts.ps1
+  
+      # - name: Copy EpinovaDxpDeploymentUtil to tasks
+      #   shell: pwsh
+      #   run: |
+      #     Write-Host "---Start---"
+      #     $script = (Get-Item -Path Modules/EpinovaDxpDeploymentUtil.ps1).FullName
+      #     Write-Host $script
+      #     $srcRootPath = (Get-Item .\* | Where-Object {$_.FullName.EndsWith("src")})
+      #     $dir = Get-ChildItem -Path $srcRootPath -Directory
+      #     foreach ($d in $dir){
+      #         $psmodulesPath = Join-Path -Path $d.FullName -ChildPath "ps_modules"
+      #         $filePath = $d.FullName
+      #         if (Test-Path $psmodulesPath){
+      #             Write-Host "Copy script to $filePath"
+      #             Copy-Item -Path $script -Destination $filePath -Recurse -Force
+      #         }
+      #         else {
+      #             # Handle if we have directories for versions.
+      #             $subdir = Get-ChildItem -Path $d.FullName -Directory
+      #             foreach ($sd in $subdir){
+      #                 $subfilePath = Join-Path -Path $sd.FullName -ChildPath "ps_modules"
+      #                 if (Test-Path $subfilePath){
+      #                     Write-Host $subfilePath
+      #                     Copy-Item -Path $script -Destination $subfilePath -Recurse -Force
+      #                 }
+      #             }        
+      #         }
+      #     }
+      #     Write-Host "---End---"
+
+      # - name: Copy EpinovaDxpDeploymentUtil
+      #   shell: pwsh
+      #   run: |
+      #     $module = (Get-Item -Path Modules/EpiCloud).FullName
+      #     Write-Host $module
+      #     $srcRootPath = (Get-Item .\* | Where-Object {$_.FullName.EndsWith("src")})
+      #     $dir = Get-ChildItem -Path $srcRootPath -Directory
+      #     foreach ($d in $dir){
+      #         $filePath = Join-Path -Path $d.FullName -ChildPath "ps_modules"
+      #         if (Test-Path $filePath){
+      #             Write-Host $filePath
+      #             Copy-Item -Path $module -Destination $filePath -Recurse -Force
+      #         }
+      #         else {
+      #             # Handle if we have directories for versions.
+      #             $subdir = Get-ChildItem -Path $d.FullName -Directory
+      #             foreach ($sd in $subdir){
+      #                 $subfilePath = Join-Path -Path $sd.FullName -ChildPath "ps_modules"
+                      
+      #                 if (Test-Path $subfilePath){
+      #                     Write-Host $subfilePath
+      #                     Copy-Item -Path $module -Destination $subfilePath -Recurse -Force
+      #                 }
+      #             }
+      #         }
+      #     }
+
+      # - name: Copy XXX
+      #   shell: pwsh
+      #   run: |
+      #     $module = (Get-Item -Path Modules/VstsTaskSdk).FullName
+      #     Write-Host $module
+      #     $srcRootPath = (Get-Item .\* | Where-Object {$_.FullName.EndsWith("src")})
+      #     $dir = Get-ChildItem -Path $srcRootPath -Directory
+      #     foreach ($d in $dir){
+      #         $filePath = Join-Path -Path $d.FullName -ChildPath "ps_modules"
+              
+      #         if (Test-Path $filePath){
+      #             Write-Host $filePath
+      #             Copy-Item -Path $module -Destination $filePath -Recurse -Force
+      #         }
+      #         else {
+      #             # Handle if we have directories for versions.
+      #             $subdir = Get-ChildItem -Path $d.FullName -Directory
+      #             foreach ($sd in $subdir){
+      #                 $subfilePath = Join-Path -Path $sd.FullName -ChildPath "ps_modules"
+      #                 if (Test-Path $subfilePath){
+      #                     Write-Host $subfilePath
+      #                     Copy-Item -Path $module -Destination $subfilePath -Recurse -Force
+      #                 }
+      #             }        
+      #         }
+      #     }
+
+      # - name: Copy scripts
+      #   shell: pwsh
+      #   run: |
+      #     ./BuildScripts/CopyScripts.ps1
 
       # START TASKS
       - name: npm install - AwaitStatusV2
