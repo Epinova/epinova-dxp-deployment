@@ -32,7 +32,7 @@ jobs:
           echo "VERSION=$VERSION"
           echo "EXTENSION_VERSION=$EXTENSION_VERSION"
 
-      - name: Copy scripts to tasks ps_modules folder
+      - name: Copy scripts ps_modules folders
         shell: pwsh
         run: |
           Write-Host "---Start---"
@@ -56,8 +56,7 @@ jobs:
           $utilScript = (Get-Item -Path Modules/EpinovaDxpDeploymentUtil.ps1).FullName
           $epiCloudModule = (Get-Item -Path Modules/EpiCloud).FullName
           $vstsModule = (Get-Item -Path Modules/VstsTaskSdk).FullName
-          #Write-Host $utilScript
-
+          
           $srcRootPath = (Get-Item .\* | Where-Object {$_.FullName.EndsWith("src")})
           $dir = Get-ChildItem -Path $srcRootPath -Directory
           foreach ($d in $dir){
@@ -69,7 +68,11 @@ jobs:
                   CopyItems -path $utilScript -destinationPath $filePath
                   CopyItems -path $epiCloudModule -destinationPath $filePath
                   CopyItems -path $vstsModule -destinationPath $filePath
-
+                  $readmeFilePath = $psmodulesPath + "/readme.md"
+                  if (Test-Path $readmeFilePath) {
+                    Remove-Item -Path $readmeFilePath -Force
+                    Write-Host "Removed item $readmeFilePath"
+                  }
                   #Write-Host "Copy $utilScript to $filePath"
                   #Copy-Item -Path $utilScript -Destination $filePath -Recurse -Force
               }
@@ -83,6 +86,11 @@ jobs:
                           CopyItems -path $utilScript -destinationPath $subfilePath
                           CopyItems -path $epiCloudModule -destinationPath $subfilePath
                           CopyItems -path $vstsModule -destinationPath $subfilePath
+                          $readmeFilePath = $subfilePath + "/readme.md"
+                          if (Test-Path $readmeFilePath) {
+                            Remove-Item -Path $readmeFilePath -Force
+                            Write-Host "Removed item $readmeFilePath"
+                          }
                           #Write-Host "Copy $utilScript to $subfilePath"
                           #Copy-Item -Path $utilScript -Destination $subfilePath -Recurse -Force
                       }
