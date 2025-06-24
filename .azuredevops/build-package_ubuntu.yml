@@ -1,4 +1,4 @@
-trigger: none
+# trigger: none
 
 name: $(Date:yyyyMMdd)$(Rev:.r)
 
