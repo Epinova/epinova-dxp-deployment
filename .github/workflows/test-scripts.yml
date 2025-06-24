@@ -29,7 +29,7 @@ jobs:
       - uses: ./.github/actions/get-extension-version
 
       - name: Show VERSION/EXTENSION_VERSION
-        run: 
+        run: |
           echo "VERSION=$VERSION"
           echo "EXTENSION_VERSION=$EXTENSION_VERSION"
 
