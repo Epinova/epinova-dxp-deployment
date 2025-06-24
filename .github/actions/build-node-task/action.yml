@@ -1,0 +1,20 @@
+name: Build node task
+description: Build extension task.
+inputs:
+  TaskName:
+    required: true
+    description: 'Name of the task'
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: npm install - ${{ inputs['TaskName'] }}V2
+      shell: bash
+      run: npm install
+      working-directory: ./src/${{ inputs['TaskName'] }}/${{ inputs['TaskName'] }}V2
+
+    - name: npm run all - ${{ inputs['TaskName'] }}
+      shell: bash
+      run: npm run all
+      working-directory: ./src/${{ inputs['TaskName'] }}/${{ inputs['TaskName'] }}V2

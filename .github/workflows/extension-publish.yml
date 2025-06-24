@@ -1,0 +1,60 @@
+name: Publish Azure DevOps extension
+
+on:
+  workflow_dispatch: # Allow manuel trigger of the workflow
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/get-extension-version
+
+      - uses: ./.github/actions/populate-psmodules-folders
+
+      - uses: ./.github/actions/build-node-tasks
+
+      - name: npm install
+        run: npm install
+        working-directory: ./src
+
+      - name: Install tfx-cli
+        run: npm install -g tfx-cli@0.18.0
+
+      - name: Set extension filename variable
+        run: echo "VsixFileName=epinova-dxp-deployment-extension-$EXTENSION_VERSION.vsix" >> $GITHUB_ENV
+
+      - name: Show VsixFileName
+        run: echo "The value of VsixFileName is $VsixFileName"
+
+      - name: Package Extension
+        run: tfx extension create --root "src" --manifests "vss-extension.json" --outputPath $VsixFileName --json
+
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-without-markdown
+          path: |
+            $VsixFileName
+            
+      # - name: tfx extension publish help
+      #   run: tfx extension publish --help
+
+      - name: Publish Extension to Visual Studio Marketplace
+        env:
+          PUBLISHER_ID: ${{ secrets.EPINOVA_VS_MARKETPLACE_PUBLISHER_ID }}
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.EPINOVA_VS_MARKETPLACE_PAT }}
+        run: |
+          tfx extension publish \
+            --publisher $PUBLISHER_ID \
+            --service-url https://marketplace.visualstudio.com \
+            --vsix $VsixFileName \
+            --token $PERSONAL_ACCESS_TOKEN
+
+      - name: Create Git Tag
+        run: |
+          git tag "v${VERSION}"
+          git push origin "v${VERSION}"

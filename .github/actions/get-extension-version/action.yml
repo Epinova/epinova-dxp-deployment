@@ -1,0 +1,17 @@
+name: Get extension version
+description: Scripts that load vss-extension.json and get the version and set to variable.
+
+runs:
+  using: "composite"
+
+  steps:
+      - name: Get extension version
+        shell: pwsh
+        run: |
+          $version = (Get-Content src/vss-extension.json) -join "`n" | ConvertFrom-Json | Select -ExpandProperty "version"
+          $buildNumber = $env:GITHUB_RUN_NUMBER
+          $extVersion = "v$version-$buildNumber"
+          Write-Host "Try to set VERSION to $version"
+          Add-Content -Path $env:GITHUB_ENV -Value "VERSION=$version"
+          Write-Host "Try to set EXTENSION_VERSION to $extVersion"
+          Add-Content -Path $env:GITHUB_ENV -Value "EXTENSION_VERSION=$extVersion"

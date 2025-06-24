@@ -1,0 +1,39 @@
+name: Update vss-extension.json
+description: Update the extension manifest file.
+inputs:
+  id:
+    required: true
+    description: 'The new id for the manifest'
+  name:
+    required: true
+    description: 'The new name for the manifest'
+  public:
+    required: true
+    description: 'The new public for the manifest'
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: Update vss-extension.json
+      shell: pwsh
+      run: |
+          $id = "${{ inputs.id }}"
+          $name = "${{ inputs.name }}"
+          $public = "${{ inputs.public }}"
+          $vssJsonFile = "src/vss-extension.json"
+
+          $json = Get-Content $vssJsonFile -raw | ConvertFrom-Json
+
+          #$id = "$($json.id)$taskNameSuffix"
+          Write-Host "Update id: $id"
+          $json.id = "$id"
+
+          Write-Host "Update name: $name"
+          $json.name = "$name"
+
+          Write-Host "Update public: $public"
+          $json.public = $public
+
+          $json | ConvertTo-Json -depth 32| set-content $vssJsonFile
+          Write-Host "Updated: $vssJsonFile"

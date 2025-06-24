@@ -1,0 +1,49 @@
+name: TEST - Validate Azure DevOps extension
+
+on:
+  push:
+    branches:
+      - develop
+      - feature/**
+  pull_request:
+  workflow_dispatch: # Allow manuel trigger of the workflow
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/get-extension-version
+
+      - uses: ./.github/actions/populate-psmodules-folders
+
+      - uses: ./.github/actions/build-node-tasks
+
+      # - name: Rename tasks to TEST
+      #   shell: pwsh
+      #   run: |
+      #     ./BuildScripts/RenameTasksToTest.ps1
+
+      - uses: ./.github/actions/rename-tasks
+        with:
+          TaskNameSuffix: "-TEST"
+
+      - name: npm install
+        run: npm install
+        working-directory: ./src
+
+      - name: Install tfx-cli
+        run: npm install -g tfx-cli@0.18.0
+
+      - name: Set extension filename variable
+        run: echo "VsixFileName=epinova-dxp-deploy-extension-test-$EXTENSION_VERSION.vsix" >> $GITHUB_ENV
+
+      - name: Show VsixFileName
+        run: echo "The value of VsixFileName is $VsixFileName"
+
+      - name: Package Extension
+        run: tfx extension isvalid --root "src" --manifests "vss-extension.json" --outputPath $VsixFileName --json
+
