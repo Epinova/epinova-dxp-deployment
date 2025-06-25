@@ -91,7 +91,8 @@ function AddAzStorageBlob {
             $webClient.Headers.Remove("Content-MD5")
             $webClient.Headers.Add("Content-MD5", $contentHashBase64)
 
-            $blockUrl = "$baseUri/$BlobName$query&comp=block&blockid=$blockId"
+            $encodedBlockId = [System.Web.HttpUtility]::UrlEncode($blockId)
+            $blockUrl = "$baseUri/$BlobName$query&comp=block&blockid=$encodedBlockId"
 
             $retryCount = 0
             while ($true) {

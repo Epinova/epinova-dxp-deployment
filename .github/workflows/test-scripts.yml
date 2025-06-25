@@ -38,6 +38,7 @@ jobs:
         with:
           id: "d7aa7a0b-20b5-4d3b-aaea-a46a1d4d53ce"
           name: "Epinova Optimizely DXP deployment - TEST"
+          version: "$EXTENSION_VERSION"
           public: "false"
 
       - name: Generate deterministic extension ID (UUIDv5)
@@ -66,7 +67,7 @@ jobs:
             PUBLISHER_ID: ${{ secrets.EPINOVA_VS_MARKETPLACE_PUBLISHER_ID }}
             EXTENSION_ID: 'd7aa7a0b-20b5-4d3b-aaea-a46a1d4d53ce'
             TASK_NAME: 'DxpCompleteDeploy-TEST'
-  
+          
       # - name: Update vss-extension.json
       #   shell: pwsh
       #   run: |

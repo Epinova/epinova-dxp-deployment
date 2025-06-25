@@ -7,6 +7,9 @@ inputs:
   name:
     required: true
     description: 'The new name for the manifest'
+  version:
+    required: true
+    description: 'The new version for the manifest'
   public:
     required: true
     description: 'The new public for the manifest'
@@ -20,6 +23,7 @@ runs:
       run: |
           $id = "${{ inputs.id }}"
           $name = "${{ inputs.name }}"
+          $version = "${{ inputs.version }}"
           $public = "${{ inputs.public }}"
           $vssJsonFile = "src/vss-extension.json"
 
@@ -31,6 +35,9 @@ runs:
 
           Write-Host "Update name: $name"
           $json.name = "$name"
+
+          Write-Host "Update version: $version"
+          $json.version = "$version"
 
           Write-Host "Update public: $public"
           $json.public = $public
