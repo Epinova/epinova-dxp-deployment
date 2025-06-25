@@ -24,6 +24,12 @@ jobs:
         with:
           TaskNameSuffix: "-TEST"
 
+      - uses: ./.github/actions/update-vss-extension-json
+        with:
+          id: "d7aa7a0b-20b5-4d3b-aaea-a46a1d4d53ce"
+          name: "Epinova Optimizely DXP deployment - TEST"
+          public: "false"
+  
       - name: npm install
         run: npm install
         working-directory: ./src

@@ -38,6 +38,7 @@ jobs:
         with:
           id: "d7aa7a0b-20b5-4d3b-aaea-a46a1d4d53ce"
           name: "Epinova Optimizely DXP deployment - TEST"
+          version: "$EXTENSION_VERSION"
           public: "false"
 
       - name: Generate deterministic extension ID (UUIDv5)
@@ -66,61 +67,6 @@ jobs:
             PUBLISHER_ID: ${{ secrets.EPINOVA_VS_MARKETPLACE_PUBLISHER_ID }}
             EXTENSION_ID: 'd7aa7a0b-20b5-4d3b-aaea-a46a1d4d53ce'
             TASK_NAME: 'DxpCompleteDeploy-TEST'
-  
-      - name: uuidv5 in pwsh
-        shell: pwsh
-        run: |
-          function New-UUIDv5 {
-            param (
-                [string]$name,
-                [Guid]$namespaceGuid
-            )
-        
-            # Convert namespace GUID to bytes
-            $namespaceBytes = $namespaceGuid.ToByteArray()
-        
-            # Reverse certain parts to match UUID byte order spec
-            $namespaceBytes[0..3] = [System.BitConverter]::GetBytes([System.BitConverter]::ToUInt32($namespaceBytes[0..3], 0))[::-1]
-            $namespaceBytes[4..5] = [System.BitConverter]::GetBytes([System.BitConverter]::ToUInt16($namespaceBytes[4..5], 0))[::-1]
-        
-            # Convert name to bytes
-            $nameBytes = [System.Text.Encoding]::UTF8.GetBytes($name)
-        
-            # Concatenate namespace and name
-            $data = $namespaceBytes + $nameBytes
-        
-            # Compute SHA1 hash
-            $sha1 = [System.Security.Cryptography.SHA1]::Create()
-            $hash = $sha1.ComputeHash($data)
-        
-            # Set version to 5
-            $hash[6] = ($hash[6] -band 0x0F) -bor 0x50
-            # Set variant to RFC 4122
-            $hash[8] = ($hash[8] -band 0x3F) -bor 0x80
-        
-            # Take first 16 bytes and build GUID
-            return [Guid]::New([byte[]]$hash[0..15])
-          }
-        
-          # Input parameters (can be passed in or set as environment variables)
-          $publisherId = $env:PUBLISHER_ID
-          $extensionId = $env:EXTENSION_ID
-          $taskName = $env:TASK_NAME
-          
-          $manifestString = "$publisherId.$extensionId.$taskName"
-          
-          # Predefined URL namespace for UUID v5 (from RFC 4122)
-          $urlNamespace = [Guid]::Parse("6ba7b811-9dad-11d1-80b4-00c04fd430c8")
-          
-          # Generate UUID v5
-          $taskUuid = New-UUIDv5 -name $manifestString -namespaceGuid $urlNamespace
-          
-          # Output
-          Write-Output "task_uuid=$taskUuid"
-        env:
-          PUBLISHER_ID: ${{ secrets.EPINOVA_VS_MARKETPLACE_PUBLISHER_ID }}
-          EXTENSION_ID: 'd7aa7a0b-20b5-4d3b-aaea-a46a1d4d53ce'
-          TASK_NAME: 'DxpCompleteDeploy-TEST'
           
       # - name: Update vss-extension.json
       #   shell: pwsh
